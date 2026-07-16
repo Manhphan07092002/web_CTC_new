@@ -143,8 +143,8 @@ const AdminDashboard: React.FC = () => {
         <div className="h-16 flex items-center px-6 border-b border-white/10">
            {/* Admin Logo */}
            <img 
-              src="https://placehold.co/180x40/003B5C/ffffff?text=TRAN+LE+ADMIN&font=montserrat" 
-              alt="Tran Le Admin" 
+              src="https://placehold.co/180x40/003B5C/ffffff?text=CTC+ADMIN&font=montserrat" 
+              alt="CTC Admin" 
               className="h-8 w-auto object-contain" 
             />
         </div>
