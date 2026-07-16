@@ -131,7 +131,7 @@ const SolutionFarm: React.FC = () => {
                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary rounded-full opacity-20 blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
                    <h4 className="font-bold text-2xl mb-4 relative z-10">Nhà đầu tư?</h4>
                    <p className="text-sm text-gray-300 mb-8 relative z-10 leading-relaxed">
-                      Đầu tư Solar Farm đòi hỏi kế hoạch kỹ thuật và tài chính chi tiết. TLEC có kinh nghiệm triển khai các dự án quy mô MWp với tỷ suất hoàn vốn (IRR) hấp dẫn.
+                      Đầu tư Solar Farm đòi hỏi kế hoạch kỹ thuật và tài chính chi tiết. CTC có kinh nghiệm triển khai các dự án quy mô MWp với tỷ suất hoàn vốn (IRR) hấp dẫn.
                    </p>
                    <Link to="/contact" className="inline-flex items-center gap-2 bg-white dark:bg-gray-900 text-corporate px-6 py-3 rounded-xl font-bold transition-all hover:bg-gray-100 w-full justify-center relative z-10 shadow-lg">
                       <Zap size={18}/> Liên hệ EPC

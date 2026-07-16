@@ -103,7 +103,7 @@ async function seedSecurityData() {
     const actions = ['login', 'create', 'update', 'delete', 'view'];
     const resources = ['products', 'news', 'users', 'projects', 'settings', 'categories'];
     const statuses = ['success', 'success', 'success', 'failed', 'unauthorized'];
-    const emails = ['admin@ctcdn.vn', 'editor@tranle.com', 'user1@gmail.com', 'user2@gmail.com'];
+    const emails = ['admin@ctcdn.vn', 'editor@ctcdn.vn', 'user1@gmail.com', 'user2@gmail.com'];
 
     const auditLogs = [];
     for (let i = 0; i < 100; i++) {

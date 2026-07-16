@@ -175,7 +175,7 @@ async function seedRealData() {
       await db.collection('teammembers').insertOne({
         ...translatedTeam,
         image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-        email: 'hoanganh@tranle.com',
+        email: 'hoanganh@ctcdn.vn',
         phone: '0901234567',
         linkedin: 'https://linkedin.com/in/lehoang',
         isActive: true,

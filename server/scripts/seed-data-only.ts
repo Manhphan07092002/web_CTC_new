@@ -105,7 +105,7 @@ async function seedData() {
       await db.collection('teammembers').insertOne({
         name: 'Lê Hoàng Anh',
         role: 'Kỹ sư trưởng Năng lượng Mặt trời',
-        email: 'hoanganh@tranle.com',
+        email: 'hoanganh@ctcdn.vn',
         isActive: true,
         order: 4,
         createdAt: new Date()

@@ -68,7 +68,7 @@ const News: React.FC = () => {
           "publisher": {
             "@type": "Organization",
             "name": "CTC",
-            "url": "https://tranle.vn"
+            "url": "https://ctcdn.vn"
           }
         }
       }))

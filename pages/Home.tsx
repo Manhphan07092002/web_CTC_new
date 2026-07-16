@@ -829,10 +829,10 @@ const Home: React.FC = () => {
                     {t('home.apply_now')} <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a
-                    href="mailto:hr@tranle.com"
+                    href="mailto:hr@ctcdn.vn"
                     className="inline-flex items-center gap-3 bg-white text-gray-900 border-2 border-gray-100 px-8 py-4 rounded-full font-bold hover:border-primary hover:text-primary transition-all duration-300 hover:-translate-y-1"
                   >
-                    <Mail size={20} /> hr@tranle.com
+                    <Mail size={20} /> hr@ctcdn.vn
                   </a>
                 </div>
               </div>

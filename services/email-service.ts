@@ -464,7 +464,7 @@ export class EmailService {
               </div>
               
               <div style="text-align: center;">
-                <a href="https://tranle.com" class="cta-button">🌐 Tìm hiểu thêm về chúng tôi</a>
+                <a href="https://ctcdn.vn" class="cta-button">🌐 Tìm hiểu thêm về chúng tôi</a>
               </div>
               
               <div class="signature">
@@ -638,7 +638,7 @@ export class EmailService {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://tranle.com" class="cta-button">
+                <a href="https://ctcdn.vn" class="cta-button">
                   🌐 Khám phá sản phẩm
                 </a>
               </div>

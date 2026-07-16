@@ -10,7 +10,7 @@ import { Product, Project, News, ProductCategory } from '../../models';
 const router = express.Router();
 
 // Site configuration
-const SITE_URL = process.env.SITE_URL || 'https://tranle.vn';
+const SITE_URL = process.env.SITE_URL || 'https://ctcdn.vn';
 
 /**
  * GET /sitemap.xml
