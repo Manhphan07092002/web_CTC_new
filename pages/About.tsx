@@ -99,7 +99,7 @@ const About: React.FC = () => {
                   <div className="space-y-8 relative border-l-2 border-gray-200 ml-3 pl-8">
                      <div className="relative group">
                         <span className="absolute -left-[41px] top-1 w-6 h-6 rounded-full bg-white border-4 border-primary group-hover:scale-125 transition-transform duration-300"></span>
-                        <div className="font-bold text-2xl text-primary leading-none mb-1">25/11/2015</div>
+                        <div className="font-bold text-2xl text-primary leading-none mb-1">1992</div>
                         <h4 className="font-bold text-gray-800 text-lg">{t('about.milestone_1')}</h4>
                         <p className="text-sm text-gray-500 mt-1">{t('about.milestone_1_desc')}</p>
                      </div>
@@ -136,7 +136,7 @@ const About: React.FC = () => {
                    </div>
 
                    <p>
-                     Trong tương lai gần, Việt Nam sẽ chính thức tham gia các hiệp định quốc tế về giảm phát thải năng lượng, thể hiện quyết tâm và cam kết mạnh mẽ của Chính phủ Việt Nam trong việc phát triển năng lượng tái tạo. Động thái vĩ mô này của Chính phủ sẽ tạo điều kiện cho TLEC phát triển bền vững trong những năm tiếp theo.
+                     Trong tương lai gần, Việt Nam sẽ chính thức tham gia các hiệp định quốc tế về giảm phát thải năng lượng, thể hiện quyết tâm và cam kết mạnh mẽ của Chính phủ Việt Nam trong việc phát triển năng lượng tái tạo. Động thái vĩ mô này của Chính phủ sẽ tạo điều kiện cho CTC phát triển bền vững trong những năm tiếp theo.
                    </p>
 
                    <p>
@@ -152,7 +152,7 @@ const About: React.FC = () => {
                       <h3 className="font-bold text-corporate text-lg uppercase tracking-widest">{t('about.ceo_role')}</h3>
                       <div className="h-24 flex items-center justify-center">
                          {/* Simulated Signature - In real app use an image or signature font */}
-                         <span className="font-signature text-5xl text-primary rotate-[-5deg] opacity-90 font-cursive" style={{fontFamily: '"Dancing Script", cursive, serif'}}>Tran Thanh Xuan</span>
+                         <span className="font-signature text-5xl text-primary rotate-[-5deg] opacity-90 font-cursive" style={{fontFamily: '"Dancing Script", cursive, serif'}}>Nguyen Van Duy</span>
                       </div>
                       <p className="font-bold text-gray-800 mt-2">{t('about.ceo_title')}</p>
                     </div>
