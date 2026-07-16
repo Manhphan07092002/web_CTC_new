@@ -31,7 +31,7 @@ interface SettingsContextType {
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Tran Le Electricity',
+  siteName: 'CTC',
   siteDescription: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam',
   logo: '/uploads/images/logo/logodo.png',
   email: 'info@ctcdn.vn',

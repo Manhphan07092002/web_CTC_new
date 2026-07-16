@@ -264,7 +264,7 @@ const translations: Record<Language, Translations> = {
     solutions: {
       hero_title: 'Giải Pháp Năng Lượng',
       hero_subtitle: 'Toàn Diện & Bền Vững',
-      hero_desc: 'Tối ưu hóa chi phí, bảo vệ môi trường và kiến tạo tương lai xanh với các mô hình điện mặt trời hiện đại nhất từ CTC Electricity.',
+      hero_desc: 'Tối ưu hóa chi phí, bảo vệ môi trường và kiến tạo tương lai xanh với các mô hình điện mặt trời hiện đại nhất từ CTC.',
       category_title: 'Danh mục giải pháp',
       rooftop: 'Điện mặt trời Áp mái',
       rooftop_desc: 'Tận dụng không gian mái nhà xưởng, văn phòng hoặc hộ gia đình để tạo ra điện năng. Giải pháp tiết kiệm chi phí hiệu quả nhất.',
@@ -353,7 +353,7 @@ const translations: Record<Language, Translations> = {
     },
     news: {
         title: 'Tin tức & Sự kiện',
-        subtitle: 'Cập nhật tin tức mới nhất về công nghệ điện mặt trời, xu hướng năng lượng tái tạo và hoạt động của CTC Electricity.',
+        subtitle: 'Cập nhật tin tức mới nhất về công nghệ điện mặt trời, xu hướng năng lượng tái tạo và hoạt động của CTC.',
         no_news: 'Hiện chưa có tin tức nào.'
     },
     resources: {
@@ -449,7 +449,7 @@ const translations: Record<Language, Translations> = {
       contact_title: 'Contact Info',
       desc: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company (CTC). Pioneering in renewable energy.',
       address: '259 The Lu, Son Tra, Da Nang',
-      copyright: '© 2024 CTC Electricity. All rights reserved.'
+      copyright: '© 2024 CTC. All rights reserved.'
     },
     common: {
       loading: 'Loading...',
@@ -485,7 +485,7 @@ const translations: Record<Language, Translations> = {
       hero_badge: 'Latest AI Inverter Technology 2024',
       hero_title: 'Clean Energy',
       hero_subtitle: 'Sustainable Investment',
-      hero_desc: 'CTC Electricity provides comprehensive solar solutions, helping you save costs and build a green future.',
+      hero_desc: 'CTC provides comprehensive solar solutions, helping you save costs and build a green future.',
       get_quote: 'Get Quote',
       view_projects: 'View Projects',
       why_choose: 'Why Choose Us',
@@ -510,7 +510,7 @@ const translations: Record<Language, Translations> = {
       warranty_25: '25 Years Warranty',
       save_70: 'Save 70% on Energy',
       ready_to_switch: 'Ready to switch to green energy?',
-      ready_desc: 'Contact CTC Electricity today for a free survey and consultation on the most optimal solution for your home. Save 70% on your electricity bill immediately.',
+      ready_desc: 'Contact CTC today for a free survey and consultation on the most optimal solution for your home. Save 70% on your electricity bill immediately.',
       contact_consult: 'Contact Us',
       partners_title: 'Leading Technology Partners',
       partners_supplier: 'SUPPLIER PARTNERS',
@@ -565,8 +565,8 @@ const translations: Record<Language, Translations> = {
       
       // About Company
       about_badge: 'ABOUT US',
-      about_title: 'CTC Electricity - Your Trusted Partner',
-      about_desc: 'CTC Electricity Consulting and Construction Joint Stock Company (CTC) was established in 2015, specializing in comprehensive renewable energy solutions with experienced engineers and advanced technology.',
+      about_title: 'CTC - Your Trusted Partner',
+      about_desc: 'CTC Consulting and Construction Joint Stock Company (CTC) was established in 2015, specializing in comprehensive renewable energy solutions with experienced engineers and advanced technology.',
       about_desc_2: 'We are proud to be a strategic partner of world-leading brands such as Huawei, Canadian Solar, Longi, bringing customers high-quality products at the most competitive prices.',
       mission: 'Mission',
       mission_desc: 'Bringing clean energy to every home',
@@ -674,7 +674,7 @@ const translations: Record<Language, Translations> = {
     solutions: {
       hero_title: 'Energy Solutions',
       hero_subtitle: 'Comprehensive & Sustainable',
-      hero_desc: 'Optimize costs, protect the environment, and create a green future with the most modern solar models from CTC Electricity.',
+      hero_desc: 'Optimize costs, protect the environment, and create a green future with the most modern solar models from CTC.',
       category_title: 'Solution Categories',
       rooftop: 'Rooftop Solar',
       rooftop_desc: 'Utilize roof space of factories, offices, or households to generate electricity. The most effective cost-saving solution.',
@@ -763,7 +763,7 @@ const translations: Record<Language, Translations> = {
     },
     news: {
         title: 'News & Events',
-        subtitle: 'Update the latest news on solar technology, renewable energy trends, and CTC Electricity activities.',
+        subtitle: 'Update the latest news on solar technology, renewable energy trends, and CTC activities.',
         no_news: 'No news found.'
     },
     resources: {
@@ -859,7 +859,7 @@ const translations: Record<Language, Translations> = {
       contact_title: '연락처',
       desc: 'CTC 전기 건설 및 컨설팅 주식회사(CTC). 재생 에너지 분야의 선구자.',
       address: '259 The Lu, Son Tra, Da Nang',
-      copyright: '© 2024 CTC Electricity. 모든 권리 보유.'
+      copyright: '© 2024 CTC. 모든 권리 보유.'
     },
     common: {
       loading: '로딩 중...',
@@ -895,7 +895,7 @@ const translations: Record<Language, Translations> = {
       hero_badge: '최신 AI 인버터 기술 2025',
       hero_title: '청정 에너지',
       hero_subtitle: '지속 가능한 투자',
-      hero_desc: 'CTC Electricity는 포괄적인 태양광 솔루션을 제공하여 전기 비용을 절감하고 친환경 미래를 만듭니다.',
+      hero_desc: 'CTC는 포괄적인 태양광 솔루션을 제공하여 전기 비용을 절감하고 친환경 미래를 만듭니다.',
       get_quote: '견적 받기',
       view_projects: '프로젝트 보기',
       why_choose: '선택 이유',
@@ -920,7 +920,7 @@ const translations: Record<Language, Translations> = {
       warranty_25: '25년 보증',
       save_70: '70% 전력 절감',
       ready_to_switch: '친환경 에너지로 전환할 준비가 되셨나요?',
-      ready_desc: '오늘 CTC Electricity에 연락하여 무료 조사 및 상담을 받으세요. 전기 요금을 즉시 70% 절감하세요.',
+      ready_desc: '오늘 CTC에 연락하여 무료 조사 및 상담을 받으세요. 전기 요금을 즉시 70% 절감하세요.',
       contact_consult: '문의하기',
       partners_title: '주요 기술 파트너',
       partners_supplier: '공급 파트너',
@@ -965,7 +965,7 @@ const translations: Record<Language, Translations> = {
       faq_4_q: '설치 시간은 얼마나 걸립니까?',
       faq_4_a: '가정용(3kW - 10kW)의 경우 설치는 1-2일이 소요됩니다. 산업 프로젝트는 규모에 따라 일반적으로 2-4주가 소요됩니다.',
       about_badge: '회사 소개',
-      about_title: 'CTC Electricity - 신뢰할 수 있는 파트너',
+      about_title: 'CTC - 신뢰할 수 있는 파트너',
       about_desc: 'CTC 전기 컨설팅 및 건설 주식회사(CTC)는 2015년에 설립되어 경험 많은 엔지니어와 첨단 기술로 포괄적인 재생 에너지 솔루션을 전문으로 합니다.',
       about_desc_2: '우리는 Huawei, Canadian Solar, Longi와 같은 세계 최고 브랜드의 전략적 파트너로서 고객에게 가장 경쟁력 있는 가격으로 고품질 제품을 제공합니다.',
       mission: '미션',
@@ -1070,7 +1070,7 @@ const translations: Record<Language, Translations> = {
     solutions: {
       hero_title: '에너지 솔루션',
       hero_subtitle: '종합 및 지속 가능',
-      hero_desc: 'CTC Electricity의 가장 현대적인 태양광 모델로 비용을 최적화하고 환경을 보호하며 친환경 미래를 만듭니다.',
+      hero_desc: 'CTC의 가장 현대적인 태양광 모델로 비용을 최적화하고 환경을 보호하며 친환경 미래를 만듭니다.',
       category_title: '솔루션 카테고리',
       rooftop: '옥상 태양광',
       rooftop_desc: '공장, 사무실 또는 가정의 지붕 공간을 활용하여 전기를 생성합니다. 가장 효과적인 비용 절감 솔루션.',
@@ -1157,7 +1157,7 @@ const translations: Record<Language, Translations> = {
     },
     news: {
       title: '뉴스 및 이벤트',
-      subtitle: '태양광 기술, 재생 에너지 동향 및 CTC Electricity 활동에 대한 최신 뉴스를 업데이트합니다.',
+      subtitle: '태양광 기술, 재생 에너지 동향 및 CTC 활동에 대한 최신 뉴스를 업데이트합니다.',
       no_news: '뉴스를 찾을 수 없습니다.'
     },
     resources: {
@@ -1253,7 +1253,7 @@ const translations: Record<Language, Translations> = {
       contact_title: '連絡先',
       desc: 'CTC電気建設コンサルティング株式会社（CTC）。再生可能エネルギー分野のパイオニア。',
       address: '259 The Lu, Son Tra, Da Nang',
-      copyright: '© 2024 CTC Electricity. 全著作権所有。'
+      copyright: '© 2024 CTC. 全著作権所有。'
     },
     common: {
       loading: '読み込み中...',
@@ -1289,7 +1289,7 @@ const translations: Record<Language, Translations> = {
       hero_badge: '最新AIインバーター技術2025',
       hero_title: 'クリーンエネルギー',
       hero_subtitle: '持続可能な投資',
-      hero_desc: 'CTC Electricityは包括的な太陽光発電ソリューションを提供し、電気代を節約し、グリーンな未来を創造します。',
+      hero_desc: 'CTCは包括的な太陽光発電ソリューションを提供し、電気代を節約し、グリーンな未来を創造します。',
       get_quote: '見積もりを取得',
       view_projects: 'プロジェクトを見る',
       why_choose: '選ばれる理由',
@@ -1314,7 +1314,7 @@ const translations: Record<Language, Translations> = {
       warranty_25: '25年保証',
       save_70: '70%エネルギー節約',
       ready_to_switch: 'グリーンエネルギーへの切り替え準備はできましたか？',
-      ready_desc: '今日CTC Electricityに連絡して、無料調査とコンサルティングを受けてください。電気代を即座に70％節約できます。',
+      ready_desc: '今日CTCに連絡して、無料調査とコンサルティングを受けてください。電気代を即座に70％節約できます。',
       contact_consult: 'お問い合わせ',
       partners_title: '主要技術パートナー',
       partners_supplier: 'サプライヤーパートナー',
@@ -1359,7 +1359,7 @@ const translations: Record<Language, Translations> = {
       faq_4_q: '設置時間はどのくらいかかりますか？',
       faq_4_a: '家庭用（3kW〜10kW）の場合、設置は1〜2日かかります。産業プロジェクトは規模によって異なり、通常2〜4週間かかります。',
       about_badge: '会社概要',
-      about_title: 'CTC Electricity - 信頼できるパートナー',
+      about_title: 'CTC - 信頼できるパートナー',
       about_desc: 'CTC電気コンサルティング建設株式会社（CTC）は2015年に設立され、経験豊富なエンジニアと先進技術で包括的な再生可能エネルギーソリューションを専門としています。',
       about_desc_2: '私たちはHuawei、Canadian Solar、Longiなどの世界有数のブランドの戦略的パートナーとして、お客様に最も競争力のある価格で高品質の製品を提供しています。',
       mission: 'ミッション',
@@ -1464,7 +1464,7 @@ const translations: Record<Language, Translations> = {
     solutions: {
       hero_title: 'エネルギーソリューション',
       hero_subtitle: '包括的＆持続可能',
-      hero_desc: 'CTC Electricityの最も現代的な太陽光モデルでコストを最適化し、環境を保護し、グリーンな未来を創造します。',
+      hero_desc: 'CTCの最も現代的な太陽光モデルでコストを最適化し、環境を保護し、グリーンな未来を創造します。',
       category_title: 'ソリューションカテゴリー',
       rooftop: '屋上太陽光',
       rooftop_desc: '工場、オフィス、または家庭の屋根スペースを活用して電気を生成します。最も効果的なコスト削減ソリューション。',
@@ -1551,7 +1551,7 @@ const translations: Record<Language, Translations> = {
     },
     news: {
       title: 'ニュース＆イベント',
-      subtitle: '太陽光技術、再生可能エネルギーのトレンド、CTC Electricityの活動に関する最新ニュースを更新します。',
+      subtitle: '太陽光技術、再生可能エネルギーのトレンド、CTCの活動に関する最新ニュースを更新します。',
       no_news: 'ニュースが見つかりません。'
     },
     resources: {
@@ -1619,7 +1619,7 @@ const translations: Record<Language, Translations> = {
       nav: { home: '首页', about: '关于我们', solutions: '解决方案', products: '产品中心', projects: '项目案例', news: '新闻资讯', resources: '资料下载', contact: '联系我们' }, 
       common: { loading: '加载中...', light: '浅色', dark: '深色', theme_light: '浅色模式', theme_dark: '深色模式', theme_auto: '跟随系统' },
       home: { 
-        hero_title: '清洁能源', hero_subtitle: '可持续投资', hero_desc: 'CTC Electricity 提供全面的太阳能解决方案。', get_quote: '获取报价',
+        hero_title: '清洁能源', hero_subtitle: '可持续投资', hero_desc: 'CTC 提供全面的太阳能解决方案。', get_quote: '获取报价',
         workflow_badge: '流程', workflow_title: '标准实施流程',
         projects_badge: '项目', featured_projects: '精选项目', featured_projects_sub: '证明CTC品质的项目。',
         testimonials: '客户评价', testimonials_title: '客户怎么说',
@@ -1649,7 +1649,7 @@ const translations: Record<Language, Translations> = {
       nav: { home: 'Startseite', about: 'Über uns', solutions: 'Lösungen', products: 'Produkte', projects: 'Projekte', news: 'Nachrichten', resources: 'Ressourcen', contact: 'Kontakt' }, 
       common: { loading: 'Laden...', light: 'Hell', dark: 'Dunkel', theme_light: 'Heller Modus', theme_dark: 'Dunkler Modus', theme_auto: 'Systemeinstellung' },
       home: { 
-        hero_title: 'Saubere Energie', hero_subtitle: 'Nachhaltige Investition', hero_desc: 'CTC Electricity bietet umfassende Solarlösungen.', get_quote: 'Angebot anfordern',
+        hero_title: 'Saubere Energie', hero_subtitle: 'Nachhaltige Investition', hero_desc: 'CTC bietet umfassende Solarlösungen.', get_quote: 'Angebot anfordern',
         workflow_badge: 'Prozess', workflow_title: 'Standard-Implementierungsprozess',
         projects_badge: 'Projekte', featured_projects: 'Ausgewählte Projekte', featured_projects_sub: 'Projekte, die die Qualität von CTC bestätigen.',
         testimonials: 'Kundenbewertungen', testimonials_title: 'Was unsere Kunden sagen',

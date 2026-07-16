@@ -430,7 +430,7 @@ export interface ISettings extends BaseDocument {
 }
 
 const SettingsSchema = new Schema<ISettings>({
-  siteName: { type: String, required: true, default: 'Tran Le Electricity' },
+  siteName: { type: String, required: true, default: 'CTC' },
   siteDescription: { type: String, required: true, default: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam' },
   logo: { type: String, required: true, default: '/uploads/images/logo/logodo.png' },
   logoHeader: { type: String, default: '' },

@@ -53,7 +53,7 @@ const News: React.FC = () => {
   const itemListSchema = {
       "@context": "https://schema.org",
       "@type": "ItemList",
-      "name": "Tin tức điện mặt trời - TRAN LE Electricity",
+      "name": "Tin tức điện mặt trời - CTC",
       "description": "Tin tức mới nhất về năng lượng mặt trời, công nghệ solar và các dự án của TRAN LE",
       "itemListElement": news.slice(0, 10).map((item, index) => ({
         "@type": "ListItem",
@@ -67,7 +67,7 @@ const News: React.FC = () => {
           "description": item.excerpt,
           "publisher": {
             "@type": "Organization",
-            "name": "TRAN LE Electricity",
+            "name": "CTC",
             "url": "https://tranle.vn"
           }
         }

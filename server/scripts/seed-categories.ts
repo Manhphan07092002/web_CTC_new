@@ -53,7 +53,7 @@ const newsCategories = [
   {
     name: 'Tin Tức Công Ty',
     slug: 'tin-tuc-cong-ty',
-    description: 'Tin tức và sự kiện của Tran Le Electricity',
+    description: 'Tin tức và sự kiện của CTC',
     icon: 'Building',
     color: '#3B82F6',
     order: 1

@@ -111,7 +111,7 @@ export class ExportService {
       <body>
         <div class="header">
           <h1>📊 BÁO CÁO DASHBOARD</h1>
-          <p>Tran Le Electricity - Solar Energy</p>
+          <p>CTC - Solar Energy</p>
           <p>Ngày: ${date}</p>
         </div>
 
@@ -185,7 +185,7 @@ export class ExportService {
         ` : ''}
 
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Tran Le Electricity. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} CTC. All rights reserved.</p>
           <p>Báo cáo được tạo tự động bởi AI Dashboard</p>
         </div>
       </body>

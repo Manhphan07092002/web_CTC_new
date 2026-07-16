@@ -39,7 +39,7 @@ const Settings: React.FC = () => {
   const [imagePickerTarget, setImagePickerTarget] = useState<'logo' | 'logoHeader' | 'logoFooter' | 'favicon' | 'appleTouchIcon'>('logo');
   
   const [formData, setFormData] = useState<SettingsData>({
-    siteName: 'Tran Le Electricity',
+    siteName: 'CTC',
     siteDescription: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam',
     logo: '/uploads/images/logo/logodo.png',
     logoHeader: '',
