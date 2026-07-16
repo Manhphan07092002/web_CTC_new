@@ -270,7 +270,7 @@ const Contact: React.FC = () => {
           allowFullScreen={true} 
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
-          title="Tran Le Office Map"
+          title="CTC Office Map"
           className="grayscale hover:grayscale-0 transition-all duration-500"
         ></iframe>
         <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/50 to-transparent h-20 pointer-events-none"></div>

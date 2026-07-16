@@ -138,7 +138,7 @@ async function seedRealData() {
     const testimonial = {
       name: 'Nguyễn Minh Tuấn',
       role: 'Giám đốc Khách sạn Sunrise',
-      content: 'Sau khi lắp đặt hệ thống điện mặt trời của TRAN LE, chúng tôi đã tiết kiệm được 40% chi phí điện. Đội ngũ kỹ thuật rất chuyên nghiệp và hỗ trợ tận tình.'
+      content: 'Sau khi lắp đặt hệ thống điện mặt trời của CTC, chúng tôi đã tiết kiệm được 40% chi phí điện. Đội ngũ kỹ thuật rất chuyên nghiệp và hỗ trợ tận tình.'
     };
     
     const translatedTestimonial = await translateTestimonial(testimonial);

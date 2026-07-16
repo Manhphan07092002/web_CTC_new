@@ -182,7 +182,7 @@ app.get('/', (req: any, res) => {
   const t = req.t;
   res.json({ 
     status: 'ok', 
-    message: t ? t('greeting.welcome') : 'Tran Le Solar API server',
+    message: t ? t('greeting.welcome') : 'CTC Solar API server',
     security: 'enabled',
     language: req.language || 'vi',
     timestamp: new Date().toISOString()

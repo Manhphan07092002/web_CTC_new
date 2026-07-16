@@ -117,7 +117,7 @@ const ChatBox: React.FC = () => {
         <button
           onClick={toggleChat}
           className="bg-primary hover:bg-secondary text-white w-14 h-14 rounded-full shadow-xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center border-2 border-white group"
-          title="Chat với AI Tran Le"
+          title="Chat với AI CTC"
         >
           <Bot size={28} className="group-hover:rotate-12 transition-transform" />
           {/* Optional Badge/Indicator */}
@@ -140,7 +140,7 @@ const ChatBox: React.FC = () => {
                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-white rounded-full"></span>
                 </div>
                 <div>
-                  <h3 className="font-bold flex items-center gap-1">Trợ Lý AI TRAN LE <Sparkles size={12} className="text-yellow-400"/></h3>
+                  <h3 className="font-bold flex items-center gap-1">Trợ Lý AI CTC <Sparkles size={12} className="text-yellow-400"/></h3>
                   <p className="text-xs opacity-80 flex items-center gap-1">Hỗ trợ 24/7</p>
                 </div>
               </div>

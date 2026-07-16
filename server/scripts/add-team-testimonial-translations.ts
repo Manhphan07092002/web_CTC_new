@@ -68,11 +68,11 @@ const testimonialTranslations: Record<string, any> = {
       de: 'Serene Hotel'
     },
     content: {
-      en: 'Investing in solar hot water and electricity system from Tran Le was the best decision for our hotel this year.',
-      ko: 'Tran Le의 태양열 온수 및 전기 시스템에 투자한 것은 올해 호텔에서 내린 최고의 결정이었습니다.',
-      ja: 'Tran Leの太陽熱温水・電気システムへの投資は、今年ホテルで下した最良の決断でした。',
-      zh: '投资Tran Le的太阳能热水和电力系统是我们酒店今年做出的最佳决定。',
-      de: 'Die Investition in Solarwarmwasser- und Stromsysteme von Tran Le war die beste Entscheidung für unser Hotel in diesem Jahr.'
+      en: 'Investing in solar hot water and electricity system from CTC was the best decision for our hotel this year.',
+      ko: 'CTC의 태양열 온수 및 전기 시스템에 투자한 것은 올해 호텔에서 내린 최고의 결정이었습니다.',
+      ja: 'CTCの太陽熱温水・電気システムへの投資は、今年ホテルで下した最良の決断でした。',
+      zh: '投资CTC的太阳能热水和电力系统是我们酒店今年做出的最佳决定。',
+      de: 'Die Investition in Solarwarmwasser- und Stromsysteme von CTC war die beste Entscheidung für unser Hotel in diesem Jahr.'
     }
   },
   'GĐ Công ty May Việt Tiến': {

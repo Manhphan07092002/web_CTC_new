@@ -54,7 +54,7 @@ const News: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "ItemList",
       "name": "Tin tức điện mặt trời - CTC",
-      "description": "Tin tức mới nhất về năng lượng mặt trời, công nghệ solar và các dự án của TRAN LE",
+      "description": "Tin tức mới nhất về năng lượng mặt trời, công nghệ solar và các dự án của CTC",
       "itemListElement": news.slice(0, 10).map((item, index) => ({
         "@type": "ListItem",
         "position": index + 1,

@@ -38,11 +38,11 @@ const translations = {
   },
   testimonials: {
     'Nguyễn Minh Tuấn': {
-      en: { name: 'Nguyen Minh Tuan', role: 'Director of Sunrise Hotel', content: 'After installing TRAN LE solar system, we saved 40% on electricity costs. The technical team is very professional and supportive.' },
-      ko: { name: '응우옌 민 뚜안', role: '선라이즈 호텔 대표', content: 'TRAN LE 태양광 시스템 설치 후 전기 비용을 40% 절감했습니다. 기술팀이 매우 전문적이고 친절합니다.' },
-      ja: { name: 'グエン・ミン・トゥアン', role: 'サンライズホテル取締役', content: 'TRAN LEのソーラーシステム設置後、電気代を40%節約できました。技術チームは非常にプロフェッショナルでサポートが充実しています。' },
-      zh: { name: '阮明俊', role: '日出酒店总监', content: '安装TRAN LE太阳能系统后，我们节省了40%的电费。技术团队非常专业，服务周到。' },
-      de: { name: 'Nguyen Minh Tuan', role: 'Direktor des Sunrise Hotels', content: 'Nach der Installation des TRAN LE Solarsystems sparen wir 40% Stromkosten. Das technische Team ist sehr professionell und hilfsbereit.' }
+      en: { name: 'Nguyen Minh Tuan', role: 'Director of Sunrise Hotel', content: 'After installing CTC solar system, we saved 40% on electricity costs. The technical team is very professional and supportive.' },
+      ko: { name: '응우옌 민 뚜안', role: '선라이즈 호텔 대표', content: 'CTC 태양광 시스템 설치 후 전기 비용을 40% 절감했습니다. 기술팀이 매우 전문적이고 친절합니다.' },
+      ja: { name: 'グエン・ミン・トゥアン', role: 'サンライズホテル取締役', content: 'CTCのソーラーシステム設置後、電気代を40%節約できました。技術チームは非常にプロフェッショナルでサポートが充実しています。' },
+      zh: { name: '阮明俊', role: '日出酒店总监', content: '安装CTC太阳能系统后，我们节省了40%的电费。技术团队非常专业，服务周到。' },
+      de: { name: 'Nguyen Minh Tuan', role: 'Direktor des Sunrise Hotels', content: 'Nach der Installation des CTC Solarsystems sparen wir 40% Stromkosten. Das technische Team ist sehr professionell und hilfsbereit.' }
     }
   },
   team: {

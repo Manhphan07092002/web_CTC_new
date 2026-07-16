@@ -220,7 +220,7 @@ export class EmailService {
             </div>
             
             <div class="footer">
-              <p class="company-name">⚡ TRAN LE ELECTRICITY</p>
+              <p class="company-name">⚡ CTC</p>
               <div class="divider"></div>
               <p>Email này được gửi tự động từ hệ thống</p>
               <p>Thời gian: ${new Date().toLocaleString('vi-VN', { 
@@ -475,7 +475,7 @@ export class EmailService {
             </div>
             
             <div class="footer">
-              <p class="company-name">⚡ TRAN LE ELECTRICITY</p>
+              <p class="company-name">⚡ CTC</p>
               <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
               <p>MST: 0401707621</p>
               <p style="margin-top: 15px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
@@ -656,7 +656,7 @@ export class EmailService {
             </div>
             
             <div class="footer">
-              <p class="company-name">⚡ TRAN LE ELECTRICITY</p>
+              <p class="company-name">⚡ CTC</p>
               <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
               <p>MST: 0401707621</p>
               <p style="margin-top: 15px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
