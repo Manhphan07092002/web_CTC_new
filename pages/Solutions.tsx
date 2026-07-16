@@ -14,9 +14,9 @@ const Solutions: React.FC = () => {
     "serviceType": "Lắp đặt hệ thống điện mặt trời",
     "provider": {
       "@type": "Organization",
-      "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-      "url": "https://tranle.vn",
-      "telephone": "+84-236-656-2020"
+      "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+      "url": "https://www.ctcdn.vn",
+      "telephone": "+84-915-059-666"
     },
     "areaServed": {
       "@type": "Country",

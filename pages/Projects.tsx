@@ -73,9 +73,9 @@ const Projects: React.FC = () => {
     "dateCreated": project.completionDate,
     "creator": {
        "@type": "Organization",
-       "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-       "url": "https://tranle.vn",
-       "telephone": "+84-236-656-2020"
+       "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+       "url": "https://www.ctcdn.vn",
+       "telephone": "+84-915-059-666"
     }
   });
 
@@ -90,12 +90,12 @@ const Projects: React.FC = () => {
         schema={selectedProject ? getProjectSchema(selectedProject) : {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            "name": "Dự án điện mặt trời - TRAN LE Electricity",
-            "description": "Danh sách các dự án lắp đặt hệ thống điện mặt trời đã hoàn thành bởi CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
+            "name": "Dự án điện mặt trời - CTC",
+            "description": "Danh sách các dự án lắp đặt hệ thống điện mặt trời đã hoàn thành bởi Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
             "publisher": {
               "@type": "Organization",
-              "name": "TRAN LE Electricity",
-              "url": "https://tranle.vn"
+              "name": "CTC",
+              "url": "https://www.ctcdn.vn"
             }
         }}
       />

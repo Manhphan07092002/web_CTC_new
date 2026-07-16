@@ -8,7 +8,7 @@ const SolutionFloating: React.FC = () => {
     <div className="w-full animate-fade-in font-sans text-gray-700 dark:text-gray-200 pb-20 bg-gray-50 dark:bg-gray-900">
       <SEO 
         title="Hệ Thống Năng Lượng Mặt Trời Nổi" 
-        description="Công nghệ điện mặt trời nổi trên hồ chứa, đập thủy điện. Xu hướng mới giúp tiết kiệm đất và tăng hiệu suất. TRAN LE Electricity - 0236 656 2020"
+        description="Công nghệ điện mặt trời nổi trên hồ chứa, đập thủy điện. Xu hướng mới giúp tiết kiệm đất và tăng hiệu suất. CTC - 0236 656 2020"
         schema={{
           "@context": "https://schema.org",
           "@type": "Service",
@@ -16,9 +16,9 @@ const SolutionFloating: React.FC = () => {
           "description": "Công nghệ điện mặt trời nổi trên hồ chứa, đập thủy điện, tiết kiệm đất và tăng hiệu suất",
           "provider": {
             "@type": "Organization",
-            "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-            "url": "https://tranle.vn",
-            "telephone": "+84-236-656-2020"
+            "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+            "url": "https://www.ctcdn.vn",
+            "telephone": "+84-915-059-666"
           },
           "areaServed": "Vietnam",
           "serviceType": "Lắp đặt hệ thống điện mặt trời nổi"

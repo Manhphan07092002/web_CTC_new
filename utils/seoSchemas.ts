@@ -3,12 +3,12 @@
  * Helps Google understand and display rich snippets
  */
 
-// Site configuration - Thông tin công ty TRẦN LÊ
-const SITE_URL = 'https://tranle.vn';
-const SITE_NAME = 'CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ';
-const SITE_SHORT_NAME = 'TRAN LE Electricity';
+// Site configuration - Thông tin công ty CTC
+const SITE_URL = 'https://www.ctcdn.vn';
+const SITE_NAME = 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung';
+const SITE_SHORT_NAME = 'CTC';
 const COMPANY_PHONE = '+84 236 656 2020';
-const COMPANY_EMAIL = 'info@tranle.vn';
+const COMPANY_EMAIL = 'info@ctcdn.vn';
 const COMPANY_ADDRESS = {
   street: '275-279 Diên Hồng',
   ward: 'Phường Hòa Xuân',
@@ -16,7 +16,7 @@ const COMPANY_ADDRESS = {
   city: 'Đà Nẵng',
   postalCode: '550000',
   country: 'VN',
-  full: '275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ, Đà Nẵng'
+  full: '50B Nguyễn Du, Quận Hải Châu, Đà Nẵng'
 };
 
 // ==================== LOCAL BUSINESS SCHEMA ====================
@@ -230,17 +230,17 @@ export function generateOrganizationSchema(data: LocalBusinessData = {}) {
     '@type': 'Organization',
     '@id': `${SITE_URL}/#organization`,
     name: data.name || SITE_NAME,
-    alternateName: 'TRAN LE ELECTRICAL EQUIPMENT CORPORATION',
+    alternateName: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company',
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
       url: data.logo || `${SITE_URL}/uploads/images/logo/logo.png`
     },
-    taxID: '0402055834',
-    foundingDate: '2020-07-28',
+    taxID: '0400458940',
+    foundingDate: '1992-01-01',
     founder: {
       '@type': 'Person',
-      name: 'TRẦN THANH XUÂN'
+      name: 'Nguyễn Văn Duy'
     },
     address: {
       '@type': 'PostalAddress',
@@ -288,7 +288,7 @@ export function generateArticleSchema(article: ArticleSchemaData) {
     image: article.image.startsWith('http') ? article.image : `${SITE_URL}${article.image}`,
     author: {
       '@type': 'Person',
-      name: article.author || 'TRAN LE Team'
+      name: article.author || 'CTC Team'
     },
     publisher: {
       '@type': 'Organization',

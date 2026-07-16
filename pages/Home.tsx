@@ -176,9 +176,9 @@ const Home: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "Organization",
       "@id": `${window.location.origin}/#organization`,
-      "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-      "alternateName": ["TRAN LE ELECTRICAL EQUIPMENT CORPORATION", "TRAN LE Electricity", "Điện Trần Lê"],
-      "url": "https://tranle.vn",
+      "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+      "alternateName": ["Central Vietnam Posts and Telecommunications Construction Joint Stock Company", "CTC", "CTC"],
+      "url": "https://www.ctcdn.vn",
       "logo": {
         "@type": "ImageObject",
         "url": `${window.location.origin}/uploads/images/logo/logo.png`,
@@ -186,13 +186,13 @@ const Home: React.FC = () => {
         "height": 60
       },
       "image": `${window.location.origin}/uploads/images/logo/tran-le-og.jpg`,
-      "taxID": "0402055834",
-      "foundingDate": "2020-07-28",
+      "taxID": "0400458940",
+      "foundingDate": "1992-01-01",
       "description": "Công ty chuyên thi công lắp đặt hệ thống điện mặt trời, inverter, tấm pin năng lượng mặt trời tại Đà Nẵng và toàn quốc. Hotline: 0236 656 2020",
       "slogan": "Đối tác tin cậy trong lĩnh vực năng lượng mặt trời",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ",
+        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
         "addressLocality": "Đà Nẵng",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
@@ -201,7 +201,7 @@ const Home: React.FC = () => {
       "contactPoint": [
         {
           "@type": "ContactPoint",
-          "telephone": "+84-236-656-2020",
+          "telephone": "+84-915-059-666",
           "contactType": "customer service",
           "areaServed": "VN",
           "availableLanguage": ["Vietnamese", "English"],
@@ -209,14 +209,14 @@ const Home: React.FC = () => {
         },
         {
           "@type": "ContactPoint",
-          "telephone": "+84-236-656-2020",
+          "telephone": "+84-915-059-666",
           "contactType": "sales",
           "areaServed": "VN"
         }
       ],
       "founder": {
         "@type": "Person",
-        "name": "TRẦN THANH XUÂN",
+        "name": "Nguyễn Văn Duy",
         "jobTitle": "CEO / Tổng Giám Đốc"
       },
       "numberOfEmployees": {
@@ -236,17 +236,17 @@ const Home: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "ElectricalContractor",
       "@id": `${window.location.origin}/#localbusiness`,
-      "name": "TRAN LE Electricity - Điện Mặt Trời Đà Nẵng",
+      "name": "CTC - Điện Mặt Trời Đà Nẵng",
       "image": `${window.location.origin}/uploads/images/logo/tran-le-og.jpg`,
-      "telephone": "+84-236-656-2020",
-      "email": "info@tranle.vn",
-      "url": "https://tranle.vn",
+      "telephone": "+84-915-059-666",
+      "email": "info@ctcdn.vn",
+      "url": "https://www.ctcdn.vn",
       "priceRange": "$$",
       "currenciesAccepted": "VND",
       "paymentAccepted": "Cash, Bank Transfer, Credit Card",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ",
+        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
         "addressLocality": "Đà Nẵng",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
@@ -291,9 +291,9 @@ const Home: React.FC = () => {
       "@type": "WebSite",
       "@id": `${window.location.origin}/#website`,
       "url": window.location.origin,
-      "name": "TRAN LE Electricity",
-      "alternateName": "Điện Mặt Trời Trần Lê",
-      "description": "Website chính thức của CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ - Giải pháp điện mặt trời hàng đầu Việt Nam",
+      "name": "CTC",
+      "alternateName": "CTC",
+      "description": "Website chính thức của Công ty Cổ phần Xây lắp Bưu điện Miền Trung - Giải pháp điện mặt trời hàng đầu Việt Nam",
       "publisher": { "@id": `${window.location.origin}/#organization` },
       "potentialAction": {
         "@type": "SearchAction",
@@ -342,7 +342,7 @@ const Home: React.FC = () => {
     ...(featuredProducts.length > 0 ? [{
       "@context": "https://schema.org",
       "@type": "ItemList",
-      "name": "Sản phẩm nổi bật - TRAN LE Electricity",
+      "name": "Sản phẩm nổi bật - CTC",
       "description": "Các sản phẩm điện mặt trời được khách hàng ưa chuộng",
       "numberOfItems": featuredProducts.length,
       "itemListElement": featuredProducts.slice(0, 6).map((product, index) => ({
@@ -368,7 +368,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col w-full font-sans text-gray-800 dark:text-slate-200 bg-white dark:bg-slate-900 overflow-hidden">
       <SEO
-        title="TRAN LE ELECTRICITY - ĐỐI TÁC TIN CẬY CỦA BẠN"
+        title="CTC ELECTRICITY - ĐỐI TÁC TIN CẬY CỦA BẠN"
         description={t('home.hero_desc')}
         schema={homePageSchema}
       />

@@ -1,47 +1,49 @@
 /**
- * CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ
+ * Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)
  * Company Information Constants
  * Sử dụng file này để có thông tin công ty nhất quán trên toàn website
  */
 
 export const COMPANY = {
   // Tên công ty
-  name: 'CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ',
-  nameEn: 'TRAN LE ELECTRICAL EQUIPMENT CORPORATION',
-  shortName: 'TRAN LE Electricity',
-  brandName: 'TRAN LE',
+  name: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung',
+  nameEn: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company',
+  shortName: 'CTC',
+  brandName: 'CTC',
   
   // Pháp lý
-  taxId: '0402055834',
-  foundingDate: '2020-07-28',
-  founder: 'TRẦN THANH XUÂN',
+  taxId: '0400458940',
+  foundingDate: '1992-01-01',
+  founder: 'Nguyễn Văn Duy',
+  charterCapital: '9.987.660.000 VNĐ',
   
   // Liên hệ
-  phone: '02366562020',
-  phoneFormatted: '+84 236 656 2020',
-  phoneDisplay: '0236 656 2020',
-  hotline: '0236 656 2020',
-  email: 'info@tranle.vn',
-  website: 'https://tranle.vn',
+  phone: '0915059666',
+  phoneFormatted: '+84 915 059 666',
+  phoneDisplay: '0915 059 666',
+  hotline: '0915 059 666',
+  email: 'info@ctcdn.vn',
+  emailAlternate: 'khkd.ctc@gmail.com',
+  website: 'https://www.ctcdn.vn',
   
   // Địa chỉ
   address: {
-    street: '275-279 Diên Hồng',
-    ward: 'Phường Hòa Xuân',
-    district: 'Quận Cẩm Lệ',
+    street: '50B Nguyễn Du',
+    ward: '',
+    district: 'Quận Hải Châu',
     city: 'Đà Nẵng',
     province: 'Đà Nẵng',
     postalCode: '550000',
     country: 'VN',
     countryName: 'Việt Nam',
-    full: '275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ, Đà Nẵng',
-    short: '275-279 Diên Hồng, Cẩm Lệ, Đà Nẵng'
+    full: '50B Nguyễn Du, Quận Hải Châu, Thành phố Đà Nẵng',
+    short: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
   },
   
   // Tọa độ
   geo: {
-    latitude: 16.0190,
-    longitude: 108.2208
+    latitude: 16.0759,
+    longitude: 108.2201
   },
   
   // Giờ làm việc
@@ -54,29 +56,29 @@ export const COMPANY = {
   
   // Social Media
   social: {
-    facebook: 'https://www.facebook.com/tranleelectricity',
-    youtube: 'https://www.youtube.com/@tranleelectricity',
-    zalo: 'https://zalo.me/0236656202',
+    facebook: 'https://www.facebook.com/ctcdn',
+    youtube: 'https://www.youtube.com/@ctcdn',
+    zalo: 'https://zalo.me/0915059666',
     linkedin: '',
     instagram: ''
   },
   
   // Mô tả
   description: {
-    vi: 'Thi công và lắp đặt hệ thống pin năng lượng mặt trời, máy phát điện năng lượng mặt trời, inverter, thiết bị năng lượng mặt trời tại Đà Nẵng và toàn quốc.',
-    en: 'Installation of solar panel systems, solar generators, inverters, and solar equipment in Da Nang and nationwide Vietnam.'
+    vi: 'Thi công và xây lắp hạ tầng viễn thông, năng lượng tái tạo, xây dựng công nghiệp, dân dụng, công trình điện, công nghệ thông tin và chuyển đổi số.',
+    en: 'Construction and installation of telecommunications infrastructure, renewable energy, industrial and civil construction, electrical works, information technology, and digital transformation.'
   },
   
   // Slogan
   slogan: {
-    vi: 'Đối tác tin cậy trong lĩnh vực năng lượng mặt trời',
-    en: 'Your trusted partner in solar energy'
+    vi: 'Giải pháp tổng thể - Giá trị bền vững',
+    en: 'Total Solutions - Sustainable Values'
   },
   
   // Keywords SEO
   keywords: {
-    vi: 'điện mặt trời, năng lượng mặt trời, tấm pin mặt trời, inverter, TRAN LE, lắp đặt điện mặt trời Đà Nẵng, hệ thống điện mặt trời',
-    en: 'solar energy, solar panels, solar installation, inverter, TRAN LE, Da Nang solar, solar system'
+    vi: 'CTC, công ty cổ phần xây lắp bưu điện miền trung, viễn thông, xây lắp điện, năng lượng tái tạo, điện mặt trời, điện gió, đà nẵng',
+    en: 'CTC, central vietnam posts and telecommunications construction, telecommunications, renewable energy, solar power, da nang'
   }
 };
 

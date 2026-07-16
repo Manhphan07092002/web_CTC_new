@@ -56,12 +56,12 @@ const NewsDetail: React.FC = () => {
     "dateModified": news.date,
     "author": {
       "@type": "Organization",
-      "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-      "url": "https://tranle.vn"
+      "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+      "url": "https://www.ctcdn.vn"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "TRAN LE Electricity",
+      "name": "CTC",
       "logo": {
         "@type": "ImageObject",
         "url": `${window.location.origin}/uploads/images/logo/logo.png`

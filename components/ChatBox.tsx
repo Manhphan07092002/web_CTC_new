@@ -18,7 +18,7 @@ const ChatBox: React.FC = () => {
   const QUICK_QUESTIONS = [
     { label: "💰 Báo giá lắp đặt", text: "Cho tôi xin báo giá lắp đặt điện mặt trời áp mái." },
     { label: "🛠️ Quy trình làm việc", text: "Quy trình lắp đặt hệ thống điện mặt trời như thế nào?" },
-    { label: "🛡️ Chính sách bảo hành", text: "Chính sách bảo hành của Trần Lê như thế nào?" },
+    { label: "🛡️ Chính sách bảo hành", text: "Chính sách bảo hành của CTC như thế nào?" },
     { label: "📞 Liên hệ tư vấn", text: "Tôi muốn liên hệ với nhân viên tư vấn kỹ thuật." },
   ];
 

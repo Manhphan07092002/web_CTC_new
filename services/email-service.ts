@@ -232,7 +232,7 @@ export class EmailService {
                 minute: '2-digit'
               })}</p>
               <p style="margin-top: 15px; font-size: 12px;">📍 259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</p>
-              <p style="font-size: 12px;">📞 0236 656 2020 | 📧 info@tranle.com</p>
+              <p style="font-size: 12px;">📞 0915 059 666 | 📧 info@tranle.com</p>
             </div>
           </div>
         </body>
@@ -241,7 +241,7 @@ export class EmailService {
 
       // Gửi email cho admin
       await this.transporter.sendMail({
-        from: `"Tran Le Electricity" <${process.env.EMAIL_USER}>`,
+        from: `"CTC" <${process.env.EMAIL_USER}>`,
         to: adminEmail,
         subject: `🔔 Yêu cầu tư vấn mới từ ${data.name}`,
         html: htmlContent
@@ -443,7 +443,7 @@ export class EmailService {
               
               <div class="message-box">
                 <p>🎉 <strong>Chúng tôi đã nhận được yêu cầu tư vấn của bạn!</strong></p>
-                <p>Cảm ơn bạn đã quan tâm đến dịch vụ <strong>${data.service}</strong> của Tran Le Electricity.</p>
+                <p>Cảm ơn bạn đã quan tâm đến dịch vụ <strong>${data.service}</strong> của CTC.</p>
                 <p>Đội ngũ chuyên gia của chúng tôi sẽ liên hệ lại với bạn trong vòng <strong style="color: #28a745;">24 giờ</strong> để tư vấn chi tiết và giải đáp mọi thắc mắc.</p>
               </div>
               
@@ -457,7 +457,7 @@ export class EmailService {
               
               <div class="contact-box">
                 <p><strong>⚡ Cần hỗ trợ gấp?</strong></p>
-                <p>📞 Hotline: <strong>0236 656 2020</strong></p>
+                <p>📞 Hotline: <strong>0915 059 666</strong></p>
                 <p>📧 Email: <strong>info@tranle.com</strong></p>
                 <p>🏢 Địa chỉ: <strong>259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</strong></p>
                 <p>🕒 Thời gian làm việc: <strong>Thứ 2 - Thứ 7: 8:00 - 17:30</strong></p>
@@ -469,23 +469,23 @@ export class EmailService {
               
               <div class="signature">
                 <p>Trân trọng,</p>
-                <p><strong>⚡ Tran Le Electricity Team</strong></p>
+                <p><strong>⚡ CTC Team</strong></p>
                 <p style="font-size: 13px; color: #999; margin-top: 10px;">Giải pháp năng lượng mặt trời hàng đầu Việt Nam</p>
               </div>
             </div>
             
             <div class="footer">
               <p class="company-name">⚡ TRAN LE ELECTRICITY</p>
-              <p>Công ty TNHH Tư Vấn & Xây Dựng Điện Trần Lê</p>
+              <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
               <p>MST: 0401707621</p>
               <p style="margin-top: 15px;">📍 259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</p>
-              <p>📞 0236 656 2020 | 📧 info@tranle.com</p>
+              <p>📞 0915 059 666 | 📧 info@tranle.com</p>
               <div class="social-links">
                 <a href="#">Facebook</a> | 
                 <a href="#">Instagram</a> | 
                 <a href="#">YouTube</a>
               </div>
-              <p style="margin-top: 20px; font-size: 11px; opacity: 0.6;">© 2024 Tran Le Electricity. All rights reserved.</p>
+              <p style="margin-top: 20px; font-size: 11px; opacity: 0.6;">© 2024 CTC. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -494,9 +494,9 @@ export class EmailService {
 
       // Gửi email cho khách hàng
       await this.transporter.sendMail({
-        from: `"Tran Le Electricity" <${process.env.EMAIL_USER}>`,
+        from: `"CTC" <${process.env.EMAIL_USER}>`,
         to: data.email,
-        subject: '✅ Xác nhận yêu cầu tư vấn - Tran Le Electricity',
+        subject: '✅ Xác nhận yêu cầu tư vấn - CTC',
         html: htmlContent
       });
 
@@ -605,13 +605,13 @@ export class EmailService {
             <div class="header">
               <div class="welcome-icon">🎉</div>
               <h1>Chào mừng bạn!</h1>
-              <p>Cảm ơn bạn đã đăng ký nhận tin từ Tran Le Electricity</p>
+              <p>Cảm ơn bạn đã đăng ký nhận tin từ CTC</p>
             </div>
             
             <div class="content">
               <div class="highlight-box">
                 <p style="margin: 0; font-size: 16px; color: #2c3e50;">
-                  <strong>Chúc mừng!</strong> Bạn đã đăng ký thành công nhận bản tin từ Tran Le Electricity.
+                  <strong>Chúc mừng!</strong> Bạn đã đăng ký thành công nhận bản tin từ CTC.
                 </p>
               </div>
               
@@ -646,7 +646,7 @@ export class EmailService {
               <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 5px solid #ffc107; margin: 25px 0;">
                 <p style="margin: 0; color: #856404;">
                   <strong>💼 Cần tư vấn ngay?</strong><br>
-                  Liên hệ hotline: <strong>0236 656 2020</strong> hoặc email: <strong>info@tranle.com</strong>
+                  Liên hệ hotline: <strong>0915 059 666</strong> hoặc email: <strong>info@tranle.com</strong>
                 </p>
               </div>
               
@@ -657,11 +657,11 @@ export class EmailService {
             
             <div class="footer">
               <p class="company-name">⚡ TRAN LE ELECTRICITY</p>
-              <p>Công ty TNHH Tư Vấn & Xây Dựng Điện Trần Lê</p>
+              <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
               <p>MST: 0401707621</p>
               <p style="margin-top: 15px;">📍 259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</p>
-              <p>📞 0236 656 2020 | 📧 info@tranle.com</p>
-              <p style="margin-top: 20px; font-size: 11px; opacity: 0.6;">© 2024 Tran Le Electricity. All rights reserved.</p>
+              <p>📞 0915 059 666 | 📧 info@tranle.com</p>
+              <p style="margin-top: 20px; font-size: 11px; opacity: 0.6;">© 2024 CTC. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -669,9 +669,9 @@ export class EmailService {
       `;
 
       await this.transporter.sendMail({
-        from: `"Tran Le Electricity" <${process.env.EMAIL_USER}>`,
+        from: `"CTC" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: '🎉 Chào mừng bạn đến với Tran Le Electricity!',
+        subject: '🎉 Chào mừng bạn đến với CTC!',
         html: htmlContent
       });
 

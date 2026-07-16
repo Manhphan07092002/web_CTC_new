@@ -9,7 +9,7 @@ const SolutionFarm: React.FC = () => {
     <div className="w-full animate-fade-in font-sans text-gray-700 dark:text-gray-200 pb-20">
       <SEO 
         title="Trang Trại Điện Mặt Trời" 
-        description="Giải pháp đầu tư trang trại năng lượng mặt trời quy mô lớn (Solar Farm). Kết nối lưới điện quốc gia. TRAN LE Electricity - 0236 656 2020"
+        description="Giải pháp đầu tư trang trại năng lượng mặt trời quy mô lớn (Solar Farm). Kết nối lưới điện quốc gia. CTC - 0236 656 2020"
         schema={{
           "@context": "https://schema.org",
           "@type": "Service",
@@ -17,9 +17,9 @@ const SolutionFarm: React.FC = () => {
           "description": "Giải pháp đầu tư trang trại năng lượng mặt trời quy mô lớn, kết nối lưới điện quốc gia",
           "provider": {
             "@type": "Organization",
-            "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-            "url": "https://tranle.vn",
-            "telephone": "+84-236-656-2020"
+            "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+            "url": "https://www.ctcdn.vn",
+            "telephone": "+84-915-059-666"
           },
           "areaServed": "Vietnam",
           "serviceType": "Tư vấn và xây dựng trang trại điện mặt trời"

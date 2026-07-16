@@ -71,12 +71,12 @@ const Contact: React.FC = () => {
     "@type": "ContactPage",
     "mainEntity": {
       "@type": "Organization",
-      "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-      "alternateName": "TRAN LE ELECTRICAL EQUIPMENT CORPORATION",
-      "taxID": "0402055834",
+      "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+      "alternateName": "Central Vietnam Posts and Telecommunications Construction Joint Stock Company",
+      "taxID": "0400458940",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ",
+        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
         "addressLocality": "Đà Nẵng",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
@@ -87,9 +87,9 @@ const Contact: React.FC = () => {
         "latitude": 16.0190,
         "longitude": 108.2208
       },
-      "telephone": "+84-236-656-2020",
-      "email": "info@tranle.vn",
-      "url": "https://tranle.vn"
+      "telephone": "+84-915-059-666",
+      "email": "info@ctcdn.vn",
+      "url": "https://www.ctcdn.vn"
     }
   };
 
@@ -122,8 +122,8 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">{t('common.name')}</h4>
-                    <p className="text-sm text-gray-600 font-semibold uppercase">CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ</p>
-                    <p className="text-sm text-gray-500 mt-1">MST: 0402055834</p>
+                    <p className="text-sm text-gray-600 font-semibold uppercase">Công ty Cổ phần Xây lắp Bưu điện Miền Trung</p>
+                    <p className="text-sm text-gray-500 mt-1">MST: 0400458940</p>
                   </div>
                 </div>
 
@@ -133,7 +133,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">{t('footer.address')}</h4>
-                    <p className="text-sm text-gray-600">275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ, Đà Nẵng</p>
+                    <p className="text-sm text-gray-600">50B Nguyễn Du, Quận Hải Châu, Đà Nẵng</p>
                   </div>
                 </div>
 
@@ -153,7 +153,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">{t('contact.email')}</h4>
-                    <p className="text-sm text-gray-600">info@tranle.vn</p>
+                    <p className="text-sm text-gray-600">info@ctcdn.vn</p>
                   </div>
                 </div>
 

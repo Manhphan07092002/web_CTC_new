@@ -13,26 +13,26 @@ const About: React.FC = () => {
     "@id": `${window.location.origin}/about`,
     "mainEntity": {
       "@type": "Organization",
-      "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-      "alternateName": "TRAN LE ELECTRICAL EQUIPMENT CORPORATION",
-      "taxID": "0402055834",
-      "foundingDate": "2020-07-28",
+      "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+      "alternateName": "Central Vietnam Posts and Telecommunications Construction Joint Stock Company",
+      "taxID": "0400458940",
+      "foundingDate": "1992-01-01",
       "founder": {
         "@type": "Person",
-        "name": "TRẦN THANH XUÂN",
+        "name": "Nguyễn Văn Duy",
         "jobTitle": "Tổng Giám Đốc / CEO"
       },
       "description": "Thi công và lắp đặt hệ thống pin năng lượng mặt trời, máy phát điện năng lượng mặt trời, inverter, thiết bị năng lượng mặt trời tại Đà Nẵng và toàn quốc.",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ",
+        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
         "addressLocality": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
       },
-      "telephone": "+84-236-656-2020",
-      "email": "info@tranle.vn",
-      "url": "https://tranle.vn"
+      "telephone": "+84-915-059-666",
+      "email": "info@ctcdn.vn",
+      "url": "https://www.ctcdn.vn"
     }
   };
 

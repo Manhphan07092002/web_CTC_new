@@ -319,12 +319,12 @@ Sau đó thêm 1-2 câu kết luận ngắn gọn.`;
     "sku": id,
     "brand": { 
       "@type": "Brand", 
-      "name": (product as any).brand || "TRAN LE Electricity" 
+      "name": (product as any).brand || "CTC" 
     },
     "manufacturer": {
       "@type": "Organization",
-      "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-      "url": "https://tranle.vn"
+      "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+      "url": "https://www.ctcdn.vn"
     },
     "offers": {
       "@type": "Offer",
@@ -334,8 +334,8 @@ Sau đó thêm 1-2 câu kết luận ngắn gọn.`;
       "availability": (product.stock && product.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       "seller": {
         "@type": "Organization",
-        "name": "TRAN LE Electricity",
-        "url": "https://tranle.vn"
+        "name": "CTC",
+        "url": "https://www.ctcdn.vn"
       }
     },
     "aggregateRating": reviews.length > 0 ? {

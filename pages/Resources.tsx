@@ -66,16 +66,16 @@ const Resources: React.FC = () => {
     <div className="w-full animate-fade-in pb-20">
       <SEO 
         title={t('resources.title')} 
-        description="Thư viện tài liệu kỹ thuật, hướng dẫn sử dụng và chính sách bảo hành sản phẩm điện mặt trời của TRAN LE Electricity."
+        description="Thư viện tài liệu kỹ thuật, hướng dẫn sử dụng và chính sách bảo hành sản phẩm điện mặt trời của CTC."
         schema={{
           "@context": "https://schema.org",
           "@type": "WebPage",
-          "name": "Tài liệu kỹ thuật - TRAN LE Electricity",
+          "name": "Tài liệu kỹ thuật - CTC",
           "description": "Catalogue, hướng dẫn sử dụng và chính sách bảo hành sản phẩm điện mặt trời",
           "publisher": {
             "@type": "Organization",
-            "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-            "url": "https://tranle.vn"
+            "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+            "url": "https://www.ctcdn.vn"
           }
         }}
       />

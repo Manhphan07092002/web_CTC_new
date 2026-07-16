@@ -18,14 +18,14 @@ interface SEOProps {
 
 // Company Information - Export để dùng ở các component khác
 export const COMPANY_INFO = {
-  name: 'CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ',
-  nameEn: 'TRAN LE ELECTRICAL EQUIPMENT CORPORATION',
-  shortName: 'TRAN LE Electricity',
-  taxId: '0402055834',
+  name: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung',
+  nameEn: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company',
+  shortName: 'CTC',
+  taxId: '0400458940',
   phone: '02366562020',
   phoneFormatted: '+84 236 656 2020',
-  email: 'info@tranle.vn',
-  website: 'https://tranle.vn',
+  email: 'info@ctcdn.vn',
+  website: 'https://www.ctcdn.vn',
   address: {
     street: '275-279 Diên Hồng',
     ward: 'Phường Hòa Xuân',
@@ -33,14 +33,14 @@ export const COMPANY_INFO = {
     city: 'Đà Nẵng',
     postalCode: '550000',
     country: 'VN',
-    full: '275-279 Diên Hồng, Phường Hòa Xuân, Quận Cẩm Lệ, Đà Nẵng'
+    full: '50B Nguyễn Du, Quận Hải Châu, Đà Nẵng'
   },
   geo: {
     latitude: 16.0190,
     longitude: 108.2208
   },
-  founder: 'TRẦN THANH XUÂN',
-  foundingDate: '2020-07-28',
+  founder: 'Nguyễn Văn Duy',
+  foundingDate: '1992-01-01',
   social: {
     facebook: 'https://www.facebook.com/tranleelectricity',
     youtube: 'https://www.youtube.com/@tranleelectricity',
@@ -51,7 +51,7 @@ export const COMPANY_INFO = {
 const SEO: React.FC<SEOProps> = ({ 
   title, 
   description, 
-  keywords = "điện mặt trời, solar energy, năng lượng mặt trời, tấm pin mặt trời, inverter, TRAN LE, lắp đặt điện mặt trời Đà Nẵng, hệ thống điện mặt trời, pin năng lượng mặt trời, điện năng lượng tái tạo", 
+  keywords = "điện mặt trời, solar energy, năng lượng mặt trời, tấm pin mặt trời, inverter, CTC, lắp đặt điện mặt trời Đà Nẵng, hệ thống điện mặt trời, pin năng lượng mặt trời, điện năng lượng tái tạo", 
   image = "/uploads/images/logo/tran-le-og.jpg",
   type = 'website',
   schema,

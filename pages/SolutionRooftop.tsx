@@ -9,7 +9,7 @@ const SolutionRooftop: React.FC = () => {
     <div className="w-full animate-fade-in font-sans text-gray-700 dark:text-gray-200 pb-20">
       <SEO 
         title="Điện Mặt Trời Áp Mái" 
-        description="Giải pháp điện mặt trời áp mái cho hộ gia đình và doanh nghiệp. Tiết kiệm chi phí, bảo vệ môi trường. TRAN LE Electricity - 0236 656 2020"
+        description="Giải pháp điện mặt trời áp mái cho hộ gia đình và doanh nghiệp. Tiết kiệm chi phí, bảo vệ môi trường. CTC - 0236 656 2020"
         schema={{
           "@context": "https://schema.org",
           "@type": "Service",
@@ -17,9 +17,9 @@ const SolutionRooftop: React.FC = () => {
           "description": "Giải pháp điện mặt trời áp mái cho hộ gia đình và doanh nghiệp",
           "provider": {
             "@type": "Organization",
-            "name": "CÔNG TY CỔ PHẦN THIẾT BỊ ĐIỆN TRẦN LÊ",
-            "url": "https://tranle.vn",
-            "telephone": "+84-236-656-2020"
+            "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+            "url": "https://www.ctcdn.vn",
+            "telephone": "+84-915-059-666"
           },
           "areaServed": "Vietnam",
           "serviceType": "Lắp đặt hệ thống điện mặt trời"
