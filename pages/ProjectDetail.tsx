@@ -200,7 +200,7 @@ const ProjectDetail: React.FC = () => {
                   Liên hệ tư vấn
                 </Link>
                 <a 
-                  href="tel:02366562020" 
+                  href="tel:0915059666" 
                   className="w-full border border-white/30 text-white py-3 rounded-lg font-bold text-center block hover:bg-white dark:bg-gray-900/10 transition-colors flex items-center justify-center gap-2"
                 >
                   <Phone size={18} /> Gọi ngay

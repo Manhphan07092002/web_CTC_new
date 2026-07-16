@@ -80,7 +80,7 @@ const ChatBox: React.FC = () => {
     setMessages([{ text: t('chat.welcome'), isUser: false, timestamp: Date.now() }]);
   };
 
-  const HOTLINE = "0939792428";
+  const HOTLINE = "0915059666";
   const ZALO_LINK = `https://zalo.me/${HOTLINE}`;
 
   return (

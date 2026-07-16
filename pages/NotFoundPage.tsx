@@ -140,7 +140,7 @@ const NotFoundPage: React.FC = () => {
                 </a>
                 {' '}hoặc gọi{' '}
                 <a 
-                  href="tel:0236656202" 
+                  href="tel:0915059666" 
                   className="text-primary hover:text-secondary font-bold underline"
                 >
                   0915 059 666

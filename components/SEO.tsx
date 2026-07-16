@@ -22,7 +22,7 @@ export const COMPANY_INFO = {
   nameEn: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company',
   shortName: 'CTC',
   taxId: '0400458940',
-  phone: '02366562020',
+  phone: '0915059666',
   phoneFormatted: '+84 236 656 2020',
   email: 'info@ctcdn.vn',
   website: 'https://www.ctcdn.vn',
@@ -44,7 +44,7 @@ export const COMPANY_INFO = {
   social: {
     facebook: 'https://www.facebook.com/tranleelectricity',
     youtube: 'https://www.youtube.com/@tranleelectricity',
-    zalo: 'https://zalo.me/0236656202'
+    zalo: 'https://zalo.me/0915059666'
   }
 };
 

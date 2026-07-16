@@ -160,7 +160,7 @@ const MaintenancePage: React.FC = () => {
               </a>
               
               <a 
-                href="tel:0236656202"
+                href="tel:0915059666"
                 className="flex items-center gap-3 bg-white dark:bg-gray-800/10 hover:bg-white dark:bg-gray-800/20 rounded-xl p-4 transition-all group"
               >
                 <div className="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">

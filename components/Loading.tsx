@@ -12,7 +12,7 @@ const Loading: React.FC = () => {
         </div>
       </div>
       <div className="mt-4 text-corporate font-bold text-lg animate-pulse">
-        Tran Le Electricity...
+        CTC...
       </div>
     </div>
   );

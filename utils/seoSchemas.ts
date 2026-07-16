@@ -89,7 +89,7 @@ export function generateLocalBusinessSchema(data: LocalBusinessData = {}) {
     sameAs: [
       'https://www.facebook.com/tranleelectricity',
       'https://www.youtube.com/@tranleelectricity',
-      'https://zalo.me/0236656202'
+      'https://zalo.me/0915059666'
     ]
   };
 }
@@ -261,7 +261,7 @@ export function generateOrganizationSchema(data: LocalBusinessData = {}) {
     sameAs: [
       'https://www.facebook.com/tranleelectricity',
       'https://www.youtube.com/@tranleelectricity',
-      'https://zalo.me/0236656202'
+      'https://zalo.me/0915059666'
     ]
   };
 }

@@ -227,7 +227,7 @@ const Home: React.FC = () => {
       "sameAs": [
         "https://www.facebook.com/tranleelectricity",
         "https://www.youtube.com/@tranleelectricity",
-        "https://zalo.me/0236656202"
+        "https://zalo.me/0915059666"
       ],
       "knowsAbout": ["Solar Energy", "Điện mặt trời", "Inverter", "Tấm pin năng lượng mặt trời", "Năng lượng tái tạo"]
     },
@@ -1400,13 +1400,13 @@ const Home: React.FC = () => {
                 <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-300 relative z-10" />
               </Link>
               
-              <a href="tel:02366562020" className="group inline-flex items-center gap-3 text-gray-700 dark:text-slate-300 hover:text-primary font-semibold transition-colors duration-300 w-full sm:w-auto justify-center sm:justify-start">
+              <a href="tel:0915059666" className="group inline-flex items-center gap-3 text-gray-700 dark:text-slate-300 hover:text-primary font-semibold transition-colors duration-300 w-full sm:w-auto justify-center sm:justify-start">
                 <div className="w-12 h-12 bg-gray-100 dark:bg-slate-800 group-hover:bg-primary/10 rounded-full flex items-center justify-center transition-colors duration-300">
                   <Phone size={20} className="group-hover:animate-bounce" />
                 </div>
                 <div className="text-left">
                   <div className="text-sm text-gray-500 dark:text-slate-400">{t('home.call_now')}</div>
-                  <div className="font-bold text-base sm:text-lg dark:text-white">023 6656 2020</div>
+                  <div className="font-bold text-base sm:text-lg dark:text-white">0915 059 666</div>
                 </div>
               </a>
             </div>
