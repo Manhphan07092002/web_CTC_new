@@ -147,7 +147,7 @@ const MaintenancePage: React.FC = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <a 
-                href="mailto:info@tranle.com"
+                href="mailto:info@ctcdn.vn"
                 className="flex items-center gap-3 bg-white dark:bg-gray-800/10 hover:bg-white dark:bg-gray-800/20 rounded-xl p-4 transition-all group"
               >
                 <div className="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -155,7 +155,7 @@ const MaintenancePage: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-sm opacity-80">Email</div>
-                  <div className="font-bold">info@tranle.com</div>
+                  <div className="font-bold">info@ctcdn.vn</div>
                 </div>
               </a>
               

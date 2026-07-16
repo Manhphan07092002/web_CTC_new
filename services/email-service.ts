@@ -231,8 +231,8 @@ export class EmailService {
                 hour: '2-digit',
                 minute: '2-digit'
               })}</p>
-              <p style="margin-top: 15px; font-size: 12px;">📍 259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</p>
-              <p style="font-size: 12px;">📞 0915 059 666 | 📧 info@tranle.com</p>
+              <p style="margin-top: 15px; font-size: 12px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
+              <p style="font-size: 12px;">📞 0915 059 666 | 📧 info@ctcdn.vn</p>
             </div>
           </div>
         </body>
@@ -458,8 +458,8 @@ export class EmailService {
               <div class="contact-box">
                 <p><strong>⚡ Cần hỗ trợ gấp?</strong></p>
                 <p>📞 Hotline: <strong>0915 059 666</strong></p>
-                <p>📧 Email: <strong>info@tranle.com</strong></p>
-                <p>🏢 Địa chỉ: <strong>259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</strong></p>
+                <p>📧 Email: <strong>info@ctcdn.vn</strong></p>
+                <p>🏢 Địa chỉ: <strong>50B Nguyễn Du, Hải Châu, Đà Nẵng</strong></p>
                 <p>🕒 Thời gian làm việc: <strong>Thứ 2 - Thứ 7: 8:00 - 17:30</strong></p>
               </div>
               
@@ -478,8 +478,8 @@ export class EmailService {
               <p class="company-name">⚡ TRAN LE ELECTRICITY</p>
               <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
               <p>MST: 0401707621</p>
-              <p style="margin-top: 15px;">📍 259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</p>
-              <p>📞 0915 059 666 | 📧 info@tranle.com</p>
+              <p style="margin-top: 15px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
+              <p>📞 0915 059 666 | 📧 info@ctcdn.vn</p>
               <div class="social-links">
                 <a href="#">Facebook</a> | 
                 <a href="#">Instagram</a> | 
@@ -646,7 +646,7 @@ export class EmailService {
               <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 5px solid #ffc107; margin: 25px 0;">
                 <p style="margin: 0; color: #856404;">
                   <strong>💼 Cần tư vấn ngay?</strong><br>
-                  Liên hệ hotline: <strong>0915 059 666</strong> hoặc email: <strong>info@tranle.com</strong>
+                  Liên hệ hotline: <strong>0915 059 666</strong> hoặc email: <strong>info@ctcdn.vn</strong>
                 </p>
               </div>
               
@@ -659,8 +659,8 @@ export class EmailService {
               <p class="company-name">⚡ TRAN LE ELECTRICITY</p>
               <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
               <p>MST: 0401707621</p>
-              <p style="margin-top: 15px;">📍 259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng</p>
-              <p>📞 0915 059 666 | 📧 info@tranle.com</p>
+              <p style="margin-top: 15px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
+              <p>📞 0915 059 666 | 📧 info@ctcdn.vn</p>
               <p style="margin-top: 20px; font-size: 11px; opacity: 0.6;">© 2024 CTC. All rights reserved.</p>
             </div>
           </div>

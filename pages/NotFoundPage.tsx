@@ -133,10 +133,10 @@ const NotFoundPage: React.FC = () => {
               <p className="text-sm text-gray-500">
                 Cần hỗ trợ? Liên hệ{' '}
                 <a 
-                  href="mailto:info@tranle.com" 
+                  href="mailto:info@ctcdn.vn" 
                   className="text-primary hover:text-secondary font-bold underline"
                 >
-                  info@tranle.com
+                  info@ctcdn.vn
                 </a>
                 {' '}hoặc gọi{' '}
                 <a 
