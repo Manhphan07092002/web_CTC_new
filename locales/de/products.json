@@ -1,0 +1,28 @@
+{
+  "title": "Produkte",
+  "categories": {
+    "solar_panels": "Solarpanels",
+    "inverters": "Wechselrichter",
+    "batteries": "Batterien",
+    "accessories": "Zubehör"
+  },
+  "details": {
+    "specifications": "Spezifikationen",
+    "warranty": "Garantie",
+    "price": "Preis",
+    "availability": "Verfügbarkeit",
+    "in_stock": "Auf Lager",
+    "out_of_stock": "Ausverkauft"
+  },
+  "actions": {
+    "add_to_cart": "In den Warenkorb",
+    "request_quote": "Angebot anfordern",
+    "view_details": "Details anzeigen",
+    "compare": "Vergleichen"
+  },
+  "messages": {
+    "added_to_cart": "Produkt wurde zum Warenkorb hinzugefügt",
+    "quote_requested": "Angebotsanfrage wurde gesendet",
+    "product_not_found": "Produkt nicht gefunden"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "greeting": {
+    "hello": "こんにちは",
+    "welcome": "TRAN LE Electricityへようこそ",
+    "goodbye": "さようなら"
+  },
+  "order": {
+    "items_zero": "商品がありません",
+    "items_one": "{{count}}個の商品",
+    "items_other": "{{count}}個の商品"
+  },
+  "status": {
+    "success": "成功",
+    "error": "エラー",
+    "loading": "読み込み中...",
+    "not_found": "見つかりません"
+  },
+  "actions": {
+    "create": "作成",
+    "edit": "編集",
+    "delete": "削除",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "view": "表示",
+    "search": "検索"
+  },
+  "validation": {
+    "required": "この項目は必須です",
+    "email_invalid": "無効なメールアドレス",
+    "password_min": "パスワードは最低{{min}}文字以上である必要があります"
+  }
+}

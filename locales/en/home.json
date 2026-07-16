@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "Solar Energy Solutions",
+    "subtitle": "Save costs, protect the environment"
+  },
+  "join_team": "Join Our Team",
+  "join_team_title": "Create Together",
+  "join_team_highlight": "A Green Future",
+  "join_team_desc": "We are always looking for talented individuals passionate about clean energy to build a sustainable future together.",
+  "apply_now": "Apply Now",
+  "opportunity": "OPPORTUNITY",
+  "calculator": {
+    "title": "Calculate Your Savings",
+    "usage_type": "Power Usage Type",
+    "household": "Household",
+    "household_desc": "Residential electricity",
+    "company": "Business",
+    "company_desc": "Commercial electricity",
+    "monthly_bill": "Monthly Electricity Bill",
+    "daytime_usage": "Daytime Usage Ratio",
+    "all_night": "ALL NIGHT",
+    "all_day": "ALL DAY",
+    "tip": "Tip",
+    "tip_text": "Typical households use 20-40% electricity during daytime (cooking, laundry, afternoon AC).",
+    "tip_residential": "Typical households use 20-40% electricity during daytime (cooking, laundry, afternoon AC).",
+    "tip_commercial": "Companies/Offices typically use 70-90% electricity during daytime (working hours 8am-5pm).",
+    "reference_note": "Results are for reference only.",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "Monthly Savings",
+      "estimated_investment": "Estimated Investment",
+      "roi_period": "ROI Period",
+      "years": "years",
+      "system_capacity": "RECOMMENDED SYSTEM CAPACITY",
+      "storage": "STORAGE (if any)",
+      "estimated_bill": "ESTIMATED ELECTRICITY BILL",
+      "max_savings": "MAXIMUM SAVINGS",
+      "recommended_area": "RECOMMENDED AREA",
+      "per_month": "/month"
+    },
+    "consult_btn": "Consult About This Package"
+  },
+  "testimonials": {
+    "badge": "Customer Reviews",
+    "title": "What Our Customers Say",
+    "business_owner": "BUSINESS OWNER",
+    "hotel": "HOTEL",
+    "factory_director": "FACTORY DIRECTOR"
+  },
+  "news": {
+    "badge": "NEWS",
+    "title": "News & Events",
+    "view_all": "View All",
+    "read_more": "Read More"
+  },
+  "cta": {
+    "badge": "GET STARTED",
+    "title": "Ready to switch to green energy?",
+    "description": "Contact Tran Le Electricity today for a free consultation and quote. Save up to 70% on electricity costs.",
+    "consult_btn": "Get Consultation",
+    "call_now": "Call Now",
+    "benefits": {
+      "free_consult": "Free Consultation",
+      "warranty": "25 Years Warranty",
+      "savings": "Save 70% on Energy"
+    }
+  },
+  "stats": {
+    "projects": "Completed Projects",
+    "capacity": "Installed Capacity",
+    "customers": "Happy Customers",
+    "experience": "Years Experience"
+  }
+}

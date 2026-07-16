@@ -1,0 +1,332 @@
+{
+  "generatedAt": "2025-12-01T23:49:57.536Z",
+  "summary": {
+    "totalLanguages": 5,
+    "totalNamespaces": 8,
+    "totalKeys": 415,
+    "averageCompletion": 100
+  },
+  "languages": {
+    "en": {
+      "language": "en",
+      "namespaces": [
+        {
+          "namespace": "common",
+          "totalKeys": 20,
+          "translatedKeys": 20,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "auth",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "products",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "projects",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "news",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "contact",
+          "totalKeys": 27,
+          "translatedKeys": 27,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "calculator",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "admin",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        }
+      ],
+      "totalKeys": 83,
+      "translatedKeys": 83,
+      "averageCompletion": 100
+    },
+    "ko": {
+      "language": "ko",
+      "namespaces": [
+        {
+          "namespace": "common",
+          "totalKeys": 20,
+          "translatedKeys": 20,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "auth",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "products",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "projects",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "news",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "contact",
+          "totalKeys": 27,
+          "translatedKeys": 27,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "calculator",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "admin",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        }
+      ],
+      "totalKeys": 83,
+      "translatedKeys": 83,
+      "averageCompletion": 100
+    },
+    "ja": {
+      "language": "ja",
+      "namespaces": [
+        {
+          "namespace": "common",
+          "totalKeys": 20,
+          "translatedKeys": 20,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "auth",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "products",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "projects",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "news",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "contact",
+          "totalKeys": 27,
+          "translatedKeys": 27,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "calculator",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "admin",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        }
+      ],
+      "totalKeys": 83,
+      "translatedKeys": 83,
+      "averageCompletion": 100
+    },
+    "zh": {
+      "language": "zh",
+      "namespaces": [
+        {
+          "namespace": "common",
+          "totalKeys": 20,
+          "translatedKeys": 20,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "auth",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "products",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "projects",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "news",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "contact",
+          "totalKeys": 27,
+          "translatedKeys": 27,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "calculator",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "admin",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        }
+      ],
+      "totalKeys": 83,
+      "translatedKeys": 83,
+      "averageCompletion": 100
+    },
+    "de": {
+      "language": "de",
+      "namespaces": [
+        {
+          "namespace": "common",
+          "totalKeys": 20,
+          "translatedKeys": 20,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "auth",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "products",
+          "totalKeys": 18,
+          "translatedKeys": 18,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "projects",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "news",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "contact",
+          "totalKeys": 27,
+          "translatedKeys": 27,
+          "completionPercentage": 100,
+          "missingKeys": []
+        },
+        {
+          "namespace": "calculator",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        },
+        {
+          "namespace": "admin",
+          "totalKeys": 0,
+          "translatedKeys": 0,
+          "completionPercentage": 0,
+          "missingKeys": []
+        }
+      ],
+      "totalKeys": 83,
+      "translatedKeys": 83,
+      "averageCompletion": 100
+    }
+  },
+  "missingTranslations": []
+}

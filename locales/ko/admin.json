@@ -1,0 +1,43 @@
+{
+  "title": "시스템 관리",
+  "navigation": {
+    "dashboard": "대시보드",
+    "users": "사용자",
+    "products": "제품",
+    "projects": "프로젝트",
+    "orders": "주문",
+    "analytics": "분석",
+    "settings": "설정",
+    "translations": "번역"
+  },
+  "dashboard": {
+    "welcome": "대시보드에 오신 것을 환영합니다",
+    "total_users": "총 사용자",
+    "total_orders": "총 주문",
+    "revenue": "수익",
+    "active_projects": "진행 중인 프로젝트"
+  },
+  "actions": {
+    "create": "생성",
+    "edit": "편집",
+    "delete": "삭제",
+    "view": "보기",
+    "export": "데이터 내보내기",
+    "import": "데이터 가져오기",
+    "backup": "백업",
+    "restore": "복원"
+  },
+  "status": {
+    "active": "활성",
+    "inactive": "비활성",
+    "pending": "대기 중",
+    "approved": "승인됨",
+    "rejected": "거부됨"
+  },
+  "messages": {
+    "saved": "성공적으로 저장되었습니다",
+    "deleted": "성공적으로 삭제되었습니다",
+    "error": "오류가 발생했습니다",
+    "confirm_delete": "정말로 삭제하시겠습니까?"
+  }
+}

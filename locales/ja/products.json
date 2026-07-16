@@ -1,0 +1,28 @@
+{
+  "title": "製品",
+  "categories": {
+    "solar_panels": "ソーラーパネル",
+    "inverters": "インバーター",
+    "batteries": "バッテリー",
+    "accessories": "アクセサリー"
+  },
+  "details": {
+    "specifications": "仕様",
+    "warranty": "保証",
+    "price": "価格",
+    "availability": "在庫状況",
+    "in_stock": "在庫あり",
+    "out_of_stock": "在庫切れ"
+  },
+  "actions": {
+    "add_to_cart": "カートに追加",
+    "request_quote": "見積もり依頼",
+    "view_details": "詳細を見る",
+    "compare": "比較"
+  },
+  "messages": {
+    "added_to_cart": "製品がカートに追加されました",
+    "quote_requested": "見積もり依頼が送信されました",
+    "product_not_found": "製品が見つかりません"
+  }
+}

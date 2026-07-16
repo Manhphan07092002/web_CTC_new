@@ -1,0 +1,43 @@
+{
+  "title": "Quản trị hệ thống",
+  "navigation": {
+    "dashboard": "Bảng điều khiển",
+    "users": "Người dùng",
+    "products": "Sản phẩm",
+    "projects": "Dự án",
+    "orders": "Đơn hàng",
+    "analytics": "Phân tích",
+    "settings": "Cài đặt",
+    "translations": "Dịch thuật"
+  },
+  "dashboard": {
+    "welcome": "Chào mừng đến với bảng điều khiển",
+    "total_users": "Tổng người dùng",
+    "total_orders": "Tổng đơn hàng",
+    "revenue": "Doanh thu",
+    "active_projects": "Dự án đang thực hiện"
+  },
+  "actions": {
+    "create": "Tạo mới",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "view": "Xem",
+    "export": "Xuất dữ liệu",
+    "import": "Nhập dữ liệu",
+    "backup": "Sao lưu",
+    "restore": "Khôi phục"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "pending": "Đang chờ",
+    "approved": "Đã phê duyệt",
+    "rejected": "Đã từ chối"
+  },
+  "messages": {
+    "saved": "Đã lưu thành công",
+    "deleted": "Đã xóa thành công",
+    "error": "Có lỗi xảy ra",
+    "confirm_delete": "Bạn có chắc chắn muốn xóa?"
+  }
+}

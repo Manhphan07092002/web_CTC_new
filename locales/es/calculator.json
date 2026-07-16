@@ -1,0 +1,41 @@
+{
+  "title": "Calculadora de energía solar",
+  "subtitle": "Calcule los costos y beneficios de su sistema solar",
+  "inputs": {
+    "monthly_bill": "Factura de electricidad mensual (€)",
+    "roof_area": "Área del techo (m²)",
+    "location": "Ubicación",
+    "roof_direction": "Orientación del techo",
+    "roof_angle": "Inclinación del techo",
+    "electricity_usage": "Consumo eléctrico (kWh/mes)"
+  },
+  "directions": {
+    "north": "Norte",
+    "south": "Sur",
+    "east": "Este",
+    "west": "Oeste",
+    "southeast": "Sureste",
+    "southwest": "Suroeste"
+  },
+  "results": {
+    "system_capacity": "Capacidad del sistema",
+    "annual_production": "Producción anual",
+    "installation_cost": "Costo de instalación",
+    "annual_savings": "Ahorros anuales",
+    "payback_period": "Período de retorno",
+    "co2_reduction": "Reducción de CO2"
+  },
+  "actions": {
+    "calculate": "Calcular",
+    "reset": "Restablecer",
+    "get_quote": "Obtener cotización",
+    "contact_expert": "Contactar experto"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "€",
+    "years": "años",
+    "tons": "toneladas"
+  }
+}

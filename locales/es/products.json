@@ -1,0 +1,28 @@
+{
+  "title": "Productos",
+  "categories": {
+    "solar_panels": "Paneles solares",
+    "inverters": "Inversores",
+    "batteries": "Baterías",
+    "accessories": "Accesorios"
+  },
+  "details": {
+    "specifications": "Especificaciones",
+    "warranty": "Garantía",
+    "price": "Precio",
+    "availability": "Disponibilidad",
+    "in_stock": "En stock",
+    "out_of_stock": "Agotado"
+  },
+  "actions": {
+    "add_to_cart": "Añadir al carrito",
+    "request_quote": "Solicitar cotización",
+    "view_details": "Ver detalles",
+    "compare": "Comparar"
+  },
+  "messages": {
+    "added_to_cart": "Producto añadido al carrito",
+    "quote_requested": "Solicitud de cotización enviada",
+    "product_not_found": "Producto no encontrado"
+  }
+}

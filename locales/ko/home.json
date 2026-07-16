@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "태양광 에너지 솔루션",
+    "subtitle": "비용 절감, 환경 보호"
+  },
+  "join_team": "팀에 합류하세요",
+  "join_team_title": "함께 만들어가요",
+  "join_team_highlight": "녹색 미래",
+  "join_team_desc": "우리는 깨끗한 에너지에 열정을 가진 인재들과 함께 지속 가능한 미래를 만들어 가고자 합니다.",
+  "apply_now": "지금 지원하기",
+  "opportunity": "기회",
+  "calculator": {
+    "title": "절약 계산",
+    "usage_type": "전력 사용 유형",
+    "household": "가정용",
+    "household_desc": "생활용 전기",
+    "company": "기업용",
+    "company_desc": "사업용 전기",
+    "monthly_bill": "월 평균 전기 요금",
+    "daytime_usage": "주간 전력 사용 비율",
+    "all_night": "전부 야간",
+    "all_day": "전부 주간",
+    "tip": "팁",
+    "tip_text": "일반 가정은 주간에 20-40% 전력을 사용합니다 (요리, 세탁, 낮 시간 에어컨).",
+    "tip_residential": "일반 가정은 주간에 20-40% 전력을 사용합니다 (요리, 세탁, 낮 시간 에어컨).",
+    "tip_commercial": "회사/사무실은 주간에 70-90% 전력을 사용합니다 (근무시간 8시-17시).",
+    "reference_note": "결과는 참고용입니다.",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "월 절감액",
+      "estimated_investment": "예상 투자",
+      "roi_period": "투자 회수 기간",
+      "years": "년",
+      "system_capacity": "권장 시스템 용량",
+      "storage": "저장 장치 (있는 경우)",
+      "estimated_bill": "예상 전기 요금",
+      "max_savings": "최대 절감액",
+      "recommended_area": "권장 설치 면적",
+      "per_month": "/월"
+    },
+    "consult_btn": "이 패키지에 대해 상담"
+  },
+  "testimonials": {
+    "badge": "고객 후기",
+    "title": "고객님들의 이야기",
+    "business_owner": "사업주",
+    "hotel": "호텔",
+    "factory_director": "공장장"
+  },
+  "news": {
+    "badge": "뉴스",
+    "title": "뉴스 및 이벤트",
+    "view_all": "상세보기",
+    "read_more": "더 읽기"
+  },
+  "cta": {
+    "badge": "지금 시작하세요",
+    "title": "녹색 에너지로 전환할 준비가 되셨나요?",
+    "description": "오늘 Tran Le Electricity에 연락하여 무료 상담 및 견적을 받으세요. 전기 요금을 최대 70% 절감하세요.",
+    "consult_btn": "문의하기",
+    "call_now": "지금 전화",
+    "benefits": {
+      "free_consult": "무료 상담",
+      "warranty": "25년 보증",
+      "savings": "70% 전력 절감"
+    }
+  },
+  "stats": {
+    "projects": "완료된 프로젝트",
+    "capacity": "설치 용량",
+    "customers": "만족한 고객",
+    "experience": "년 경험"
+  }
+}

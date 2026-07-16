@@ -1,0 +1,28 @@
+{
+  "title": "Nachrichten",
+  "subtitle": "Neueste Nachrichten über Solarenergie",
+  "categories": {
+    "company_news": "Unternehmensnachrichten",
+    "industry_news": "Branchennachrichten",
+    "technology": "Technologie",
+    "events": "Veranstaltungen"
+  },
+  "details": {
+    "published_date": "Veröffentlichungsdatum",
+    "author": "Autor",
+    "category": "Kategorie",
+    "tags": "Tags",
+    "read_time": "Lesezeit"
+  },
+  "actions": {
+    "read_more": "Mehr lesen",
+    "share": "Teilen",
+    "comment": "Kommentieren",
+    "subscribe": "Newsletter abonnieren"
+  },
+  "messages": {
+    "no_articles": "Keine Artikel vorhanden",
+    "loading": "Nachrichten werden geladen...",
+    "subscribed": "Erfolgreich abonniert"
+  }
+}

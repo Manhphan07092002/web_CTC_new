@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TRAN LE Electricity</title>
+    <link rel="icon" type="image/jpeg" href="/uploads/images/logo/1763275681669-913578388.jpg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#FF7F00', // Orange
+              secondary: '#FF4F00', // Red/Orange
+              corporate: '#003B5C', // Deep Blue
+              neutral: '#FFFFFF',
+              lightGray: '#F3F4F6',
+            },
+            animation: {
+              'fade-in': 'fadeIn 1s ease-out forwards',
+              'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+              'fade-in-down': 'fadeInDown 0.8s ease-out forwards',
+              'slide-in-left': 'slideInLeft 0.8s ease-out forwards',
+              'slide-in-right': 'slideInRight 0.8s ease-out forwards',
+              'slide-in': 'slideIn 0.4s ease-out',
+              'bounce-once': 'bounceOnce 0.6s ease-in-out',
+              'shake': 'shake 0.5s ease-in-out',
+              'float': 'float 6s ease-in-out infinite',
+              'spin-slow': 'spin 8s linear infinite',
+              'blob': 'blob 7s infinite',
+              'infinite-scroll': 'infinite-scroll 30s linear infinite',
+              'gradient': 'gradient 3s ease infinite',
+              'scale-in': 'scaleIn 0.5s ease-out forwards',
+              'glow': 'glow 2s ease-in-out infinite',
+              'text-reveal': 'textReveal 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards',
+              'zoom-in': 'zoomIn 0.6s ease-out forwards',
+              'card-hover': 'cardHover 0.3s ease-out forwards',
+              'particle-float': 'particleFloat 20s infinite linear',
+              'scroll': 'scroll 30s linear infinite',
+              'bounce-x': 'bounceX 1s ease-in-out infinite',
+              'shimmer': 'shimmer 2s ease-in-out infinite',
+            },
+            keyframes: {
+              textReveal: {
+                '0%': { transform: 'translateY(100%)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              },
+              zoomIn: {
+                '0%': { transform: 'scale(0.9)', opacity: '0' },
+                '100%': { transform: 'scale(1)', opacity: '1' },
+              },
+              cardHover: {
+                '0%': { transform: 'translateY(0) scale(1)' },
+                '100%': { transform: 'translateY(-10px) scale(1.02)', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' },
+              },
+              particleFloat: {
+                '0%': { transform: 'translate(0, 0)' },
+                '25%': { transform: 'translate(100px, 100px)' },
+                '50%': { transform: 'translate(0, 200px)' },
+                '75%': { transform: 'translate(-100px, 100px)' },
+                '100%': { transform: 'translate(0, 0)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              scroll: {
+                '0%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(-50%)' },
+              },
+              fadeInDown: {
+                '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              slideInLeft: {
+                '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                '100%': { opacity: '1', transform: 'translateX(0)' },
+              },
+              slideInRight: {
+                '0%': { opacity: '0', transform: 'translateX(30px)' },
+                '100%': { opacity: '1', transform: 'translateX(0)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              },
+              'infinite-scroll': {
+                '0%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(-100%)' },
+              },
+              slideIn: {
+                '0%': { transform: 'translateX(100%)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
+              bounceOnce: {
+                '0%, 100%': { transform: 'scale(1)' },
+                '50%': { transform: 'scale(1.2)' },
+              },
+              shake: {
+                '0%, 100%': { transform: 'translateX(0)' },
+                '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
+                '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' },
+              },
+              gradient: {
+                '0%, 100%': { backgroundPosition: '0% 50%' },
+                '50%': { backgroundPosition: '100% 50%' },
+              },
+              scaleIn: {
+                '0%': { opacity: '0', transform: 'scale(0.9)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              },
+              glow: {
+                '0%, 100%': { boxShadow: '0 0 20px rgba(255, 127, 0, 0.3)' },
+                '50%': { boxShadow: '0 0 40px rgba(255, 127, 0, 0.6)' },
+              },
+              bounceX: {
+                '0%, 100%': { transform: 'translateX(0)' },
+                '50%': { transform: 'translateX(5px)' },
+              },
+              shimmer: {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(100%)' },
+              }
+            },
+          },
+          extend: {
+            colors: {
+              primary: '#FF7F00', // Orange
+              secondary: '#FF4F00', // Red/Orange
+              corporate: '#003B5C', // Deep Blue
+              neutral: '#FFFFFF',
+              lightGray: '#F3F4F6',
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      /* Spin animation keyframe */
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      .animate-spin-slow {
+        animation: spin 8s linear infinite;
+      }
+      
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+      
+      /* Scroll animation keyframe */
+      @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      
+      /* Infinite scroll animation for partners */
+      @keyframes infinite-scroll {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-100%, 0, 0); }
+      }
+      
+      /* Animation classes */
+      .animate-infinite-scroll {
+        animation: infinite-scroll 80s linear infinite;
+        will-change: transform;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Smooth scrolling container */
+      .marquee-container {
+        backface-visibility: hidden;
+        perspective: 1000px;
+        transform: translateZ(0);
+        overflow: hidden;
+      }
+      
+      /* Hover pause for entire container */
+      .marquee-container:hover .animate-infinite-scroll {
+        animation-play-state: paused !important;
+      }
+      
+      /* Pause animation utility */
+      .pause-animation {
+        animation-play-state: paused !important;
+      }
+      
+      /* Background gradient animation */
+      .bg-size-200 {
+        background-size: 200% 200%;
+      }
+      .bg-pos-0 {
+        background-position: 0% 50%;
+      }
+      .bg-pos-100 {
+        background-position: 100% 50%;
+      }
+      
+      /* Custom scrollbar for cleaner look */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #ccc; 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #FF7F00; 
+      }
+      .delay-100 { animation-delay: 100ms; }
+      .delay-200 { animation-delay: 200ms; }
+      .delay-300 { animation-delay: 300ms; }
+      .delay-500 { animation-delay: 500ms; }
+      
+      /* ===== DARK MODE STYLES - GLOBAL ===== */
+      
+      /* Base dark mode */
+      .dark {
+        color-scheme: dark;
+      }
+      
+      .dark body,
+      .dark #root {
+        background-color: #0f172a !important;
+        color: #e2e8f0 !important;
+      }
+      
+      /* ===== Background Colors ===== */
+      .dark .bg-white {
+        background-color: #1e293b !important;
+      }
+      
+      .dark .bg-gray-50,
+      .dark .bg-slate-50 {
+        background-color: #0f172a !important;
+      }
+      
+      .dark .bg-gray-100,
+      .dark .bg-slate-100 {
+        background-color: #1e293b !important;
+      }
+      
+      .dark .bg-gray-200,
+      .dark .bg-slate-200 {
+        background-color: #334155 !important;
+      }
+      
+      /* ===== Text Colors ===== */
+      .dark .text-gray-900,
+      .dark .text-slate-900 {
+        color: #ffffff !important;
+      }
+      
+      .dark .text-gray-800,
+      .dark .text-slate-800 {
+        color: #f1f5f9 !important;
+      }
+      
+      .dark .text-gray-700,
+      .dark .text-slate-700 {
+        color: #e2e8f0 !important;
+      }
+      
+      .dark .text-gray-600,
+      .dark .text-slate-600 {
+        color: #cbd5e1 !important;
+      }
+      
+      .dark .text-gray-500,
+      .dark .text-slate-500 {
+        color: #94a3b8 !important;
+      }
+      
+      .dark .text-gray-400,
+      .dark .text-slate-400 {
+        color: #94a3b8 !important;
+      }
+      
+      .dark .text-black {
+        color: #ffffff !important;
+      }
+      
+      /* Fix for all paragraph and span text */
+      .dark p,
+      .dark span:not([class*="text-primary"]):not([class*="text-white"]):not([class*="text-red"]):not([class*="text-green"]):not([class*="text-blue"]):not([class*="text-yellow"]):not([class*="text-orange"]) {
+        color: #e2e8f0;
+      }
+      
+      .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+        color: #ffffff !important;
+      }
+      
+      /* ===== Border Colors ===== */
+      .dark .border-gray-100,
+      .dark .border-slate-100 {
+        border-color: #334155 !important;
+      }
+      
+      .dark .border-gray-200,
+      .dark .border-slate-200 {
+        border-color: #475569 !important;
+      }
+      
+      .dark .border-gray-300,
+      .dark .border-slate-300 {
+        border-color: #475569 !important;
+      }
+      
+      .dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+      .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+        border-color: #334155 !important;
+      }
+      
+      /* ===== Card & Container Backgrounds ===== */
+      .dark .bg-white\/80,
+      .dark .bg-white\/90,
+      .dark .bg-white\/95 {
+        background-color: rgba(30, 41, 59, 0.9) !important;
+      }
+      
+      .dark .bg-gray-50\/50,
+      .dark .bg-gray-50\/80 {
+        background-color: rgba(15, 23, 42, 0.8) !important;
+      }
+      
+      /* ===== Shadows ===== */
+      .dark .shadow-sm {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+      }
+      
+      .dark .shadow,
+      .dark .shadow-md {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4) !important;
+      }
+      
+      .dark .shadow-lg {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+      }
+      
+      .dark .shadow-xl {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+      }
+      
+      .dark .shadow-2xl {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+      }
+      
+      /* ===== Gradient Backgrounds ===== */
+      .dark .from-gray-50,
+      .dark .from-slate-50 {
+        --tw-gradient-from: #0f172a !important;
+      }
+      
+      .dark .to-white,
+      .dark .to-gray-50 {
+        --tw-gradient-to: #1e293b !important;
+      }
+      
+      .dark .from-white {
+        --tw-gradient-from: #1e293b !important;
+      }
+      
+      .dark .via-gray-50 {
+        --tw-gradient-via: #0f172a !important;
+      }
+      
+      /* ===== Form Elements ===== */
+      .dark input,
+      .dark textarea,
+      .dark select {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        color: #e2e8f0 !important;
+      }
+      
+      .dark input:focus,
+      .dark textarea:focus,
+      .dark select:focus {
+        border-color: #FF7F00 !important;
+        box-shadow: 0 0 0 2px rgba(255, 127, 0, 0.2) !important;
+      }
+      
+      .dark input::placeholder,
+      .dark textarea::placeholder {
+        color: #64748b !important;
+      }
+      
+      .dark label {
+        color: #e2e8f0 !important;
+      }
+      
+      /* ===== Tables ===== */
+      .dark table {
+        background-color: #1e293b !important;
+      }
+      
+      .dark th {
+        background-color: #0f172a !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
+      }
+      
+      .dark td {
+        border-color: #334155 !important;
+        color: #cbd5e1 !important;
+      }
+      
+      .dark tr:hover td {
+        background-color: #334155 !important;
+      }
+      
+      /* ===== Scrollbar ===== */
+      .dark ::-webkit-scrollbar-track {
+        background: #1e293b;
+      }
+      
+      .dark ::-webkit-scrollbar-thumb {
+        background: #475569;
+      }
+      
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #FF7F00;
+      }
+      
+      /* ===== Backdrop & Overlays ===== */
+      .dark .backdrop-blur-sm,
+      .dark .backdrop-blur-md,
+      .dark .backdrop-blur-lg,
+      .dark .backdrop-blur-xl {
+        background-color: rgba(15, 23, 42, 0.85) !important;
+      }
+      
+      /* ===== Hover States ===== */
+      .dark .hover\:bg-gray-50:hover,
+      .dark .hover\:bg-slate-50:hover {
+        background-color: #0f172a !important;
+      }
+      
+      .dark .hover\:bg-gray-100:hover,
+      .dark .hover\:bg-slate-100:hover {
+        background-color: #334155 !important;
+      }
+      
+      .dark .hover\:bg-gray-200:hover,
+      .dark .hover\:bg-slate-200:hover {
+        background-color: #475569 !important;
+      }
+      
+      .dark .hover\:text-gray-900:hover {
+        color: #f1f5f9 !important;
+      }
+      
+      /* ===== Ring & Focus States ===== */
+      .dark .ring-gray-100,
+      .dark .ring-gray-200 {
+        --tw-ring-color: #475569 !important;
+      }
+      
+      .dark .focus\:ring-gray-100:focus,
+      .dark .focus\:ring-gray-200:focus {
+        --tw-ring-color: #475569 !important;
+      }
+      
+      /* ===== Special Components ===== */
+      /* Header/Navbar - Force same background */
+      .dark header,
+      .dark header > *,
+      .dark header > div,
+      .dark header > div > *,
+      .dark header .container,
+      .dark header .container > *,
+      .dark nav,
+      .dark nav > *,
+      .dark [class*="header"],
+      .dark [class*="navbar"],
+      .dark [class*="nav-"],
+      .dark .sticky,
+      .dark .fixed {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
+      }
+      
+      .dark header a,
+      .dark nav a,
+      .dark header button,
+      .dark nav button {
+        background-color: transparent !important;
+      }
+      
+      .dark header .bg-white,
+      .dark header .bg-gray-50,
+      .dark header .bg-gray-100,
+      .dark nav .bg-white,
+      .dark nav .bg-gray-50,
+      .dark nav .bg-gray-100,
+      .dark header div[class*="bg-"],
+      .dark nav div[class*="bg-"] {
+        background-color: #0f172a !important;
+      }
+      
+      /* Top bar */
+      .dark .bg-corporate,
+      .dark [class*="top-bar"],
+      .dark [class*="topbar"] {
+        background-color: #0f172a !important;
+      }
+      
+      /* Footer */
+      .dark footer {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
+      }
+      
+      /* Cards */
+      .dark .card,
+      .dark [class*="card"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+      }
+      
+      /* Modals */
+      .dark .modal,
+      .dark [class*="modal"] {
+        background-color: #1e293b !important;
+      }
+      
+      /* Dropdowns */
+      .dark .dropdown-menu,
+      .dark [class*="dropdown"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+      }
+      
+      /* Badges */
+      .dark .bg-gray-100.text-gray-800,
+      .dark .bg-slate-100.text-slate-800 {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+      
+      /* Code blocks */
+      .dark pre,
+      .dark code {
+        background-color: #0f172a !important;
+        color: #e2e8f0 !important;
+      }
+      
+      /* Blockquotes */
+      .dark blockquote {
+        border-color: #FF7F00 !important;
+        background-color: rgba(255, 127, 0, 0.1) !important;
+      }
+      
+      /* HR */
+      .dark hr {
+        border-color: #334155 !important;
+      }
+      
+      /* Links (non-primary) */
+      .dark a:not(.text-primary):not(.text-white):not([class*="bg-"]) {
+        color: #94a3b8;
+      }
+      
+      .dark a:not(.text-primary):not(.text-white):not([class*="bg-"]):hover {
+        color: #FF7F00;
+      }
+      
+      /* ===== Specific Page Sections ===== */
+      /* Calculator */
+      .dark .calculator-section,
+      .dark [class*="calculator"] {
+        background-color: #1e293b !important;
+      }
+      
+      /* Partner Slider */
+      .dark .partner-slider,
+      .dark [class*="partner"] {
+        background-color: #0f172a !important;
+      }
+      
+      /* FAQ Accordion */
+      .dark .faq-item,
+      .dark [class*="accordion"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+      }
+      
+      /* Hide decorative blur circles in dark mode */
+      .dark .blur-3xl,
+      .dark .blur-2xl,
+      .dark [class*="blur-"] {
+        opacity: 0 !important;
+      }
+      
+      /* Hide background patterns in dark mode */
+      .dark [style*="transparenttextures"] {
+        opacity: 0 !important;
+      }
+      
+      /* ===== Animation Optimization ===== */
+      .dark * {
+        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+        transition-timing-function: ease;
+        transition-duration: 0.2s;
+      }
+      
+      /* Disable transitions during theme switch for performance */
+      .dark.switching * {
+        transition: none !important;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+  <script>
+    // Placeholder image
+    const PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent('<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#F3F4F6"/><g transform="translate(110, 60)"><path d="M160 120L110 60L80 95L30 30L0 120H160Z" fill="#D1D5DB"/><circle cx="130" cy="35" r="20" fill="#D1D5DB"/></g><text x="200" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="500" fill="#9CA3AF">No Image</text></svg>');
+    
+    // Check and fix images on error
+    document.addEventListener('error', function(e) {
+      if (e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+        e.target.dataset.fixed = 'true';
+        e.target.src = PLACEHOLDER;
+        e.target.alt = '';
+      }
+    }, true);
+    
+    // Check all images on load
+    function checkImage(img) {
+      if (!img || !img.dataset || img.dataset.fixed) return;
+      
+      // Check if image is broken or empty
+      const isBroken = !img.src || 
+                       img.src === '' || 
+                       img.src === window.location.href ||
+                       img.src.startsWith('data:text') ||
+                       (img.complete && img.naturalWidth === 0);
+      
+      if (isBroken) {
+        img.dataset.fixed = 'true';
+        img.src = PLACEHOLDER;
+        img.alt = '';
+      }
+    }
+    
+    // Check images periodically
+    setInterval(function() {
+      document.querySelectorAll('img').forEach(checkImage);
+    }, 300);
+    
+    // Also check on load event
+    document.addEventListener('load', function(e) {
+      if (e.target && e.target.tagName === 'IMG') {
+        var imgRef = e.target;
+        setTimeout(function() { 
+          if (imgRef && document.contains(imgRef)) {
+            checkImage(imgRef); 
+          }
+        }, 100);
+      }
+    }, true);
+  </script>
+</body>
+</html>

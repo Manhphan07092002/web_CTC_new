@@ -1,0 +1,43 @@
+{
+  "title": "Systemverwaltung",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "users": "Benutzer",
+    "products": "Produkte",
+    "projects": "Projekte",
+    "orders": "Bestellungen",
+    "analytics": "Analysen",
+    "settings": "Einstellungen",
+    "translations": "Übersetzungen"
+  },
+  "dashboard": {
+    "welcome": "Willkommen im Dashboard",
+    "total_users": "Gesamtbenutzer",
+    "total_orders": "Gesamtbestellungen",
+    "revenue": "Umsatz",
+    "active_projects": "Aktive Projekte"
+  },
+  "actions": {
+    "create": "Erstellen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "view": "Anzeigen",
+    "export": "Daten exportieren",
+    "import": "Daten importieren",
+    "backup": "Sicherung",
+    "restore": "Wiederherstellen"
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "pending": "Ausstehend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt"
+  },
+  "messages": {
+    "saved": "Erfolgreich gespeichert",
+    "deleted": "Erfolgreich gelöscht",
+    "error": "Ein Fehler ist aufgetreten",
+    "confirm_delete": "Sind Sie sicher, dass Sie löschen möchten?"
+  }
+}

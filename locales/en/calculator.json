@@ -1,0 +1,41 @@
+{
+  "title": "Solar Energy Calculator",
+  "subtitle": "Calculate costs and benefits of your solar system",
+  "inputs": {
+    "monthly_bill": "Monthly Electricity Bill",
+    "roof_area": "Roof Area (m²)",
+    "location": "Location",
+    "roof_direction": "Roof Direction",
+    "roof_angle": "Roof Angle",
+    "electricity_usage": "Electricity Usage (kWh/month)"
+  },
+  "directions": {
+    "north": "North",
+    "south": "South",
+    "east": "East",
+    "west": "West",
+    "southeast": "Southeast",
+    "southwest": "Southwest"
+  },
+  "results": {
+    "system_capacity": "System Capacity",
+    "annual_production": "Annual Production",
+    "installation_cost": "Installation Cost",
+    "annual_savings": "Annual Savings",
+    "payback_period": "Payback Period",
+    "co2_reduction": "CO2 Reduction"
+  },
+  "actions": {
+    "calculate": "Calculate",
+    "reset": "Reset",
+    "get_quote": "Get Quote",
+    "contact_expert": "Contact Expert"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "USD",
+    "years": "years",
+    "tons": "tons"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "新闻",
+  "subtitle": "太阳能最新资讯",
+  "categories": {
+    "company_news": "公司新闻",
+    "industry_news": "行业新闻",
+    "technology": "技术",
+    "events": "活动"
+  },
+  "details": {
+    "published_date": "发布日期",
+    "author": "作者",
+    "category": "类别",
+    "tags": "标签",
+    "read_time": "阅读时间"
+  },
+  "actions": {
+    "read_more": "阅读更多",
+    "share": "分享",
+    "comment": "评论",
+    "subscribe": "订阅新闻"
+  },
+  "messages": {
+    "no_articles": "没有文章",
+    "loading": "正在加载新闻...",
+    "subscribed": "订阅成功"
+  }
+}

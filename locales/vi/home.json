@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "Giải pháp năng lượng mặt trời",
+    "subtitle": "Tiết kiệm chi phí, bảo vệ môi trường"
+  },
+  "join_team": "Gia nhập đội ngũ",
+  "join_team_title": "Cùng kiến tạo",
+  "join_team_highlight": "Tương lai xanh",
+  "join_team_desc": "Chúng tôi luôn tìm kiếm những tài năng đam mê năng lượng sạch để cùng xây dựng tương lai bền vững.",
+  "apply_now": "Ứng tuyển ngay",
+  "opportunity": "CƠ HỘI",
+  "calculator": {
+    "title": "Tính toán tiết kiệm",
+    "usage_type": "Loại hình sử dụng điện",
+    "household": "Hộ gia đình",
+    "household_desc": "Điện sinh hoạt",
+    "company": "Công ty",
+    "company_desc": "Điện kinh doanh",
+    "monthly_bill": "Hóa đơn điện hàng tháng",
+    "daytime_usage": "Tỷ lệ dùng điện ban ngày",
+    "all_night": "TẤT CẢ BAN ĐÊM",
+    "all_day": "TẤT CẢ BAN NGÀY",
+    "tip": "Gợi ý",
+    "tip_text": "Hộ gia đình thường dùng 20-40% điện ban ngày (nấu ăn, giặt giũ, điều hòa buổi trưa).",
+    "tip_residential": "Hộ gia đình thường dùng 20-40% điện ban ngày (nấu ăn, giặt giũ, điều hòa buổi trưa).",
+    "tip_commercial": "Công ty/Văn phòng thường dùng 70-90% điện ban ngày (giờ làm việc 8h-17h).",
+    "reference_note": "Kết quả là tham khảo.",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "Tiết kiệm hàng tháng",
+      "estimated_investment": "Đầu tư dự kiến",
+      "roi_period": "Thời gian hoàn vốn",
+      "years": "năm",
+      "system_capacity": "CÔNG SUẤT HỆ THỐNG NÊN LẮP",
+      "storage": "LƯU TRỮ (nếu có)",
+      "estimated_bill": "TIỀN ĐIỆN DỰ KIẾN",
+      "max_savings": "SỐ TIỀN TIẾT KIỆM TỐI ĐA",
+      "recommended_area": "DIỆN TÍCH KHUYẾN NGHỊ",
+      "per_month": "/tháng"
+    },
+    "consult_btn": "Tư vấn về gói này"
+  },
+  "testimonials": {
+    "badge": "Đánh giá khách hàng",
+    "title": "Khách hàng nói gì về chúng tôi",
+    "business_owner": "CHỦ HỘ KINH DOANH",
+    "hotel": "KHÁCH SẠN",
+    "factory_director": "GĐ CÔNG TY"
+  },
+  "news": {
+    "badge": "TIN TỨC",
+    "title": "Tin tức và sự kiện",
+    "view_all": "Xem tất cả",
+    "read_more": "Đọc tiếp"
+  },
+  "cta": {
+    "badge": "BẮT ĐẦU NGAY",
+    "title": "Sẵn sàng chuyển đổi sang năng lượng xanh?",
+    "description": "Liên hệ Tran Le Electricity hôm nay để được tư vấn miễn phí và nhận báo giá. Tiết kiệm đến 70% chi phí điện năng.",
+    "consult_btn": "Tư vấn ngay",
+    "call_now": "Gọi ngay",
+    "benefits": {
+      "free_consult": "Tư vấn miễn phí",
+      "warranty": "Bảo hành 25 năm",
+      "savings": "Tiết kiệm 70% điện năng"
+    }
+  },
+  "stats": {
+    "projects": "Dự án hoàn thành",
+    "capacity": "Công suất lắp đặt",
+    "customers": "Khách hàng hài lòng",
+    "experience": "Năm kinh nghiệm"
+  }
+}

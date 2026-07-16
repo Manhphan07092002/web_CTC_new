@@ -1,0 +1,43 @@
+{
+  "title": "Administración del sistema",
+  "navigation": {
+    "dashboard": "Panel de control",
+    "users": "Usuarios",
+    "products": "Productos",
+    "projects": "Proyectos",
+    "orders": "Pedidos",
+    "analytics": "Análisis",
+    "settings": "Configuración",
+    "translations": "Traducciones"
+  },
+  "dashboard": {
+    "welcome": "Bienvenido al panel de control",
+    "total_users": "Usuarios totales",
+    "total_orders": "Pedidos totales",
+    "revenue": "Ingresos",
+    "active_projects": "Proyectos activos"
+  },
+  "actions": {
+    "create": "Crear",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "export": "Exportar datos",
+    "import": "Importar datos",
+    "backup": "Respaldo",
+    "restore": "Restaurar"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "pending": "Pendiente",
+    "approved": "Aprobado",
+    "rejected": "Rechazado"
+  },
+  "messages": {
+    "saved": "Guardado exitosamente",
+    "deleted": "Eliminado exitosamente",
+    "error": "Ha ocurrido un error",
+    "confirm_delete": "¿Está seguro de que desea eliminar?"
+  }
+}

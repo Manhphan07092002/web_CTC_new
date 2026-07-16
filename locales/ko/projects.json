@@ -1,0 +1,26 @@
+{
+  "title": "프로젝트",
+  "subtitle": "우리의 대표 프로젝트",
+  "categories": {
+    "residential": "주거용",
+    "commercial": "상업용",
+    "industrial": "산업용"
+  },
+  "details": {
+    "capacity": "용량",
+    "location": "위치",
+    "completion_date": "완료일",
+    "client": "고객",
+    "description": "설명"
+  },
+  "status": {
+    "completed": "완료됨",
+    "in_progress": "진행 중",
+    "planned": "계획 중"
+  },
+  "actions": {
+    "view_details": "자세히 보기",
+    "contact_us": "문의하기",
+    "request_consultation": "상담 요청"
+  }
+}

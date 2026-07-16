@@ -1,0 +1,41 @@
+{
+  "title": "Solarenergie-Rechner",
+  "subtitle": "Berechnen Sie Kosten und Nutzen Ihrer Solaranlage",
+  "inputs": {
+    "monthly_bill": "Monatliche Stromrechnung (€)",
+    "roof_area": "Dachfläche (m²)",
+    "location": "Standort",
+    "roof_direction": "Dachausrichtung",
+    "roof_angle": "Dachneigung",
+    "electricity_usage": "Stromverbrauch (kWh/Monat)"
+  },
+  "directions": {
+    "north": "Norden",
+    "south": "Süden",
+    "east": "Osten",
+    "west": "Westen",
+    "southeast": "Südosten",
+    "southwest": "Südwesten"
+  },
+  "results": {
+    "system_capacity": "Anlagenkapazität",
+    "annual_production": "Jahresproduktion",
+    "installation_cost": "Installationskosten",
+    "annual_savings": "Jährliche Einsparungen",
+    "payback_period": "Amortisationszeit",
+    "co2_reduction": "CO2-Einsparung"
+  },
+  "actions": {
+    "calculate": "Berechnen",
+    "reset": "Zurücksetzen",
+    "get_quote": "Angebot erhalten",
+    "contact_expert": "Experten kontaktieren"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "€",
+    "years": "Jahre",
+    "tons": "Tonnen"
+  }
+}

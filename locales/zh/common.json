@@ -1,0 +1,32 @@
+{
+  "greeting": {
+    "hello": "您好",
+    "welcome": "欢迎来到TRAN LE Electricity",
+    "goodbye": "再见"
+  },
+  "order": {
+    "items_zero": "没有商品",
+    "items_one": "{{count}}个商品",
+    "items_other": "{{count}}个商品"
+  },
+  "status": {
+    "success": "成功",
+    "error": "错误",
+    "loading": "加载中...",
+    "not_found": "未找到"
+  },
+  "actions": {
+    "create": "创建",
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "cancel": "取消",
+    "view": "查看",
+    "search": "搜索"
+  },
+  "validation": {
+    "required": "此字段为必填项",
+    "email_invalid": "无效的电子邮件地址",
+    "password_min": "密码至少需要{{min}}个字符"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "greeting": {
+    "hello": "Xin chào bạn",
+    "welcome": "Chào mừng đến với TRAN LE Electricity",
+    "goodbye": "Tạm biệt"
+  },
+  "order": {
+    "items_zero": "Không có sản phẩm nào",
+    "items_one": "{{count}} sản phẩm",
+    "items_other": "{{count}} sản phẩm"
+  },
+  "status": {
+    "success": "Thành công",
+    "error": "Lỗi",
+    "loading": "Đang tải...",
+    "not_found": "Không tìm thấy"
+  },
+  "actions": {
+    "create": "Tạo mới",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "view": "Xem",
+    "search": "Tìm kiếm"
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "email_invalid": "Email không hợp lệ",
+    "password_min": "Mật khẩu phải có ít nhất {{min}} ký tự"
+  }
+}

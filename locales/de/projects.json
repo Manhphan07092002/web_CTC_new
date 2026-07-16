@@ -1,0 +1,26 @@
+{
+  "title": "Projekte",
+  "subtitle": "Unsere repräsentativen Projekte",
+  "categories": {
+    "residential": "Wohnbereich",
+    "commercial": "Gewerbe",
+    "industrial": "Industrie"
+  },
+  "details": {
+    "capacity": "Kapazität",
+    "location": "Standort",
+    "completion_date": "Fertigstellungsdatum",
+    "client": "Kunde",
+    "description": "Beschreibung"
+  },
+  "status": {
+    "completed": "Abgeschlossen",
+    "in_progress": "In Bearbeitung",
+    "planned": "Geplant"
+  },
+  "actions": {
+    "view_details": "Details anzeigen",
+    "contact_us": "Kontaktieren Sie uns",
+    "request_consultation": "Beratung anfordern"
+  }
+}

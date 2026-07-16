@@ -1,0 +1,28 @@
+{
+  "title": "Sản phẩm",
+  "categories": {
+    "solar_panels": "Tấm pin mặt trời",
+    "inverters": "Inverter",
+    "batteries": "Pin lưu trữ",
+    "accessories": "Phụ kiện"
+  },
+  "details": {
+    "specifications": "Thông số kỹ thuật",
+    "warranty": "Bảo hành",
+    "price": "Giá",
+    "availability": "Tình trạng",
+    "in_stock": "Còn hàng",
+    "out_of_stock": "Hết hàng"
+  },
+  "actions": {
+    "add_to_cart": "Thêm vào giỏ hàng",
+    "request_quote": "Yêu cầu báo giá",
+    "view_details": "Xem chi tiết",
+    "compare": "So sánh"
+  },
+  "messages": {
+    "added_to_cart": "Đã thêm sản phẩm vào giỏ hàng",
+    "quote_requested": "Đã gửi yêu cầu báo giá",
+    "product_not_found": "Không tìm thấy sản phẩm"
+  }
+}

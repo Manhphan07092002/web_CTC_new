@@ -1,0 +1,32 @@
+{
+  "greeting": {
+    "hello": "Hallo",
+    "welcome": "Willkommen bei TRAN LE Electricity",
+    "goodbye": "Auf Wiedersehen"
+  },
+  "order": {
+    "items_zero": "Keine Artikel",
+    "items_one": "{{count}} Artikel",
+    "items_other": "{{count}} Artikel"
+  },
+  "status": {
+    "success": "Erfolgreich",
+    "error": "Fehler",
+    "loading": "Wird geladen...",
+    "not_found": "Nicht gefunden"
+  },
+  "actions": {
+    "create": "Erstellen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "view": "Anzeigen",
+    "search": "Suchen"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "email_invalid": "Ungültige E-Mail-Adresse",
+    "password_min": "Das Passwort muss mindestens {{min}} Zeichen lang sein"
+  }
+}

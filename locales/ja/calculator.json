@@ -1,0 +1,41 @@
+{
+  "title": "太陽光エネルギー計算機",
+  "subtitle": "太陽光システムのコストと利益を計算",
+  "inputs": {
+    "monthly_bill": "月間電気料金（円）",
+    "roof_area": "屋根面積（m²）",
+    "location": "場所",
+    "roof_direction": "屋根の向き",
+    "roof_angle": "屋根の角度",
+    "electricity_usage": "電力使用量（kWh/月）"
+  },
+  "directions": {
+    "north": "北",
+    "south": "南",
+    "east": "東",
+    "west": "西",
+    "southeast": "南東",
+    "southwest": "南西"
+  },
+  "results": {
+    "system_capacity": "システム容量",
+    "annual_production": "年間発電量",
+    "installation_cost": "設置費用",
+    "annual_savings": "年間節約額",
+    "payback_period": "投資回収期間",
+    "co2_reduction": "CO2削減量"
+  },
+  "actions": {
+    "calculate": "計算する",
+    "reset": "リセット",
+    "get_quote": "見積もりを取得",
+    "contact_expert": "専門家に相談"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "円",
+    "years": "年",
+    "tons": "トン"
+  }
+}

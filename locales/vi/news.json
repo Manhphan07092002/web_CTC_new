@@ -1,0 +1,28 @@
+{
+  "title": "Tin tức",
+  "subtitle": "Cập nhật tin tức mới nhất về năng lượng mặt trời",
+  "categories": {
+    "company_news": "Tin công ty",
+    "industry_news": "Tin ngành",
+    "technology": "Công nghệ",
+    "events": "Sự kiện"
+  },
+  "details": {
+    "published_date": "Ngày đăng",
+    "author": "Tác giả",
+    "category": "Danh mục",
+    "tags": "Thẻ",
+    "read_time": "Thời gian đọc"
+  },
+  "actions": {
+    "read_more": "Đọc thêm",
+    "share": "Chia sẻ",
+    "comment": "Bình luận",
+    "subscribe": "Đăng ký nhận tin"
+  },
+  "messages": {
+    "no_articles": "Không có bài viết nào",
+    "loading": "Đang tải tin tức...",
+    "subscribed": "Đã đăng ký thành công"
+  }
+}

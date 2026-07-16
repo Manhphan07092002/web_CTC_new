@@ -1,0 +1,26 @@
+{
+  "title": "Proyectos",
+  "subtitle": "Nuestros proyectos destacados",
+  "categories": {
+    "residential": "Residencial",
+    "commercial": "Comercial",
+    "industrial": "Industrial"
+  },
+  "details": {
+    "capacity": "Capacidad",
+    "location": "Ubicación",
+    "completion_date": "Fecha de finalización",
+    "client": "Cliente",
+    "description": "Descripción"
+  },
+  "status": {
+    "completed": "Completado",
+    "in_progress": "En progreso",
+    "planned": "Planificado"
+  },
+  "actions": {
+    "view_details": "Ver detalles",
+    "contact_us": "Contáctenos",
+    "request_consultation": "Solicitar consulta"
+  }
+}

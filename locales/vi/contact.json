@@ -1,0 +1,39 @@
+{
+  "form": {
+    "title": "Liên hệ tư vấn",
+    "name": "Họ và tên",
+    "phone": "Số điện thoại",
+    "email": "Email",
+    "service": "Dịch vụ quan tâm",
+    "message": "Tin nhắn",
+    "submit": "Gửi yêu cầu",
+    "required_fields": "Vui lòng điền đầy đủ thông tin bắt buộc"
+  },
+  "services": {
+    "solar_installation": "Lắp đặt hệ thống điện mặt trời",
+    "consultation": "Tư vấn kỹ thuật",
+    "maintenance": "Bảo trì hệ thống",
+    "newsletter": "Đăng ký nhận tin"
+  },
+  "status": {
+    "new": "Mới",
+    "processing": "Đang xử lý",
+    "completed": "Hoàn thành",
+    "cancelled": "Đã hủy"
+  },
+  "messages": {
+    "submit_success": "Yêu cầu tư vấn đã được gửi thành công!",
+    "submit_error": "Có lỗi xảy ra khi gửi yêu cầu",
+    "not_found": "Không tìm thấy yêu cầu liên hệ",
+    "update_success": "Cập nhật trạng thái thành công",
+    "delete_success": "Xóa yêu cầu thành công",
+    "newsletter_welcome": "Cảm ơn bạn đã đăng ký nhận tin!",
+    "confirmation_sent": "Email xác nhận đã được gửi"
+  },
+  "notifications": {
+    "new_contact": "Yêu cầu tư vấn mới",
+    "newsletter_signup": "Đăng ký nhận tin mới",
+    "contact_description": "{{name}} ({{phone}}) quan tâm đến \"{{service}}\". Email: {{email}}",
+    "newsletter_description": "{{email}} đã đăng ký nhận bản tin từ Footer"
+  }
+}

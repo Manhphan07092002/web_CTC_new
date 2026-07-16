@@ -1,0 +1,28 @@
+{
+  "title": "News",
+  "subtitle": "Latest updates on solar energy",
+  "categories": {
+    "company_news": "Company News",
+    "industry_news": "Industry News",
+    "technology": "Technology",
+    "events": "Events"
+  },
+  "details": {
+    "published_date": "Published Date",
+    "author": "Author",
+    "category": "Category",
+    "tags": "Tags",
+    "read_time": "Read Time"
+  },
+  "actions": {
+    "read_more": "Read More",
+    "share": "Share",
+    "comment": "Comment",
+    "subscribe": "Subscribe to Newsletter"
+  },
+  "messages": {
+    "no_articles": "No articles found",
+    "loading": "Loading news...",
+    "subscribed": "Successfully subscribed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Projets",
+  "subtitle": "Nos projets phares",
+  "categories": {
+    "residential": "Résidentiel",
+    "commercial": "Commercial",
+    "industrial": "Industriel"
+  },
+  "details": {
+    "capacity": "Capacité",
+    "location": "Emplacement",
+    "completion_date": "Date d'achèvement",
+    "client": "Client",
+    "description": "Description"
+  },
+  "status": {
+    "completed": "Terminé",
+    "in_progress": "En cours",
+    "planned": "Planifié"
+  },
+  "actions": {
+    "view_details": "Voir les détails",
+    "contact_us": "Contactez-nous",
+    "request_consultation": "Demander une consultation"
+  }
+}

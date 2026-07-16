@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "太阳能解决方案",
+    "subtitle": "节省成本，保护环境"
+  },
+  "join_team": "加入我们的团队",
+  "join_team_title": "共同创造",
+  "join_team_highlight": "绿色未来",
+  "join_team_desc": "我们一直在寻找对清洁能源充满热情的人才，共同建设可持续的未来。",
+  "apply_now": "立即申请",
+  "opportunity": "机会",
+  "calculator": {
+    "title": "计算您的节省",
+    "usage_type": "用电类型",
+    "household": "家庭用户",
+    "household_desc": "生活用电",
+    "company": "企业用户",
+    "company_desc": "商业用电",
+    "monthly_bill": "月平均电费",
+    "daytime_usage": "白天用电比例",
+    "all_night": "全部夜间",
+    "all_day": "全部白天",
+    "tip": "提示",
+    "tip_text": "一般家庭白天用电占20-40%（做饭、洗衣、午间空调）。",
+    "tip_residential": "一般家庭白天用电占20-40%（做饭、洗衣、午间空调）。",
+    "tip_commercial": "公司/办公室白天用电占70-90%（工作时间8点-17点）。",
+    "reference_note": "结果仅供参考。",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "月节省",
+      "estimated_investment": "预计投资",
+      "roi_period": "投资回收期",
+      "years": "年",
+      "system_capacity": "推荐系统容量",
+      "storage": "储能（如有）",
+      "estimated_bill": "预计电费",
+      "max_savings": "最大节省",
+      "recommended_area": "推荐安装面积",
+      "per_month": "/月"
+    },
+    "consult_btn": "咨询此套餐"
+  },
+  "testimonials": {
+    "badge": "客户评价",
+    "title": "客户怎么说",
+    "business_owner": "企业主",
+    "hotel": "酒店",
+    "factory_director": "厂长"
+  },
+  "news": {
+    "badge": "新闻",
+    "title": "新闻与活动",
+    "view_all": "查看全部",
+    "read_more": "阅读更多"
+  },
+  "cta": {
+    "badge": "立即开始",
+    "title": "准备好转向绿色能源了吗？",
+    "description": "今天就联系Tran Le Electricity获取免费咨询和报价。节省高达70%的电费。",
+    "consult_btn": "立即咨询",
+    "call_now": "立即致电",
+    "benefits": {
+      "free_consult": "免费咨询",
+      "warranty": "25年质保",
+      "savings": "节省70%电费"
+    }
+  },
+  "stats": {
+    "projects": "已完成项目",
+    "capacity": "安装容量",
+    "customers": "满意客户",
+    "experience": "年经验"
+  }
+}

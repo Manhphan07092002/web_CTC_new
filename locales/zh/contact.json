@@ -1,0 +1,39 @@
+{
+  "form": {
+    "title": "咨询联系",
+    "name": "姓名",
+    "phone": "电话号码",
+    "email": "电子邮件",
+    "service": "感兴趣的服务",
+    "message": "留言",
+    "submit": "提交请求",
+    "required_fields": "请填写所有必填项"
+  },
+  "services": {
+    "solar_installation": "太阳能系统安装",
+    "consultation": "技术咨询",
+    "maintenance": "系统维护",
+    "newsletter": "订阅新闻"
+  },
+  "status": {
+    "new": "新的",
+    "processing": "处理中",
+    "completed": "已完成",
+    "cancelled": "已取消"
+  },
+  "messages": {
+    "submit_success": "咨询请求已成功发送！",
+    "submit_error": "发送请求时出错",
+    "not_found": "未找到联系请求",
+    "update_success": "状态更新成功",
+    "delete_success": "请求删除成功",
+    "newsletter_welcome": "感谢您订阅新闻！",
+    "confirmation_sent": "确认邮件已发送"
+  },
+  "notifications": {
+    "new_contact": "新咨询请求",
+    "newsletter_signup": "新订阅",
+    "contact_description": "{{name}} ({{phone}}) 对「{{service}}」感兴趣。邮件: {{email}}",
+    "newsletter_description": "{{email}} 已从页脚订阅新闻"
+  }
+}

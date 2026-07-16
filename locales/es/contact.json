@@ -1,0 +1,31 @@
+{
+  "title": "Contacto",
+  "subtitle": "Contáctenos",
+  "form": {
+    "name": "Nombre completo",
+    "email": "Correo electrónico",
+    "phone": "Número de teléfono",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "submit": "Enviar mensaje",
+    "reset": "Restablecer"
+  },
+  "subjects": {
+    "general": "Consulta general",
+    "sales": "Ventas",
+    "support": "Soporte técnico",
+    "partnership": "Asociación",
+    "feedback": "Comentarios"
+  },
+  "info": {
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "working_hours": "Horario de atención"
+  },
+  "messages": {
+    "success": "Mensaje enviado exitosamente",
+    "error": "Error al enviar el mensaje",
+    "required": "Este campo es obligatorio"
+  }
+}

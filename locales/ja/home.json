@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "太陽光エネルギーソリューション",
+    "subtitle": "コスト削減、環境保護"
+  },
+  "join_team": "チームに参加",
+  "join_team_title": "一緒に創造しよう",
+  "join_team_highlight": "グリーンな未来",
+  "join_team_desc": "クリーンエネルギーに情熱を持つ人材と共に、持続可能な未来を築いていきたいと考えています。",
+  "apply_now": "今すぐ応募",
+  "opportunity": "機会",
+  "calculator": {
+    "title": "節約額を計算",
+    "usage_type": "電力使用タイプ",
+    "household": "家庭用",
+    "household_desc": "生活用電力",
+    "company": "企業用",
+    "company_desc": "事業用電力",
+    "monthly_bill": "月間電気料金",
+    "daytime_usage": "日中電力使用率",
+    "all_night": "すべて夜間",
+    "all_day": "すべて日中",
+    "tip": "ヒント",
+    "tip_text": "一般家庭は日中に20-40%の電力を使用します（調理、洗濯、昼間のエアコン）。",
+    "tip_residential": "一般家庭は日中に20-40%の電力を使用します（調理、洗濯、昼間のエアコン）。",
+    "tip_commercial": "企業/オフィスは日中に70-90%の電力を使用します（勤務時間8時-17時）。",
+    "reference_note": "結果は参考値です。",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "月間節約額",
+      "estimated_investment": "予想投資額",
+      "roi_period": "投資回収期間",
+      "years": "年",
+      "system_capacity": "推奨システム容量",
+      "storage": "蓄電池（ある場合）",
+      "estimated_bill": "予想電気料金",
+      "max_savings": "最大節約額",
+      "recommended_area": "推奨設置面積",
+      "per_month": "/月"
+    },
+    "consult_btn": "このパッケージについて相談"
+  },
+  "testimonials": {
+    "badge": "お客様の声",
+    "title": "お客様からのご感想",
+    "business_owner": "事業主",
+    "hotel": "ホテル",
+    "factory_director": "工場長"
+  },
+  "news": {
+    "badge": "ニュース",
+    "title": "ニュース＆イベント",
+    "view_all": "すべて見る",
+    "read_more": "続きを読む"
+  },
+  "cta": {
+    "badge": "今すぐ始める",
+    "title": "グリーンエネルギーへの切り替え準備はできましたか？",
+    "description": "今すぐTran Le Electricityにご連絡ください。無料相談とお見積もりをご提供します。電気代を最大70%削減できます。",
+    "consult_btn": "相談する",
+    "call_now": "今すぐ電話",
+    "benefits": {
+      "free_consult": "無料相談",
+      "warranty": "25年保証",
+      "savings": "70%省エネ"
+    }
+  },
+  "stats": {
+    "projects": "完了プロジェクト",
+    "capacity": "設置容量",
+    "customers": "満足したお客様",
+    "experience": "年の経験"
+  }
+}

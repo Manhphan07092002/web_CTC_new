@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "Solutions d'énergie solaire",
+    "subtitle": "Économisez, protégez l'environnement"
+  },
+  "join_team": "Rejoignez notre équipe",
+  "join_team_title": "Créons ensemble",
+  "join_team_highlight": "Un avenir vert",
+  "join_team_desc": "Nous recherchons des talents passionnés par l'énergie propre pour construire ensemble un avenir durable.",
+  "apply_now": "Postuler maintenant",
+  "opportunity": "OPPORTUNITÉ",
+  "calculator": {
+    "title": "Calculez vos économies",
+    "usage_type": "Type d'utilisation d'électricité",
+    "household": "Ménage",
+    "household_desc": "Électricité résidentielle",
+    "company": "Entreprise",
+    "company_desc": "Électricité commerciale",
+    "monthly_bill": "Facture d'électricité mensuelle",
+    "daytime_usage": "Ratio d'utilisation diurne",
+    "all_night": "TOUTE LA NUIT",
+    "all_day": "TOUTE LA JOURNÉE",
+    "tip": "Conseil",
+    "tip_text": "Les ménages utilisent généralement 20-40% d'électricité pendant la journée (cuisine, lessive, climatisation l'après-midi).",
+    "tip_residential": "Les ménages utilisent généralement 20-40% d'électricité pendant la journée (cuisine, lessive, climatisation l'après-midi).",
+    "tip_commercial": "Les entreprises/bureaux utilisent généralement 70-90% d'électricité pendant la journée (heures de travail 8h-17h).",
+    "reference_note": "Les résultats sont à titre indicatif.",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "Économies mensuelles",
+      "estimated_investment": "Investissement estimé",
+      "roi_period": "Période de retour",
+      "years": "ans",
+      "system_capacity": "CAPACITÉ SYSTÈME RECOMMANDÉE",
+      "storage": "STOCKAGE (le cas échéant)",
+      "estimated_bill": "FACTURE ESTIMÉE",
+      "max_savings": "ÉCONOMIES MAXIMALES",
+      "recommended_area": "SURFACE RECOMMANDÉE",
+      "per_month": "/mois"
+    },
+    "consult_btn": "Consulter sur ce forfait"
+  },
+  "testimonials": {
+    "badge": "Avis clients",
+    "title": "Ce que disent nos clients",
+    "business_owner": "CHEF D'ENTREPRISE",
+    "hotel": "HÔTEL",
+    "factory_director": "DIRECTEUR D'USINE"
+  },
+  "news": {
+    "badge": "ACTUALITÉS",
+    "title": "Actualités & Événements",
+    "view_all": "Voir tout",
+    "read_more": "Lire la suite"
+  },
+  "cta": {
+    "badge": "COMMENCER",
+    "title": "Prêt à passer à l'énergie verte ?",
+    "description": "Contactez Tran Le Electricity aujourd'hui pour une consultation gratuite et un devis. Économisez jusqu'à 70% sur les coûts d'électricité.",
+    "consult_btn": "Obtenir une consultation",
+    "call_now": "Appeler maintenant",
+    "benefits": {
+      "free_consult": "Consultation gratuite",
+      "warranty": "Garantie 25 ans",
+      "savings": "70% d'économies d'énergie"
+    }
+  },
+  "stats": {
+    "projects": "Projets terminés",
+    "capacity": "Capacité installée",
+    "customers": "Clients satisfaits",
+    "experience": "Années d'expérience"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "太阳能计算器",
+  "subtitle": "计算太阳能系统的成本和收益",
+  "inputs": {
+    "monthly_bill": "月电费（元）",
+    "roof_area": "屋顶面积（m²）",
+    "location": "位置",
+    "roof_direction": "屋顶朝向",
+    "roof_angle": "屋顶角度",
+    "electricity_usage": "用电量（kWh/月）"
+  },
+  "directions": {
+    "north": "北",
+    "south": "南",
+    "east": "东",
+    "west": "西",
+    "southeast": "东南",
+    "southwest": "西南"
+  },
+  "results": {
+    "system_capacity": "系统容量",
+    "annual_production": "年发电量",
+    "installation_cost": "安装成本",
+    "annual_savings": "年节省",
+    "payback_period": "投资回收期",
+    "co2_reduction": "CO2减排"
+  },
+  "actions": {
+    "calculate": "计算",
+    "reset": "重置",
+    "get_quote": "获取报价",
+    "contact_expert": "咨询专家"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "元",
+    "years": "年",
+    "tons": "吨"
+  }
+}

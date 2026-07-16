@@ -1,0 +1,41 @@
+{
+  "title": "태양광 에너지 계산기",
+  "subtitle": "태양광 시스템의 비용과 이익을 계산하세요",
+  "inputs": {
+    "monthly_bill": "월 전기요금 (원)",
+    "roof_area": "지붕 면적 (m²)",
+    "location": "위치",
+    "roof_direction": "지붕 방향",
+    "roof_angle": "지붕 각도",
+    "electricity_usage": "전력 사용량 (kWh/월)"
+  },
+  "directions": {
+    "north": "북쪽",
+    "south": "남쪽",
+    "east": "동쪽",
+    "west": "서쪽",
+    "southeast": "남동쪽",
+    "southwest": "남서쪽"
+  },
+  "results": {
+    "system_capacity": "시스템 용량",
+    "annual_production": "연간 발전량",
+    "installation_cost": "설치 비용",
+    "annual_savings": "연간 절약액",
+    "payback_period": "투자 회수 기간",
+    "co2_reduction": "CO2 감축량"
+  },
+  "actions": {
+    "calculate": "계산하기",
+    "reset": "초기화",
+    "get_quote": "견적 받기",
+    "contact_expert": "전문가 상담"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "원",
+    "years": "년",
+    "tons": "톤"
+  }
+}

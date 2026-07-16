@@ -1,0 +1,41 @@
+{
+  "title": "Calculateur d'énergie solaire",
+  "subtitle": "Calculez les coûts et avantages de votre système solaire",
+  "inputs": {
+    "monthly_bill": "Facture d'électricité mensuelle (€)",
+    "roof_area": "Surface du toit (m²)",
+    "location": "Emplacement",
+    "roof_direction": "Orientation du toit",
+    "roof_angle": "Inclinaison du toit",
+    "electricity_usage": "Consommation électrique (kWh/mois)"
+  },
+  "directions": {
+    "north": "Nord",
+    "south": "Sud",
+    "east": "Est",
+    "west": "Ouest",
+    "southeast": "Sud-Est",
+    "southwest": "Sud-Ouest"
+  },
+  "results": {
+    "system_capacity": "Capacité du système",
+    "annual_production": "Production annuelle",
+    "installation_cost": "Coût d'installation",
+    "annual_savings": "Économies annuelles",
+    "payback_period": "Période de retour sur investissement",
+    "co2_reduction": "Réduction de CO2"
+  },
+  "actions": {
+    "calculate": "Calculer",
+    "reset": "Réinitialiser",
+    "get_quote": "Obtenir un devis",
+    "contact_expert": "Contacter un expert"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "€",
+    "years": "ans",
+    "tons": "tonnes"
+  }
+}

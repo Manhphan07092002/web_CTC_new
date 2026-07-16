@@ -1,0 +1,43 @@
+{
+  "title": "Administration système",
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "products": "Produits",
+    "projects": "Projets",
+    "orders": "Commandes",
+    "analytics": "Analyses",
+    "settings": "Paramètres",
+    "translations": "Traductions"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue sur le tableau de bord",
+    "total_users": "Utilisateurs totaux",
+    "total_orders": "Commandes totales",
+    "revenue": "Revenus",
+    "active_projects": "Projets actifs"
+  },
+  "actions": {
+    "create": "Créer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "view": "Voir",
+    "export": "Exporter les données",
+    "import": "Importer les données",
+    "backup": "Sauvegarder",
+    "restore": "Restaurer"
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Inactif",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté"
+  },
+  "messages": {
+    "saved": "Enregistré avec succès",
+    "deleted": "Supprimé avec succès",
+    "error": "Une erreur s'est produite",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer ?"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Dự án",
+  "subtitle": "Các dự án tiêu biểu của chúng tôi",
+  "categories": {
+    "residential": "Dân dụng",
+    "commercial": "Thương mại",
+    "industrial": "Công nghiệp"
+  },
+  "details": {
+    "capacity": "Công suất",
+    "location": "Địa điểm",
+    "completion_date": "Ngày hoàn thành",
+    "client": "Khách hàng",
+    "description": "Mô tả"
+  },
+  "status": {
+    "completed": "Đã hoàn thành",
+    "in_progress": "Đang thực hiện",
+    "planned": "Đang lên kế hoạch"
+  },
+  "actions": {
+    "view_details": "Xem chi tiết",
+    "contact_us": "Liên hệ với chúng tôi",
+    "request_consultation": "Yêu cầu tư vấn"
+  }
+}

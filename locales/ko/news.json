@@ -1,0 +1,28 @@
+{
+  "title": "뉴스",
+  "subtitle": "태양광 에너지 최신 뉴스 업데이트",
+  "categories": {
+    "company_news": "회사 뉴스",
+    "industry_news": "업계 뉴스",
+    "technology": "기술",
+    "events": "이벤트"
+  },
+  "details": {
+    "published_date": "게시일",
+    "author": "작성자",
+    "category": "카테고리",
+    "tags": "태그",
+    "read_time": "읽기 시간"
+  },
+  "actions": {
+    "read_more": "더 읽기",
+    "share": "공유",
+    "comment": "댓글",
+    "subscribe": "뉴스 구독"
+  },
+  "messages": {
+    "no_articles": "기사가 없습니다",
+    "loading": "뉴스를 불러오는 중...",
+    "subscribed": "구독이 완료되었습니다"
+  }
+}

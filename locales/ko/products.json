@@ -1,0 +1,28 @@
+{
+  "title": "제품",
+  "categories": {
+    "solar_panels": "태양광 패널",
+    "inverters": "인버터",
+    "batteries": "배터리",
+    "accessories": "액세서리"
+  },
+  "details": {
+    "specifications": "사양",
+    "warranty": "보증",
+    "price": "가격",
+    "availability": "재고 상태",
+    "in_stock": "재고 있음",
+    "out_of_stock": "품절"
+  },
+  "actions": {
+    "add_to_cart": "장바구니에 추가",
+    "request_quote": "견적 요청",
+    "view_details": "자세히 보기",
+    "compare": "비교"
+  },
+  "messages": {
+    "added_to_cart": "제품이 장바구니에 추가되었습니다",
+    "quote_requested": "견적 요청이 전송되었습니다",
+    "product_not_found": "제품을 찾을 수 없습니다"
+  }
+}

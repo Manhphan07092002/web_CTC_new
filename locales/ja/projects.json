@@ -1,0 +1,26 @@
+{
+  "title": "プロジェクト",
+  "subtitle": "私たちの代表的なプロジェクト",
+  "categories": {
+    "residential": "住宅用",
+    "commercial": "商業用",
+    "industrial": "産業用"
+  },
+  "details": {
+    "capacity": "容量",
+    "location": "場所",
+    "completion_date": "完了日",
+    "client": "クライアント",
+    "description": "説明"
+  },
+  "status": {
+    "completed": "完了",
+    "in_progress": "進行中",
+    "planned": "計画中"
+  },
+  "actions": {
+    "view_details": "詳細を見る",
+    "contact_us": "お問い合わせ",
+    "request_consultation": "相談を依頼"
+  }
+}

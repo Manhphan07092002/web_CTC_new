@@ -1,0 +1,28 @@
+{
+  "title": "Produits",
+  "categories": {
+    "solar_panels": "Panneaux solaires",
+    "inverters": "Onduleurs",
+    "batteries": "Batteries",
+    "accessories": "Accessoires"
+  },
+  "details": {
+    "specifications": "Spécifications",
+    "warranty": "Garantie",
+    "price": "Prix",
+    "availability": "Disponibilité",
+    "in_stock": "En stock",
+    "out_of_stock": "Rupture de stock"
+  },
+  "actions": {
+    "add_to_cart": "Ajouter au panier",
+    "request_quote": "Demander un devis",
+    "view_details": "Voir les détails",
+    "compare": "Comparer"
+  },
+  "messages": {
+    "added_to_cart": "Produit ajouté au panier",
+    "quote_requested": "Demande de devis envoyée",
+    "product_not_found": "Produit non trouvé"
+  }
+}

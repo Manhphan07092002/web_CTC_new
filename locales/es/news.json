@@ -1,0 +1,28 @@
+{
+  "title": "Noticias",
+  "subtitle": "Últimas noticias sobre energía solar",
+  "categories": {
+    "company_news": "Noticias de la empresa",
+    "industry_news": "Noticias del sector",
+    "technology": "Tecnología",
+    "events": "Eventos"
+  },
+  "details": {
+    "published_date": "Fecha de publicación",
+    "author": "Autor",
+    "category": "Categoría",
+    "tags": "Etiquetas",
+    "read_time": "Tiempo de lectura"
+  },
+  "actions": {
+    "read_more": "Leer más",
+    "share": "Compartir",
+    "comment": "Comentar",
+    "subscribe": "Suscribirse al boletín"
+  },
+  "messages": {
+    "no_articles": "No se encontraron artículos",
+    "loading": "Cargando noticias...",
+    "subscribed": "Suscripción exitosa"
+  }
+}

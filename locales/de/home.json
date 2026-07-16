@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "Solarenergie-Lösungen",
+    "subtitle": "Kosten sparen, Umwelt schützen"
+  },
+  "join_team": "Werden Sie Teil unseres Teams",
+  "join_team_title": "Gemeinsam gestalten",
+  "join_team_highlight": "Eine grüne Zukunft",
+  "join_team_desc": "Wir suchen immer nach talentierten Menschen, die sich für saubere Energie begeistern, um gemeinsam eine nachhaltige Zukunft aufzubauen.",
+  "apply_now": "Jetzt bewerben",
+  "opportunity": "CHANCE",
+  "calculator": {
+    "title": "Berechnen Sie Ihre Einsparungen",
+    "usage_type": "Stromverbrauchstyp",
+    "household": "Haushalt",
+    "household_desc": "Privater Stromverbrauch",
+    "company": "Unternehmen",
+    "company_desc": "Gewerblicher Stromverbrauch",
+    "monthly_bill": "Monatliche Stromrechnung",
+    "daytime_usage": "Tagesverbrauchsanteil",
+    "all_night": "ALLES NACHTS",
+    "all_day": "ALLES TAGS",
+    "tip": "Tipp",
+    "tip_text": "Typische Haushalte verbrauchen 20-40% des Stroms tagsüber (Kochen, Wäsche, Nachmittags-AC).",
+    "tip_residential": "Typische Haushalte verbrauchen 20-40% des Stroms tagsüber (Kochen, Wäsche, Nachmittags-AC).",
+    "tip_commercial": "Unternehmen/Büros verbrauchen 70-90% des Stroms tagsüber (Arbeitszeit 8-17 Uhr).",
+    "reference_note": "Ergebnisse dienen nur als Referenz.",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "Monatliche Einsparungen",
+      "estimated_investment": "Geschätzte Investition",
+      "roi_period": "Amortisationszeit",
+      "years": "Jahre",
+      "system_capacity": "EMPFOHLENE SYSTEMKAPAZITÄT",
+      "storage": "SPEICHER (falls vorhanden)",
+      "estimated_bill": "GESCHÄTZTE STROMRECHNUNG",
+      "max_savings": "MAXIMALE EINSPARUNGEN",
+      "recommended_area": "EMPFOHLENE FLÄCHE",
+      "per_month": "/Monat"
+    },
+    "consult_btn": "Zu diesem Paket beraten"
+  },
+  "testimonials": {
+    "badge": "Kundenbewertungen",
+    "title": "Was unsere Kunden sagen",
+    "business_owner": "GESCHÄFTSINHABER",
+    "hotel": "HOTEL",
+    "factory_director": "FABRIKDIREKTOR"
+  },
+  "news": {
+    "badge": "NACHRICHTEN",
+    "title": "Nachrichten & Events",
+    "view_all": "Alle anzeigen",
+    "read_more": "Mehr lesen"
+  },
+  "cta": {
+    "badge": "JETZT STARTEN",
+    "title": "Bereit für den Umstieg auf grüne Energie?",
+    "description": "Kontaktieren Sie Tran Le Electricity noch heute für eine kostenlose Beratung und ein Angebot. Sparen Sie bis zu 70% bei den Stromkosten.",
+    "consult_btn": "Beratung erhalten",
+    "call_now": "Jetzt anrufen",
+    "benefits": {
+      "free_consult": "Kostenlose Beratung",
+      "warranty": "25 Jahre Garantie",
+      "savings": "70% Energieeinsparung"
+    }
+  },
+  "stats": {
+    "projects": "Abgeschlossene Projekte",
+    "capacity": "Installierte Kapazität",
+    "customers": "Zufriedene Kunden",
+    "experience": "Jahre Erfahrung"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "title": "System Administration",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "products": "Products",
+    "projects": "Projects",
+    "orders": "Orders",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "translations": "Translations"
+  },
+  "dashboard": {
+    "welcome": "Welcome to Dashboard",
+    "total_users": "Total Users",
+    "total_orders": "Total Orders",
+    "revenue": "Revenue",
+    "active_projects": "Active Projects"
+  },
+  "actions": {
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "export": "Export Data",
+    "import": "Import Data",
+    "backup": "Backup",
+    "restore": "Restore"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "messages": {
+    "saved": "Successfully saved",
+    "deleted": "Successfully deleted",
+    "error": "An error occurred",
+    "confirm_delete": "Are you sure you want to delete?"
+  }
+}

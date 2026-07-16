@@ -1,0 +1,28 @@
+{
+  "title": "产品",
+  "categories": {
+    "solar_panels": "太阳能电池板",
+    "inverters": "逆变器",
+    "batteries": "电池",
+    "accessories": "配件"
+  },
+  "details": {
+    "specifications": "规格",
+    "warranty": "保修",
+    "price": "价格",
+    "availability": "库存状态",
+    "in_stock": "有库存",
+    "out_of_stock": "缺货"
+  },
+  "actions": {
+    "add_to_cart": "加入购物车",
+    "request_quote": "请求报价",
+    "view_details": "查看详情",
+    "compare": "比较"
+  },
+  "messages": {
+    "added_to_cart": "产品已添加到购物车",
+    "quote_requested": "报价请求已发送",
+    "product_not_found": "未找到产品"
+  }
+}

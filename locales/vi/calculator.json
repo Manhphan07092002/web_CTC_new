@@ -1,0 +1,41 @@
+{
+  "title": "Tính toán năng lượng mặt trời",
+  "subtitle": "Tính toán chi phí và lợi ích của hệ thống điện mặt trời",
+  "inputs": {
+    "monthly_bill": "Hóa đơn điện hàng tháng (VNĐ)",
+    "roof_area": "Diện tích mái (m²)",
+    "location": "Vị trí",
+    "roof_direction": "Hướng mái",
+    "roof_angle": "Góc nghiêng mái",
+    "electricity_usage": "Mức tiêu thụ điện (kWh/tháng)"
+  },
+  "directions": {
+    "north": "Bắc",
+    "south": "Nam",
+    "east": "Đông",
+    "west": "Tây",
+    "southeast": "Đông Nam",
+    "southwest": "Tây Nam"
+  },
+  "results": {
+    "system_capacity": "Công suất hệ thống",
+    "annual_production": "Sản lượng điện hàng năm",
+    "installation_cost": "Chi phí lắp đặt",
+    "annual_savings": "Tiết kiệm hàng năm",
+    "payback_period": "Thời gian hoàn vốn",
+    "co2_reduction": "Giảm CO2"
+  },
+  "actions": {
+    "calculate": "Tính toán",
+    "reset": "Đặt lại",
+    "get_quote": "Nhận báo giá",
+    "contact_expert": "Liên hệ chuyên gia"
+  },
+  "units": {
+    "kwh": "kWh",
+    "kw": "kW",
+    "vnd": "VNĐ",
+    "years": "năm",
+    "tons": "tấn"
+  }
+}

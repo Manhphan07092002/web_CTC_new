@@ -1,0 +1,39 @@
+{
+  "form": {
+    "title": "お問い合わせ",
+    "name": "お名前",
+    "phone": "電話番号",
+    "email": "メールアドレス",
+    "service": "ご関心のサービス",
+    "message": "メッセージ",
+    "submit": "送信する",
+    "required_fields": "必須項目をすべて入力してください"
+  },
+  "services": {
+    "solar_installation": "太陽光発電システム設置",
+    "consultation": "技術相談",
+    "maintenance": "システムメンテナンス",
+    "newsletter": "ニュースレター購読"
+  },
+  "status": {
+    "new": "新規",
+    "processing": "処理中",
+    "completed": "完了",
+    "cancelled": "キャンセル"
+  },
+  "messages": {
+    "submit_success": "お問い合わせが正常に送信されました！",
+    "submit_error": "送信中にエラーが発生しました",
+    "not_found": "お問い合わせが見つかりません",
+    "update_success": "ステータスが正常に更新されました",
+    "delete_success": "リクエストが正常に削除されました",
+    "newsletter_welcome": "ニュースレターのご登録ありがとうございます！",
+    "confirmation_sent": "確認メールが送信されました"
+  },
+  "notifications": {
+    "new_contact": "新しいお問い合わせ",
+    "newsletter_signup": "新しいニュースレター登録",
+    "contact_description": "{{name}} ({{phone}})様が「{{service}}」に関心をお持ちです。メール: {{email}}",
+    "newsletter_description": "{{email}}様がフッターからニュースレターを購読しました"
+  }
+}

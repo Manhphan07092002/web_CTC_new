@@ -1,0 +1,43 @@
+{
+  "title": "システム管理",
+  "navigation": {
+    "dashboard": "ダッシュボード",
+    "users": "ユーザー",
+    "products": "製品",
+    "projects": "プロジェクト",
+    "orders": "注文",
+    "analytics": "分析",
+    "settings": "設定",
+    "translations": "翻訳"
+  },
+  "dashboard": {
+    "welcome": "ダッシュボードへようこそ",
+    "total_users": "総ユーザー数",
+    "total_orders": "総注文数",
+    "revenue": "収益",
+    "active_projects": "進行中のプロジェクト"
+  },
+  "actions": {
+    "create": "作成",
+    "edit": "編集",
+    "delete": "削除",
+    "view": "表示",
+    "export": "データエクスポート",
+    "import": "データインポート",
+    "backup": "バックアップ",
+    "restore": "復元"
+  },
+  "status": {
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "拒否済み"
+  },
+  "messages": {
+    "saved": "正常に保存されました",
+    "deleted": "正常に削除されました",
+    "error": "エラーが発生しました",
+    "confirm_delete": "本当に削除しますか？"
+  }
+}

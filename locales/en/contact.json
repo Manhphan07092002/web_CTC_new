@@ -1,0 +1,39 @@
+{
+  "form": {
+    "title": "Contact for Consultation",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "email": "Email",
+    "service": "Service of Interest",
+    "message": "Message",
+    "submit": "Send Request",
+    "required_fields": "Please fill in all required fields"
+  },
+  "services": {
+    "solar_installation": "Solar System Installation",
+    "consultation": "Technical Consultation",
+    "maintenance": "System Maintenance",
+    "newsletter": "Newsletter Subscription"
+  },
+  "status": {
+    "new": "New",
+    "processing": "Processing",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "messages": {
+    "submit_success": "Consultation request sent successfully!",
+    "submit_error": "An error occurred while sending the request",
+    "not_found": "Contact request not found",
+    "update_success": "Status updated successfully",
+    "delete_success": "Request deleted successfully",
+    "newsletter_welcome": "Thank you for subscribing to our newsletter!",
+    "confirmation_sent": "Confirmation email has been sent"
+  },
+  "notifications": {
+    "new_contact": "New consultation request",
+    "newsletter_signup": "New newsletter signup",
+    "contact_description": "{{name}} ({{phone}}) is interested in \"{{service}}\". Email: {{email}}",
+    "newsletter_description": "{{email}} subscribed to newsletter from Footer"
+  }
+}

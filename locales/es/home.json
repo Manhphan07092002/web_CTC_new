@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "Soluciones de energía solar",
+    "subtitle": "Ahorre costos, proteja el medio ambiente"
+  },
+  "join_team": "Únete a nuestro equipo",
+  "join_team_title": "Creemos juntos",
+  "join_team_highlight": "Un futuro verde",
+  "join_team_desc": "Siempre buscamos talentos apasionados por la energía limpia para construir juntos un futuro sostenible.",
+  "apply_now": "Aplicar ahora",
+  "opportunity": "OPORTUNIDAD",
+  "calculator": {
+    "title": "Calcule sus ahorros",
+    "usage_type": "Tipo de uso de electricidad",
+    "household": "Hogar",
+    "household_desc": "Electricidad residencial",
+    "company": "Empresa",
+    "company_desc": "Electricidad comercial",
+    "monthly_bill": "Factura de electricidad mensual",
+    "daytime_usage": "Ratio de uso diurno",
+    "all_night": "TODA LA NOCHE",
+    "all_day": "TODO EL DÍA",
+    "tip": "Consejo",
+    "tip_text": "Los hogares típicos usan 20-40% de electricidad durante el día (cocina, lavandería, aire acondicionado por la tarde).",
+    "tip_residential": "Los hogares típicos usan 20-40% de electricidad durante el día (cocina, lavandería, aire acondicionado por la tarde).",
+    "tip_commercial": "Las empresas/oficinas típicamente usan 70-90% de electricidad durante el día (horario laboral 8am-5pm).",
+    "reference_note": "Los resultados son solo de referencia.",
+    "results": {
+      "kwp": "KWP",
+      "monthly_savings": "Ahorros mensuales",
+      "estimated_investment": "Inversión estimada",
+      "roi_period": "Período de retorno",
+      "years": "años",
+      "system_capacity": "CAPACIDAD DEL SISTEMA RECOMENDADA",
+      "storage": "ALMACENAMIENTO (si hay)",
+      "estimated_bill": "FACTURA ESTIMADA",
+      "max_savings": "AHORRO MÁXIMO",
+      "recommended_area": "ÁREA RECOMENDADA",
+      "per_month": "/mes"
+    },
+    "consult_btn": "Consultar sobre este paquete"
+  },
+  "testimonials": {
+    "badge": "Opiniones de clientes",
+    "title": "Lo que dicen nuestros clientes",
+    "business_owner": "PROPIETARIO DE NEGOCIO",
+    "hotel": "HOTEL",
+    "factory_director": "DIRECTOR DE FÁBRICA"
+  },
+  "news": {
+    "badge": "NOTICIAS",
+    "title": "Noticias y Eventos",
+    "view_all": "Ver todo",
+    "read_more": "Leer más"
+  },
+  "cta": {
+    "badge": "COMENZAR",
+    "title": "¿Listo para cambiar a energía verde?",
+    "description": "Contacte a Tran Le Electricity hoy para una consulta gratuita y cotización. Ahorre hasta 70% en costos de electricidad.",
+    "consult_btn": "Obtener consulta",
+    "call_now": "Llamar ahora",
+    "benefits": {
+      "free_consult": "Consulta gratuita",
+      "warranty": "25 años de garantía",
+      "savings": "70% de ahorro energético"
+    }
+  },
+  "stats": {
+    "projects": "Proyectos completados",
+    "capacity": "Capacidad instalada",
+    "customers": "Clientes satisfechos",
+    "experience": "Años de experiencia"
+  }
+}

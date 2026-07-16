@@ -1,0 +1,28 @@
+{
+  "title": "Products",
+  "categories": {
+    "solar_panels": "Solar Panels",
+    "inverters": "Inverters",
+    "batteries": "Battery Storage",
+    "accessories": "Accessories"
+  },
+  "details": {
+    "specifications": "Specifications",
+    "warranty": "Warranty",
+    "price": "Price",
+    "availability": "Availability",
+    "in_stock": "In Stock",
+    "out_of_stock": "Out of Stock"
+  },
+  "actions": {
+    "add_to_cart": "Add to Cart",
+    "request_quote": "Request Quote",
+    "view_details": "View Details",
+    "compare": "Compare"
+  },
+  "messages": {
+    "added_to_cart": "Product added to cart",
+    "quote_requested": "Quote request sent",
+    "product_not_found": "Product not found"
+  }
+}

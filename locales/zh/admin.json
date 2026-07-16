@@ -1,0 +1,43 @@
+{
+  "title": "系统管理",
+  "navigation": {
+    "dashboard": "仪表板",
+    "users": "用户",
+    "products": "产品",
+    "projects": "项目",
+    "orders": "订单",
+    "analytics": "分析",
+    "settings": "设置",
+    "translations": "翻译"
+  },
+  "dashboard": {
+    "welcome": "欢迎来到仪表板",
+    "total_users": "总用户数",
+    "total_orders": "总订单数",
+    "revenue": "收入",
+    "active_projects": "进行中的项目"
+  },
+  "actions": {
+    "create": "创建",
+    "edit": "编辑",
+    "delete": "删除",
+    "view": "查看",
+    "export": "导出数据",
+    "import": "导入数据",
+    "backup": "备份",
+    "restore": "恢复"
+  },
+  "status": {
+    "active": "活跃",
+    "inactive": "非活跃",
+    "pending": "待处理",
+    "approved": "已批准",
+    "rejected": "已拒绝"
+  },
+  "messages": {
+    "saved": "保存成功",
+    "deleted": "删除成功",
+    "error": "发生错误",
+    "confirm_delete": "确定要删除吗？"
+  }
+}

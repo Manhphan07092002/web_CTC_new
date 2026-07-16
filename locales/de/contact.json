@@ -1,0 +1,39 @@
+{
+  "form": {
+    "title": "Kontaktanfrage",
+    "name": "Vollständiger Name",
+    "phone": "Telefonnummer",
+    "email": "E-Mail-Adresse",
+    "service": "Interessierter Service",
+    "message": "Nachricht",
+    "submit": "Anfrage senden",
+    "required_fields": "Bitte füllen Sie alle Pflichtfelder aus"
+  },
+  "services": {
+    "solar_installation": "Solaranlagen-Installation",
+    "consultation": "Technische Beratung",
+    "maintenance": "Systemwartung",
+    "newsletter": "Newsletter abonnieren"
+  },
+  "status": {
+    "new": "Neu",
+    "processing": "In Bearbeitung",
+    "completed": "Abgeschlossen",
+    "cancelled": "Storniert"
+  },
+  "messages": {
+    "submit_success": "Ihre Anfrage wurde erfolgreich gesendet!",
+    "submit_error": "Fehler beim Senden der Anfrage",
+    "not_found": "Kontaktanfrage nicht gefunden",
+    "update_success": "Status erfolgreich aktualisiert",
+    "delete_success": "Anfrage erfolgreich gelöscht",
+    "newsletter_welcome": "Vielen Dank für Ihre Newsletter-Anmeldung!",
+    "confirmation_sent": "Bestätigungs-E-Mail wurde gesendet"
+  },
+  "notifications": {
+    "new_contact": "Neue Kontaktanfrage",
+    "newsletter_signup": "Neue Newsletter-Anmeldung",
+    "contact_description": "{{name}} ({{phone}}) interessiert sich für '{{service}}'. E-Mail: {{email}}",
+    "newsletter_description": "{{email}} hat den Newsletter über die Fußzeile abonniert"
+  }
+}
