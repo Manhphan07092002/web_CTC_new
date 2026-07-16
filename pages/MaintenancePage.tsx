@@ -168,7 +168,7 @@ const MaintenancePage: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-sm opacity-80">Hotline</div>
-                  <div className="font-bold">0236 656 2020</div>
+                  <div className="font-bold">0915 059 666</div>
                 </div>
               </a>
             </div>

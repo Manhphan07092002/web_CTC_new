@@ -76,10 +76,10 @@ export const chatService = {
         message: text
       });
 
-      return result.text || "Xin lỗi, hệ thống đang bận. Vui lòng liên hệ Hotline 093 979 24 28.";
+      return result.text || "Xin lỗi, hệ thống đang bận. Vui lòng liên hệ Hotline 0915 059 666.";
     } catch (error) {
       console.error("Gemini Chat Error:", error);
-      return "Hiện tại kết nối AI đang gián đoạn. Quý khách vui lòng gọi Hotline/Zalo: 093 979 24 28 để được hỗ trợ ngay ạ.";
+      return "Hiện tại kết nối AI đang gián đoạn. Quý khách vui lòng gọi Hotline/Zalo: 0915 059 666 để được hỗ trợ ngay ạ.";
     }
   },
 

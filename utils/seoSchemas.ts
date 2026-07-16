@@ -316,7 +316,7 @@ export function generateWebsiteSchema() {
     url: SITE_URL,
     name: SITE_SHORT_NAME,
     alternateName: SITE_NAME,
-    description: 'Thi công lắp đặt hệ thống điện mặt trời, inverter, tấm pin năng lượng mặt trời tại Đà Nẵng và toàn quốc. Hotline: 0236 656 2020',
+    description: 'Thi công lắp đặt hệ thống điện mặt trời, inverter, tấm pin năng lượng mặt trời tại Đà Nẵng và toàn quốc. Hotline: 0915 059 666',
     publisher: {
       '@type': 'Organization',
       '@id': `${SITE_URL}/#organization`

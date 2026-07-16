@@ -100,7 +100,7 @@ router.get('/sitemap.xml', async (req, res) => {
 router.get('/robots.txt', (req, res) => {
   const robotsTxt = `# Robots.txt for Công ty Cổ phần Xây lắp Bưu điện Miền Trung
 # Website: ${SITE_URL}
-# Hotline: 0236 656 2020
+# Hotline: 0915 059 666
 
 User-agent: *
 Allow: /

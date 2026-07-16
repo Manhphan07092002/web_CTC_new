@@ -143,7 +143,7 @@ const NotFoundPage: React.FC = () => {
                   href="tel:0236656202" 
                   className="text-primary hover:text-secondary font-bold underline"
                 >
-                  0236 656 2020
+                  0915 059 666
                 </a>
               </p>
             </div>

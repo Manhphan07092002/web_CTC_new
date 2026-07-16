@@ -9,7 +9,7 @@ const SolutionFarm: React.FC = () => {
     <div className="w-full animate-fade-in font-sans text-gray-700 dark:text-gray-200 pb-20">
       <SEO 
         title="Trang Trại Điện Mặt Trời" 
-        description="Giải pháp đầu tư trang trại năng lượng mặt trời quy mô lớn (Solar Farm). Kết nối lưới điện quốc gia. CTC - 0236 656 2020"
+        description="Giải pháp đầu tư trang trại năng lượng mặt trời quy mô lớn (Solar Farm). Kết nối lưới điện quốc gia. CTC - 0915 059 666"
         schema={{
           "@context": "https://schema.org",
           "@type": "Service",

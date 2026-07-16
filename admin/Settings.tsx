@@ -40,14 +40,14 @@ const Settings: React.FC = () => {
   
   const [formData, setFormData] = useState<SettingsData>({
     siteName: 'Tran Le Electricity',
-    siteDescription: 'Giải pháp năng lượng mặt trời hàng đầu Việt Nam',
+    siteDescription: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam',
     logo: '/uploads/images/logo/logodo.png',
     logoHeader: '',
     logoFooter: '',
     favicon: '',
     appleTouchIcon: '',
     email: 'info@tranle.com',
-    phone: '0236 656 2020',
+    phone: '0915 059 666',
     address: '259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng',
     facebook: '',
     instagram: '',

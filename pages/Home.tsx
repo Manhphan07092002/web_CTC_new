@@ -188,7 +188,7 @@ const Home: React.FC = () => {
       "image": `${window.location.origin}/uploads/images/logo/tran-le-og.jpg`,
       "taxID": "0400458940",
       "foundingDate": "1992-01-01",
-      "description": "Công ty chuyên thi công lắp đặt hệ thống điện mặt trời, inverter, tấm pin năng lượng mặt trời tại Đà Nẵng và toàn quốc. Hotline: 0236 656 2020",
+      "description": "Công ty chuyên thi công lắp đặt hệ thống điện mặt trời, inverter, tấm pin năng lượng mặt trời tại Đà Nẵng và toàn quốc. Hotline: 0915 059 666",
       "slogan": "Đối tác tin cậy trong lĩnh vực năng lượng mặt trời",
       "address": {
         "@type": "PostalAddress",

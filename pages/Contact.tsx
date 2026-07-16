@@ -143,7 +143,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">{t('contact.phone')}</h4>
-                    <p className="text-sm text-gray-600">0236 656 2020</p>
+                    <p className="text-sm text-gray-600">0915 059 666</p>
                   </div>
                 </div>
 

@@ -51,7 +51,7 @@ const ChatBox: React.FC = () => {
       const botMsg = { text: responseText, isUser: false, timestamp: Date.now() };
       setMessages(prev => [...prev, botMsg]);
     } catch (error) {
-      const errorMsg = { text: "Kết nối gián đoạn. Vui lòng gọi 093 979 24 28.", isUser: false, timestamp: Date.now() };
+      const errorMsg = { text: "Kết nối gián đoạn. Vui lòng gọi 0915 059 666.", isUser: false, timestamp: Date.now() };
       setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsTyping(false);
@@ -107,7 +107,7 @@ const ChatBox: React.FC = () => {
              title="Call Hotline"
            >
              <Phone size={24} className="animate-pulse" />
-             <span className="absolute right-full mr-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity">093 979 24 28</span>
+             <span className="absolute right-full mr-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity">0915 059 666</span>
            </a>
         </div>
       )}
@@ -156,7 +156,7 @@ const ChatBox: React.FC = () => {
                   Chat Zalo
                </a>
                <a href={`tel:${HOTLINE}`} className="flex-1 bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1 transition-colors">
-                  <Phone size={12}/> 093 979 24 28
+                  <Phone size={12}/> 0915 059 666
                </a>
             </div>
           </div>

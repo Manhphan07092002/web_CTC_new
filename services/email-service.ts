@@ -470,7 +470,7 @@ export class EmailService {
               <div class="signature">
                 <p>Trân trọng,</p>
                 <p><strong>⚡ CTC Team</strong></p>
-                <p style="font-size: 13px; color: #999; margin-top: 10px;">Giải pháp năng lượng mặt trời hàng đầu Việt Nam</p>
+                <p style="font-size: 13px; color: #999; margin-top: 10px;">Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam</p>
               </div>
             </div>
             

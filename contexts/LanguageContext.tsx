@@ -28,7 +28,7 @@ const translations: Record<Language, Translations> = {
       'PHỤ KIỆN LẮP ĐẶT': 'Phụ kiện lắp đặt'
     },
     header: {
-      slogan: 'Giải pháp Năng lượng Mặt trời hàng đầu Việt Nam',
+      slogan: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam',
       admin: 'Quản trị',
       hotline: 'Hotline'
     },

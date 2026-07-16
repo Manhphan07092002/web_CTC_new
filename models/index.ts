@@ -431,14 +431,14 @@ export interface ISettings extends BaseDocument {
 
 const SettingsSchema = new Schema<ISettings>({
   siteName: { type: String, required: true, default: 'Tran Le Electricity' },
-  siteDescription: { type: String, required: true, default: 'Giải pháp năng lượng mặt trời hàng đầu Việt Nam' },
+  siteDescription: { type: String, required: true, default: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam' },
   logo: { type: String, required: true, default: '/uploads/images/logo/logodo.png' },
   logoHeader: { type: String, default: '' },
   logoFooter: { type: String, default: '' },
   favicon: { type: String, default: '' },
   appleTouchIcon: { type: String, default: '' },
   email: { type: String, required: true, default: 'info@tranle.com' },
-  phone: { type: String, required: true, default: '0236 656 2020' },
+  phone: { type: String, required: true, default: '0915 059 666' },
   address: { type: String, required: true, default: '259 Thế Lữ, An Hải Bắc, Sơn Trà, Đà Nẵng' },
   facebook: String,
   instagram: String,
