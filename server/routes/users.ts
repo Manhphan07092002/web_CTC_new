@@ -108,10 +108,10 @@ router.get('/', async (req, res) => {
     // If no users exist, create default admin
     if (items.length === 0) {
       logger.info('No users found, creating default admin...');
-      const hashedPassword = await hashPassword('TranLe@2024');
+      const hashedPassword = await hashPassword('CTC@2024');
       const defaultAdmin = await db.users.add({
         name: 'Super Admin',
-        email: 'admin@tranle.com',
+        email: 'admin@ctcdn.vn',
         password: hashedPassword,
         role: 'admin' as 'admin' | 'editor' | 'viewer',
         phone: '',

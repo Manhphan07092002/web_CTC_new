@@ -31,8 +31,8 @@ async function seedAdmin() {
     
     const admin = new User({
       name: 'Super Admin',
-      email: 'admin@tranle.com',
-      password: 'TranLe@2024',
+      email: 'admin@ctcdn.vn',
+      password: 'CTC@2024',
       role: 'admin',
       phone: '',
       avatar: ''
@@ -43,8 +43,8 @@ async function seedAdmin() {
     console.log('\n✅ IMPORTANT: Copy this ID to AuthContext.tsx line 53:');
     console.log('ID:', admin._id.toString());
     console.log('\n✅ Admin credentials:');
-    console.log('Email: admin@tranle.com');
-    console.log('Password: TranLe@2024');
+    console.log('Email: admin@ctcdn.vn');
+    console.log('Password: CTC@2024');
     
     await mongoose.disconnect();
     console.log('\nDisconnected from MongoDB');

@@ -23,7 +23,7 @@ const removeFromBlacklist = (ip: string) => {
 // Simple admin check middleware (replace with JWT auth later)
 const requireAdmin = (req: any, res: any, next: any) => {
   // For now, allow all requests - implement proper JWT auth later
-  req.user = req.user || { email: 'admin@tranle.com', role: 'admin' };
+  req.user = req.user || { email: 'admin@ctcdn.vn', role: 'admin' };
   next();
 };
 import { logger } from '../../utils/logger';

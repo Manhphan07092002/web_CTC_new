@@ -108,7 +108,7 @@ const Login: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
            <img 
-              src="https://placehold.co/200x60/ffffff/003B5C?text=TRAN+LE+GROUP&font=montserrat" 
+              src="https://placehold.co/200x60/ffffff/003B5C?text=CTC&font=montserrat" 
               alt="Logo" 
               className="h-12 mx-auto mb-6 object-contain"
            />
@@ -159,7 +159,7 @@ const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                placeholder="admin@tranle.com"
+                placeholder="admin@ctcdn.vn"
               />
             </div>
           </div>
@@ -189,7 +189,7 @@ const Login: React.FC = () => {
             </div>
              {/* Hint for Demo Users */}
              <p className="text-xs text-gray-400 mt-2 text-center italic">
-               Default: admin@tranle.com / TranLe@2024
+               Default: admin@ctcdn.vn / CTC@2024
              </p>
           </div>
 

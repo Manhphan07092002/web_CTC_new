@@ -20,7 +20,7 @@ async function resetPassword() {
     await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB');
 
-    const admin = await User.findOne({ email: 'admin@tranle.com' });
+    const admin = await User.findOne({ email: 'admin@ctcdn.vn' });
     
     if (!admin) {
       console.error('Admin user not found!');
@@ -28,14 +28,14 @@ async function resetPassword() {
     }
 
     console.log('Found admin user:', admin._id);
-    console.log('Resetting password to: TranLe@2024');
+    console.log('Resetting password to: CTC@2024');
     
-    admin.password = 'TranLe@2024';
+    admin.password = 'CTC@2024';
     await admin.save();
     
     console.log('\n✅ Password reset successfully!');
-    console.log('Email: admin@tranle.com');
-    console.log('Password: TranLe@2024');
+    console.log('Email: admin@ctcdn.vn');
+    console.log('Password: CTC@2024');
     
     await mongoose.disconnect();
     console.log('\nDisconnected from MongoDB');

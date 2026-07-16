@@ -103,7 +103,7 @@ async function seedSecurityData() {
     const actions = ['login', 'create', 'update', 'delete', 'view'];
     const resources = ['products', 'news', 'users', 'projects', 'settings', 'categories'];
     const statuses = ['success', 'success', 'success', 'failed', 'unauthorized'];
-    const emails = ['admin@tranle.com', 'editor@tranle.com', 'user1@gmail.com', 'user2@gmail.com'];
+    const emails = ['admin@ctcdn.vn', 'editor@tranle.com', 'user1@gmail.com', 'user2@gmail.com'];
 
     const auditLogs = [];
     for (let i = 0; i < 100; i++) {
@@ -135,8 +135,8 @@ async function seedSecurityData() {
 
     // Create blacklisted IPs
     const blacklistedIPs = [
-      { ip: '192.168.100.50', reason: 'Brute force attack detected', blockedByEmail: 'admin@tranle.com', permanent: true },
-      { ip: '10.0.0.99', reason: 'Spam requests', blockedByEmail: 'admin@tranle.com', permanent: false },
+      { ip: '192.168.100.50', reason: 'Brute force attack detected', blockedByEmail: 'admin@ctcdn.vn', permanent: true },
+      { ip: '10.0.0.99', reason: 'Spam requests', blockedByEmail: 'admin@ctcdn.vn', permanent: false },
       { ip: '172.16.0.15', reason: 'XSS injection attempts', blockedByEmail: 'system', permanent: true },
     ];
     

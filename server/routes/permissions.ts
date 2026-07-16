@@ -12,7 +12,7 @@ const requireAuth = (req: any, res: any, next: any) => {
   // For now, allow all requests - implement proper JWT auth later
   req.user = req.user || { 
     id: '691bd7fe159644a4936efee7',
-    email: 'admin@tranle.com', 
+    email: 'admin@ctcdn.vn', 
     role: 'super_admin',
     name: 'Super Admin'
   };
