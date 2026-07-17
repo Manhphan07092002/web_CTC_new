@@ -1,29 +1,67 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Download, BookOpen, Shield, HelpCircle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import SEO from '../components/SEO';
 
+interface Resource {
+  _id: string;
+  title: string;
+  description: string;
+  fileUrl: string;
+  type: 'catalogue' | 'manual' | 'policy';
+  size: string;
+  isActive: boolean;
+}
+
 const Resources: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'catalogue' | 'manual' | 'policy'>('catalogue');
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const fetchResources = async () => {
+    try {
+      const response = await fetch('/api/resources');
+      const data = await response.json();
+      setResources(data);
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderContent = () => {
+    if (loading) {
+      return <div className="text-center py-12 text-gray-500">Đang tải tài liệu...</div>;
+    }
+
+    const currentResources = resources.filter(r => r.type === activeTab);
+
+    if (currentResources.length === 0) {
+      return <div className="text-center py-12 text-gray-500">Hiện tại chưa có tài liệu nào trong mục này.</div>;
+    }
+
     switch (activeTab) {
       case 'catalogue':
         return (
           <div className="grid md:grid-cols-2 gap-6 animate-fade-in">
-             {[1, 2, 3, 4].map(i => (
-               <div key={i} className="flex items-start gap-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-primary transition-colors">
+             {currentResources.map(resource => (
+               <div key={resource._id} className="flex items-start gap-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-primary transition-colors">
                  <div className="bg-blue-100 text-corporate p-4 rounded-lg">
                    <BookOpen size={32} />
                  </div>
                  <div className="flex-1">
-                   <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-1">{t('resources.catalogue')} 2024 - Vol {i}</h4>
-                   <p className="text-sm text-gray-500 mb-3">Product specs and details.</p>
-                   <button className="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
-                     <Download size={16} /> {t('resources.download')} (PDF 5MB)
-                   </button>
+                   <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-1">{resource.title}</h4>
+                   <p className="text-sm text-gray-500 mb-3">{resource.description}</p>
+                   <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                     <Download size={16} /> {t('resources.download')} {resource.size ? `(${resource.size})` : ''}
+                   </a>
                  </div>
                </div>
              ))}
@@ -32,13 +70,18 @@ const Resources: React.FC = () => {
       case 'manual':
         return (
           <div className="space-y-4 animate-fade-in">
-             {[1, 2, 3].map(i => (
-               <div key={i} className="flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+             {currentResources.map(resource => (
+               <div key={resource._id} className="flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="bg-gray-100 p-2 rounded text-gray-600 dark:text-gray-400"><SettingsIcon size={20} /></div>
-                    <span className="font-medium text-gray-700 dark:text-gray-300">Huawei Inverter WiFi Setup - v{i}.0</span>
+                    <div>
+                      <span className="font-medium text-gray-700 dark:text-gray-300 block">{resource.title}</span>
+                      {resource.description && <span className="text-sm text-gray-500 block">{resource.description}</span>}
+                    </div>
                   </div>
-                  <button className="bg-gray-100 hover:bg-gray-200 p-2 rounded text-gray-700 dark:text-gray-300"><Download size={18}/></button>
+                  <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer" className="bg-gray-100 hover:bg-gray-200 p-2 rounded text-gray-700 dark:text-gray-300 flex items-center gap-2 text-sm">
+                    <Download size={18}/> {resource.size}
+                  </a>
                </div>
              ))}
           </div>
@@ -46,14 +89,17 @@ const Resources: React.FC = () => {
       case 'policy':
         return (
           <div className="space-y-6 animate-fade-in">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <h3 className="text-xl font-bold text-corporate mb-4 flex items-center gap-2"><Shield size={24}/> {t('resources.policy')}</h3>
-              <ul className="space-y-3 text-gray-600 dark:text-gray-400 list-disc pl-5">
-                <li>Solar Panel Warranty: <strong>12 Years</strong>.</li>
-                <li>Performance Warranty: <strong>25 Years</strong>.</li>
-                <li>Inverter Warranty: <strong>05 - 10 Years</strong>.</li>
-              </ul>
-            </div>
+             {currentResources.map(resource => (
+               <div key={resource._id} className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                 <h3 className="text-xl font-bold text-corporate mb-4 flex items-center gap-2">
+                   <Shield size={24}/> {resource.title}
+                 </h3>
+                 <p className="text-gray-600 dark:text-gray-400 mb-4">{resource.description}</p>
+                 <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition-colors">
+                    <Download size={18}/> Xem chính sách {resource.size ? `(${resource.size})` : ''}
+                 </a>
+               </div>
+             ))}
           </div>
         );
       default: return null;

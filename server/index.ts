@@ -58,6 +58,7 @@ import translationAdminRouter from './routes/translation';
 import seoRouter from './routes/seo.js';
 import slogansRouter from './routes/slogans.js';
 import migrationRouter from './routes/migration.js';
+import resourcesRouter from './routes/resources.js';
 import { startTranslationScheduler } from './services/translationScheduler.js';
 
 // Load envs
@@ -228,6 +229,7 @@ app.use('/api/i18n/cache', i18nCacheRouter);
 app.use('/api/admin', translationAdminRouter);
 app.use('/api/slogans', slogansRouter);
 app.use('/api/migration', migrationRouter);
+app.use('/api/resources', resourcesRouter);
 
 // SEO Routes (sitemap.xml, robots.txt)
 app.use('/', seoRouter);

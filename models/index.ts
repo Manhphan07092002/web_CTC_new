@@ -772,3 +772,22 @@ export const TRANSLATION_FIELDS = {
   testimonial: ['role', 'content'],
   category: ['name', 'description']
 } as const;
+// Resource (Document) Schema
+export interface IResource extends BaseDocument {
+  title: string;
+  description?: string;
+  fileUrl: string;
+  type: 'catalogue' | 'manual' | 'policy';
+  size?: string;
+  isActive: boolean;
+}
+
+const ResourceSchema = new Schema<IResource>({
+  title: { type: String, required: true, trim: true },
+  description: { type: String, trim: true },
+  fileUrl: { type: String, required: true },
+  type: { type: String, required: true, enum: ['catalogue', 'manual', 'policy'] },
+  size: { type: String },
+  isActive: { type: Boolean, default: true }
+}, { timestamps: true });
+export const Resource = mongoose.model<IResource>('Resource', ResourceSchema);
