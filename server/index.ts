@@ -55,9 +55,10 @@ import i18nRouter from './routes/i18n';
 import translationsRouter from './routes/translations';
 import i18nCacheRouter from './routes/i18n-cache';
 import translationAdminRouter from './routes/translation';
-import seoRouter from './routes/seo';
-import slogansRouter from './routes/slogans';
-import { startTranslationScheduler } from './services/translationScheduler';
+import seoRouter from './routes/seo.js';
+import slogansRouter from './routes/slogans.js';
+import migrationRouter from './routes/migration.js';
+import { startTranslationScheduler } from './services/translationScheduler.js';
 
 // Load envs
 dotenv.config({ path: '.env.local' });
@@ -226,6 +227,7 @@ app.use('/api/translations', translationsRouter);
 app.use('/api/i18n/cache', i18nCacheRouter);
 app.use('/api/admin', translationAdminRouter);
 app.use('/api/slogans', slogansRouter);
+app.use('/api/migration', migrationRouter);
 
 // SEO Routes (sitemap.xml, robots.txt)
 app.use('/', seoRouter);

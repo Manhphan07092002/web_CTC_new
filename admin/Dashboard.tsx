@@ -30,6 +30,7 @@ import ReviewsManagement from './ReviewsManagement';
 import EngagementManagement from './EngagementManagement';
 import GoalsManagement from './GoalsManagement';
 import SecurityMonitoring from './SecurityMonitoring';
+import MigrationManagement from './MigrationManagement';
 import AccountSettings from './AccountSettings';
 
 const SubHeader = () => {
@@ -180,7 +181,9 @@ const AdminDashboard: React.FC = () => {
                 }`}
               >
                 <Icon size={20} />
-                <span className="font-medium text-sm">{t(`admin.${item.key}`)}</span>
+                <span className="font-medium text-sm">
+                  {t(`admin.${item.key}`) === item.key ? item.name : t(`admin.${item.key}`)}
+                </span>
               </Link>
             )
           })}
@@ -301,6 +304,7 @@ const AdminDashboard: React.FC = () => {
             <Route path="/engagement" element={<EngagementManagement />} />
             <Route path="/goals" element={<GoalsManagement />} />
             <Route path="/security" element={<SecurityMonitoring />} />
+            <Route path="/migration" element={<MigrationManagement />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/account" element={<AccountSettings />} />
             <Route path="*" element={<div className="p-8 text-center text-gray-500">Trang không tồn tại</div>} />

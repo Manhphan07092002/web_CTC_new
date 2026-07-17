@@ -429,6 +429,14 @@ export interface ISettings extends BaseDocument {
   taxRate: number;
 }
 
+export interface IMigrationLog extends BaseDocument {
+  action: 'import' | 'export';
+  status: 'success' | 'error';
+  details: string;
+  user: string;
+  date: Date;
+}
+
 const SettingsSchema = new Schema<ISettings>({
   siteName: { type: String, required: true, default: 'CTC' },
   siteDescription: { type: String, required: true, default: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam' },
@@ -450,6 +458,14 @@ const SettingsSchema = new Schema<ISettings>({
   currency: { type: String, default: 'VND' },
   taxRate: { type: Number, default: 10 }
 }, { timestamps: true });
+
+const MigrationLogSchema = new Schema({
+  action: { type: String, enum: ['import', 'export'], required: true },
+  status: { type: String, enum: ['success', 'error'], required: true },
+  details: { type: String, required: true },
+  user: { type: String, required: true },
+  date: { type: Date, default: Date.now }
+});
 
 // Helper function to generate slug
 export function generateSlug(name: string): string {
@@ -479,6 +495,7 @@ export const TeamMember = mongoose.model<ITeamMember>('TeamMember', TeamMemberSc
 export const Contact = mongoose.model<IContact>('Contact', ContactSchema);
 export const Notification = mongoose.model<INotification>('Notification', NotificationSchema);
 export const Settings = mongoose.model<ISettings>('Settings', SettingsSchema);
+export const MigrationLog = mongoose.model<IMigrationLog>('MigrationLog', MigrationLogSchema);
 
 // Export all schemas for potential use elsewhere
 export {

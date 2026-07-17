@@ -1,6 +1,6 @@
 
 import { Product, Project, NewsItem, User, Testimonial, Partner, Category, TeamMember } from './types';
-import { LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, Star, Target, Shield, Crown, UserCheck } from 'lucide-react';
+import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, Star, Target, Shield, Crown, UserCheck } from 'lucide-react';
 
 export const NAV_LINKS = [
   { name: 'Trang chủ', path: '/', key: 'home' },
@@ -43,6 +43,7 @@ export const ADMIN_MENU = [
   { name: 'Quản Lý Nhân Viên', path: '/admin/team', icon: Users, key: 'team', permission: 'view_users', minLevel: 50 },
   { name: 'Quản Lý Tài Khoản', path: '/admin/users', icon: Handshake, key: 'users', permission: 'view_users', minLevel: 90 },
   { name: 'Giám sát Bảo mật', path: '/admin/security', icon: Shield, key: 'security', permission: 'view_security_logs', minLevel: 90 },
+  { name: 'Nhập Dữ liệu', path: '/admin/migration', icon: Database, key: 'migration', permission: 'settings_manage', minLevel: 90 },
   { name: 'Cấu hình', path: '/admin/settings', icon: Settings, key: 'settings', permission: 'view_system_settings', minLevel: 90 },
 ];
 
