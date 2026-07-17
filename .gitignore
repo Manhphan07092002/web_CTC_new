@@ -37,3 +37,15 @@ exports/
 
 # OS files
 Thumbs.db
+
+# Migration Data & Tools
+*.bacpac
+ctcdb_extracted/
+Blog.json
+Menu.json
+Products.json
+StaticPage.json
+Users.json
+categories.json
+server/scripts/catMap.json
+sqlpackage*/
