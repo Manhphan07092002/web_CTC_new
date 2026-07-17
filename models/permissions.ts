@@ -56,7 +56,7 @@ const PermissionSchema = new Schema<IPermission>({
 PermissionSchema.index({ resource: 1, action: 1 });
 PermissionSchema.index({ category: 1 });
 
-export const Permission = mongoose.models.Permission || mongoose.model<IPermission>('Permission', PermissionSchema);
+export const Permission = (mongoose.models.Permission as mongoose.Model<IPermission>) || mongoose.model<IPermission>('Permission', PermissionSchema);
 
 // ============================================
 // ROLE MODEL
@@ -125,7 +125,7 @@ const RoleSchema = new Schema<IRole>({
 RoleSchema.index({ level: 1 });
 RoleSchema.index({ isActive: 1 });
 
-export const Role = mongoose.models.Role || mongoose.model<IRole>('Role', RoleSchema);
+export const Role = (mongoose.models.Role as mongoose.Model<IRole>) || mongoose.model<IRole>('Role', RoleSchema);
 
 // ============================================
 // USER PERMISSION MODEL (Extended User)
@@ -189,7 +189,7 @@ UserPermissionSchema.index({ userId: 1 });
 UserPermissionSchema.index({ roleId: 1 });
 UserPermissionSchema.index({ isActive: 1 });
 
-export const UserPermission = mongoose.models.UserPermission || mongoose.model<IUserPermission>('UserPermission', UserPermissionSchema);
+export const UserPermission = (mongoose.models.UserPermission as mongoose.Model<IUserPermission>) || mongoose.model<IUserPermission>('UserPermission', UserPermissionSchema);
 
 // ============================================
 // PERMISSION LOG MODEL

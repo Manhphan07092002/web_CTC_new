@@ -39,7 +39,7 @@ router.get('/funnel', async (req, res) => {
     const start = startDate ? new Date(startDate as string) : undefined;
     const end = endDate ? new Date(endDate as string) : undefined;
     
-    const funnelData = await db.analytics.getFunnelData(start, end);
+    const funnelData = await db.analytics.getFunnelData();
     res.json(funnelData);
   } catch (error) {
     console.error('Error getting funnel data:', error);
@@ -50,7 +50,7 @@ router.get('/funnel', async (req, res) => {
 // Get all events
 router.get('/events', async (req, res) => {
   try {
-    const events = await db.analytics.getAll();
+    const events = await db.analytics.getEvents();
     res.json(events);
   } catch (error) {
     console.error('Error getting events:', error);
@@ -61,7 +61,7 @@ router.get('/events', async (req, res) => {
 // Get events by type
 router.get('/events/:type', async (req, res) => {
   try {
-    const events = await db.analytics.getByType(req.params.type);
+    const events = await db.analytics.getEvents({ type: req.params.type });
     res.json(events);
   } catch (error) {
     console.error('Error getting events by type:', error);
@@ -72,7 +72,7 @@ router.get('/events/:type', async (req, res) => {
 // Get events by session
 router.get('/session/:sessionId', async (req, res) => {
   try {
-    const events = await db.analytics.getBySession(req.params.sessionId);
+    const events = await db.analytics.getEvents({ sessionId: req.params.sessionId });
     res.json(events);
   } catch (error) {
     console.error('Error getting session events:', error);

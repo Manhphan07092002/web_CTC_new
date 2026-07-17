@@ -228,7 +228,10 @@ declare global {
       user?: {
         id: string;
         email: string;
-        role: 'admin' | 'editor' | 'viewer';
+        role: string;
+        permissions?: string[];
+        name?: string;
+        avatar?: string;
       };
     }
   }

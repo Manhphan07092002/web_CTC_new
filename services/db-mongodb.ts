@@ -144,6 +144,7 @@ export const db = {
   },
 
   projects: {
+    getFeatured: async (limit: number = 5) => { const projects = await Project.find({ isFeatured: true }).sort({ createdAt: -1 }).limit(limit); return projects.map(toPlainObject<IProject>); },
     getAll: async () => {
       const projects = await Project.find().sort({ createdAt: -1 });
       return projects.map(toPlainObject<IProject>);
@@ -172,6 +173,7 @@ export const db = {
   },
 
   news: {
+    getLatest: async (limit: number = 5) => { const news = await News.find().sort({ createdAt: -1 }).limit(limit); return news.map(toPlainObject<INewsItem>); },
     getAll: async () => {
       const news = await News.find().sort({ createdAt: -1 });
       return news.map(toPlainObject<INewsItem>);
@@ -429,6 +431,8 @@ export const db = {
   },
 
   notifications: {
+    getUnread: async () => { const notifs = await Notification.find({ read: false }).sort({ createdAt: -1 }); return notifs.map(toPlainObject<INotification>); },
+    deleteAll: async () => { await Notification.deleteMany({}); return true; },
     getAll: async () => {
       const notifications = await Notification.find().sort({ createdAt: -1 });
       return notifications.map(toPlainObject<INotification>);
@@ -527,6 +531,7 @@ export const db = {
       return toPlainObject(event);
     },
     
+    clearOldEvents: async (days: number) => { const date = new Date(); date.setDate(date.getDate() - days); const res = await AnalyticsEvent.deleteMany({ timestamp: { $lt: date } }); return res.deletedCount; },
     getEvents: async (filters: any = {}) => {
       const events = await AnalyticsEvent.find(filters).sort({ timestamp: -1 });
       return events.map(toPlainObject);

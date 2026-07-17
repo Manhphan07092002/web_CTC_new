@@ -346,6 +346,9 @@ export const api = {
     markAllAsRead: () => fetchAPI<any>('/notifications/read-all', {
       method: 'PUT',
     }),
+    deleteAll: () => fetchAPI<void>('/notifications/all', {
+      method: 'DELETE',
+    }),
     delete: (id: string) => fetchAPI<void>(`/notifications/${id}`, {
       method: 'DELETE',
     }),
