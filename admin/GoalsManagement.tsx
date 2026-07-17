@@ -55,7 +55,7 @@ const GoalsManagement: React.FC = () => {
 
   const fetchGoals = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/goals');
+      const response = await fetch('http://103.161.171.54:4000/api/goals');
       const data = await response.json();
       setGoals(data);
     } catch (error) {
@@ -67,7 +67,7 @@ const GoalsManagement: React.FC = () => {
 
   const fetchCurrentGoal = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/goals/current');
+      const response = await fetch('http://103.161.171.54:4000/api/goals/current');
       const data = await response.json();
       setCurrentGoal(data);
     } catch (error) {
@@ -80,8 +80,8 @@ const GoalsManagement: React.FC = () => {
     
     try {
       const url = editingGoal
-        ? `http://localhost:4000/api/goals/${editingGoal.id}`
-        : 'http://localhost:4000/api/goals';
+        ? `http://103.161.171.54:4000/api/goals/${editingGoal.id}`
+        : 'http://103.161.171.54:4000/api/goals';
       
       const method = editingGoal ? 'PUT' : 'POST';
       
@@ -105,7 +105,7 @@ const GoalsManagement: React.FC = () => {
     if (!confirm('Bạn có chắc muốn xóa mục tiêu này?')) return;
     
     try {
-      const response = await fetch(`http://localhost:4000/api/goals/${id}`, {
+      const response = await fetch(`http://103.161.171.54:4000/api/goals/${id}`, {
         method: 'DELETE'
       });
 

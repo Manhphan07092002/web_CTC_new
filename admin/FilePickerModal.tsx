@@ -29,7 +29,7 @@ interface FilePickerModalProps {
   onSelect: (url: string) => void;
 }
 
-const API_BASE = 'http://localhost:4000/api/uploads';
+const API_BASE = 'http://103.161.171.54:4000/api/uploads';
 
 // Helper function to get file extension
 const getFileExtension = (filename: string): string => {

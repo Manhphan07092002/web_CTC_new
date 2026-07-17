@@ -8,7 +8,7 @@ interface UploadedFile {
   isDirectory?: boolean;
 }
 
-const API_BASE = 'http://localhost:4000/api/uploads';
+const API_BASE = 'http://103.161.171.54:4000/api/uploads';
 
 const FileManager: React.FC = () => {
   const [files, setFiles] = useState<UploadedFile[]>([]);

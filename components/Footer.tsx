@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
 
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:4000/api/contact/submit', {
+      const response = await fetch('http://103.161.171.54:4000/api/contact/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

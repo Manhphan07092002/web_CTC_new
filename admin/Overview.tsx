@@ -41,8 +41,8 @@ const Overview: React.FC = () => {
         api.statistics.getRevenue(),
         api.products.getAll(),
         api.reviews.getAll(),
-        fetch('http://localhost:4000/api/goals/current').then(r => r.ok ? r.json() : null).catch(() => null),
-        fetch('http://localhost:4000/api/analytics/funnel').then(r => r.ok ? r.json() : null).catch(() => null)
+        fetch('http://103.161.171.54:4000/api/goals/current').then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('http://103.161.171.54:4000/api/analytics/funnel').then(r => r.ok ? r.json() : null).catch(() => null)
       ]);
       setStatistics(stats);
       setRevenueData(revenue);
