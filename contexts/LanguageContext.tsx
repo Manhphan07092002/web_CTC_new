@@ -108,7 +108,7 @@ const translations: Record<Language, Translations> = {
       
       // Stats
       stat_assets: 'Tổng tài sản',
-      stat_sectors: 'Lĩnh vực hoạt động',
+      stat_partners: 'Đối tác chiến lược',
       stat_capacity: 'Tổng công suất',
       stat_satisfaction: 'Kỹ sư chủ chốt',
 
@@ -519,7 +519,7 @@ const translations: Record<Language, Translations> = {
 
       // Stats
       stat_assets: 'Total Assets',
-      stat_sectors: 'Business Sectors',
+      stat_partners: 'Strategic Partners',
       stat_capacity: 'Total Capacity',
       stat_satisfaction: 'Key Engineers',
 
@@ -928,7 +928,7 @@ const translations: Record<Language, Translations> = {
       partners_supplier: '공급 파트너',
       partners_financial: '금융 파트너',
       stat_assets: '총 자산',
-      stat_sectors: '사업 분야',
+      stat_partners: '전략적 파트너',
       stat_capacity: '총 용량',
       stat_satisfaction: '핵심 엔지니어',
       workflow_badge: '프로세스',
@@ -1322,7 +1322,7 @@ const translations: Record<Language, Translations> = {
       partners_supplier: 'サプライヤーパートナー',
       partners_financial: '金融パートナー',
       stat_assets: '総資産',
-      stat_sectors: '事業分野',
+      stat_partners: '戦略的パートナー',
       stat_capacity: '総容量',
       stat_satisfaction: '主要技術者',
       workflow_badge: 'プロセス',

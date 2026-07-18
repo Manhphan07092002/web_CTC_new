@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wallet, Layers, Zap, Handshake } from 'lucide-react';
+import { Wallet, Users, Zap, Handshake } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 
@@ -9,7 +9,7 @@ const Stats: React.FC = () => {
 
   const statsList = [
     { icon: Wallet, value: language === 'vi' ? '181+ Tỷ' : '181+B', label: t('home.stat_assets') },
-    { icon: Layers, value: '6+', label: t('home.stat_sectors') },
+    { icon: Users, value: '100+', label: t('home.stat_partners') },
     { icon: Zap, value: '50+ MW', label: t('home.stat_capacity') },
     { icon: Handshake, value: '50+', label: t('home.stat_satisfaction') }
   ];
