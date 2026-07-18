@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor } from 'lucide-react';
+import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -14,12 +13,27 @@ const Header: React.FC = () => {
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [expandedMobileMenu, setExpandedMobileMenu] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isScrolled, setIsScrolled] = useState(false);
+  
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const { theme, themeMode, toggleTheme } = useTheme();
   const { settings } = useSettings();
 
-  // Load categories from database (with language support)
+  // Scroll handler to toggle transparent vs glassmorphic header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Load categories from database
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -57,11 +71,9 @@ const Header: React.FC = () => {
     setExpandedMobileMenu(expandedMobileMenu === key ? null : key);
   };
 
-  // Build dynamic nav links with categories from database
   const getDynamicNavLinks = () => {
     return NAV_LINKS.map(link => {
       if (link.key === 'products' && categories.length > 0) {
-        // Replace hardcoded submenu with dynamic categories
         return {
           ...link,
           submenu: categories.map(cat => ({
@@ -76,58 +88,97 @@ const Header: React.FC = () => {
 
   const navLinks = getDynamicNavLinks();
 
-  return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-slate-900 shadow-md font-sans transition-colors duration-300">
-      {/* Top Bar */}
-      <div className="bg-corporate dark:bg-slate-900 text-white py-2 px-4 text-xs md:text-sm transition-colors duration-300 border-b border-transparent dark:border-slate-800">
-        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
-          <span className="text-center sm:text-left hidden md:block">{settings.siteDescription || t('header.slogan')}</span>
-          <div className="flex items-center gap-4 justify-between w-full sm:w-auto">
-            <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="flex items-center hover:text-primary transition-colors">
-              <Phone size={14} className="mr-1" /> <span className="hidden sm:inline">{t('header.hotline')}:</span> {settings.phone}
-            </a>
-            <div className="h-3 w-px bg-white/30 hidden sm:block"></div>
+  // Dynamic style resolution based on scroll and theme mode
+  const getHeaderContainerClass = () => {
+    const base = "fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ";
+    if (isScrolled) {
+      return base + "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-slate-800/80 py-1 sm:py-2";
+    }
+    // Transparent style at Y=0 (always slightly dark tinted for optimal white text contrast over video)
+    return base + "bg-slate-950/40 backdrop-blur-[2px] border-b border-white/5 py-3 sm:py-4";
+  };
 
-            {/* Theme Toggle - Cycles through: Light → Dark → System */}
+  const getTopBarClass = () => {
+    const base = "transition-all duration-300 ease-in-out overflow-hidden ";
+    if (isScrolled) {
+      return base + "max-h-0 opacity-0 py-0 border-none";
+    }
+    return base + "max-h-[40px] opacity-100 py-2 border-b border-white/5 text-white/90 text-xs md:text-sm";
+  };
+
+  const getNavLinkClass = (path: string) => {
+    const activeColor = "text-sky-500 dark:text-sky-400";
+    if (isActive(path)) return activeColor;
+
+    if (isScrolled) {
+      return "text-slate-800 dark:text-slate-200 hover:text-sky-500 dark:hover:text-sky-400";
+    }
+    // Transparent state: force light readable link color
+    return "text-slate-100 hover:text-sky-400";
+  };
+
+  const getLogoClass = () => {
+    return "h-9 sm:h-11 w-auto object-contain transition-all duration-300";
+  };
+
+  return (
+    <header className={getHeaderContainerClass()}>
+      
+      {/* Top Bar (Collapses dynamically when scrolling down) */}
+      <div className={getTopBarClass()}>
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <span className="hidden md:block font-sans font-medium tracking-wide">
+            {settings.siteDescription || t('header.slogan')}
+          </span>
+          <div className="flex items-center gap-4 justify-between w-full md:w-auto">
+            <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="flex items-center hover:text-sky-400 transition-colors font-semibold">
+              <Phone size={13} className="mr-1" />
+              <span className="hidden sm:inline mr-1">{t('header.hotline')}:</span>
+              {settings.phone}
+            </a>
+
+            <div className="h-3 w-px bg-white/20"></div>
+
+            {/* Theme Toggle Button */}
             <button 
               onClick={toggleTheme} 
-              className="flex items-center gap-2 hover:text-primary transition-colors focus:outline-none"
+              className="flex items-center gap-1.5 hover:text-sky-400 transition-colors focus:outline-none"
               title={
                 themeMode === 'light' ? t('common.theme_light') : 
                 themeMode === 'dark' ? t('common.theme_dark') : 
                 t('common.theme_auto')
               }
             >
-              {themeMode === 'light' && <Sun size={16} className="text-yellow-500" />}
-              {themeMode === 'dark' && <Moon size={16} className="text-blue-400" />}
-              {themeMode === 'system' && <Monitor size={16} className="text-green-400" />}
-              <span className="hidden sm:inline text-xs opacity-80">
+              {themeMode === 'light' && <Sun size={14} className="text-yellow-400" />}
+              {themeMode === 'dark' && <Moon size={14} className="text-sky-300" />}
+              {themeMode === 'system' && <Monitor size={14} className="text-emerald-400" />}
+              <span className="hidden sm:inline text-xs font-medium">
                 {themeMode === 'system' ? 'Auto' : themeMode === 'dark' ? t('common.dark') : t('common.light')}
               </span>
             </button>
             
-            <div className="h-3 w-px bg-white/30"></div>
+            <div className="h-3 w-px bg-white/20"></div>
             
             {/* Language Selector */}
             <div className="relative">
               <button 
                 onClick={toggleLangMenu}
-                className="flex items-center gap-1 hover:text-primary transition-colors focus:outline-none"
+                className="flex items-center gap-1 hover:text-sky-400 transition-colors focus:outline-none font-medium"
               >
-                <span className="text-base">{currentLang.flag}</span>
-                <span className="hidden sm:inline">{currentLang.label}</span>
-                <Globe size={14} className="ml-1 opacity-70"/>
+                <span className="text-sm">{currentLang.flag}</span>
+                <span className="hidden sm:inline ml-0.5 text-xs">{currentLang.label}</span>
+                <Globe size={13} className="ml-1 opacity-80"/>
               </button>
               
               {isLangMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-36 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden z-50">
+                <div className="absolute right-0 top-full mt-2.5 w-36 bg-slate-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in duration-200">
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code)}
-                      className={`w-full text-left px-4 py-2 text-sm flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 ${language === lang.code ? 'bg-blue-50 dark:bg-gray-700 text-primary font-bold' : 'text-gray-700 dark:text-gray-200'}`}
+                      className={`w-full text-left px-4 py-2.5 text-xs flex items-center gap-3 hover:bg-white/10 transition-colors ${language === lang.code ? 'bg-white/15 text-sky-400 font-bold' : 'text-slate-200'}`}
                     >
-                      <span className="text-base">{lang.flag}</span>
+                      <span className="text-sm">{lang.flag}</span>
                       {lang.label}
                     </button>
                   ))}
@@ -135,53 +186,48 @@ const Header: React.FC = () => {
               )}
             </div>
 
-            <div className="h-3 w-px bg-white/30 hidden sm:block"></div>
-            <Link to="/admin" className="hover:text-primary transition-colors hidden sm:block">{t('header.admin')}</Link>
+            <div className="h-3 w-px bg-white/20 hidden sm:block"></div>
+            <Link to="/admin" className="hover:text-sky-400 transition-colors hidden sm:block font-medium">{t('header.admin')}</Link>
           </div>
         </div>
       </div>
 
-      {/* Main Navigation */}
-      <div className="container mx-auto px-4 py-3">
+      {/* Main Navigation Row */}
+      <div className="container mx-auto px-4 py-2.5">
         <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
+          
+          {/* Logo Section */}
+          <Link to="/" className="flex items-center group">
             <img 
               src={settings.logoHeader || settings.logo} 
               alt={settings.siteName} 
-              className="h-10 sm:h-12 w-auto object-contain" 
+              className={getLogoClass()} 
             />
           </Link>
 
-          {/* Desktop Menu */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          {/* Center Navigation Links (Desktop) */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 h-full">
             {navLinks.map((link) => (
-              <div key={link.path} className="relative group h-full flex items-center py-3">
+              <div key={link.path} className="relative group h-full flex items-center py-2">
                 <Link
                   to={link.path}
-                  className={`flex items-center text-sm font-bold uppercase tracking-wide transition-colors duration-200 ${
-                    isActive(link.path) 
-                      ? 'text-primary' 
-                      : 'text-corporate dark:text-gray-200 hover:text-primary dark:hover:text-primary'
-                  }`}
+                  className={`flex items-center text-xs xl:text-sm font-extrabold uppercase tracking-wider transition-colors duration-200 ${getNavLinkClass(link.path)}`}
                 >
                   {t(`nav.${link.key}`)}
                   {link.submenu && (
-                    <ChevronDown size={14} className="ml-1 group-hover:rotate-180 transition-transform duration-300" />
+                    <ChevronDown size={13} className="ml-1 group-hover:rotate-180 transition-transform duration-300" />
                   )}
                 </Link>
-                
-                {isActive(link.path) && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"></div>}
 
-                {/* Desktop Dropdown Submenu */}
+                {/* Submenu Dropdown */}
                 {link.submenu && (
-                  <div className="absolute left-0 top-full w-72 bg-white dark:bg-gray-800 shadow-xl rounded-b-lg border-t-4 border-primary opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 z-50">
-                    <div className="py-2">
+                  <div className="absolute left-0 top-full pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 z-50">
+                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl overflow-hidden py-1">
                       {link.submenu.map((sub, index) => (
                         <Link 
                           key={index}
                           to={sub.path}
-                          className="block px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-primary hover:pl-8 transition-all duration-200 border-b border-gray-50 dark:border-gray-700 last:border-0 uppercase"
+                          className="block px-5 py-3 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-sky-500 dark:hover:text-sky-400 hover:pl-7 transition-all duration-200 border-b border-gray-50 dark:border-slate-800 last:border-0 uppercase"
                         >
                           {t(`nav.${sub.name}`)}
                         </Link>
@@ -193,25 +239,46 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button onClick={toggleMenu} className="lg:hidden text-corporate dark:text-white p-2">
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          {/* Right Action Button (Orange capsule button like screenshot) */}
+          <div className="hidden lg:flex items-center gap-4">
+            <a 
+              href="https://zalo.me/0915059666" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 transition-all hover:scale-105 active:scale-95"
+            >
+              <Phone size={14} className="animate-bounce" />
+              <span>Liên hệ</span>
+            </a>
+          </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <button 
+            onClick={toggleMenu} 
+            className={`lg:hidden p-2 rounded-xl transition-colors ${
+              isScrolled 
+                ? 'text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800' 
+                : 'text-white hover:bg-white/10'
+            }`}
+          >
+            {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
+
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Menu Dropdown Panel */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-gray-900 border-t dark:border-gray-800 absolute w-full shadow-xl z-[60] max-h-[80vh] overflow-y-auto">
-          <nav className="flex flex-col p-4">
+        <div className="lg:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 absolute top-full left-0 w-full shadow-2xl z-[60] max-h-[85vh] overflow-y-auto animate-in slide-in-from-top duration-300">
+          <nav className="flex flex-col p-5 gap-1.5">
             {navLinks.map((link) => (
-              <div key={link.path} className="border-b border-gray-100 dark:border-gray-800 last:border-none">
+              <div key={link.path} className="border-b border-gray-50 dark:border-slate-800/50 last:border-none">
                 <div className="flex justify-between items-center">
-                   <Link
+                  <Link
                     to={link.path}
                     onClick={() => !link.submenu && setIsMenuOpen(false)}
-                    className={`flex-1 py-3 text-base font-semibold ${
-                      isActive(link.path) ? 'text-primary' : 'text-gray-700 dark:text-gray-200'
+                    className={`flex-1 py-3.5 text-sm font-bold uppercase tracking-wider ${
+                      isActive(link.path) ? 'text-sky-500' : 'text-slate-800 dark:text-slate-200'
                     }`}
                   >
                     {t(`nav.${link.key}`)}
@@ -219,22 +286,22 @@ const Header: React.FC = () => {
                   {link.submenu && (
                     <button 
                       onClick={() => toggleMobileSubmenu(link.key)}
-                      className="p-3 text-gray-500 dark:text-gray-400"
+                      className="p-3 text-slate-400"
                     >
-                      {expandedMobileMenu === link.key ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      {expandedMobileMenu === link.key ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                     </button>
                   )}
                 </div>
 
-                {/* Mobile Submenu */}
+                {/* Mobile Dropdown Sublinks */}
                 {link.submenu && expandedMobileMenu === link.key && (
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg mb-2 overflow-hidden">
+                  <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800">
                     {link.submenu.map((sub, subIdx) => (
                       <Link
                         key={subIdx}
                         to={sub.path}
                         onClick={() => setIsMenuOpen(false)}
-                        className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:text-primary border-b border-gray-100 dark:border-gray-700 last:border-0 pl-8"
+                        className="block px-5 py-3 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 border-b border-gray-100/30 dark:border-slate-800 last:border-0 pl-8 uppercase"
                       >
                         • {t(`nav.${sub.name}`)}
                       </Link>
@@ -243,10 +310,22 @@ const Header: React.FC = () => {
                 )}
               </div>
             ))}
-            <div className="pt-4 flex justify-center">
-                <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="text-gray-500 dark:text-gray-400 text-sm hover:text-primary">
-                   {t('header.admin')}
+            
+            {/* Mobile Contact Action Button */}
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
+              <a 
+                href="https://zalo.me/0915059666"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-full shadow-lg"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Phone size={14} />
+                <span>Liên hệ Zalo</span>
+              </a>
+              <div className="flex justify-center gap-6 text-xs text-slate-400 mt-2">
+                <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-sky-500 font-semibold uppercase tracking-wider">
+                  {t('header.admin')}
                 </Link>
+              </div>
             </div>
           </nav>
         </div>
