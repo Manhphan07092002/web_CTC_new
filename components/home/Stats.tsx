@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, Check, Zap, Users } from 'lucide-react';
+import { Trophy, Building2, Zap, Handshake } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 
@@ -8,10 +8,10 @@ const Stats: React.FC = () => {
   const { ref: statsRef, isInView } = useInView(0.1);
 
   const statsList = [
-    { icon: Briefcase, value: '22+', label: t('home.stat_exp'), color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50' },
-    { icon: Check, value: '500+', label: t('home.stat_projects'), color: 'from-green-500 to-emerald-500', bg: 'bg-green-50' },
+    { icon: Trophy, value: '22+', label: t('home.stat_exp'), color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50' },
+    { icon: Building2, value: '500+', label: t('home.stat_projects'), color: 'from-green-500 to-emerald-500', bg: 'bg-green-50' },
     { icon: Zap, value: '50MW', label: t('home.stat_capacity'), color: 'from-sky-500 to-blue-500', bg: 'bg-sky-50' },
-    { icon: Users, value: '98%', label: t('home.stat_satisfaction'), color: 'from-purple-500 to-pink-500', bg: 'bg-purple-50' }
+    { icon: Handshake, value: '98%', label: t('home.stat_satisfaction'), color: 'from-purple-500 to-pink-500', bg: 'bg-purple-50' }
   ];
 
   return (
