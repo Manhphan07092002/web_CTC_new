@@ -8,92 +8,98 @@ const Stats: React.FC = () => {
   const { ref: statsRef, isInView } = useInView(0.1);
 
   const statsList = [
-    { icon: Trophy, value: '22+', label: t('home.stat_exp'), color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50' },
-    { icon: Building2, value: '500+', label: t('home.stat_projects'), color: 'from-green-500 to-emerald-500', bg: 'bg-green-50' },
-    { icon: Zap, value: '50MW', label: t('home.stat_capacity'), color: 'from-sky-500 to-blue-500', bg: 'bg-sky-50' },
-    { icon: Handshake, value: '98%', label: t('home.stat_satisfaction'), color: 'from-purple-500 to-pink-500', bg: 'bg-purple-50' }
+    { icon: Trophy, value: '22+', label: t('home.stat_exp') },
+    { icon: Building2, value: '500+', label: t('home.stat_projects') },
+    { icon: Zap, value: '50MW', label: t('home.stat_capacity') },
+    { icon: Handshake, value: '98%', label: t('home.stat_satisfaction') }
   ];
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
-        /* === UNIFIED CORPORATE STATS CLASS === */
-        .glass-stat-card {
+        /* === UNIFIED CORPORATE DARK STATS CARD === */
+        .glass-stat-card-dark {
             border-radius: 16px; /* Matched 16px squircle radius from Hero.tsx */
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
-        }
-
-        /* Light Mode Frosted White Glass */
-        .glass-stat-card {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 15px 35px -10px rgba(0, 30, 80, 0.08), 
-                        inset 0 1px 1px rgba(255, 255, 255, 0.5);
-        }
-
-        .glass-stat-card:hover {
-            transform: translateY(-8px) scale(1.03);
-            background: rgba(255, 255, 255, 0.85);
-            border-color: rgba(14, 165, 233, 0.25);
-            box-shadow: 0 25px 50px -12px rgba(0, 30, 80, 0.15),
-                        0 0 15px rgba(14, 165, 233, 0.1);
-        }
-
-        /* Dark Mode Frosted Dark Glass */
-        .dark .glass-stat-card {
-            background: rgba(15, 23, 42, 0.45) !important;
+            background: rgba(15, 23, 42, 0.45);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.5);
         }
 
-        .dark .glass-stat-card:hover {
-            background: rgba(15, 23, 42, 0.65) !important;
-            border-color: rgba(56, 189, 248, 0.3) !important;
+        .glass-stat-card-dark:hover {
+            transform: translateY(-8px) scale(1.03);
+            background: rgba(15, 23, 42, 0.65);
+            border-color: rgba(56, 189, 248, 0.35);
             box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7),
-                        0 0 20px rgba(56, 189, 248, 0.15) !important;
+                        0 0 20px rgba(56, 189, 248, 0.15);
         }
 
-        /* Ticker text styling inside cards */
-        .stat-value-text {
-            background-clip: text;
-            -webkit-background-clip: text;
+        /* Outlined Cyan Icon Frame matching Hero dashboard exactly */
+        .outlined-icon-frame {
+            width: 60px;
+            height: 60px;
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.25);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #38bdf8;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: inset 0 1px 1px rgba(56, 189, 248, 0.05);
+        }
+
+        .glass-stat-card-dark:hover .outlined-icon-frame {
+            transform: scale(1.1) rotate(6deg);
+            background: rgba(14, 165, 233, 0.2);
+            border-color: rgba(56, 189, 248, 0.6);
+            color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-value-text-white {
+            color: #ffffff;
             transition: all 0.3s ease;
         }
 
-        .glass-stat-card:hover .stat-value-text {
-            transform: scale(1.05);
+        .glass-stat-card-dark:hover .stat-value-text-white {
+            transform: scale(1.04);
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
         }
       `}} />
 
-      <section ref={statsRef} className="py-12 relative z-20 -mt-16 container mx-auto px-4 bg-transparent">
-        <div className={`grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-          {statsList.map((stat, idx) => (
-            <div key={idx} className="glass-stat-card group text-center p-6 sm:p-8">
-              
-              {/* Icon Holder with Pulse Ring */}
-              <div className={`w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 relative overflow-hidden`}>
-                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <stat.icon size={26} className="text-white relative z-10" />
-              </div>
+      <section 
+        ref={statsRef} 
+        className="py-16 bg-[#060d1d] relative z-20 -mt-12 border-t border-b border-white/5"
+      >
+        <div className="container mx-auto px-4">
+          <div className={`grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+            {statsList.map((stat, idx) => (
+              <div key={idx} className="glass-stat-card-dark group text-center p-6 sm:p-8">
+                
+                {/* Outlined Icon Container (Identical to Hero Dashboard icon style) */}
+                <div className="outlined-icon-frame mx-auto mb-6">
+                  <stat.icon size={24} />
+                </div>
 
-              {/* Statistic Numbers */}
-              <div className="stat-value-text text-3xl sm:text-4xl font-extrabold text-slate-800 dark:text-white mb-2 tracking-tight">
-                {stat.value}
-              </div>
+                {/* Statistic Value (Always White) */}
+                <div className="stat-value-text-white text-3xl sm:text-4xl font-extrabold mb-2 tracking-tight">
+                  {stat.value}
+                </div>
 
-              {/* Statistic Label */}
-              <div className="text-xxs sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors">
-                {stat.label}
-              </div>
+                {/* Statistic Label (Always Light Slate-400) */}
+                <div className="text-xxs sm:text-xs font-bold text-slate-400 uppercase tracking-widest group-hover:text-sky-400 transition-colors">
+                  {stat.label}
+                </div>
 
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </>
