@@ -18,6 +18,13 @@ import AdvancedCharts from './AdvancedCharts';
 import PermissionSummary from '../components/PermissionSummary';
 import ExportService from '../services/export-service';
 
+const getApiBase = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  return `${protocol}//${hostname}:4000/api`;
+};
+const API_BASE = getApiBase();
+
 const Overview: React.FC = () => {
   const { t } = useLanguage();
   const { role, roleLevel, permissions } = usePermission();
@@ -41,8 +48,8 @@ const Overview: React.FC = () => {
         api.statistics.getRevenue(),
         api.products.getAll(),
         api.reviews.getAll(),
-        fetch('http://103.161.171.54:4000/api/goals/current').then(r => r.ok ? r.json() : null).catch(() => null),
-        fetch('http://103.161.171.54:4000/api/analytics/funnel').then(r => r.ok ? r.json() : null).catch(() => null)
+        fetch(`${API_BASE}/goals/current`).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(`${API_BASE}/analytics/funnel`).then(r => r.ok ? r.json() : null).catch(() => null)
       ]);
       setStatistics(stats);
       setRevenueData(revenue);

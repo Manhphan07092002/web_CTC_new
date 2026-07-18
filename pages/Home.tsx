@@ -177,7 +177,7 @@ const Home: React.FC = () => {
       "@type": "Organization",
       "@id": `${window.location.origin}/#organization`,
       "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
-      "alternateName": ["Central Vietnam Posts and Telecommunications Construction Joint Stock Company", "CTC", "CTC"],
+      "alternateName": ["CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS  CONSTRUCTION JOINT - STOCK COMPANY", "CTC", "CTC"],
       "url": "https://www.ctcdn.vn",
       "logo": {
         "@type": "ImageObject",
@@ -187,13 +187,13 @@ const Home: React.FC = () => {
       },
       "image": `${window.location.origin}/uploads/images/logo/tran-le-og.jpg`,
       "taxID": "0400458940",
-      "foundingDate": "1992-01-01",
+      "foundingDate": "2004-02-11",
       "description": "Công ty chuyên thi công lắp đặt hệ thống điện mặt trời, inverter, tấm pin năng lượng mặt trời tại Đà Nẵng và toàn quốc. Hotline: 0915 059 666",
       "slogan": "Đối tác tin cậy trong lĩnh vực năng lượng mặt trời",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
-        "addressLocality": "Đà Nẵng",
+        "streetAddress": "50B Nguyễn Du",
+        "addressLocality": "Hải Châu",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
@@ -238,7 +238,7 @@ const Home: React.FC = () => {
       "@id": `${window.location.origin}/#localbusiness`,
       "name": "CTC - Điện Mặt Trời Đà Nẵng",
       "image": `${window.location.origin}/uploads/images/logo/tran-le-og.jpg`,
-      "telephone": "+84-915-059-666",
+      "telephone": "+84-236-3745-555",
       "email": "info@ctcdn.vn",
       "url": "https://www.ctcdn.vn",
       "priceRange": "$$",
@@ -246,16 +246,16 @@ const Home: React.FC = () => {
       "paymentAccepted": "Cash, Bank Transfer, Credit Card",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
-        "addressLocality": "Đà Nẵng",
+        "streetAddress": "50B Nguyễn Du",
+        "addressLocality": "Hải Châu",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": 16.0190,
-        "longitude": 108.2208
+        "latitude": 16.0759,
+        "longitude": 108.2201
       },
       "openingHoursSpecification": [
         {

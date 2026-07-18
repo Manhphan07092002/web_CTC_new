@@ -31,7 +31,6 @@ import EngagementManagement from './EngagementManagement';
 import GoalsManagement from './GoalsManagement';
 import SecurityMonitoring from './SecurityMonitoring';
 import MigrationManagement from './MigrationManagement';
-import ResourceManagement from './ResourceManagement';
 import AccountSettings from './AccountSettings';
 
 const SubHeader = () => {
@@ -50,6 +49,7 @@ const SubHeader = () => {
     { id: 'news', label: t('admin.news') },
     { id: 'partners', label: t('admin.partners') },
     { id: 'testimonials', label: t('admin.testimonials') },
+    { id: 'resources', label: 'Tài liệu' },
   ];
 
   return (
@@ -304,7 +304,6 @@ const AdminDashboard: React.FC = () => {
             <Route path="/reviews" element={<ReviewsManagement />} />
             <Route path="/engagement" element={<EngagementManagement />} />
             <Route path="/goals" element={<GoalsManagement />} />
-            <Route path="/resources" element={<ResourceManagement />} />
             <Route path="/security" element={<SecurityMonitoring />} />
             <Route path="/migration" element={<MigrationManagement />} />
             <Route path="/settings" element={<Settings />} />

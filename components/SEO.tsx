@@ -19,31 +19,31 @@ interface SEOProps {
 // Company Information - Export để dùng ở các component khác
 export const COMPANY_INFO = {
   name: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung',
-  nameEn: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company',
+  nameEn: 'CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS  CONSTRUCTION JOINT - STOCK COMPANY',
   shortName: 'CTC',
   taxId: '0400458940',
-  phone: '0915059666',
-  phoneFormatted: '+84 236 656 2020',
+  phone: '02363745555',
+  phoneFormatted: '+84 236 3745 555',
   email: 'info@ctcdn.vn',
   website: 'https://www.ctcdn.vn',
   address: {
-    street: '275-279 Diên Hồng',
-    ward: 'Phường Hòa Xuân',
-    district: 'Quận Cẩm Lệ',
+    street: '50B Nguyễn Du',
+    ward: '',
+    district: 'Hải Châu',
     city: 'Đà Nẵng',
     postalCode: '550000',
     country: 'VN',
-    full: '50B Nguyễn Du, Quận Hải Châu, Đà Nẵng'
+    full: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
   },
   geo: {
-    latitude: 16.0190,
-    longitude: 108.2208
+    latitude: 16.0759,
+    longitude: 108.2201
   },
   founder: 'Nguyễn Văn Duy',
-  foundingDate: '1992-01-01',
+  foundingDate: '2004-02-11',
   social: {
-    facebook: 'https://www.facebook.com/tranleelectricity',
-    youtube: 'https://www.youtube.com/@tranleelectricity',
+    facebook: 'https://www.facebook.com/ctcdn',
+    youtube: 'https://www.youtube.com/@ctcdn',
     zalo: 'https://zalo.me/0915059666'
   }
 };

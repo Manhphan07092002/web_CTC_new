@@ -478,4 +478,21 @@ export const api = {
       return await response.json();
     },
   },
+
+  // Document Categories
+  documentCategories: {
+    getAll: () => fetchAPI<any[]>('/document-categories'),
+    getAdmin: () => fetchAPI<any[]>('/document-categories/admin'),
+    create: (data: any) => fetchAPI<any>('/document-categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    update: (id: string, data: any) => fetchAPI<any>(`/document-categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+    delete: (id: string) => fetchAPI<void>(`/document-categories/${id}`, {
+      method: 'DELETE',
+    }),
+  },
 };

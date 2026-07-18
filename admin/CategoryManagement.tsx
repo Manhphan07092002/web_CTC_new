@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Tag, Grid, Layers } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Tag, Grid, Layers, FolderOpen } from 'lucide-react';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { PermissionGate } from '../contexts/PermissionContext';
@@ -16,10 +16,11 @@ interface Category {
   productCount?: number;
   newsCount?: number;
   projectCount?: number;
+  resourceCount?: number;
   createdAt: string;
 }
 
-type CategoryType = 'product' | 'news' | 'project';
+type CategoryType = 'product' | 'news' | 'project' | 'document';
 
 const CategoryManagement: React.FC = () => {
   const { showToast } = useToast();
@@ -56,6 +57,9 @@ const CategoryManagement: React.FC = () => {
           break;
         case 'project':
           data = await api.projectCategories.getAll();
+          break;
+        case 'document':
+          data = await api.documentCategories.getAdmin();
           break;
       }
       // Sort by order
@@ -122,12 +126,16 @@ const CategoryManagement: React.FC = () => {
         case 'project':
           await api.projectCategories.delete(id);
           break;
+        case 'document':
+          await api.documentCategories.delete(id);
+          break;
       }
       showToast(`Đã xóa danh mục ${name}`, 'success');
       loadCategories();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting category:', error);
-      showToast('Lỗi khi xóa danh mục', 'error');
+      const errorMessage = error.message || 'Lỗi khi xóa danh mục';
+      showToast(errorMessage, 'error');
     }
   };
 
@@ -155,6 +163,9 @@ const CategoryManagement: React.FC = () => {
           case 'project':
             await api.projectCategories.update(editingCategory.id, dataToSave);
             break;
+          case 'document':
+            await api.documentCategories.update(editingCategory.id, dataToSave);
+            break;
         }
         showToast('Cập nhật danh mục thành công!', 'success');
       } else {
@@ -168,14 +179,18 @@ const CategoryManagement: React.FC = () => {
           case 'project':
             await api.projectCategories.create(dataToSave);
             break;
+          case 'document':
+            await api.documentCategories.create(dataToSave);
+            break;
         }
         showToast('Thêm danh mục thành công!', 'success');
       }
       setIsModalOpen(false);
       loadCategories();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving category:', error);
-      showToast('Lỗi khi lưu danh mục', 'error');
+      const errorMessage = error.message || 'Lỗi khi lưu danh mục';
+      showToast(errorMessage, 'error');
     }
   };
 
@@ -189,8 +204,9 @@ const CategoryManagement: React.FC = () => {
 
   const tabs = [
     { id: 'product' as CategoryType, label: 'Sản phẩm', icon: Grid },
+    { id: 'project' as CategoryType, label: 'Dự án', icon: Tag },
     { id: 'news' as CategoryType, label: 'Tin tức', icon: Layers },
-    { id: 'project' as CategoryType, label: 'Dự án', icon: Tag }
+    { id: 'document' as CategoryType, label: 'Thể loại tài liệu', icon: FolderOpen }
   ];
 
   return (
@@ -199,7 +215,7 @@ const CategoryManagement: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Quản lý Danh mục</h1>
-          <p className="text-gray-500 mt-1">Quản lý danh mục cho sản phẩm, tin tức và dự án</p>
+          <p className="text-gray-500 mt-1">Quản lý danh mục cho sản phẩm, dự án, tin tức và tài liệu của hệ thống</p>
         </div>
         <PermissionGate permission="manage_product_categories">
           <button
@@ -306,6 +322,7 @@ const CategoryManagement: React.FC = () => {
                   {activeTab === 'product' && `${category.productCount || 0} sản phẩm`}
                   {activeTab === 'news' && `${category.newsCount || 0} tin tức`}
                   {activeTab === 'project' && `${category.projectCount || 0} dự án`}
+                  {activeTab === 'document' && `${category.resourceCount || 0} tài liệu`}
                 </span>
                 <span className={`px-2 py-1 rounded-full font-medium ${
                   category.isActive !== false

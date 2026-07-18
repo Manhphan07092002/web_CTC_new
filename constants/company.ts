@@ -7,20 +7,20 @@
 export const COMPANY = {
   // Tên công ty
   name: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung',
-  nameEn: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company',
+  nameEn: 'CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS  CONSTRUCTION JOINT - STOCK COMPANY',
   shortName: 'CTC',
   brandName: 'CTC',
   
   // Pháp lý
   taxId: '0400458940',
-  foundingDate: '1992-01-01',
+  foundingDate: '2004-02-11',
   founder: 'Nguyễn Văn Duy',
   charterCapital: '9.987.660.000 VNĐ',
   
   // Liên hệ
-  phone: '0915059666',
-  phoneFormatted: '+84 915 059 666',
-  phoneDisplay: '0915 059 666',
+  phone: '02363745555',
+  phoneFormatted: '+84 236 3745 555',
+  phoneDisplay: '0236 3745 555',
   hotline: '0915 059 666',
   email: 'info@ctcdn.vn',
   emailAlternate: 'khkd.ctc@gmail.com',
@@ -30,13 +30,13 @@ export const COMPANY = {
   address: {
     street: '50B Nguyễn Du',
     ward: '',
-    district: 'Quận Hải Châu',
+    district: 'Hải Châu',
     city: 'Đà Nẵng',
     province: 'Đà Nẵng',
     postalCode: '550000',
     country: 'VN',
     countryName: 'Việt Nam',
-    full: '50B Nguyễn Du, Quận Hải Châu, Thành phố Đà Nẵng',
+    full: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
     short: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
   },
   

@@ -8,7 +8,7 @@ const router = express.Router();
 // GET all resources (public)
 router.get('/', async (req, res) => {
   try {
-    const resources = await Resource.find({ isActive: true }).sort({ createdAt: -1 });
+    const resources = await Resource.find({ isActive: true }).populate('categoryId').sort({ createdAt: -1 });
     res.json(resources);
   } catch (error) {
     logger.error('Error fetching resources:', error);
@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 // GET all resources including inactive (admin only)
 router.get('/admin', async (req, res) => {
   try {
-    const resources = await Resource.find().sort({ createdAt: -1 });
+    const resources = await Resource.find().populate('categoryId').sort({ createdAt: -1 });
     res.json(resources);
   } catch (error) {
     logger.error('Error fetching admin resources:', error);
@@ -32,7 +32,8 @@ router.post('/', async (req, res) => {
   try {
     const newResource = new Resource(req.body);
     const savedResource = await newResource.save();
-    res.status(201).json(savedResource);
+    const populated = await savedResource.populate('categoryId');
+    res.status(201).json(populated);
   } catch (error) {
     logger.error('Error creating resource:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -46,7 +47,7 @@ router.put('/:id', async (req, res) => {
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    );
+    ).populate('categoryId');
     
     if (!updatedResource) {
       return res.status(404).json({ message: 'Resource not found' });

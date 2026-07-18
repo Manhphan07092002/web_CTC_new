@@ -81,7 +81,7 @@ const Header: React.FC = () => {
       {/* Top Bar */}
       <div className="bg-corporate dark:bg-slate-900 text-white py-2 px-4 text-xs md:text-sm transition-colors duration-300 border-b border-transparent dark:border-slate-800">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
-          <span className="text-center sm:text-left hidden md:block">{t('header.slogan')}</span>
+          <span className="text-center sm:text-left hidden md:block">{settings.siteDescription || t('header.slogan')}</span>
           <div className="flex items-center gap-4 justify-between w-full sm:w-auto">
             <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="flex items-center hover:text-primary transition-colors">
               <Phone size={14} className="mr-1" /> <span className="hidden sm:inline">{t('header.hotline')}:</span> {settings.phone}

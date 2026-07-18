@@ -1,5 +1,5 @@
 import { Product, Project, NewsItem, User, Testimonial, Partner, Category, TeamMember } from './types';
-import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, Star, Target, Shield, FileText } from 'lucide-react';
+import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText } from 'lucide-react';
 
 export const NAV_LINKS = [
   { name: 'Trang chủ', path: '/', key: 'home' },
@@ -37,7 +37,6 @@ export const ADMIN_MENU = [
   { name: 'Quản lý nội dung', path: '/admin/content', icon: Layers, key: 'content', permission: 'view_content', minLevel: 30 },
   { name: 'Quản Lý Danh Mục', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50 },
   { name: 'Đánh Giá Khách Hàng', path: '/admin/reviews', icon: Star, key: 'reviews', permission: 'view_content', minLevel: 30 },
-  { name: 'Quản lý Tài liệu', path: '/admin/resources', icon: FileText, key: 'resources', permission: 'view_content', minLevel: 30 },
   { name: 'Quản lý Mục tiêu', path: '/admin/goals', icon: Target, key: 'goals', permission: 'view_content', minLevel: 30 },
   { name: 'Quản Lý Liên Hệ', path: '/admin/contacts', icon: Mail, key: 'contacts', permission: 'view_customers', minLevel: 40 },
   { name: 'Quản Lý Nhân Viên', path: '/admin/team', icon: Users, key: 'team', permission: 'view_users', minLevel: 50 },

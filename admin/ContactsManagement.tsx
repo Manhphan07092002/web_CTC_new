@@ -14,6 +14,13 @@ interface Contact {
   createdAt: string;
 }
 
+const getApiBase = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  return `${protocol}//${hostname}:4000/api`;
+};
+const API_BASE = getApiBase();
+
 const ContactsManagement: React.FC = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +36,7 @@ const ContactsManagement: React.FC = () => {
   const fetchContacts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://103.161.171.54:4000/api/contact');
+      const response = await fetch(`${API_BASE}/contact`);
       const data = await response.json();
       // Ensure data is an array
       if (Array.isArray(data)) {
@@ -53,7 +60,7 @@ const ContactsManagement: React.FC = () => {
 
   const updateStatus = async (id: string, status: string, notes?: string) => {
     try {
-      const response = await fetch(`http://103.161.171.54:4000/api/contact/${id}/status`, {
+      const response = await fetch(`${API_BASE}/contact/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, notes })
@@ -74,7 +81,7 @@ const ContactsManagement: React.FC = () => {
     if (!confirm('Bạn có chắc muốn xóa liên hệ này?')) return;
 
     try {
-      const response = await fetch(`http://103.161.171.54:4000/api/contact/${id}`, {
+      const response = await fetch(`${API_BASE}/contact/${id}`, {
         method: 'DELETE'
       });
 

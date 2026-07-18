@@ -5,6 +5,13 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
 import { useSettings } from '../contexts/SettingsContext';
 
+const getApiBase = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  return `${protocol}//${hostname}:4000/api`;
+};
+const API_BASE = getApiBase();
+
 const Footer: React.FC = () => {
   const { t } = useLanguage();
   const { showToast } = useToast();
@@ -19,7 +26,7 @@ const Footer: React.FC = () => {
 
     setSubmitting(true);
     try {
-      const response = await fetch('http://103.161.171.54:4000/api/contact/submit', {
+      const response = await fetch(`${API_BASE}/contact/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -8,8 +8,12 @@ interface UploadedFile {
   isDirectory?: boolean;
 }
 
-const API_BASE = 'http://103.161.171.54:4000/api/uploads';
-
+const getApiBase = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  return `${protocol}//${hostname}:4000/api/uploads`;
+};
+const API_BASE = getApiBase();
 const FileManager: React.FC = () => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);

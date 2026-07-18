@@ -199,6 +199,7 @@ const translations: Record<Language, Translations> = {
       team: 'Quản Lý Nhân Viên',
       project_categories: 'DM Dự án',
       news_categories: 'DM Tin tức',
+      document_categories: 'Thể loại tài liệu',
       logout: 'Thoát',
       welcome: 'Xin chào',
       search_placeholder: 'Tìm kiếm trong admin...',
@@ -448,7 +449,7 @@ const translations: Record<Language, Translations> = {
       solutions_title: 'Solutions',
       contact_title: 'Contact Info',
       desc: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company (CTC). Pioneering in renewable energy.',
-      address: '259 The Lu, Son Tra, Da Nang',
+      address: '50B Nguyen Du, Hai Chau, Da Nang',
       copyright: '© 2024 CTC. All rights reserved.'
     },
     common: {
@@ -609,6 +610,7 @@ const translations: Record<Language, Translations> = {
       team: 'Staff Management',
       project_categories: 'Project Categories',
       news_categories: 'News Categories',
+      document_categories: 'Document Categories',
       logout: 'Logout',
       welcome: 'Welcome',
       search_placeholder: 'Search in admin...',

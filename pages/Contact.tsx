@@ -7,6 +7,13 @@ import SEO from '../components/SEO';
 import { api } from '../services/api';
 import analyticsTracking from '../services/analytics-tracking';
 
+const getApiBase = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  return `${protocol}//${hostname}:4000/api`;
+};
+const API_BASE = getApiBase();
+
 const Contact: React.FC = () => {
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const { t } = useLanguage();
@@ -25,7 +32,7 @@ const Contact: React.FC = () => {
     
     try {
       // Call API to submit contact form
-      const response = await fetch('http://103.161.171.54:4000/api/contact/submit', {
+      const response = await fetch(`${API_BASE}/contact/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -72,22 +79,22 @@ const Contact: React.FC = () => {
     "mainEntity": {
       "@type": "Organization",
       "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
-      "alternateName": "Central Vietnam Posts and Telecommunications Construction Joint Stock Company",
+      "alternateName": "CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS  CONSTRUCTION JOINT - STOCK COMPANY",
       "taxID": "0400458940",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
-        "addressLocality": "Đà Nẵng",
+        "streetAddress": "50B Nguyễn Du",
+        "addressLocality": "Hải Châu",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": 16.0190,
-        "longitude": 108.2208
+        "latitude": 16.0759,
+        "longitude": 108.2201
       },
-      "telephone": "+84-915-059-666",
+      "telephone": "+84-236-3745-555",
       "email": "info@ctcdn.vn",
       "url": "https://www.ctcdn.vn"
     }
@@ -133,7 +140,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">{t('footer.address')}</h4>
-                    <p className="text-sm text-gray-600">50B Nguyễn Du, Quận Hải Châu, Đà Nẵng</p>
+                    <p className="text-sm text-gray-600">50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
                   </div>
                 </div>
 
@@ -143,7 +150,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">{t('contact.phone')}</h4>
-                    <p className="text-sm text-gray-600">0915 059 666</p>
+                    <p className="text-sm text-gray-600">0236 3745 555 - 0915 059 666</p>
                   </div>
                 </div>
 

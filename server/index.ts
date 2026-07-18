@@ -59,6 +59,7 @@ import seoRouter from './routes/seo.js';
 import slogansRouter from './routes/slogans.js';
 import migrationRouter from './routes/migration.js';
 import resourcesRouter from './routes/resources.js';
+import documentCategoriesRouter from './routes/document-categories.js';
 import { startTranslationScheduler } from './services/translationScheduler.js';
 
 // Load envs
@@ -230,6 +231,7 @@ app.use('/api/admin', translationAdminRouter);
 app.use('/api/slogans', slogansRouter);
 app.use('/api/migration', migrationRouter);
 app.use('/api/resources', resourcesRouter);
+app.use('/api/document-categories', documentCategoriesRouter);
 
 // SEO Routes (sitemap.xml, robots.txt)
 app.use('/', seoRouter);

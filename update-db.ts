@@ -9,7 +9,7 @@ mongoose.connect(process.env.MONGODB_URI).then(async () => {
     $set: {
       address: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
       email: 'info@ctcdn.vn',
-      phone: '0915 059 666',
+      phone: '0236 3745 555',
       siteName: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung',
       siteDescription: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam'
     }

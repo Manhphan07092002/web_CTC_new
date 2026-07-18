@@ -231,7 +231,7 @@ export class EmailService {
                 hour: '2-digit',
                 minute: '2-digit'
               })}</p>
-              <p style="margin-top: 15px; font-size: 12px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
+              <p style="margin-top: 15px; font-size: 12px;">📍 50B Nguyễn Du, Phường Thạch Thang, Hải Châu, Đà Nẵng</p>
               <p style="font-size: 12px;">📞 0915 059 666 | 📧 info@ctcdn.vn</p>
             </div>
           </div>
@@ -459,7 +459,7 @@ export class EmailService {
                 <p><strong>⚡ Cần hỗ trợ gấp?</strong></p>
                 <p>📞 Hotline: <strong>0915 059 666</strong></p>
                 <p>📧 Email: <strong>info@ctcdn.vn</strong></p>
-                <p>🏢 Địa chỉ: <strong>50B Nguyễn Du, Hải Châu, Đà Nẵng</strong></p>
+                <p>🏢 Địa chỉ: <strong>50B Nguyễn Du, Phường Thạch Thang, Hải Châu, Đà Nẵng</strong></p>
                 <p>🕒 Thời gian làm việc: <strong>Thứ 2 - Thứ 7: 8:00 - 17:30</strong></p>
               </div>
               
@@ -477,8 +477,8 @@ export class EmailService {
             <div class="footer">
               <p class="company-name">⚡ CTC</p>
               <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
-              <p>MST: 0401707621</p>
-              <p style="margin-top: 15px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
+              <p>MST: 0400458940</p>
+              <p style="margin-top: 15px;">📍 50B Nguyễn Du, Phường Thạch Thang, Hải Châu, Đà Nẵng</p>
               <p>📞 0915 059 666 | 📧 info@ctcdn.vn</p>
               <div class="social-links">
                 <a href="#">Facebook</a> | 
@@ -658,8 +658,8 @@ export class EmailService {
             <div class="footer">
               <p class="company-name">⚡ CTC</p>
               <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
-              <p>MST: 0401707621</p>
-              <p style="margin-top: 15px;">📍 50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
+              <p>MST: 0400458940</p>
+              <p style="margin-top: 15px;">📍 50B Nguyễn Du, Phường Thạch Thang, Hải Châu, Đà Nẵng</p>
               <p>📞 0915 059 666 | 📧 info@ctcdn.vn</p>
               <p style="margin-top: 20px; font-size: 11px; opacity: 0.6;">© 2024 CTC. All rights reserved.</p>
             </div>

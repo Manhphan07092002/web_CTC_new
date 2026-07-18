@@ -14,9 +14,9 @@ const About: React.FC = () => {
     "mainEntity": {
       "@type": "Organization",
       "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
-      "alternateName": "Central Vietnam Posts and Telecommunications Construction Joint Stock Company",
+      "alternateName": "CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS  CONSTRUCTION JOINT - STOCK COMPANY",
       "taxID": "0400458940",
-      "foundingDate": "1992-01-01",
+      "foundingDate": "2004-02-11",
       "founder": {
         "@type": "Person",
         "name": "Nguyễn Văn Duy",
@@ -25,12 +25,13 @@ const About: React.FC = () => {
       "description": "Thi công và lắp đặt hệ thống pin năng lượng mặt trời, máy phát điện năng lượng mặt trời, inverter, thiết bị năng lượng mặt trời tại Đà Nẵng và toàn quốc.",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "50B Nguyễn Du, Quận Hải Châu",
-        "addressLocality": "Đà Nẵng",
+        "streetAddress": "50B Nguyễn Du",
+        "addressLocality": "Hải Châu",
+        "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
       },
-      "telephone": "+84-915-059-666",
+      "telephone": "+84-236-3745-555",
       "email": "info@ctcdn.vn",
       "url": "https://www.ctcdn.vn"
     }

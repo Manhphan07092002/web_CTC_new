@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, FileText, Upload, Save, X, BookOpen, Shield } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, FileText, Upload, Save, X } from 'lucide-react';
 
 interface Resource {
   _id: string;
   title: string;
   description: string;
   fileUrl: string;
-  type: 'catalogue' | 'manual' | 'policy';
+  categoryId: string | { _id: string; name: string; isActive: boolean };
   size: string;
   isActive: boolean;
   createdAt: string;
 }
 
+interface DocumentCategory {
+  _id: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+}
+
 const ResourceManagement: React.FC = () => {
   const [resources, setResources] = useState<Resource[]>([]);
+  const [categories, setCategories] = useState<DocumentCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [currentResource, setCurrentResource] = useState<Partial<Resource>>({});
@@ -23,6 +31,7 @@ const ResourceManagement: React.FC = () => {
 
   useEffect(() => {
     fetchResources();
+    fetchCategories();
   }, []);
 
   const fetchResources = async () => {
@@ -47,9 +56,21 @@ const ResourceManagement: React.FC = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/document-categories');
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
   const handleSave = async () => {
-    if (!currentResource.title || !currentResource.fileUrl || !currentResource.type) {
-      alert('Vui lòng nhập đầy đủ thông tin bắt buộc (Tiêu đề, Đường dẫn/File, Loại)');
+    if (!currentResource.title || !currentResource.fileUrl || !currentResource.categoryId) {
+      alert('Vui lòng nhập đầy đủ thông tin bắt buộc (Tiêu đề, Đường dẫn/File, Thể loại)');
       return;
     }
 
@@ -64,7 +85,13 @@ const ResourceManagement: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(currentResource)
+        body: JSON.stringify({
+          ...currentResource,
+          // Gửi categoryId dạng string
+          categoryId: typeof currentResource.categoryId === 'object' && currentResource.categoryId
+            ? currentResource.categoryId._id
+            : currentResource.categoryId
+        })
       });
 
       if (response.ok) {
@@ -72,7 +99,8 @@ const ResourceManagement: React.FC = () => {
         setCurrentResource({});
         fetchResources();
       } else {
-        alert('Có lỗi xảy ra khi lưu tài liệu');
+        const errorData = await response.json();
+        alert(errorData.message || 'Có lỗi xảy ra khi lưu tài liệu');
       }
     } catch (error) {
       console.error('Error saving resource:', error);
@@ -92,6 +120,8 @@ const ResourceManagement: React.FC = () => {
       });
       if (response.ok) {
         fetchResources();
+      } else {
+        alert('Có lỗi xảy ra khi xóa tài liệu');
       }
     } catch (error) {
       console.error('Error deleting resource:', error);
@@ -138,42 +168,41 @@ const ResourceManagement: React.FC = () => {
 
   const filteredResources = resources.filter(res => {
     const matchesSearch = res.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === 'all' || res.type === filterType;
+    const resCategoryId = typeof res.categoryId === 'object' && res.categoryId ? res.categoryId._id : res.categoryId;
+    const matchesType = filterType === 'all' || resCategoryId === filterType;
     return matchesSearch && matchesType;
   });
 
-  const getTypeLabel = (type: string) => {
-    switch(type) {
-      case 'catalogue': return 'Catalogue';
-      case 'manual': return 'Hướng dẫn sử dụng';
-      case 'policy': return 'Chính sách bảo hành';
-      default: return type;
+  const getCategoryName = (res: Resource) => {
+    if (typeof res.categoryId === 'object' && res.categoryId) {
+      return res.categoryId.name;
     }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch(type) {
-      case 'catalogue': return <FileText size={16} />;
-      case 'manual': return <BookOpen size={16} />;
-      case 'policy': return <Shield size={16} />;
-      default: return <FileText size={16} />;
-    }
+    const found = categories.find(c => c._id === res.categoryId);
+    return found ? found.name : 'Chưa phân loại';
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Quản lý Tài liệu</h2>
-        <button
-          onClick={() => {
-            setCurrentResource({ type: 'catalogue', isActive: true });
-            setIsEditing(true);
-          }}
-          className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2"
-        >
-          <Plus size={20} />
-          <span>Thêm mới</span>
-        </button>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Quản lý Tài liệu</h1>
+          <p className="text-gray-500 mt-1">Quản lý các tài liệu và file tài liệu kỹ thuật của hệ thống</p>
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => {
+              setCurrentResource({ 
+                categoryId: categories[0]?._id || '', 
+                isActive: true 
+              });
+              setIsEditing(true);
+            }}
+            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <Plus size={20} />
+            <span>Thêm mới</span>
+          </button>
+        )}
       </div>
 
       {isEditing ? (
@@ -210,15 +239,20 @@ const ResourceManagement: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Loại tài liệu *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Thể loại tài liệu *</label>
                 <select
-                  value={currentResource.type || 'catalogue'}
-                  onChange={e => setCurrentResource(prev => ({ ...prev, type: e.target.value as any }))}
+                  value={
+                    typeof currentResource.categoryId === 'object' && currentResource.categoryId
+                      ? currentResource.categoryId._id
+                      : (currentResource.categoryId || '')
+                  }
+                  onChange={e => setCurrentResource(prev => ({ ...prev, categoryId: e.target.value }))}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                 >
-                  <option value="catalogue">Catalogue</option>
-                  <option value="manual">Hướng dẫn sử dụng</option>
-                  <option value="policy">Chính sách bảo hành</option>
+                  <option value="" disabled>-- Chọn thể loại --</option>
+                  {categories.map(cat => (
+                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -299,9 +333,9 @@ const ResourceManagement: React.FC = () => {
                 className="p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
               >
                 <option value="all">Tất cả loại</option>
-                <option value="catalogue">Catalogue</option>
-                <option value="manual">Hướng dẫn sử dụng</option>
-                <option value="policy">Chính sách bảo hành</option>
+                {categories.map(cat => (
+                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -329,7 +363,8 @@ const ResourceManagement: React.FC = () => {
                       </td>
                       <td className="p-4">
                         <span className="flex items-center gap-1 text-sm bg-gray-100 px-2 py-1 rounded-full w-fit">
-                          {getTypeIcon(resource.type)} {getTypeLabel(resource.type)}
+                          <FileText size={16} className="text-primary" />
+                          {getCategoryName(resource)}
                         </span>
                       </td>
                       <td className="p-4 text-sm text-gray-500">{resource.size || '-'}</td>
@@ -341,7 +376,14 @@ const ResourceManagement: React.FC = () => {
                       <td className="p-4 text-right space-x-2">
                         <button
                           onClick={() => {
-                            setCurrentResource(resource);
+                            // Chuyển categoryId sang dạng ID string khi đưa vào form edit
+                            const catId = typeof resource.categoryId === 'object' && resource.categoryId
+                              ? resource.categoryId._id
+                              : resource.categoryId;
+                            setCurrentResource({
+                              ...resource,
+                              categoryId: catId
+                            });
                             setIsEditing(true);
                           }}
                           className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"

@@ -20,6 +20,13 @@ interface Goal {
   createdAt: string;
 }
 
+const getApiBase = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  return `${protocol}//${hostname}:4000/api`;
+};
+const API_BASE = getApiBase();
+
 const GoalsManagement: React.FC = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +62,7 @@ const GoalsManagement: React.FC = () => {
 
   const fetchGoals = async () => {
     try {
-      const response = await fetch('http://103.161.171.54:4000/api/goals');
+      const response = await fetch(`${API_BASE}/goals`);
       const data = await response.json();
       setGoals(data);
     } catch (error) {
@@ -67,7 +74,7 @@ const GoalsManagement: React.FC = () => {
 
   const fetchCurrentGoal = async () => {
     try {
-      const response = await fetch('http://103.161.171.54:4000/api/goals/current');
+      const response = await fetch(`${API_BASE}/goals/current`);
       const data = await response.json();
       setCurrentGoal(data);
     } catch (error) {
@@ -80,8 +87,8 @@ const GoalsManagement: React.FC = () => {
     
     try {
       const url = editingGoal
-        ? `http://103.161.171.54:4000/api/goals/${editingGoal.id}`
-        : 'http://103.161.171.54:4000/api/goals';
+        ? `${API_BASE}/goals/${editingGoal.id}`
+        : `${API_BASE}/goals`;
       
       const method = editingGoal ? 'PUT' : 'POST';
       
@@ -105,7 +112,7 @@ const GoalsManagement: React.FC = () => {
     if (!confirm('Bạn có chắc muốn xóa mục tiêu này?')) return;
     
     try {
-      const response = await fetch(`http://103.161.171.54:4000/api/goals/${id}`, {
+      const response = await fetch(`${API_BASE}/goals/${id}`, {
         method: 'DELETE'
       });
 

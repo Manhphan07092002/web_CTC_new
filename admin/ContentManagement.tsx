@@ -8,6 +8,7 @@ import { usePermission, PermissionGate } from '../contexts/PermissionContext';
 import PriceDisplay from '../components/PriceDisplay';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import FilePickerModal from './FilePickerModal';
+import ResourceManagement from './ResourceManagement';
 
 interface Product {
   id: string;
@@ -337,6 +338,10 @@ const ContentManagement: React.FC = () => {
     t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     t.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (currentTab === 'resources') {
+    return <ResourceManagement />;
+  }
 
   return (
     <div className="space-y-6">

@@ -47,7 +47,7 @@ const Settings: React.FC = () => {
     favicon: '',
     appleTouchIcon: '',
     email: 'info@ctcdn.vn',
-    phone: '0915 059 666',
+    phone: '0236 3745 555',
     address: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
     facebook: '',
     instagram: '',

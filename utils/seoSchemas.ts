@@ -7,16 +7,16 @@
 const SITE_URL = 'https://www.ctcdn.vn';
 const SITE_NAME = 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung';
 const SITE_SHORT_NAME = 'CTC';
-const COMPANY_PHONE = '+84 236 656 2020';
+const COMPANY_PHONE = '+84 236 3745 555';
 const COMPANY_EMAIL = 'info@ctcdn.vn';
 const COMPANY_ADDRESS = {
-  street: '275-279 Diên Hồng',
-  ward: 'Phường Hòa Xuân',
-  district: 'Quận Cẩm Lệ', 
+  street: '50B Nguyễn Du',
+  ward: '',
+  district: 'Hải Châu', 
   city: 'Đà Nẵng',
   postalCode: '550000',
   country: 'VN',
-  full: '50B Nguyễn Du, Quận Hải Châu, Đà Nẵng'
+  full: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
 };
 
 // ==================== LOCAL BUSINESS SCHEMA ====================
@@ -66,8 +66,8 @@ export function generateLocalBusinessSchema(data: LocalBusinessData = {}) {
       longitude: data.geo.longitude
     } : {
       '@type': 'GeoCoordinates',
-      latitude: 16.0190,
-      longitude: 108.2208
+      latitude: 16.0759,
+      longitude: 108.2201
     },
     openingHoursSpecification: [
       {
@@ -87,8 +87,8 @@ export function generateLocalBusinessSchema(data: LocalBusinessData = {}) {
     image: data.image || `${SITE_URL}/uploads/images/logo/tran-le-og.jpg`,
     logo: data.logo || `${SITE_URL}/uploads/images/logo/logo.png`,
     sameAs: [
-      'https://www.facebook.com/tranleelectricity',
-      'https://www.youtube.com/@tranleelectricity',
+      'https://www.facebook.com/ctcdn',
+      'https://www.youtube.com/@ctcdn',
       'https://zalo.me/0915059666'
     ]
   };
@@ -230,14 +230,14 @@ export function generateOrganizationSchema(data: LocalBusinessData = {}) {
     '@type': 'Organization',
     '@id': `${SITE_URL}/#organization`,
     name: data.name || SITE_NAME,
-    alternateName: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company',
+    alternateName: 'CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS  CONSTRUCTION JOINT - STOCK COMPANY',
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
       url: data.logo || `${SITE_URL}/uploads/images/logo/logo.png`
     },
     taxID: '0400458940',
-    foundingDate: '1992-01-01',
+    foundingDate: '2004-02-11',
     founder: {
       '@type': 'Person',
       name: 'Nguyễn Văn Duy'
@@ -245,7 +245,7 @@ export function generateOrganizationSchema(data: LocalBusinessData = {}) {
     address: {
       '@type': 'PostalAddress',
       streetAddress: COMPANY_ADDRESS.street,
-      addressLocality: COMPANY_ADDRESS.city,
+      addressLocality: COMPANY_ADDRESS.district,
       addressRegion: COMPANY_ADDRESS.city,
       postalCode: COMPANY_ADDRESS.postalCode,
       addressCountry: COMPANY_ADDRESS.country
@@ -259,8 +259,8 @@ export function generateOrganizationSchema(data: LocalBusinessData = {}) {
       availableLanguage: ['Vietnamese', 'English']
     },
     sameAs: [
-      'https://www.facebook.com/tranleelectricity',
-      'https://www.youtube.com/@tranleelectricity',
+      'https://www.facebook.com/ctcdn',
+      'https://www.youtube.com/@ctcdn',
       'https://zalo.me/0915059666'
     ]
   };

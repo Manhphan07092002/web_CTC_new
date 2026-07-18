@@ -772,12 +772,28 @@ export const TRANSLATION_FIELDS = {
   testimonial: ['role', 'content'],
   category: ['name', 'description']
 } as const;
+// DocumentCategory Schema
+export interface IDocumentCategory extends BaseDocument {
+  name: string;
+  description?: string;
+  isActive: boolean;
+}
+
+const DocumentCategorySchema = new Schema<IDocumentCategory>({
+  name: { type: String, required: true, unique: true, trim: true },
+  description: { type: String, trim: true },
+  isActive: { type: Boolean, default: true }
+}, { timestamps: true });
+
+export const DocumentCategory = mongoose.model<IDocumentCategory>('DocumentCategory', DocumentCategorySchema);
+
 // Resource (Document) Schema
 export interface IResource extends BaseDocument {
   title: string;
   description?: string;
   fileUrl: string;
-  type: 'catalogue' | 'manual' | 'policy';
+  type?: string;
+  categoryId: mongoose.Types.ObjectId | IDocumentCategory;
   size?: string;
   isActive: boolean;
 }
@@ -786,8 +802,10 @@ const ResourceSchema = new Schema<IResource>({
   title: { type: String, required: true, trim: true },
   description: { type: String, trim: true },
   fileUrl: { type: String, required: true },
-  type: { type: String, required: true, enum: ['catalogue', 'manual', 'policy'] },
+  type: { type: String },
+  categoryId: { type: Schema.Types.ObjectId, ref: 'DocumentCategory', required: true },
   size: { type: String },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
+
 export const Resource = mongoose.model<IResource>('Resource', ResourceSchema);
