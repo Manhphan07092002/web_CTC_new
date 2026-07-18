@@ -123,6 +123,69 @@ const Header: React.FC = () => {
 
   return (
     <header className={getHeaderContainerClass()}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* Premium Header Contact Button Effects */
+        .btn-header-contact {
+            position: relative;
+            overflow: hidden;
+            border: 1.5px solid rgba(56, 189, 248, 0.25) !important;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        
+        .btn-header-contact-shimmer {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-20deg);
+            pointer-events: none;
+            animation: headerBtnShimmer 5s infinite ease-in-out;
+        }
+        
+        @keyframes headerBtnShimmer {
+            0% { left: -150%; }
+            15% { left: 150%; }
+            100% { left: 150%; }
+        }
+        
+        .btn-header-contact:hover {
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.45), 
+                        0 0 15px rgba(56, 189, 248, 0.35),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+            border-color: rgba(56, 189, 248, 0.6) !important;
+            transform: scale(1.05) translateY(-1.5px) !important;
+        }
+        
+        /* Manual hover shimmer sweep override */
+        .btn-header-contact:hover .btn-header-contact-shimmer {
+            animation: none;
+            left: 150%;
+            transition: left 0.75s ease;
+        }
+        
+        /* Phone vibrating ring animation */
+        @keyframes phoneRingVibe {
+            0%, 100% { transform: rotate(0deg); }
+            12% { transform: rotate(-18deg); }
+            24% { transform: rotate(16deg); }
+            36% { transform: rotate(-14deg); }
+            48% { transform: rotate(12deg); }
+            60% { transform: rotate(-10deg); }
+            72% { transform: rotate(8deg); }
+            84% { transform: rotate(-5deg); }
+        }
+        
+        .phone-vibe-icon {
+            display: inline-block;
+            transform-origin: center;
+        }
+        
+        .btn-header-contact:hover .phone-vibe-icon {
+            animation: phoneRingVibe 0.7s ease-in-out;
+        }
+      `}} />
       
       {/* Top Bar (Collapses dynamically when scrolling down) */}
       <div className={getTopBarClass()}>
@@ -245,9 +308,10 @@ const Header: React.FC = () => {
               href="https://zalo.me/0915059666" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-lg shadow-sky-500/10 hover:shadow-sky-500/25 transition-all hover:scale-105 active:scale-95"
+              className="btn-header-contact inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-lg transition-all active:scale-95"
             >
-              <Phone size={14} className="animate-bounce" />
+              <span className="btn-header-contact-shimmer"></span>
+              <Phone size={14} className="phone-vibe-icon" />
               <span>Liên hệ</span>
             </a>
           </div>
@@ -315,10 +379,11 @@ const Header: React.FC = () => {
             <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
               <a 
                 href="https://zalo.me/0915059666"
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-full shadow-lg shadow-sky-500/10"
+                className="btn-header-contact flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-full shadow-lg"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <Phone size={14} />
+                <span className="btn-header-contact-shimmer"></span>
+                <Phone size={14} className="phone-vibe-icon" />
                 <span>Liên hệ Zalo</span>
               </a>
               <div className="flex justify-center gap-6 text-xs text-slate-400 mt-2">
