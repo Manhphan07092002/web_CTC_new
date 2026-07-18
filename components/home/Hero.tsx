@@ -18,10 +18,10 @@ const Hero: React.FC = () => {
     link.setAttribute('fetchpriority', 'high');
     document.head.appendChild(link);
 
-    // Load Outfit and Plus Jakarta Sans fonts
+    // Load Montserrat and Be Vietnam Pro fonts
     const fontLink = document.createElement('link');
     fontLink.rel = 'stylesheet';
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap';
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap';
     document.head.appendChild(fontLink);
 
     return () => {
@@ -338,23 +338,23 @@ const Hero: React.FC = () => {
 
         /* 2027 Typography: Giant text gradients & text outlines */
         .brand-title-upper {
-            font-family: 'Outfit', sans-serif;
-            font-size: clamp(0.95rem, 2.5vw, 1.35rem);
+            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
+            font-size: clamp(0.85rem, 2vw, 1.15rem);
             font-weight: 600;
-            letter-spacing: 8px;
+            letter-spacing: 6px;
             color: #94a3b8;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             animation: revealUpBlur 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
         }
 
         .brand-title-main {
-            font-family: 'Outfit', sans-serif;
-            font-size: clamp(2.3rem, 5.8vw, 4.8rem);
-            font-weight: 900;
-            line-height: 1.15;
+            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
+            font-size: clamp(1.5rem, 3.2vw, 2.8rem); /* Giảm kích thước */
+            font-weight: 800;
+            line-height: 1.2;
             text-transform: uppercase;
-            letter-spacing: -1.5px;
+            letter-spacing: -0.5px;
             margin-bottom: 30px;
             background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 40%, #bae6fd 75%, #38bdf8 100%);
             -webkit-background-clip: text;
@@ -362,6 +362,7 @@ const Hero: React.FC = () => {
             filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4));
             animation: revealUpBlur 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
             transition: all 0.5s ease;
+            white-space: nowrap; /* Giữ chữ trên một dòng trên màn hình lớn */
         }
 
         /* Dynamic slogan container */
@@ -569,7 +570,7 @@ const Hero: React.FC = () => {
                 max-width: 1300px;
             }
             .brand-title-main {
-                font-size: 5.5rem;
+                font-size: 3.4rem; /* Giảm size để tránh xuống dòng */
                 margin-bottom: 35px;
             }
             .btn-modern {
@@ -584,7 +585,7 @@ const Hero: React.FC = () => {
                 min-height: 600px;
             }
             .brand-title-main {
-                font-size: 3.5rem;
+                font-size: 2.3rem; /* Giảm size để tránh xuống dòng */
                 margin-bottom: 24px;
             }
             .slogan-slider-container {
@@ -612,10 +613,11 @@ const Hero: React.FC = () => {
                 font-size: 0.85rem;
             }
             .brand-title-main {
-                font-size: 2.4rem;
-                line-height: 1.2;
+                font-size: 2rem;
+                line-height: 1.25;
                 margin-bottom: 24px;
                 letter-spacing: -0.5px;
+                white-space: normal; /* Cho phép xuống dòng tự nhiên trên mobile */
             }
             .slogan-slider-container {
                 min-height: 90px;
