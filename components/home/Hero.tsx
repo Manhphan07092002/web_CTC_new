@@ -4,6 +4,11 @@ import { useLanguage } from '../../contexts/LanguageContext';
 
 const Hero: React.FC = () => {
   const { language } = useLanguage();
+  
+  // Auto-incrementing years of experience starting from 2004 (incorporation date)
+  const currentYear = new Date().getFullYear();
+  const yearsOfExperience = currentYear - 2004;
+
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Load Montserrat and Be Vietnam Pro fonts dynamically
@@ -35,7 +40,7 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Liên hệ Zalo',
       panelTitle: 'NĂNG LỰC DOANH NGHIỆP',
       stat1Title: 'Kinh nghiệm',
-      stat1Val: '32+ Năm',
+      stat1Val: `${yearsOfExperience}+ Năm`,
       stat1Desc: 'Phát triển vững mạnh',
       stat2Title: 'Dự án thực hiện',
       stat2Val: '500+ Dự án',
@@ -61,7 +66,7 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Contact Zalo',
       panelTitle: 'CORPORATE CAPABILITIES',
       stat1Title: 'Experience',
-      stat1Val: '32+ Years',
+      stat1Val: `${yearsOfExperience}+ Years`,
       stat1Desc: 'Sustainable growth',
       stat2Title: 'Projects Completed',
       stat2Val: '500+ Projects',
@@ -87,7 +92,7 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zalo 문의',
       panelTitle: '기업 핵심 역량',
       stat1Title: '경력',
-      stat1Val: '32+ 년',
+      stat1Val: `${yearsOfExperience}+ 년`,
       stat1Desc: '지속 가능한 성장',
       stat2Title: '완료된 프로젝트',
       stat2Val: '500+ 프로젝트',
@@ -113,7 +118,7 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zaloでお問い合わせ',
       panelTitle: '企業実績・能力',
       stat1Title: '事業経験',
-      stat1Val: '32年以上',
+      stat1Val: `${yearsOfExperience}年以上`,
       stat1Desc: '持続的な発展と信頼',
       stat2Title: '完工プロジェクト',
       stat2Val: '500件以上',
@@ -139,7 +144,7 @@ const Hero: React.FC = () => {
       ctaSecondary: '联系 Zalo',
       panelTitle: '企业核心能力',
       stat1Title: '行业经验',
-      stat1Val: '32+ 年',
+      stat1Val: `${yearsOfExperience}+ 年`,
       stat1Desc: '稳健持续发展',
       stat2Title: '已完成项目',
       stat2Val: '500+ 项目',
@@ -165,7 +170,7 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zalo Kontakt',
       panelTitle: 'UNTERNEHMENSKOMPETENZEN',
       stat1Title: 'Erfahrung',
-      stat1Val: '32+ Jahre',
+      stat1Val: `${yearsOfExperience}+ Jahre`,
       stat1Desc: 'Nachhaltiges Wachstum',
       stat2Title: 'Fertiggestellte Projekte',
       stat2Val: '500+ Projekte',

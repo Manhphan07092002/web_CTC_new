@@ -36,8 +36,8 @@ export const COMPANY = {
     postalCode: '550000',
     country: 'VN',
     countryName: 'Việt Nam',
-    full: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
-    short: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
+    full: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
+    short: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng'
   },
   
   // Tọa độ

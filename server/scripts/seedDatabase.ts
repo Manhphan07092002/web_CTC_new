@@ -66,7 +66,7 @@ const seedDatabase = async () => {
       logo: '/uploads/images/logo/logodo.png',
       email: 'info@ctcdn.vn',
       phone: '02363745555',
-      address: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
+      address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
       maintenance: false,
       notifyEmail: true,
       twoFactorAuth: false,

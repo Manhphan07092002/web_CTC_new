@@ -8,10 +8,12 @@
 *   **Tên viết tắt**: CTC
 *   **Tên tiếng Anh**: Central Vietnam Posts and Telecommunications Construction Joint-Stock Company
 *   **Mã số thuế**: 0400458940
-*   **Ngày thành lập giấy phép**: 30/01/2004
+*   **Ngày đăng ký lần đầu**: 30/01/2004
+*   **Đăng ký thay đổi lần thứ 9**: 13/11/2015
+*   **Vốn điều lệ**: 9.987.660.000 VNĐ (Chín tỷ chín trăm tám mươi bảy triệu sáu trăm sáu mươi nghìn đồng)
 *   **Năm bắt đầu khởi sự hoạt động**: 1993 (Có **32+ năm kinh nghiệm** tính đến năm 2026)
 *   **Người đại diện pháp luật**: NGUYỄN VĂN DUY (CEO / Tổng Giám đốc)
-*   **Địa chỉ đăng ký**: 50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam
+*   **Địa chỉ đăng ký**: 50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng, Việt Nam
 *   **Điện thoại cố định**: 02363745555
 *   **Hotline Zalo hỗ trợ**: 0915059666
 

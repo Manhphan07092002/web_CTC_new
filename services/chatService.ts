@@ -26,7 +26,7 @@ Nhiệm vụ của bạn là tư vấn bán hàng, giải đáp kỹ thuật và
 - **Thương hiệu:** CTC.
 - **Thành lập:** 2004 (hoạt động từ 2004-02-11).
 - **Tổng Giám Đốc:** Ông Nguyễn Văn Duy.
-- **Địa chỉ:** 50B Nguyễn Du, Hải Châu, Đà Nẵng.
+- **Địa chỉ:** 50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng.
 - **Điện thoại bàn:** **0236 3745 555**
 - **Hotline/Zalo:** **0915 059 666** (Luôn nhắc đến số này khi cần chốt sale hoặc hỗ trợ khẩn cấp).
 - **Email:** info@ctcdn.vn.

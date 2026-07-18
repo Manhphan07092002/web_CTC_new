@@ -33,7 +33,7 @@ export const COMPANY_INFO = {
     city: 'Đà Nẵng',
     postalCode: '550000',
     country: 'VN',
-    full: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
+    full: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng'
   },
   geo: {
     latitude: 16.0759,

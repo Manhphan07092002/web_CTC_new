@@ -7,7 +7,7 @@ mongoose.connect(process.env.MONGODB_URI).then(async () => {
   
   await Setting.updateMany({}, {
     $set: {
-      address: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
+      address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
       email: 'info@ctcdn.vn',
       phone: '0236 3745 555',
       siteName: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung',

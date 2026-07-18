@@ -38,7 +38,7 @@ const translations: Record<Language, Translations> = {
       solutions_title: 'Giải pháp',
       contact_title: 'Liên hệ',
       desc: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). Doanh nghiệp hàng đầu trong lĩnh vực xây lắp và năng lượng tái tạo.',
-      address: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
+      address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
       copyright: '© 2024 CTC. Bảo lưu mọi quyền.'
     },
     common: {
@@ -109,7 +109,7 @@ const translations: Record<Language, Translations> = {
       // Stats
       stat_exp: 'Năm kinh nghiệm',
       stat_projects: 'Dự án đã thực hiện',
-      stat_capacity: 'Doanh thu 2025',
+      stat_capacity: 'Tổng công suất',
       stat_satisfaction: 'Kỹ sư chủ chốt',
 
       // Workflow
@@ -520,7 +520,7 @@ const translations: Record<Language, Translations> = {
       // Stats
       stat_exp: 'Years Experience',
       stat_projects: 'Projects Done',
-      stat_capacity: '2025 Revenue',
+      stat_capacity: 'Total Capacity',
       stat_satisfaction: 'Key Engineers',
 
        // Workflow
@@ -929,7 +929,7 @@ const translations: Record<Language, Translations> = {
       partners_financial: '금융 파트너',
       stat_exp: '년 경험',
       stat_projects: '완료된 프로젝트',
-      stat_capacity: '2025년 매출',
+      stat_capacity: '총 용량',
       stat_satisfaction: '핵심 엔지니어',
       workflow_badge: '프로세스',
       workflow_title: '표준 구현 프로세스',
@@ -1323,7 +1323,7 @@ const translations: Record<Language, Translations> = {
       partners_financial: '金融パートナー',
       stat_exp: '年の経験',
       stat_projects: '完了プロジェクト',
-      stat_capacity: '2025年売上',
+      stat_capacity: '総容量',
       stat_satisfaction: '主要技術者',
       workflow_badge: 'プロセス',
       workflow_title: '標準実装プロセス',

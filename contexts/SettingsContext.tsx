@@ -36,7 +36,7 @@ const defaultSettings: SiteSettings = {
   logo: '/uploads/images/logo/logodo.png',
   email: 'info@ctcdn.vn',
   phone: '0236 3745 555',
-  address: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
+  address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
   facebook: 'https://facebook.com/ctcdn',
   instagram: 'https://instagram.com/ctcdn',
   youtube: 'https://youtube.com/@ctcdn',

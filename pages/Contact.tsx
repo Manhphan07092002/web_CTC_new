@@ -140,7 +140,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">{t('footer.address')}</h4>
-                    <p className="text-sm text-gray-600">50B Nguyễn Du, Hải Châu, Đà Nẵng</p>
+                    <p className="text-sm text-gray-600">50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng</p>
                   </div>
                 </div>
 

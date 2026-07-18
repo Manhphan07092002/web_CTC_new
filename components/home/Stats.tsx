@@ -4,14 +4,18 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 
 const Stats: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const { ref: statsRef, isInView } = useInView(0.1);
 
+  // Auto-incrementing years of experience starting from 2004 (incorporation date)
+  const currentYear = new Date().getFullYear();
+  const yearsOfExperience = currentYear - 2004;
+
   const statsList = [
-    { icon: Trophy, value: '32+', label: t('home.stat_exp') },
+    { icon: Trophy, value: `${yearsOfExperience}+`, label: t('home.stat_exp') },
     { icon: Building2, value: '500+', label: t('home.stat_projects') },
-    { icon: Zap, value: language === 'vi' ? '288+ Tỷ' : '288+B', label: t('home.stat_capacity') },
-    { icon: Handshake, value: '53+', label: t('home.stat_satisfaction') }
+    { icon: Zap, value: '50+ MW', label: t('home.stat_capacity') },
+    { icon: Handshake, value: '50+', label: t('home.stat_satisfaction') }
   ];
 
   return (
