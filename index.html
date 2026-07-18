@@ -481,41 +481,12 @@
         --tw-ring-color: #475569 !important;
       }
       
-      /* ===== Special Components ===== */
-      /* Header/Navbar - Force same background */
-      .dark header,
-      .dark header > *,
-      .dark header > div,
-      .dark header > div > *,
-      .dark header .container,
-      .dark header .container > *,
-      .dark nav,
-      .dark nav > *,
-      .dark [class*="header"],
-      .dark [class*="navbar"],
-      .dark [class*="nav-"],
-      .dark .sticky,
-      .dark .fixed {
-        background-color: #0f172a !important;
-        border-color: #334155 !important;
-      }
-      
+      /* Header/Navbar - Styled locally in React component */
       .dark header a,
       .dark nav a,
       .dark header button,
       .dark nav button {
-        background-color: transparent !important;
-      }
-      
-      .dark header .bg-white,
-      .dark header .bg-gray-50,
-      .dark header .bg-gray-100,
-      .dark nav .bg-white,
-      .dark nav .bg-gray-50,
-      .dark nav .bg-gray-100,
-      .dark header div[class*="bg-"],
-      .dark nav div[class*="bg-"] {
-        background-color: #0f172a !important;
+        background-color: transparent;
       }
       
       /* Top bar */
@@ -608,7 +579,7 @@
       /* Hide decorative blur circles in dark mode */
       .dark .blur-3xl,
       .dark .blur-2xl,
-      .dark [class*="blur-"] {
+      .dark div[class*="blur-"]:not([class*="backdrop-"]) {
         opacity: 0 !important;
       }
       
