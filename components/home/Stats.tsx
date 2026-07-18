@@ -33,24 +33,40 @@ const Stats: React.FC = () => {
 
         /* === UNIFIED CORPORATE DARK STATS CARD === */
         .glass-stat-card-dark {
-            border-radius: 16px; /* Matched 16px squircle radius from Hero.tsx */
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 16px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
             overflow: hidden;
-            background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
             z-index: 10;
         }
 
+        /* Ánh sáng lướt qua khi hover */
+        .glass-stat-card-dark::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(56, 189, 248, 0.15), transparent);
+            transform: translateX(-100%) skewX(-15deg);
+            transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 0;
+        }
+
+        .glass-stat-card-dark:hover::before {
+            transform: translateX(100%) skewX(-15deg);
+        }
+
         .glass-stat-card-dark:hover {
-            transform: translateY(-8px) scale(1.03);
-            background: rgba(15, 23, 42, 0.65);
-            border-color: rgba(56, 189, 248, 0.35);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7),
-                        0 0 20px rgba(56, 189, 248, 0.15);
+            transform: translateY(-12px);
+            background: rgba(15, 23, 42, 0.75);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.8),
+                        0 0 30px rgba(56, 189, 248, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         /* Outlined Cyan Icon Frame matching Hero dashboard exactly */
@@ -64,27 +80,32 @@ const Stats: React.FC = () => {
             align-items: center;
             justify-content: center;
             color: #38bdf8;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             box-shadow: inset 0 1px 1px rgba(56, 189, 248, 0.05);
+            position: relative;
+            z-index: 1;
         }
 
         .glass-stat-card-dark:hover .outlined-icon-frame {
-            transform: scale(1.1) rotate(6deg);
-            background: rgba(14, 165, 233, 0.2);
-            border-color: rgba(56, 189, 248, 0.6);
-            color: #38bdf8;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25), 
-                        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px) scale(1.15) rotate(10deg);
+            background: rgba(14, 165, 233, 0.25);
+            border-color: rgba(56, 189, 248, 0.7);
+            color: #ffffff;
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3), 
+                        inset 0 0 12px rgba(56, 189, 248, 0.4);
         }
 
         .stat-value-text-white {
             color: #ffffff;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            z-index: 1;
         }
 
         .glass-stat-card-dark:hover .stat-value-text-white {
-            transform: scale(1.04);
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+            transform: scale(1.08) translateY(-2px);
+            color: #38bdf8;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
         }
       `}} />
 
