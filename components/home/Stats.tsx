@@ -4,14 +4,14 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 
 const Stats: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ref: statsRef, isInView } = useInView(0.1);
 
   const statsList = [
-    { icon: Trophy, value: '22+', label: t('home.stat_exp') },
-    { icon: Building2, value: '500+', label: t('home.stat_projects') },
-    { icon: Zap, value: '50MW', label: t('home.stat_capacity') },
-    { icon: Handshake, value: '98%', label: t('home.stat_satisfaction') }
+    { icon: Trophy, value: '32+', label: t('home.stat_exp') },
+    { icon: Building2, value: '200+', label: t('home.stat_projects') },
+    { icon: Zap, value: language === 'vi' ? '288+ Tỷ' : '288+B', label: t('home.stat_capacity') },
+    { icon: Handshake, value: '53+', label: t('home.stat_satisfaction') }
   ];
 
   return (

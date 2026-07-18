@@ -72,7 +72,7 @@ const translations: Record<Language, Translations> = {
       all: 'Tất cả'
     },
     home: {
-      hero_badge: 'Hơn 22 năm phát triển vững mạnh',
+      hero_badge: 'Hơn 32 năm phát triển vững mạnh',
       hero_title: 'Giải pháp EPC',
       hero_subtitle: 'Hàng đầu Việt Nam',
       hero_desc: 'CTC mang đến giải pháp xây lắp và năng lượng tái tạo toàn diện, kiến tạo hạ tầng kỹ thuật bền vững.',
@@ -108,9 +108,9 @@ const translations: Record<Language, Translations> = {
       
       // Stats
       stat_exp: 'Năm kinh nghiệm',
-      stat_projects: 'Dự án hoàn thành',
-      stat_capacity: 'Tổng công suất',
-      stat_satisfaction: 'Khách hàng hài lòng',
+      stat_projects: 'Dự án đã thực hiện',
+      stat_capacity: 'Doanh thu 2025',
+      stat_satisfaction: 'Kỹ sư chủ chốt',
 
       // Workflow
       workflow_badge: 'Quy trình',
@@ -156,7 +156,7 @@ const translations: Record<Language, Translations> = {
       // About Company
       about_badge: 'VỀ CHÚNG TÔI',
       about_title: 'CTC - Đối tác tin cậy của bạn',
-      about_desc: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) tự hào với hơn 22 năm phát triển, là đơn vị chuyên cung cấp giải pháp tổng thể theo mô hình EPC (Engineering – Procurement – Construction) và Design & Build.',
+      about_desc: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) tự hào với hơn 32 năm phát triển, là đơn vị chuyên cung cấp giải pháp tổng thể theo mô hình EPC (Engineering – Procurement – Construction) và Design & Build.',
       about_desc_2: 'Chúng tôi đảm nhận toàn bộ quy trình từ khảo sát, tư vấn, thiết kế, thi công đến vận hành bảo trì, giúp tối ưu chi phí và đảm bảo tính đồng bộ của dự án.',
       mission: 'Sứ mệnh',
       mission_desc: 'Giải pháp kỹ thuật toàn diện',
@@ -227,7 +227,7 @@ const translations: Record<Language, Translations> = {
       success: 'Gửi thành công!'
     },
     about: {
-      hero_badge: 'Hơn 22 Năm Phát Triển',
+      hero_badge: 'Hơn 32 Năm Phát Triển',
       hero_title: 'CTC',
       hero_subtitle: '"Tổng thầu thiết kế, cung cấp thiết bị và thi công (EPC) hàng đầu Việt Nam"',
       ceo_title: 'Ông Nguyễn Văn Duy',
@@ -520,8 +520,8 @@ const translations: Record<Language, Translations> = {
       // Stats
       stat_exp: 'Years Experience',
       stat_projects: 'Projects Done',
-      stat_capacity: 'Total Capacity',
-      stat_satisfaction: 'Happy Clients',
+      stat_capacity: '2025 Revenue',
+      stat_satisfaction: 'Key Engineers',
 
        // Workflow
       workflow_badge: 'Process',
@@ -567,7 +567,7 @@ const translations: Record<Language, Translations> = {
       // About Company
       about_badge: 'ABOUT US',
       about_title: 'CTC - Your Trusted Partner',
-      about_desc: 'CTC Consulting and Construction Joint Stock Company (CTC) was established in 2015, specializing in comprehensive renewable energy solutions with experienced engineers and advanced technology.',
+      about_desc: 'CTC Consulting and Construction Joint Stock Company (CTC) was established in 32, specializing in comprehensive renewable energy solutions with experienced engineers and advanced technology.',
       about_desc_2: 'We are proud to be a strategic partner of world-leading brands such as Huawei, Canadian Solar, Longi, bringing customers high-quality products at the most competitive prices.',
       mission: 'Mission',
       mission_desc: 'Bringing clean energy to every home',
@@ -894,7 +894,7 @@ const translations: Record<Language, Translations> = {
       all: '전체'
     },
     home: {
-      hero_badge: '최신 AI 인버터 기술 2025',
+      hero_badge: '최신 AI 인버터 기술 32',
       hero_title: '청정 에너지',
       hero_subtitle: '지속 가능한 투자',
       hero_desc: 'CTC는 포괄적인 태양광 솔루션을 제공하여 전기 비용을 절감하고 친환경 미래를 만듭니다.',
@@ -929,8 +929,8 @@ const translations: Record<Language, Translations> = {
       partners_financial: '금융 파트너',
       stat_exp: '년 경험',
       stat_projects: '완료된 프로젝트',
-      stat_capacity: '총 용량',
-      stat_satisfaction: '만족한 고객',
+      stat_capacity: '2025년 매출',
+      stat_satisfaction: '핵심 엔지니어',
       workflow_badge: '프로세스',
       workflow_title: '표준 구현 프로세스',
       step_1: '조사 및 상담',
@@ -968,7 +968,7 @@ const translations: Record<Language, Translations> = {
       faq_4_a: '가정용(3kW - 10kW)의 경우 설치는 1-2일이 소요됩니다. 산업 프로젝트는 규모에 따라 일반적으로 2-4주가 소요됩니다.',
       about_badge: '회사 소개',
       about_title: 'CTC - 신뢰할 수 있는 파트너',
-      about_desc: 'CTC 전기 컨설팅 및 건설 주식회사(CTC)는 2015년에 설립되어 경험 많은 엔지니어와 첨단 기술로 포괄적인 재생 에너지 솔루션을 전문으로 합니다.',
+      about_desc: 'CTC 전기 컨설팅 및 건설 주식회사(CTC)는 32년에 설립되어 경험 많은 엔지니어와 첨단 기술로 포괄적인 재생 에너지 솔루션을 전문으로 합니다.',
       about_desc_2: '우리는 Huawei, Canadian Solar, Longi와 같은 세계 최고 브랜드의 전략적 파트너로서 고객에게 가장 경쟁력 있는 가격으로 고품질 제품을 제공합니다.',
       mission: '미션',
       mission_desc: '모든 가정에 청정 에너지 제공',
@@ -1288,7 +1288,7 @@ const translations: Record<Language, Translations> = {
       all: 'すべて'
     },
     home: {
-      hero_badge: '最新AIインバーター技術2025',
+      hero_badge: '最新AIインバーター技術32',
       hero_title: 'クリーンエネルギー',
       hero_subtitle: '持続可能な投資',
       hero_desc: 'CTCは包括的な太陽光発電ソリューションを提供し、電気代を節約し、グリーンな未来を創造します。',
@@ -1323,8 +1323,8 @@ const translations: Record<Language, Translations> = {
       partners_financial: '金融パートナー',
       stat_exp: '年の経験',
       stat_projects: '完了プロジェクト',
-      stat_capacity: '総容量',
-      stat_satisfaction: '満足した顧客',
+      stat_capacity: '2025年売上',
+      stat_satisfaction: '主要技術者',
       workflow_badge: 'プロセス',
       workflow_title: '標準実装プロセス',
       step_1: '調査＆コンサルティング',
