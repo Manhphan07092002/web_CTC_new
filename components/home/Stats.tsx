@@ -123,7 +123,7 @@ const Stats: React.FC = () => {
 
                 {/* Statistic Value (Always White) */}
                 <div className="stat-value-text-white text-3xl sm:text-4xl font-extrabold mb-2 tracking-tight">
-                  {stat.value}
+                  <AnimatedNumber valueStr={stat.value} isInView={isInView} />
                 </div>
 
                 {/* Statistic Label (Always Light Slate-400) */}
@@ -136,6 +136,48 @@ const Stats: React.FC = () => {
           </div>
         </div>
       </section>
+    </>
+  );
+};
+
+// Component helper để chạy hiệu ứng nhảy số
+const AnimatedNumber: React.FC<{ valueStr: string; isInView: boolean }> = ({ valueStr, isInView }) => {
+  const [count, setCount] = React.useState(0);
+  
+  // Tách số và phần chữ (VD: "1000+" -> số: 1000, chữ: "+")
+  const match = valueStr.match(/(\d+)(.*)/);
+  const targetNum = match ? parseInt(match[1], 10) : 0;
+  const suffix = match ? match[2] : valueStr;
+
+  React.useEffect(() => {
+    if (!isInView || targetNum === 0) return;
+    
+    let startTimestamp: number | null = null;
+    const duration = 2500; // 2.5 seconds
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      // Ease out function cho mượt
+      const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      
+      setCount(Math.floor(easeOut * targetNum));
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        setCount(targetNum); // Đảm bảo số cuối cùng chính xác tuyệt đối
+      }
+    };
+    
+    window.requestAnimationFrame(step);
+  }, [isInView, targetNum]);
+
+  if (!match) return <>{valueStr}</>;
+
+  return (
+    <>
+      {count}{suffix}
     </>
   );
 };
