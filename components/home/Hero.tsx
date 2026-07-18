@@ -35,13 +35,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Liên hệ Zalo',
       panelTitle: 'NĂNG LỰC DOANH NGHIỆP',
       stat1Title: 'Kinh nghiệm',
-      stat1Val: '32+ Năm',
+      stat1Val: '22+ Năm',
       stat1Desc: 'Phát triển vững mạnh',
       stat2Title: 'Dự án hoàn thành',
       stat2Val: '500+ Công trình',
       stat2Desc: 'Đạt chuẩn chất lượng',
       stat3Title: 'Phạm vi hoạt động',
-      stat3Val: '63 Tỉnh thành',
+      stat3Val: '34 Tỉnh thành',
       stat3Desc: 'Mạng lưới phủ rộng',
       partnerTitle: 'ĐỐI TÁC CHIẾN LƯỢC VIỄN THÔNG'
     },
@@ -61,13 +61,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Contact Zalo',
       panelTitle: 'CORPORATE CAPABILITIES',
       stat1Title: 'Experience',
-      stat1Val: '32+ Years',
+      stat1Val: '22+ Years',
       stat1Desc: 'Sustainable growth',
       stat2Title: 'Projects Completed',
       stat2Val: '500+ Works',
       stat2Desc: 'International standards',
       stat3Title: 'Network Coverage',
-      stat3Val: '63 Provinces',
+      stat3Val: '34 Provinces',
       stat3Desc: 'Nationwide operation',
       partnerTitle: 'TELECOM STRATEGIC PARTNERS'
     },
@@ -87,13 +87,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zalo 문의',
       panelTitle: '기업 핵심 역량',
       stat1Title: '경력',
-      stat1Val: '32+ 년',
+      stat1Val: '22+ 년',
       stat1Desc: '지속 가능한 성장',
       stat2Title: '완료된 프로젝트',
       stat2Val: '500+ 공사',
       stat2Desc: '국제 표준 준수',
       stat3Title: '네트워크 범위',
-      stat3Val: '63개 성·시',
+      stat3Val: '34개 성·시',
       stat3Desc: '전국적인 운영망',
       partnerTitle: '통신 전략적 파트너'
     },
@@ -113,13 +113,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zaloでお問い合わせ',
       panelTitle: '企業実績・能力',
       stat1Title: '事業経験',
-      stat1Val: '32年以上',
+      stat1Val: '22年以上',
       stat1Desc: '持続的な発展と信頼',
       stat2Title: '完工プロジェクト',
       stat2Val: '500件以上',
       stat2Desc: '高品質規格の達成',
       stat3Title: '活動範囲',
-      stat3Val: '63省・市',
+      stat3Val: '34省・市',
       stat3Desc: '全国をカバーするネットワーク',
       partnerTitle: '通信戦略パートナー'
     },
@@ -139,13 +139,13 @@ const Hero: React.FC = () => {
       ctaSecondary: '联系 Zalo',
       panelTitle: '企业核心能力',
       stat1Title: '行业经验',
-      stat1Val: '32+ 年',
+      stat1Val: '22+ 年',
       stat1Desc: '稳健持续发展',
       stat2Title: '已完成项目',
       stat2Val: '500+ 工程',
       stat2Desc: '符合国际标准',
       stat3Title: '业务覆盖',
-      stat3Val: '63 省市',
+      stat3Val: '34 省市',
       stat3Desc: '全国服务网络',
       partnerTitle: '电信战略合作伙伴'
     },
@@ -165,13 +165,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zalo Kontakt',
       panelTitle: 'UNTERNEHMENSKOMPETENZEN',
       stat1Title: 'Erfahrung',
-      stat1Val: '32+ Jahre',
+      stat1Val: '22+ Jahre',
       stat1Desc: 'Nachhaltiges Wachstum',
       stat2Title: 'Fertiggestellte Projekte',
       stat2Val: '500+ Werke',
       stat2Desc: 'Höchste Qualitätsstandards',
       stat3Title: 'Netzabdeckung',
-      stat3Val: '63 Provinzen',
+      stat3Val: '34 Provinzen',
       stat3Desc: 'Landesweite Präsenz',
       partnerTitle: 'STRATEGISCHE PARTNER'
     }
@@ -679,8 +679,8 @@ const Hero: React.FC = () => {
             overflow: hidden;
             position: relative;
             white-space: nowrap;
-            mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+            mask-image: linear-gradient(to right, transparent, white 8%, white 92%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, white 8%, white 92%, transparent);
         }
         .partner-ticker-items {
             display: inline-flex;

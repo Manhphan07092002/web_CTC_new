@@ -8,7 +8,7 @@ const Stats: React.FC = () => {
   const { ref: statsRef, isInView } = useInView(0.1);
 
   const statsList = [
-    { icon: Briefcase, value: '10+', label: t('home.stat_exp'), color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50' },
+    { icon: Briefcase, value: '22+', label: t('home.stat_exp'), color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50' },
     { icon: Check, value: '500+', label: t('home.stat_projects'), color: 'from-green-500 to-emerald-500', bg: 'bg-green-50' },
     { icon: Zap, value: '50MW', label: t('home.stat_capacity'), color: 'from-primary to-orange-500', bg: 'bg-orange-50' },
     { icon: Users, value: '98%', label: t('home.stat_satisfaction'), color: 'from-purple-500 to-pink-500', bg: 'bg-purple-50' }

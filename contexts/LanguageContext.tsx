@@ -72,7 +72,7 @@ const translations: Record<Language, Translations> = {
       all: 'Tất cả'
     },
     home: {
-      hero_badge: 'Hơn 32 năm phát triển vững mạnh',
+      hero_badge: 'Hơn 22 năm phát triển vững mạnh',
       hero_title: 'Giải pháp EPC',
       hero_subtitle: 'Hàng đầu Việt Nam',
       hero_desc: 'CTC mang đến giải pháp xây lắp và năng lượng tái tạo toàn diện, kiến tạo hạ tầng kỹ thuật bền vững.',
@@ -156,7 +156,7 @@ const translations: Record<Language, Translations> = {
       // About Company
       about_badge: 'VỀ CHÚNG TÔI',
       about_title: 'CTC - Đối tác tin cậy của bạn',
-      about_desc: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) tự hào với hơn 32 năm phát triển, là đơn vị chuyên cung cấp giải pháp tổng thể theo mô hình EPC (Engineering – Procurement – Construction) và Design & Build.',
+      about_desc: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) tự hào với hơn 22 năm phát triển, là đơn vị chuyên cung cấp giải pháp tổng thể theo mô hình EPC (Engineering – Procurement – Construction) và Design & Build.',
       about_desc_2: 'Chúng tôi đảm nhận toàn bộ quy trình từ khảo sát, tư vấn, thiết kế, thi công đến vận hành bảo trì, giúp tối ưu chi phí và đảm bảo tính đồng bộ của dự án.',
       mission: 'Sứ mệnh',
       mission_desc: 'Giải pháp kỹ thuật toàn diện',
@@ -227,7 +227,7 @@ const translations: Record<Language, Translations> = {
       success: 'Gửi thành công!'
     },
     about: {
-      hero_badge: 'Hơn 32 Năm Phát Triển',
+      hero_badge: 'Hơn 22 Năm Phát Triển',
       hero_title: 'CTC',
       hero_subtitle: '"Tổng thầu thiết kế, cung cấp thiết bị và thi công (EPC) hàng đầu Việt Nam"',
       ceo_title: 'Ông Nguyễn Văn Duy',
