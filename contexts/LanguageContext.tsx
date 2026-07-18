@@ -107,8 +107,8 @@ const translations: Record<Language, Translations> = {
       partners_financial: 'ĐỐI TÁC TÀI CHÍNH',
       
       // Stats
-      stat_exp: 'Năm kinh nghiệm',
-      stat_projects: 'Dự án đã thực hiện',
+      stat_assets: 'Tổng tài sản',
+      stat_sectors: 'Lĩnh vực hoạt động',
       stat_capacity: 'Tổng công suất',
       stat_satisfaction: 'Kỹ sư chủ chốt',
 
@@ -518,8 +518,8 @@ const translations: Record<Language, Translations> = {
       partners_financial: 'FINANCIAL PARTNERS',
 
       // Stats
-      stat_exp: 'Years Experience',
-      stat_projects: 'Projects Done',
+      stat_assets: 'Total Assets',
+      stat_sectors: 'Business Sectors',
       stat_capacity: 'Total Capacity',
       stat_satisfaction: 'Key Engineers',
 
@@ -927,8 +927,8 @@ const translations: Record<Language, Translations> = {
       partners_title: '주요 기술 파트너',
       partners_supplier: '공급 파트너',
       partners_financial: '금융 파트너',
-      stat_exp: '년 경험',
-      stat_projects: '완료된 프로젝트',
+      stat_assets: '총 자산',
+      stat_sectors: '사업 분야',
       stat_capacity: '총 용량',
       stat_satisfaction: '핵심 엔지니어',
       workflow_badge: '프로세스',
@@ -1321,8 +1321,8 @@ const translations: Record<Language, Translations> = {
       partners_title: '主要技術パートナー',
       partners_supplier: 'サプライヤーパートナー',
       partners_financial: '金融パートナー',
-      stat_exp: '年の経験',
-      stat_projects: '完了プロジェクト',
+      stat_assets: '総資産',
+      stat_sectors: '事業分野',
       stat_capacity: '総容量',
       stat_satisfaction: '主要技術者',
       workflow_badge: 'プロセス',
