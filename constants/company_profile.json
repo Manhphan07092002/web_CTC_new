@@ -1,0 +1,104 @@
+{
+  "company_name": {
+    "vi": "CÔNG TY CỔ PHẦN XÂY LẮP BƯU ĐIỆN MIỀN TRUNG",
+    "en": "CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS CONSTRUCTION JOINT-STOCK COMPANY",
+    "short": "CTC"
+  },
+  "tax_code": "0400458940",
+  "incorporation_date": "2004-01-30",
+  "establishment_year": 1993,
+  "representative": "NGUYỄN VĂN DUY",
+  "contact": {
+    "phone": "02363745555",
+    "hotline": "0915059666",
+    "address": "50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam",
+    "zalo": "https://zalo.me/0915059666"
+  },
+  "intro": {
+    "vi": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) là doanh nghiệp hoạt động trong lĩnh vực xây dựng hạ tầng kỹ thuật, viễn thông, công trình công nghiệp, dân dụng và năng lượng tái tạo.",
+    "en": "Central Vietnam Posts and Telecommunications Construction Joint-Stock Company (CTC) is an enterprise operating in the fields of technical infrastructure construction, telecommunications, industrial, civil engineering, and renewable energy."
+  },
+  "business_model": {
+    "services": ["Tư vấn", "Khảo sát", "Thiết kế", "Cung cấp thiết bị", "Thi công", "Vận hành", "Bảo trì"],
+    "project_types": ["Viễn thông", "Công nghệ thông tin", "Trung tâm dữ liệu", "Điện mặt trời", "Điện gió", "Hạ tầng kỹ thuật"]
+  },
+  "history": [
+    { "year": "1993", "event": "Khởi đầu quá trình hoạt động trong lĩnh vực xây dựng và hạ tầng kỹ thuật." },
+    { "year": "2004", "event": "Chính thức thành lập Công ty Cổ phần Xây lắp Bưu điện Miền Trung (30/01/2004) với MST: 0400458940." },
+    { "year": "2020", "event": "Được Bộ Xây dựng cấp Chứng chỉ năng lực hoạt động xây dựng." },
+    { "year": "2021-2025", "event": "Mở rộng mạnh sang năng lượng tái tạo (điện gió, điện mặt trời), hạ tầng truyền dẫn, Data Center, chuyển đổi số và EPC công nghiệp." }
+  ],
+  "vision": {
+    "vi": "Trở thành doanh nghiệp hàng đầu Việt Nam trong lĩnh vực hạ tầng viễn thông, hạ tầng kỹ thuật, năng lượng tái tạo (điện mặt trời, điện gió), EPC công nghiệp và hạ tầng số, ứng dụng công nghệ hiện đại mang lại giải pháp bền vững.",
+    "en": "To become a leading enterprise in Vietnam in telecommunications infrastructure, technical infrastructure, renewable energy (solar, wind), industrial EPC, and digital infrastructure."
+  },
+  "mission": {
+    "vi": "Mang đến các giải pháp toàn diện trong lĩnh vực viễn thông, CNTT, năng lượng tái tạo, xây dựng với cam kết: Chất lượng, An toàn, Tiến độ, Hiệu quả, Giá trị lâu dài.",
+    "en": "Provide comprehensive solutions in telecommunications, IT, renewable energy, and construction with commitment to Quality, Safety, Progress, Efficiency, and Long-term Value."
+  },
+  "slogan": {
+    "vi": "CTC – Niềm tin, Chất lượng",
+    "en": "CTC – Trust, Quality"
+  },
+  "core_values": ["Uy tín", "Chất lượng", "Chuyên nghiệp", "Đổi mới", "Trách nhiệm", "Đồng hành cùng khách hàng", "Phát triển bền vững"],
+  "business_sectors": {
+    "telecommunications": ["Mạng truyền dẫn", "Cáp quang", "BTS", "Tổng đài", "Hạ tầng viễn thông", "Hầm cáp", "Cột anten", "OSP", "ISP"],
+    "information_technology": ["Data Center", "Camera AI", "Network", "Server", "Security"],
+    "digital_transformation": ["Cloud"],
+    "renewable_energy": {
+      "solar": ["Rooftop Solar", "Commercial Solar", "Industrial Solar", "Telecom Solar", "EPC Solar", "O&M Solar"],
+      "wind": ["Wind Farm", "Wind Mast", "Trạm điện", "Transmission", "EPC Wind", "O&M Wind"]
+    },
+    "construction": ["Công nghiệp", "Dân dụng", "Hạ tầng kỹ thuật", "Giao thông", "Đường dây", "Trạm biến áp"],
+    "technical_services": ["EPC", "Design", "Consulting", "Survey", "Supervision", "Maintenance", "Operation"]
+  },
+  "financial_capacity": {
+    "revenue": {
+      "2023": "167 tỷ",
+      "2024": "138.5 tỷ",
+      "2025": "288 tỷ"
+    },
+    "total_assets": "181 tỷ",
+    "net_profit_2025": "913 triệu"
+  },
+  "human_resources": {
+    "leadership": ["Chủ tịch HĐQT", "Tổng Giám đốc Nguyễn Văn Duy", "Các Phó Tổng Giám đốc", "Ban Kiểm soát"],
+    "departments": ["Phòng Kỹ thuật", "Phòng Kinh doanh", "Phòng Tài chính – Tổng hợp"],
+    "technical_staff": {
+      "key_officers": 53,
+      "roles": ["Kỹ sư Viễn thông", "Kỹ sư Điện", "Kỹ sư Xây dựng", "Kỹ sư CNTT", "Kỹ sư Cầu đường", "Kỹ sư Điều khiển", "Quản lý dự án"],
+      "experience": "Nhiều kỹ sư đã trực tiếp tham gia 100–250 công trình thực tế."
+    }
+  },
+  "featured_projects": {
+    "telecommunications": ["Tuyến cáp quang Bộ Công an", "Metro Mobifone", "Hệ thống trạm BTS", "Hạ tầng OSP", "Hệ thống truyền dẫn"],
+    "energy_and_solar": ["Nhà máy điện gió Hướng Hiệp", "Điện gió Hướng Linh", "Điện gió Hướng Linh 4", "Trụ đo gió Điện Biên", "EPC Solar Rooftop", "Telecom Solar", "Commercial & Industrial Solar"],
+    "infrastructure": ["Trạm biến áp 110kV", "Hạ tầng kỹ thuật đô thị", "Công trình quốc phòng A70", "Hệ thống nguồn điện dự phòng", "Hệ thống tiếp địa chống sét"]
+  },
+  "key_clients": [
+    "Bộ Công an",
+    "Cục Kỹ thuật nghiệp vụ I",
+    "Mobifone",
+    "Tổng công ty Hạ tầng mạng (VNPT Net)",
+    "Dongfang Electric International Corporation",
+    "Công ty Cổ phần Điện gió Hướng Linh",
+    "Công ty Cổ phần Tư vấn Kỹ thuật Môi trường Việt Nam"
+  ],
+  "credentials": [
+    "Chứng chỉ năng lực hoạt động xây dựng hạng Bộ Xây dựng cấp",
+    "Năng lực thi công hạ tầng kỹ thuật",
+    "Năng lực thi công công trình dân dụng & công nghiệp",
+    "Năng lực thi công đường dây & trạm biến áp",
+    "Năng lực thi công công trình viễn thông chuyên biệt"
+  ],
+  "hero_statistics": {
+    "experience_years": "32+",
+    "founded_year": "2004",
+    "revenue_2025": "288+ Tỷ VNĐ",
+    "total_assets": "181+ Tỷ VNĐ",
+    "key_technical_officers": "53+",
+    "similar_projects": "200+",
+    "active_sectors": "6+",
+    "capability_certificates": "02"
+  }
+}
