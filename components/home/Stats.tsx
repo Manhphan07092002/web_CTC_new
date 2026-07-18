@@ -17,6 +17,20 @@ const Stats: React.FC = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
+        /* Seamless blueprint grid layout matching Hero.tsx top lines */
+        .blueprint-grid-stats {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            background-position: center top;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
         /* === UNIFIED CORPORATE DARK STATS CARD === */
         .glass-stat-card-dark {
             border-radius: 16px; /* Matched 16px squircle radius from Hero.tsx */
@@ -28,6 +42,7 @@ const Stats: React.FC = () => {
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.5);
+            z-index: 10;
         }
 
         .glass-stat-card-dark:hover {
@@ -75,9 +90,12 @@ const Stats: React.FC = () => {
 
       <section 
         ref={statsRef} 
-        className="py-16 bg-[#060d1d] relative z-20 -mt-12 border-t border-b border-white/5"
+        className="py-16 bg-[#060d1d] relative z-20 -mt-12 border-b border-white/5"
       >
-        <div className="container mx-auto px-4">
+        {/* Continuous Grid lines background to bridge with Hero seamlessly */}
+        <div className="blueprint-grid-stats"></div>
+
+        <div className="container mx-auto px-4 relative z-10">
           <div className={`grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
             {statsList.map((stat, idx) => (
               <div key={idx} className="glass-stat-card-dark group text-center p-6 sm:p-8">
