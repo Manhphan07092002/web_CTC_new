@@ -280,13 +280,13 @@ const Hero: React.FC = () => {
             transform: translate(-50%, -50%);
             z-index: 1;
             object-fit: cover;
-            opacity: 0.7; /* Subdued for professional text contrast */
+            opacity: 0.88; /* Brightened from 0.7 to show the video clearly */
         }
 
         .dark-grad-mask {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 20% 30%, rgba(6, 13, 29, 0.4) 0%, #060d1d 90%);
+            background: radial-gradient(circle at 30% 30%, rgba(6, 13, 29, 0.2) 0%, rgba(6, 13, 29, 0.65) 90%);
             z-index: 2;
         }
 
@@ -295,8 +295,8 @@ const Hero: React.FC = () => {
             inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(6, 13, 29, 0.5) 0%,
-                rgba(6, 13, 29, 0.8) 60%,
+                rgba(6, 13, 29, 0.2) 0%,
+                rgba(6, 13, 29, 0.55) 60%,
                 #060d1d 100%
             );
             z-index: 2;
