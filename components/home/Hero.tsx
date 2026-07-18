@@ -1,141 +1,179 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Building2, Info, MessageSquare, ArrowDown, ArrowRight } from 'lucide-react';
+import { Building2, MessageSquare, ArrowRight, ShieldCheck, Zap, Activity } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const Hero: React.FC = () => {
   const { language } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Preload video and load futuristic Google Fonts dynamically
+  // Load Montserrat and Be Vietnam Pro fonts dynamically
   useEffect(() => {
-    // Preload video
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'video';
-    link.href = '/Videos/video_bgr.mp4';
-    link.type = 'video/mp4';
-    link.media = '(min-width: 768px)';
-    link.setAttribute('fetchpriority', 'high');
-    document.head.appendChild(link);
-
-    // Load Montserrat and Be Vietnam Pro fonts
     const fontLink = document.createElement('link');
     fontLink.rel = 'stylesheet';
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap';
     document.head.appendChild(fontLink);
-
     return () => {
-      document.head.removeChild(link);
       document.head.removeChild(fontLink);
     };
   }, []);
 
-  // Multi-language corporate data mapping
+  // Multi-language data dictionary for the telemetry command center
   const heroData = {
     vi: {
       badge: 'Doanh nghiệp hàng đầu',
-      titlePrimary: 'CÔNG TY CỔ PHẦN',
-      titleSecondary: 'XÂY LẮP BƯU ĐIỆN MIỀN TRUNG',
+      titleOutline: 'CÔNG TY CỔ PHẦN',
+      titleFilled: 'XÂY LẮP BƯU ĐIỆN',
+      titleGradient: 'MIỀN TRUNG',
       slogans: [
-        { text: '"Kết nối tương lai - Xây dựng niềm tin"', isBold: true, isMain: true },
-        { text: 'Chuyên nghiệp trong xây dựng hạ tầng viễn thông', description: 'Kiến tạo mạng lưới kết nối số hiện đại trên khắp cả nước.' },
-        { text: 'Tiên phong trong công nghệ số và truyền thông', description: 'Đột phá giải pháp công nghệ thông minh thời đại mới.' },
-        { text: 'Đối tác tin cậy của các doanh nghiệp hàng đầu', description: 'Đồng hành bền vững cùng các đơn vị viễn thông lớn tại Việt Nam.' },
-        { text: 'Hơn 30 năm kinh nghiệm phục vụ khách hàng', description: 'Uy tín tạo dựng từ chất lượng công trình và dịch vụ tận tâm.' }
+        { text: '"Kết nối tương lai - Xây dựng niềm tin"', isBold: true },
+        { text: 'Chuyên nghiệp trong xây dựng hạ tầng viễn thông' },
+        { text: 'Tiên phong trong công nghệ số và truyền thông' },
+        { text: 'Đối tác tin cậy của các doanh nghiệp hàng đầu' },
+        { text: 'Hơn 30 năm kinh nghiệm phục vụ khách hàng' }
       ],
       ctaPrimary: 'Tìm hiểu thêm',
-      ctaSecondary: 'Liên hệ Zalo'
+      ctaSecondary: 'Liên hệ Zalo',
+      telemetryTitle: 'MẠNG LƯỚI QUỐC GIA',
+      telemetryStatus: 'Đang hoạt động ổn định',
+      telemetryStat1: 'Hạ tầng viễn thông',
+      telemetryStat1Val: '5,280+',
+      telemetryStat2: 'Năng lượng tái tạo',
+      telemetryStat2Val: '850+ MW',
+      telemetryStat3: 'Đối tác chiến lược',
+      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
     },
     en: {
       badge: 'Leading Enterprise',
-      titlePrimary: 'CENTRAL VIETNAM POSTS & TELECOMMUNICATIONS',
-      titleSecondary: 'CONSTRUCTION JOINT STOCK COMPANY',
+      titleOutline: 'CONSTRUCTION J.S.C',
+      titleFilled: 'CENTRAL TELECOM',
+      titleGradient: 'CONSTRUCTION',
       slogans: [
-        { text: '"Connecting the future - Building trust"', isBold: true, isMain: true },
-        { text: 'Professional in telecommunications infrastructure construction', description: 'Creating modern digital connectivity networks nationwide.' },
-        { text: 'Pioneering in digital technology and communications', description: 'Breaking through smart technology solutions for the new era.' },
-        { text: 'Reliable partner of leading enterprises', description: 'Long-term partnership with major telecom operators in Vietnam.' },
-        { text: 'Over 30 years of experience serving customers', description: 'Trust built from superior project quality and dedicated services.' }
+        { text: '"Connecting the future - Building trust"', isBold: true },
+        { text: 'Professional in telecommunications infrastructure' },
+        { text: 'Pioneering in digital technology and communications' },
+        { text: 'Reliable partner of leading enterprises' },
+        { text: 'Over 30 years of experience serving customers' }
       ],
-      ctaPrimary: 'Learn More',
-      ctaSecondary: 'Contact Zalo'
+      ctaPrimary: 'Explore More',
+      ctaSecondary: 'Contact Zalo',
+      telemetryTitle: 'NATIONAL GRID STATUS',
+      telemetryStatus: 'SYSTEM OPERATING STABLY',
+      telemetryStat1: 'Telecom Infrastructure',
+      telemetryStat1Val: '5,280+',
+      telemetryStat2: 'Renewable Energy',
+      telemetryStat2Val: '850+ MW',
+      telemetryStat3: 'Strategic Partners',
+      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
     },
     ko: {
       badge: '선도 기업',
-      titlePrimary: '중부 포스트 및 통신',
-      titleSecondary: '건설 주식 회사',
+      titleOutline: '주식 회사',
+      titleFilled: '중부 포스트 및 통신',
+      titleGradient: '건설',
       slogans: [
-        { text: '"미래를 연결하고 신뢰를 구축합니다"', isBold: true, isMain: true },
-        { text: '통신 인프라 건설 전문', description: '전국에 현대적인 디지털 연결 네트워크 구축.' },
-        { text: '디지털 기술 및 통신 개척자', description: '새로운 시대를 위한 스마트 기술 솔루션 돌파.' },
-        { text: '주요 기업의 신뢰할 수 있는 파트너', description: '베트남 대형 통신사들과의 지속 가능한 파트너십.' },
-        { text: '고객 서비스 분야 30년 이상의 경험', description: '우수한 공사 품질과 헌신적인 서비스로 다져진 신뢰.' }
+        { text: '"미래를 연결하고 신뢰를 구축합니다"', isBold: true },
+        { text: '통신 인프라 건설 전문' },
+        { text: '디지털 기술 및 통신 개척자' },
+        { text: '주요 기업의 신뢰할 수 있는 파트너' },
+        { text: '고객 서비스 분야 30년 이상의 경험' }
       ],
-      ctaPrimary: '더 알아보기',
-      ctaSecondary: 'Zalo 문의'
+      ctaPrimary: '자세히 보기',
+      ctaSecondary: 'Zalo 문의',
+      telemetryTitle: '국가 네트워크 상태',
+      telemetryStatus: '시스템 안정 운영 중',
+      telemetryStat1: '통신 인프라',
+      telemetryStat1Val: '5,280+',
+      telemetryStat2: '신재생 에너지',
+      telemetryStat2Val: '850+ MW',
+      telemetryStat3: '주요 파트너',
+      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
     },
     ja: {
       badge: 'リーディング企業',
-      titlePrimary: '中部ポスト＆電気通信',
-      titleSecondary: '建設株式会社',
+      titleOutline: '建設株式会社',
+      titleFilled: '中部ポスト＆電気通信',
+      titleGradient: '建設',
       slogans: [
-        { text: '"未来を繋ぐ - 信頼を築く"', isBold: true, isMain: true },
-        { text: '通信インフラ建設のプロフェッショナル', description: '全国に最先端のデジタル接続ネットワークを敷設します。' },
-        { text: 'デジタル技術と通信のパイオニア', description: '新時代に向けたスマート技術ソリューションの開発。' },
-        { text: '主要企業の信頼できるパートナー', description: 'ベ트ナムの主要通信キャリアとの揺るぎない信頼関係。' },
-        { text: '30年以上の顧客サービスの経験', description: '優れた施工品質と真摯なサービスから生まれた信頼。' }
+        { text: '"未来を繋ぐ - 信頼を築く"', isBold: true },
+        { text: '通信インフラ建設のプロフェッショナル' },
+        { text: 'デジタル技術と通信のパイオニア' },
+        { text: '主要企業の信頼できるパートナー' },
+        { text: '30年以上の顧客サービスの経験' }
       ],
       ctaPrimary: '詳細を見る',
-      ctaSecondary: 'Zaloでお問い合わせ'
+      ctaSecondary: 'Zaloでお問い合わせ',
+      telemetryTitle: '国家ネットワーク監視',
+      telemetryStatus: 'システム稼働中 - 安定',
+      telemetryStat1: '通信インフラ実績',
+      telemetryStat1Val: '5,280+',
+      telemetryStat2: '再生可能エネルギー',
+      telemetryStat2Val: '850+ MW',
+      telemetryStat3: '主要パートナー',
+      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
     },
     zh: {
       badge: '领先企业',
-      titlePrimary: '越南中部邮电',
-      titleSecondary: '建设股份有限公司',
+      titleOutline: '股份有限公司',
+      titleFilled: '越南中部邮电',
+      titleGradient: '建设',
       slogans: [
-        { text: '"连接未来 - 建立信任"', isBold: true, isMain: true },
-        { text: '通信基础设施建设专业化', description: '在全国范围内构建现代化的数字互联网络。' },
-        { text: '数字技术与通信领域的先锋', description: '突破新时代的智能科技解决方案。' },
-        { text: '各大企业信赖的合作伙伴', description: '与越南大型电信运营商长期携手合作。' },
-        { text: '超过 30 年服务客户经验', description: '卓越工程品质和悉心服务铸就的信任。' }
+        { text: '"连接未来 - 建立信任"', isBold: true },
+        { text: '通信基础设施建设专业化' },
+        { text: '数字技术与通信领域的先锋' },
+        { text: '各大企业信赖的合作伙伴' },
+        { text: '超过 30 年服务客户经验' }
       ],
       ctaPrimary: '了解更多',
-      ctaSecondary: '联系 Zalo'
+      ctaSecondary: '联系 Zalo',
+      telemetryTitle: '国家网路监控',
+      telemetryStatus: '系统运行稳定',
+      telemetryStat1: '通信基础设施',
+      telemetryStat1Val: '5,280+',
+      telemetryStat2: '可再生能源',
+      telemetryStat2Val: '850+ MW',
+      telemetryStat3: '战略合作伙伴',
+      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
     },
     de: {
       badge: 'Führendes Unternehmen',
-      titlePrimary: 'CENTRAL VIETNAM POSTS & TELECOMMUNICATIONS',
-      titleSecondary: 'CONSTRUCTION AKTIENGESELLSCHAFT',
+      titleOutline: 'CONSTRUCTION AKTIENGESELLSCHAFT',
+      titleFilled: 'CENTRAL TELECOM',
+      titleGradient: 'INFRASTRUKTUR',
       slogans: [
-        { text: '"Zukunft verbinden - Vertrauen aufbauen"', isBold: true, isMain: true },
-        { text: 'Professionell im Bau von Telekommunikationsinfrastruktur', description: 'Aufbau moderner digitaler Verbindungsnetze im ganzen Land.' },
-        { text: 'Wegweisend in digitaler Technologie und Kommunikation', description: 'Durchbruch smarter Technologielösungen für das neue Zeitalter.' },
-        { text: 'Zuverlässiger Partner führender Unternehmen', description: 'Langfristige Partnerschaft mit großen Telekommunikationsbetreibern in Vietnam.' },
-        { text: 'Über 30 Jahre Erfahrung im Kundendienst', description: 'Vertrauen gewachsen aus erstklassiger Bauqualität und engagiertem Service.' }
+        { text: '"Zukunft verbinden - Vertrauen aufbauen"', isBold: true },
+        { text: 'Professionell im Bau von Telekommunikationsinfrastruktur' },
+        { text: 'Wegweisend in digitaler Technologie und Kommunikation' },
+        { text: 'Zuverlässiger Partner führender Unternehmen' },
+        { text: 'Über 30 Jahre Erfahrung im Kundendienst' }
       ],
       ctaPrimary: 'Mehr erfahren',
-      ctaSecondary: 'Zalo Kontakt'
+      ctaSecondary: 'Zalo Kontakt',
+      telemetryTitle: 'NETZWERKSTATUS',
+      telemetryStatus: 'SYSTEM LÄUFT STABIL',
+      telemetryStat1: 'Telekom-Infrastruktur',
+      telemetryStat1Val: '5,280+',
+      telemetryStat2: 'Erneuerbare Energie',
+      telemetryStat2Val: '850+ MW',
+      telemetryStat3: 'Strategische Partner',
+      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
     }
   };
 
   const currentLang = language as keyof typeof heroData;
   const currentHero = heroData[currentLang] || heroData.vi;
 
-  // React State for Smooth Slogan Slider (eliminates absolute layout bugs on mobile)
+  // React State for slogan rotation
   const [sloganIdx, setSloganIdx] = useState(0);
   const [animClass, setAnimClass] = useState('slogan-enter');
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // Exit animation
       setAnimClass('slogan-exit');
-      
-      // Change index after exit transition finishes
       setTimeout(() => {
         setSloganIdx((prev) => (prev + 1) % currentHero.slogans.length);
         setAnimClass('slogan-enter');
       }, 500);
-    }, 5000);
+    }, 4500);
     
     return () => clearInterval(interval);
   }, [currentHero.slogans.length]);
@@ -147,7 +185,7 @@ const Hero: React.FC = () => {
     }
   };
 
-  // Video performance optimizations
+  // Video performance control
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -200,22 +238,21 @@ const Hero: React.FC = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
-        /* === 2027 TRENDSETTING HERO STYLES === */
-        .hero-2027-wrapper {
+        /* === 2027 BREAKTHROUGH ASYMMETRIC COMMAND CENTER HERO === */
+        .hero-breakthrough {
             position: relative;
             width: 100%;
             height: 100vh;
-            min-height: 650px;
+            min-height: 700px;
             overflow: hidden;
+            background-color: #020617;
+            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #030712; /* Fallback dark bg */
         }
 
-        /* 100% screen video background */
-        .hero-video-bg {
+        /* Ambient video overlay */
+        .hero-video-render {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -226,275 +263,292 @@ const Hero: React.FC = () => {
             transform: translate(-50%, -50%);
             z-index: 1;
             object-fit: cover;
-            opacity: 0.85;
-            transition: opacity 1s ease;
+            opacity: 0.78;
         }
 
-        /* Gradient mask for extreme depth and contrast */
-        .hero-overlay-mask {
+        .dark-grad-mask {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(15, 23, 42, 0.4) 0%, #020617 80%);
+            z-index: 2;
+        }
+
+        .gradient-dark-overlay {
             position: absolute;
             inset: 0;
             background: linear-gradient(
-                135deg,
-                rgba(15, 23, 42, 0.9) 0%,
-                rgba(8, 47, 73, 0.75) 35%,
-                rgba(3, 7, 18, 0.85) 70%,
-                rgba(15, 23, 42, 0.95) 100%
+                to bottom,
+                rgba(2, 6, 23, 0.5) 0%,
+                rgba(2, 6, 23, 0.8) 50%,
+                #020617 100%
             );
             z-index: 2;
         }
 
-        /* Cyber mesh grid overlays */
-        .cyber-grid {
+        /* Perspective 3D Neon Grid */
+        .perspective-neon-grid {
             position: absolute;
-            inset: 0;
-            background-image: radial-gradient(rgba(99, 102, 241, 0.15) 1.5px, transparent 1.5px);
-            background-size: 40px 40px;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background-image: 
+                linear-gradient(rgba(14, 165, 233, 0.08) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1.5px, transparent 1.5px);
+            background-size: 50px 50px;
+            transform: perspective(400px) rotateX(75deg);
+            transform-origin: bottom;
             z-index: 3;
-            opacity: 0.4;
+            opacity: 0.6;
             pointer-events: none;
+            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
         }
 
-        /* Ambient Glow Spheres */
-        .glowing-glow {
+        /* Neon cyber pulses on floor */
+        .grid-cyber-glow {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1200px;
+            height: 350px;
+            background: radial-gradient(ellipse at center, rgba(14, 165, 233, 0.12) 0%, transparent 60%);
+            filter: blur(50px);
             z-index: 2;
             pointer-events: none;
-            opacity: 0.6;
         }
-        .glow-1 {
-            top: 15%;
-            left: 10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, transparent 70%);
-            animation: pulseGlow 12s ease-in-out infinite alternate;
-        }
-        .glow-2 {
-            bottom: 10%;
-            right: 15%;
+
+        /* Double glow meshes */
+        .cyber-mesh-glow-left {
+            position: absolute;
+            top: -10%;
+            left: -10%;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
-            animation: pulseGlow 16s ease-in-out infinite alternate-reverse;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.2) 0%, transparent 70%);
+            filter: blur(80px);
+            z-index: 2;
+            pointer-events: none;
+            animation: breatheLight 10s ease-in-out infinite alternate;
+        }
+        .cyber-mesh-glow-right {
+            position: absolute;
+            bottom: 10%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            filter: blur(100px);
+            z-index: 2;
+            pointer-events: none;
+            animation: breatheLight 14s ease-in-out infinite alternate-reverse;
         }
 
-        /* Content layer */
-        .hero-content-inner {
+        /* Container & Asymmetric Split Layout */
+        .command-center-layout {
             position: relative;
             z-index: 10;
-            text-align: center;
-            color: #f3f4f6;
-            max-width: 1100px;
             width: 100%;
-            padding: 0 24px;
-            display: flex;
-            flex-direction: column;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
             align-items: center;
-            justify-content: center;
         }
 
-        /* Glassmorphic Brand Badge */
-        .brand-badge-wrapper {
+        /* LEFT PANEL: Typographic Core */
+        .left-center-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* Futuristic Capsule Badge */
+        .futuristic-capsule {
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            background: rgba(15, 23, 42, 0.45); /* Nền kính mờ tối màu tích hợp tốt với video */
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Viền mảnh trong suốt */
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             border-radius: 100px;
             padding: 10px 24px;
-            margin-bottom: 28px;
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.6), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.05),
+                        0 0 12px rgba(14, 165, 233, 0.1);
             transform: scale(0.95);
-            animation: scaleInBadge 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation: badgeEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .brand-badge-wrapper:hover {
+        .futuristic-capsule:hover {
             transform: scale(0.98) translateY(-2px);
-            border-color: rgba(56, 189, 248, 0.35);
-            box-shadow: 0 15px 35px -10px rgba(56, 189, 248, 0.25);
-            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 15px 30px -10px rgba(14, 165, 233, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
-        .pulse-dot {
-            width: 7px;
-            height: 7px;
+        .radar-pulse-ring {
+            width: 8px;
+            height: 8px;
             background-color: #10b981;
             border-radius: 50%;
             position: relative;
-            display: inline-block;
         }
-        .pulse-dot::after {
+        .radar-pulse-ring::after {
             content: '';
             position: absolute;
             inset: -4px;
             border-radius: 50%;
             border: 1.5px solid #10b981;
-            animation: badgeDotPulse2 2s infinite ease-out;
+            animation: pulseWaveAnim 2s infinite ease-out;
         }
-        @keyframes badgeDotPulse2 {
-            0% { transform: scale(0.5); opacity: 1; }
-            100% { transform: scale(2.2); opacity: 0; }
-        }
-        .badge-text {
-            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
+        .capsule-badge-text {
             font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 3px; /* Giãn chữ đều như hình */
+            letter-spacing: 3px;
             color: #f1f5f9;
         }
 
-        /* 2027 Typography: Giant text gradients & text outlines */
-        .brand-title-upper {
-            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
-            font-size: clamp(0.85rem, 2vw, 1.15rem);
+        /* 3D architectural Outlined + Filled Text mix */
+        .cyber-outline-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(0.9rem, 2.5vw, 1.45rem);
             font-weight: 600;
-            letter-spacing: 6px;
-            color: #94a3b8;
+            letter-spacing: 8px;
             text-transform: uppercase;
-            margin-bottom: 12px;
-            animation: revealUpBlur 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+            margin-bottom: 8px;
+            color: transparent;
+            -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            animation: slideUpFade 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+        }
+        
+        .cyber-filled-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            color: #ffffff;
+            margin-bottom: 6px;
+            text-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
         }
 
-        .brand-title-main {
-            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
-            font-size: clamp(1.5rem, 3.2vw, 2.8rem); /* Giảm kích thước */
-            font-weight: 800;
-            line-height: 1.2;
+        .cyber-gradient-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+            font-weight: 900;
+            line-height: 1.1;
             text-transform: uppercase;
-            letter-spacing: -0.5px;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 40%, #bae6fd 75%, #38bdf8 100%);
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 60%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4));
-            animation: revealUpBlur 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-            transition: all 0.5s ease;
-            white-space: nowrap; /* Giữ chữ trên một dòng trên màn hình lớn */
+            margin-bottom: 35px;
+            filter: drop-shadow(0 15px 30px rgba(14, 165, 233, 0.3));
+            animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
         }
 
-        /* Dynamic slogan container */
-        .slogan-slider-container {
-            min-height: 100px;
-            margin-bottom: 40px;
+        /* Interactive slogan display */
+        .creative-slogan-wrapper {
+            min-height: 70px;
+            margin-bottom: 45px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start;
             width: 100%;
-            max-width: 800px;
+            border-left: 2px solid rgba(56, 189, 248, 0.3);
+            padding-left: 24px;
         }
-
-        /* Fluid typography slide transitions */
-        .slogan-slide {
+        .slogan-anim-card {
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .slogan-enter {
-            opacity: 0;
-            transform: translateY(24px) scale(0.96);
-            filter: blur(8px);
-        }
-        .slogan-exit {
-            opacity: 0;
-            transform: translateY(-24px) scale(0.96);
-            filter: blur(8px);
-            position: absolute;
-        }
-        .slogan-active {
+        .slogan-fade-in {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateX(0);
             filter: blur(0);
         }
-
-        .slogan-text-heading {
-            font-size: clamp(1.25rem, 2.5vw, 1.85rem);
+        .slogan-fade-out {
+            opacity: 0;
+            transform: translateX(-15px);
+            filter: blur(5px);
+            position: absolute;
+        }
+        .slogan-bold-line {
+            font-size: clamp(1.2rem, 2.2vw, 1.65rem);
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 8px;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             letter-spacing: -0.2px;
+            margin-bottom: 4px;
         }
-        .slogan-text-desc {
-            font-size: clamp(0.9rem, 1.8vw, 1.15rem);
-            font-weight: 450;
+        .slogan-desc-line {
+            font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+            font-weight: 500;
             color: #94a3b8;
-            max-width: 650px;
-            line-height: 1.5;
         }
 
-        /* High-end CTA buttons */
-        .cta-buttons-container {
+        /* Glass buttons styling */
+        .cta-center-group {
             display: flex;
             gap: 20px;
-            justify-content: center;
             flex-wrap: wrap;
             width: 100%;
-            animation: revealUpBlur 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+            animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
         }
 
-        .btn-modern {
+        .btn-futuristic {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             padding: 16px 36px;
-            border-radius: 14px; /* Sleek Squircle geometry */
+            border-radius: 14px; /* Squircle style */
             font-size: 0.95rem;
             font-weight: 700;
             letter-spacing: 0.8px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
-            box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.4);
             text-transform: uppercase;
         }
 
-        /* Glowing blue gradient CTA */
-        .btn-modern-primary {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0c4a6e 100%);
+        .btn-futuristic-primary {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%);
             color: #ffffff;
             border: 1px solid rgba(56, 189, 248, 0.35);
-            box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
         }
-        
-        /* Gloss glare shine sweep animation */
-        .btn-modern-primary::before {
+        .btn-futuristic-primary::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -150%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-            transform: skewX(-25deg);
-            transition: 0.75s ease;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-150%) skewX(-20deg);
+            transition: transform 0.8s ease;
         }
-        
-        .btn-modern-primary:hover {
+        .btn-futuristic-primary:hover {
             transform: translateY(-4px) scale(1.04);
-            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.65), 0 0 15px rgba(56, 189, 248, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.7), 0 0 15px rgba(56, 189, 248, 0.4);
             border-color: rgba(56, 189, 248, 0.6);
         }
-        
-        .btn-modern-primary:hover::before {
-            left: 150%;
+        .btn-futuristic-primary:hover::before {
+            transform: translateX(150%) skewX(-20deg);
         }
-
-        .btn-modern-primary:hover .arrow-icon {
+        .btn-futuristic-primary:hover .slide-arrow {
             transform: translateX(6px);
         }
-
-        .arrow-icon {
+        .slide-arrow {
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Glassmorphic border CTA */
-        .btn-modern-secondary {
+        .btn-futuristic-secondary {
             background: rgba(255, 255, 255, 0.02);
             color: #f1f5f9;
             border: 1.5px solid rgba(56, 189, 248, 0.25);
@@ -502,272 +556,359 @@ const Hero: React.FC = () => {
             -webkit-backdrop-filter: blur(16px);
             box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
         }
-        
-        .btn-modern-secondary:hover {
+        .btn-futuristic-secondary:hover {
             transform: translateY(-4px) scale(1.04);
             background: rgba(14, 165, 233, 0.1);
             border-color: rgba(56, 189, 248, 0.6);
             color: #ffffff;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
         }
-
-        .btn-modern-secondary:hover .chat-icon {
+        .btn-futuristic-secondary:hover .spin-chat {
             transform: scale(1.2);
             filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
         }
-
-        .chat-icon {
+        .spin-chat {
             transition: all 0.3s ease;
         }
 
-        /* Pulsing indicator loop */
-        .scroll-indicator-2027 {
+        /* RIGHT PANEL: Command Center Telemetry Board */
+        .right-telemetry-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: slideInRightBlur 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .telemetry-card {
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(3, 7, 18, 0.75) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.05),
+                        0 0 40px rgba(14, 165, 233, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        .telemetry-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.85), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.1),
+                        0 0 40px rgba(14, 165, 233, 0.15);
+            transform: translateY(-5px);
+        }
+
+        /* Card glowing corners */
+        .card-corner-glow {
             position: absolute;
-            bottom: 35px;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Card Header & Radar sweep */
+        .telemetry-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .system-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .telemetry-radar-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #38bdf8;
+            border-radius: 50%;
+            animation: radarPing 1.5s infinite;
+        }
+
+        /* Interactive Oscilloscope Waveform */
+        .oscilloscope-wave-container {
+            margin-bottom: 24px;
+            background: rgba(3, 7, 18, 0.5);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .wave-grid-line {
+            stroke-dasharray: 2 4;
+        }
+        .oscilloscope-path {
+            stroke-dasharray: 120;
+            animation: waveMotion 2.5s linear infinite;
+        }
+
+        /* Telemetry Stats Rows */
+        .telemetry-stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .telemetry-row-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .telemetry-row-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+        }
+
+        /* Scrolling partners logo track inside telemetry */
+        .telemetry-partners-scroller {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .partner-scroller-track {
+            display: flex;
+            gap: 16px;
+            overflow: hidden;
+            position: relative;
+            white-space: nowrap;
+            mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+        }
+        .partner-scroller-items {
+            display: inline-flex;
+            gap: 20px;
+            animation: infiniteTicker 15s linear infinite;
+        }
+        .scroller-item {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Mouse Scroll Icon 2027 */
+        .scroll-indicator-breakthrough {
+            position: absolute;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
             animation: bounceScroll 2.4s infinite;
         }
-        .indicator-mouse {
-            width: 24px;
-            height: 38px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+        .scroller-mouse-shell {
+            width: 22px;
+            height: 36px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
             border-radius: 100px;
             display: flex;
             justify-content: center;
             padding-top: 6px;
         }
-        .indicator-dot {
+        .scroller-mouse-wheel {
             width: 4px;
             height: 8px;
             background-color: #38bdf8;
             border-radius: 100px;
-            animation: scrollDotAnim 2s infinite;
+            animation: scrollWheelAnim 2s infinite;
         }
 
-        /* Particles Layer */
-        .cyber-particles {
-            position: absolute;
-            inset: 0;
-            z-index: 3;
-            pointer-events: none;
-            overflow: hidden;
+        /* Animation Keyframes definitions */
+        @keyframes pulseWaveAnim {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2.2); opacity: 0; }
         }
-        .cyber-particle {
-            position: absolute;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 80%);
-            border-radius: 50%;
-            animation: particleFloatUp 12s linear infinite;
+        @keyframes radarPing {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
         }
-        .cyber-particle:nth-child(1) { width: 120px; height: 120px; left: 15%; animation-delay: 0s; animation-duration: 15s; }
-        .cyber-particle:nth-child(2) { width: 80px; height: 80px; left: 45%; animation-delay: 3s; animation-duration: 12s; }
-        .cyber-particle:nth-child(3) { width: 140px; height: 140px; left: 75%; animation-delay: 6s; animation-duration: 18s; }
-
-        /* Animation Declarations */
-        @keyframes scaleInBadge {
+        @keyframes breatheLight {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.5; }
+            100% { transform: scale(1.1) translate(30px, -20px); opacity: 0.7; }
+        }
+        @keyframes waveMotion {
+            0% { stroke-dashoffset: 120; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes infiniteTicker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes badgeEntrance {
             0% { opacity: 0; transform: scale(0.85) translateY(10px); }
             100% { opacity: 1; transform: scale(0.95) translateY(0); }
         }
-        @keyframes revealUpBlur {
+        @keyframes slideUpFade {
             0% { opacity: 0; transform: translateY(30px); filter: blur(12px); }
             100% { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
-        @keyframes badgeDotPulse {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-        @keyframes pulseGlow {
-            0% { transform: scale(1) translate(0, 0); opacity: 0.5; }
-            100% { transform: scale(1.15) translate(30px, -30px); opacity: 0.7; }
+        @keyframes slideInRightBlur {
+            0% { opacity: 0; transform: translateX(50px); filter: blur(12px); }
+            100% { opacity: 1; transform: translateX(0); filter: blur(0); }
         }
         @keyframes bounceScroll {
             0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
             40% { transform: translateX(-50%) translateY(-6px); }
             60% { transform: translateX(-50%) translateY(-3px); }
         }
-        @keyframes scrollDotAnim {
+        @keyframes scrollWheelAnim {
             0% { transform: translateY(0); opacity: 1; }
-            80% { transform: translateY(12px); opacity: 0; }
+            80% { transform: translateY(10px); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
-        @keyframes particleFloatUp {
-            0% { transform: translateY(105vh) scale(0.9); }
-            100% { transform: translateY(-150px) scale(1.1); }
-        }
 
-        /* === ULTIMATE CROSS-PLATFORM RESPONSIVENESS === */
-        
-        /* Ultra Widescreen Displays (1600px+) */
-        @media (min-width: 1600px) {
-            .hero-content-inner {
-                max-width: 1300px;
+        /* === CROSS-PLATFORM RESPONSIVENESS OVERRIDES === */
+
+        /* Laptop / Small Desktop (1025px - 1200px) */
+        @media (max-width: 1200px) {
+            .command-center-layout {
+                gap: 30px;
+                padding: 0 24px;
             }
-            .brand-title-main {
-                font-size: 3.4rem; /* Giảm size để tránh xuống dòng */
-                margin-bottom: 35px;
+            .cyber-filled-text, .cyber-gradient-text {
+                font-size: 3.5rem;
             }
-            .btn-modern {
-                padding: 20px 48px;
-                font-size: 1.1rem;
+            .telemetry-card {
+                padding: 24px;
             }
         }
 
-        /* Medium Tablets (768px - 1024px) */
+        /* Tablets & Large Phones (768px - 1024px) */
         @media (max-width: 1024px) {
-            .hero-2027-wrapper {
-                min-height: 600px;
+            .hero-breakthrough {
+                height: auto;
+                min-height: 100vh;
+                padding: 100px 0 60px;
             }
-            .brand-title-main {
-                font-size: 2.3rem; /* Giảm size để tránh xuống dòng */
-                margin-bottom: 24px;
+            .command-center-layout {
+                grid-template-columns: 1fr;
+                gap: 50px;
+                text-align: center;
+                justify-items: center;
             }
-            .slogan-slider-container {
-                min-height: 80px;
-                margin-bottom: 30px;
-            }
-            .btn-modern {
-                padding: 16px 36px;
-                font-size: 0.95rem;
-            }
-        }
-
-        /* Small Tablets & Large Phones (576px - 767px) */
-        @media (max-width: 767px) {
-            .hero-2027-wrapper {
-                height: 100vh;
-                padding-top: 60px;
-            }
-            .brand-badge-wrapper {
-                padding: 8px 18px;
-                margin-bottom: 20px;
-            }
-            .brand-title-upper {
-                letter-spacing: 5px;
-                font-size: 0.85rem;
-            }
-            .brand-title-main {
-                font-size: 2rem;
-                line-height: 1.25;
-                margin-bottom: 24px;
-                letter-spacing: -0.5px;
-                white-space: normal; /* Cho phép xuống dòng tự nhiên trên mobile */
-            }
-            .slogan-slider-container {
-                min-height: 90px;
-                margin-bottom: 32px;
-            }
-            .slogan-text-heading {
-                font-size: 1.2rem;
-                margin-bottom: 6px;
-            }
-            .slogan-text-desc {
-                font-size: 0.85rem;
-                padding: 0 10px;
-            }
-            .cta-buttons-container {
-                gap: 12px;
-                flex-direction: column;
+            .left-center-panel {
                 align-items: center;
             }
-            .btn-modern {
+            .creative-slogan-wrapper {
+                align-items: center;
+                border-left: none;
+                border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+                padding-left: 0;
+                padding-bottom: 20px;
+            }
+            .cta-center-group {
+                justify-content: center;
+            }
+            .telemetry-card {
+                max-width: 480px;
+            }
+        }
+
+        /* Small Phones (320px - 767px) */
+        @media (max-width: 767px) {
+            .hero-breakthrough {
+                padding: 90px 0 40px;
+            }
+            .command-center-layout {
+                padding: 0 16px;
+                gap: 40px;
+            }
+            .futuristic-capsule {
+                padding: 8px 18px;
+                margin-bottom: 24px;
+            }
+            .capsule-badge-text {
+                font-size: 0.75rem;
+                letter-spacing: 2px;
+            }
+            .cyber-outline-text {
+                letter-spacing: 4px;
+                font-size: 0.85rem;
+            }
+            .cyber-filled-text, .cyber-gradient-text {
+                font-size: 2rem;
+                letter-spacing: -0.5px;
+            }
+            .cyber-gradient-text {
+                margin-bottom: 24px;
+            }
+            .creative-slogan-wrapper {
+                margin-bottom: 30px;
+            }
+            .slogan-bold-line {
+                font-size: 1.15rem;
+            }
+            .slogan-desc-line {
+                font-size: 0.82rem;
+                padding: 0 8px;
+            }
+            .cta-center-group {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+            }
+            .btn-futuristic {
                 width: 100%;
                 max-width: 280px;
                 padding: 14px 28px;
             }
-            .glowing-glow {
-                display: none;
+            .telemetry-card {
+                padding: 20px;
+                border-radius: 18px;
             }
-        }
-
-        /* Extra Small Phones (320px - 575px) */
-        @media (max-width: 575px) {
-            .hero-2027-wrapper {
-                min-height: 520px;
-            }
-            .brand-badge-wrapper {
-                padding: 6px 14px;
+            .telemetry-header {
                 margin-bottom: 16px;
+                padding-bottom: 12px;
             }
-            .badge-text {
-                font-size: 0.75rem;
-                letter-spacing: 1.5px;
-            }
-            .brand-title-upper {
-                letter-spacing: 4px;
-                font-size: 0.75rem;
-            }
-            .brand-title-main {
-                font-size: 1.85rem;
-                margin-bottom: 20px;
-            }
-            .slogan-slider-container {
-                min-height: 100px;
-                margin-bottom: 24px;
-            }
-            .slogan-text-heading {
-                font-size: 1.05rem;
-            }
-            .slogan-text-desc {
+            .telemetry-row-label {
                 font-size: 0.8rem;
-                line-clamp: 2;
-                overflow: hidden;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
             }
-            .btn-modern {
-                max-width: 250px;
-                padding: 12px 24px;
-                font-size: 0.85rem;
+            .telemetry-row-value {
+                font-size: 0.95rem;
             }
-            .scroll-indicator-2027 {
-                display: none;
-            }
-        }
-
-        /* Landscape Mobile Devices (Height <= 480px) */
-        @media (orientation: landscape) and (max-height: 480px) {
-            .hero-2027-wrapper {
-                height: auto;
-                min-height: 100vh;
-                padding: 80px 0 40px;
-            }
-            .brand-badge-wrapper {
-                margin-bottom: 12px;
-            }
-            .brand-title-main {
-                font-size: 1.8rem;
-                margin-bottom: 16px;
-            }
-            .slogan-slider-container {
-                min-height: 60px;
-                margin-bottom: 20px;
-            }
-            .cta-buttons-container {
-                flex-direction: row;
-            }
-            .btn-modern {
-                width: auto;
-                padding: 10px 24px;
-            }
-            .scroll-indicator-2027 {
+            .scroll-indicator-breakthrough {
                 display: none;
             }
         }
       `}} />
 
-      <section className="hero-2027-wrapper">
-        {/* Optimized Video Tag */}
+      <section className="hero-breakthrough">
+        {/* Telecommunication & Infrastructure Background Video */}
         <video 
           ref={videoRef}
-          className="hero-video-bg" 
+          className="hero-video-render" 
           autoPlay 
           muted 
           loop 
@@ -779,73 +920,169 @@ const Hero: React.FC = () => {
           Your browser does not support the video tag.
         </video>
 
-        {/* Ambient Overlays */}
-        <div className="hero-overlay-mask"></div>
-        <div className="cyber-grid"></div>
-        <div className="glowing-glow glow-1"></div>
-        <div className="glowing-glow glow-2"></div>
+        {/* Ambient Overlay Masks */}
+        <div className="dark-grad-mask"></div>
+        <div className="gradient-dark-overlay"></div>
+        <div className="perspective-neon-grid"></div>
+        <div className="grid-cyber-glow"></div>
+        
+        {/* Glow Spheres */}
+        <div className="cyber-mesh-glow-left"></div>
+        <div className="cyber-mesh-glow-right"></div>
 
-        {/* Floating cyber particles */}
-        <div className="cyber-particles">
-          <div className="cyber-particle"></div>
-          <div className="cyber-particle"></div>
-          <div className="cyber-particle"></div>
-        </div>
+        {/* Dynamic Command Layout */}
+        <div className="command-center-layout">
+          
+          {/* LEFT COMMAND PANEL: Typography & Brand info */}
+          <div className="left-center-panel">
+            {/* Interactive Status Badge */}
+            <div className="futuristic-capsule">
+              <span className="radar-pulse-ring"></span>
+              <Building2 size={14} className="text-sky-400" />
+              <span className="capsule-badge-text">{currentHero.badge}</span>
+            </div>
 
-        {/* Main Content Node */}
-        <div className="hero-content-inner">
-          {/* Futuristic Badge */}
-          <div className="brand-badge-wrapper">
-            <span className="pulse-dot"></span>
-            <Building2 size={15} className="text-sky-400" />
-            <span className="badge-text">{currentHero.badge}</span>
-          </div>
+            {/* Architectural Outline & Solid Typography */}
+            <div className="cyber-outline-text">{currentHero.titleOutline}</div>
+            <h1 className="cyber-filled-text">{currentHero.titleFilled}</h1>
+            <h1 className="cyber-gradient-text">{currentHero.titleGradient}</h1>
 
-          {/* Core Brand Title */}
-          <div className="brand-title-upper">{currentHero.titlePrimary}</div>
-          <h1 className="brand-title-main">
-            {currentHero.titleSecondary}
-          </h1>
-
-          {/* Slogan Slider Node */}
-          <div className="slogan-slider-container">
-            <div className={`slogan-slide ${animClass === 'slogan-enter' ? 'slogan-active' : 'slogan-exit'}`}>
-              <div className="slogan-text-heading">
-                {currentHero.slogans[sloganIdx].text}
-              </div>
-              {currentHero.slogans[sloganIdx].description && (
-                <div className="slogan-text-desc">
-                  {currentHero.slogans[sloganIdx].description}
+            {/* Slogan ticker */}
+            <div className="creative-slogan-wrapper">
+              <div className={`slogan-anim-card ${animClass === 'slogan-enter' ? 'slogan-fade-in' : 'slogan-fade-out'}`}>
+                <div className="slogan-bold-line">
+                  {currentHero.slogans[sloganIdx].text}
                 </div>
-              )}
+                {currentHero.slogans[sloganIdx].text !== currentHero.slogans[0].text && (
+                  <div className="slogan-desc-line">
+                    Chuyên gia hạ tầng mạng - CTC Telecom
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modern Interactive Buttons */}
+            <div className="cta-center-group">
+              <button onClick={handleScrollToNext} className="btn-futuristic btn-futuristic-primary">
+                <span>{currentHero.ctaPrimary}</span>
+                <ArrowRight size={18} className="slide-arrow" />
+              </button>
+
+              <a 
+                href="https://zalo.me/0915059666" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn-futuristic btn-futuristic-secondary"
+              >
+                <MessageSquare size={18} className="spin-chat text-sky-400" />
+                <span>{currentHero.ctaSecondary}</span>
+              </a>
             </div>
           </div>
 
-          {/* 2027 Custom Buttons */}
-          <div className="cta-buttons-container">
-            <button onClick={handleScrollToNext} className="btn-modern btn-modern-primary">
-              <span>{currentHero.ctaPrimary}</span>
-              <ArrowRight size={18} className="arrow-icon ml-1" />
-            </button>
-            
-            <a 
-              href="https://zalo.me/0915059666" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="btn-modern btn-modern-secondary"
-            >
-              <MessageSquare size={18} className="chat-icon text-sky-400" />
-              <span>{currentHero.ctaSecondary}</span>
-            </a>
+          {/* RIGHT COMMAND PANEL: High-Tech Telemetry Dashboard */}
+          <div className="right-telemetry-panel">
+            <div className="telemetry-card">
+              <div className="card-corner-glow"></div>
+              
+              {/* Telemetry Title */}
+              <div className="telemetry-header">
+                <div className="system-status-indicator">
+                  <span className="telemetry-radar-dot"></span>
+                  <span className="text-xs font-bold tracking-wider text-sky-400 uppercase">
+                    {currentHero.telemetryTitle}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-sky-500/10 border border-sky-500/25 px-2.5 py-1 rounded-full">
+                  <ShieldCheck size={12} className="text-sky-400" />
+                  <span className="text-[10px] font-bold tracking-wider text-sky-300 uppercase">
+                    ONLINE
+                  </span>
+                </div>
+              </div>
+
+              {/* Oscilloscope Electric Grid Wave */}
+              <div className="oscilloscope-wave-container">
+                <div className="flex justify-between items-center px-1">
+                  <div className="flex items-center gap-1">
+                    <Activity size={12} className="text-emerald-400 animate-pulse" />
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Oscilloscope Feed
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-mono text-emerald-400/80 animate-pulse">
+                    {currentHero.telemetryStatus}
+                  </span>
+                </div>
+                
+                {/* SVG Oscilloscope wave */}
+                <svg viewBox="0 0 100 25" className="w-full h-10">
+                  <line x1="0" y1="12.5" x2="100" y2="12.5" stroke="rgba(56, 189, 248, 0.1)" strokeWidth="0.5" />
+                  <path 
+                    d="M0,12.5 H25 L27,6 L29,19 L31,3 L33,21 L35,10 L37,14 L39,12.5 H100" 
+                    fill="none" 
+                    stroke="#10b981" 
+                    strokeWidth="1.2" 
+                    className="oscilloscope-path"
+                  />
+                </svg>
+              </div>
+
+              {/* Telemetry parameters */}
+              <div className="telemetry-stats-list">
+                <div className="telemetry-row">
+                  <div className="telemetry-row-label">
+                    <Building2 size={16} className="text-sky-400" />
+                    <span>{currentHero.telemetryStat1}</span>
+                  </div>
+                  <div className="telemetry-row-value text-sky-300">
+                    {currentHero.telemetryStat1Val}
+                  </div>
+                </div>
+
+                <div className="telemetry-row">
+                  <div className="telemetry-row-label">
+                    <Zap size={16} className="text-amber-400" />
+                    <span>{currentHero.telemetryStat2}</span>
+                  </div>
+                  <div className="telemetry-row-value text-amber-300">
+                    {currentHero.telemetryStat2Val}
+                  </div>
+                </div>
+              </div>
+
+              {/* Infinite Partners scrolling logo loop */}
+              <div className="telemetry-partners-scroller">
+                <div className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">
+                  {currentHero.telemetryStat3}
+                </div>
+                
+                <div className="partner-scroller-track">
+                  <div className="partner-scroller-items">
+                    <span className="scroller-item">VIETTEL</span>
+                    <span className="scroller-item">VNPT</span>
+                    <span className="scroller-item">MOBIFONE</span>
+                    <span className="scroller-item">EVN</span>
+                    {/* Repeat for seamless loop */}
+                    <span className="scroller-item">VIETTEL</span>
+                    <span className="scroller-item">VNPT</span>
+                    <span className="scroller-item">MOBIFONE</span>
+                    <span className="scroller-item">EVN</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
+
         </div>
 
-        {/* Mouse/Scroll Indicator */}
-        <div className="scroll-indicator-2027" onClick={handleScrollToNext}>
-          <div className="indicator-mouse">
-            <div className="indicator-dot"></div>
+        {/* Scroll Indicator */}
+        <div className="scroll-indicator-breakthrough" onClick={handleScrollToNext}>
+          <div className="scroller-mouse-shell">
+            <div className="scroller-mouse-wheel"></div>
           </div>
-          <ArrowDown size={14} className="text-sky-400/70" />
+          <span className="text-[9px] font-bold tracking-widest text-sky-400/50 uppercase">SCROLL</span>
         </div>
       </section>
     </>
