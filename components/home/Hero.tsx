@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Building2, MessageSquare, ArrowRight, ShieldCheck, Zap, Activity } from 'lucide-react';
+import { Building2, MessageSquare, ArrowRight, Trophy, Briefcase, Globe } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const Hero: React.FC = () => {
@@ -17,10 +17,10 @@ const Hero: React.FC = () => {
     };
   }, []);
 
-  // Multi-language data dictionary for the telemetry command center
+  // Multi-language corporate data dictionary
   const heroData = {
     vi: {
-      badge: 'Doanh nghiệp hàng đầu',
+      badge: 'Doanh nghiệp xây lắp hàng đầu',
       titleOutline: 'CÔNG TY CỔ PHẦN',
       titleFilled: 'XÂY LẮP BƯU ĐIỆN',
       titleGradient: 'MIỀN TRUNG',
@@ -33,17 +33,20 @@ const Hero: React.FC = () => {
       ],
       ctaPrimary: 'Tìm hiểu thêm',
       ctaSecondary: 'Liên hệ Zalo',
-      telemetryTitle: 'MẠNG LƯỚI QUỐC GIA',
-      telemetryStatus: 'Đang hoạt động ổn định',
-      telemetryStat1: 'Hạ tầng viễn thông',
-      telemetryStat1Val: '5,280+',
-      telemetryStat2: 'Năng lượng tái tạo',
-      telemetryStat2Val: '850+ MW',
-      telemetryStat3: 'Đối tác chiến lược',
-      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
+      panelTitle: 'NĂNG LỰC DOANH NGHIỆP',
+      stat1Title: 'Kinh nghiệm',
+      stat1Val: '32+ Năm',
+      stat1Desc: 'Phát triển vững mạnh',
+      stat2Title: 'Dự án hoàn thành',
+      stat2Val: '500+ Công trình',
+      stat2Desc: 'Đạt chuẩn chất lượng',
+      stat3Title: 'Phạm vi hoạt động',
+      stat3Val: '63 Tỉnh thành',
+      stat3Desc: 'Mạng lưới phủ rộng',
+      partnerTitle: 'ĐỐI TÁC CHIẾN LƯỢC VIỄN THÔNG'
     },
     en: {
-      badge: 'Leading Enterprise',
+      badge: 'Leading Construction Enterprise',
       titleOutline: 'CONSTRUCTION J.S.C',
       titleFilled: 'CENTRAL TELECOM',
       titleGradient: 'CONSTRUCTION',
@@ -56,17 +59,20 @@ const Hero: React.FC = () => {
       ],
       ctaPrimary: 'Explore More',
       ctaSecondary: 'Contact Zalo',
-      telemetryTitle: 'NATIONAL GRID STATUS',
-      telemetryStatus: 'SYSTEM OPERATING STABLY',
-      telemetryStat1: 'Telecom Infrastructure',
-      telemetryStat1Val: '5,280+',
-      telemetryStat2: 'Renewable Energy',
-      telemetryStat2Val: '850+ MW',
-      telemetryStat3: 'Strategic Partners',
-      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
+      panelTitle: 'CORPORATE CAPABILITIES',
+      stat1Title: 'Experience',
+      stat1Val: '32+ Years',
+      stat1Desc: 'Sustainable growth',
+      stat2Title: 'Projects Completed',
+      stat2Val: '500+ Works',
+      stat2Desc: 'International standards',
+      stat3Title: 'Network Coverage',
+      stat3Val: '63 Provinces',
+      stat3Desc: 'Nationwide operation',
+      partnerTitle: 'TELECOM STRATEGIC PARTNERS'
     },
     ko: {
-      badge: '선도 기업',
+      badge: '선도적인 건설 기업',
       titleOutline: '주식 회사',
       titleFilled: '중부 포스트 및 통신',
       titleGradient: '건설',
@@ -79,40 +85,46 @@ const Hero: React.FC = () => {
       ],
       ctaPrimary: '자세히 보기',
       ctaSecondary: 'Zalo 문의',
-      telemetryTitle: '국가 네트워크 상태',
-      telemetryStatus: '시스템 안정 운영 중',
-      telemetryStat1: '통신 인프라',
-      telemetryStat1Val: '5,280+',
-      telemetryStat2: '신재생 에너지',
-      telemetryStat2Val: '850+ MW',
-      telemetryStat3: '주요 파트너',
-      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
+      panelTitle: '기업 핵심 역량',
+      stat1Title: '경력',
+      stat1Val: '32+ 년',
+      stat1Desc: '지속 가능한 성장',
+      stat2Title: '완료된 프로젝트',
+      stat2Val: '500+ 공사',
+      stat2Desc: '국제 표준 준수',
+      stat3Title: '네트워크 범위',
+      stat3Val: '63개 성·시',
+      stat3Desc: '전국적인 운영망',
+      partnerTitle: '통신 전략적 파트너'
     },
     ja: {
-      badge: 'リーディング企業',
+      badge: '総合建設リーディング企業',
       titleOutline: '建設株式会社',
       titleFilled: '中部ポスト＆電気通信',
       titleGradient: '建設',
       slogans: [
         { text: '"未来を繋ぐ - 信頼を築く"', isBold: true },
         { text: '通信インフラ建設のプロフェッショナル' },
-        { text: 'デジタル技術と通信のパイオニア' },
+        { text: 'デジタル技術と通信의パイオニア' },
         { text: '主要企業の信頼できるパートナー' },
         { text: '30年以上の顧客サービスの経験' }
       ],
       ctaPrimary: '詳細を見る',
       ctaSecondary: 'Zaloでお問い合わせ',
-      telemetryTitle: '国家ネットワーク監視',
-      telemetryStatus: 'システム稼働中 - 安定',
-      telemetryStat1: '通信インフラ実績',
-      telemetryStat1Val: '5,280+',
-      telemetryStat2: '再生可能エネルギー',
-      telemetryStat2Val: '850+ MW',
-      telemetryStat3: '主要パートナー',
-      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
+      panelTitle: '企業実績・能力',
+      stat1Title: '事業経験',
+      stat1Val: '32年以上',
+      stat1Desc: '持続的な発展と信頼',
+      stat2Title: '完工プロジェクト',
+      stat2Val: '500件以上',
+      stat2Desc: '高品質規格の達成',
+      stat3Title: '活動範囲',
+      stat3Val: '63省・市',
+      stat3Desc: '全国をカバーするネットワーク',
+      partnerTitle: '通信戦略パートナー'
     },
     zh: {
-      badge: '领先企业',
+      badge: '领先建设工程企业',
       titleOutline: '股份有限公司',
       titleFilled: '越南中部邮电',
       titleGradient: '建设',
@@ -125,17 +137,20 @@ const Hero: React.FC = () => {
       ],
       ctaPrimary: '了解更多',
       ctaSecondary: '联系 Zalo',
-      telemetryTitle: '国家网路监控',
-      telemetryStatus: '系统运行稳定',
-      telemetryStat1: '通信基础设施',
-      telemetryStat1Val: '5,280+',
-      telemetryStat2: '可再生能源',
-      telemetryStat2Val: '850+ MW',
-      telemetryStat3: '战略合作伙伴',
-      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
+      panelTitle: '企业核心能力',
+      stat1Title: '行业经验',
+      stat1Val: '32+ 年',
+      stat1Desc: '稳健持续发展',
+      stat2Title: '已完成项目',
+      stat2Val: '500+ 工程',
+      stat2Desc: '符合国际标准',
+      stat3Title: '业务覆盖',
+      stat3Val: '63 省市',
+      stat3Desc: '全国服务网络',
+      partnerTitle: '电信战略合作伙伴'
     },
     de: {
-      badge: 'Führendes Unternehmen',
+      badge: 'Führendes Bauunternehmen',
       titleOutline: 'CONSTRUCTION AKTIENGESELLSCHAFT',
       titleFilled: 'CENTRAL TELECOM',
       titleGradient: 'INFRASTRUKTUR',
@@ -148,21 +163,23 @@ const Hero: React.FC = () => {
       ],
       ctaPrimary: 'Mehr erfahren',
       ctaSecondary: 'Zalo Kontakt',
-      telemetryTitle: 'NETZWERKSTATUS',
-      telemetryStatus: 'SYSTEM LÄUFT STABIL',
-      telemetryStat1: 'Telekom-Infrastruktur',
-      telemetryStat1Val: '5,280+',
-      telemetryStat2: 'Erneuerbare Energie',
-      telemetryStat2Val: '850+ MW',
-      telemetryStat3: 'Strategische Partner',
-      telemetryStat3Val: 'Viettel, VNPT, Mobi, EVN'
+      panelTitle: 'UNTERNEHMENSKOMPETENZEN',
+      stat1Title: 'Erfahrung',
+      stat1Val: '32+ Jahre',
+      stat1Desc: 'Nachhaltiges Wachstum',
+      stat2Title: 'Fertiggestellte Projekte',
+      stat2Val: '500+ Werke',
+      stat2Desc: 'Höchste Qualitätsstandards',
+      stat3Title: 'Netzabdeckung',
+      stat3Val: '63 Provinzen',
+      stat3Desc: 'Landesweite Präsenz',
+      partnerTitle: 'STRATEGISCHE PARTNER'
     }
   };
 
   const currentLang = language as keyof typeof heroData;
   const currentHero = heroData[currentLang] || heroData.vi;
 
-  // React State for slogan rotation
   const [sloganIdx, setSloganIdx] = useState(0);
   const [animClass, setAnimClass] = useState('slogan-enter');
 
@@ -173,7 +190,7 @@ const Hero: React.FC = () => {
         setSloganIdx((prev) => (prev + 1) % currentHero.slogans.length);
         setAnimClass('slogan-enter');
       }, 500);
-    }, 4500);
+    }, 5000);
     
     return () => clearInterval(interval);
   }, [currentHero.slogans.length]);
@@ -185,7 +202,7 @@ const Hero: React.FC = () => {
     }
   };
 
-  // Video performance control
+  // Video performance adjustments
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -238,14 +255,14 @@ const Hero: React.FC = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
-        /* === 2027 BREAKTHROUGH ASYMMETRIC COMMAND CENTER HERO === */
-        .hero-breakthrough {
+        /* === ELEGANT & PROFESSIONAL CORPORATE HERO === */
+        .hero-corporate {
             position: relative;
             width: 100%;
             height: 100vh;
             min-height: 700px;
             overflow: hidden;
-            background-color: #020617;
+            background-color: #060d1d; /* Deep professional navy */
             font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
             display: flex;
             align-items: center;
@@ -263,13 +280,13 @@ const Hero: React.FC = () => {
             transform: translate(-50%, -50%);
             z-index: 1;
             object-fit: cover;
-            opacity: 0.78;
+            opacity: 0.7; /* Subdued for professional text contrast */
         }
 
         .dark-grad-mask {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 30% 30%, rgba(15, 23, 42, 0.4) 0%, #020617 80%);
+            background: radial-gradient(circle at 20% 30%, rgba(6, 13, 29, 0.4) 0%, #060d1d 90%);
             z-index: 2;
         }
 
@@ -278,75 +295,41 @@ const Hero: React.FC = () => {
             inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(2, 6, 23, 0.5) 0%,
-                rgba(2, 6, 23, 0.8) 50%,
-                #020617 100%
+                rgba(6, 13, 29, 0.5) 0%,
+                rgba(6, 13, 29, 0.8) 60%,
+                #060d1d 100%
             );
             z-index: 2;
         }
 
-        /* Perspective 3D Neon Grid */
-        .perspective-neon-grid {
+        /* Subtle Blueprint grid layout lines (represents engineering & construction) */
+        .blueprint-lines {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50%;
+            inset: 0;
             background-image: 
-                linear-gradient(rgba(14, 165, 233, 0.08) 1.5px, transparent 1.5px),
-                linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1.5px, transparent 1.5px);
-            background-size: 50px 50px;
-            transform: perspective(400px) rotateX(75deg);
-            transform-origin: bottom;
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
             z-index: 3;
-            opacity: 0.6;
-            pointer-events: none;
-            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-        }
-
-        /* Neon cyber pulses on floor */
-        .grid-cyber-glow {
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1200px;
-            height: 350px;
-            background: radial-gradient(ellipse at center, rgba(14, 165, 233, 0.12) 0%, transparent 60%);
-            filter: blur(50px);
-            z-index: 2;
+            opacity: 0.5;
             pointer-events: none;
         }
 
-        /* Double glow meshes */
-        .cyber-mesh-glow-left {
+        /* Soft corporate glowing aura (not flashy neon) */
+        .corporate-aura-glow {
             position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.2) 0%, transparent 70%);
-            filter: blur(80px);
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, transparent 75%);
+            filter: blur(120px);
             z-index: 2;
             pointer-events: none;
-            animation: breatheLight 10s ease-in-out infinite alternate;
         }
-        .cyber-mesh-glow-right {
-            position: absolute;
-            bottom: 10%;
-            right: -10%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-            filter: blur(100px);
-            z-index: 2;
-            pointer-events: none;
-            animation: breatheLight 14s ease-in-out infinite alternate-reverse;
-        }
+        .aura-left { top: -10%; left: -5%; }
+        .aura-right { bottom: -10%; right: -5%; }
 
         /* Container & Asymmetric Split Layout */
-        .command-center-layout {
+        .corporate-layout {
             position: relative;
             z-index: 10;
             width: 100%;
@@ -354,50 +337,48 @@ const Hero: React.FC = () => {
             margin: 0 auto;
             padding: 0 32px;
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 60px;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 70px;
             align-items: center;
         }
 
         /* LEFT PANEL: Typographic Core */
-        .left-center-panel {
+        .left-corporate-panel {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
         }
 
-        /* Futuristic Capsule Badge */
-        .futuristic-capsule {
+        /* Elegant Capsule Badge */
+        .corporate-badge-capsule {
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(56, 189, 248, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 100px;
             padding: 10px 24px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.6), 
-                        inset 0 1px 1px rgba(255, 255, 255, 0.05),
-                        0 0 12px rgba(14, 165, 233, 0.1);
+            margin-bottom: 28px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
             transform: scale(0.95);
             animation: badgeEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
-        .futuristic-capsule:hover {
+        .corporate-badge-capsule:hover {
             transform: scale(0.98) translateY(-2px);
-            border-color: rgba(56, 189, 248, 0.5);
-            box-shadow: 0 15px 30px -10px rgba(14, 165, 233, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            border-color: rgba(56, 189, 248, 0.4);
+            background: rgba(255, 255, 255, 0.06);
         }
-        .radar-pulse-ring {
-            width: 8px;
-            height: 8px;
+        .green-pulse-dot {
+            width: 7px;
+            height: 7px;
             background-color: #10b981;
             border-radius: 50%;
             position: relative;
         }
-        .radar-pulse-ring::after {
+        .green-pulse-dot::after {
             content: '';
             position: absolute;
             inset: -4px;
@@ -405,96 +386,97 @@ const Hero: React.FC = () => {
             border: 1.5px solid #10b981;
             animation: pulseWaveAnim 2s infinite ease-out;
         }
-        .capsule-badge-text {
-            font-size: 0.8rem;
+        .badge-capsule-text {
+            font-size: 0.78rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #f1f5f9;
+            letter-spacing: 2.5px;
+            color: #e2e8f0;
         }
 
-        /* 3D architectural Outlined + Filled Text mix */
-        .cyber-outline-text {
+        /* Clean Architectural Typography */
+        .title-upper-outline {
             font-family: 'Montserrat', sans-serif;
-            font-size: clamp(0.9rem, 2.5vw, 1.45rem);
+            font-size: clamp(0.95rem, 2.5vw, 1.35rem);
             font-weight: 600;
-            letter-spacing: 8px;
+            letter-spacing: 7px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: transparent;
-            -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.4);
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.35);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
             animation: slideUpFade 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
         }
         
-        .cyber-filled-text {
+        .title-main-bold {
             font-family: 'Montserrat', sans-serif;
-            font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+            font-size: clamp(2rem, 4.8vw, 3.8rem);
             font-weight: 900;
-            line-height: 1.1;
+            line-height: 1.15;
             text-transform: uppercase;
-            letter-spacing: -2px;
+            letter-spacing: -1.5px;
             color: #ffffff;
             margin-bottom: 6px;
-            text-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
         }
 
-        .cyber-gradient-text {
+        .title-main-gradient {
             font-family: 'Montserrat', sans-serif;
-            font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+            font-size: clamp(2rem, 4.8vw, 3.8rem);
             font-weight: 900;
-            line-height: 1.1;
+            line-height: 1.15;
             text-transform: uppercase;
-            letter-spacing: -2px;
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 60%, #6366f1 100%);
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 60%, #1e40af 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 35px;
-            filter: drop-shadow(0 15px 30px rgba(14, 165, 233, 0.3));
+            filter: drop-shadow(0 10px 20px rgba(14, 165, 233, 0.25));
             animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+            white-space: nowrap; /* Keep central identity on a single line */
         }
 
-        /* Interactive slogan display */
-        .creative-slogan-wrapper {
+        /* Slogan Display */
+        .corporate-slogan-box {
             min-height: 70px;
             margin-bottom: 45px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             width: 100%;
-            border-left: 2px solid rgba(56, 189, 248, 0.3);
+            border-left: 2px solid rgba(14, 165, 233, 0.3);
             padding-left: 24px;
         }
-        .slogan-anim-card {
+        .slogan-card-body {
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .slogan-fade-in {
+        .slogan-show {
             opacity: 1;
             transform: translateX(0);
             filter: blur(0);
         }
-        .slogan-fade-out {
+        .slogan-hide {
             opacity: 0;
             transform: translateX(-15px);
             filter: blur(5px);
             position: absolute;
         }
-        .slogan-bold-line {
-            font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+        .slogan-strong {
+            font-size: clamp(1.2rem, 2.2vw, 1.55rem);
             font-weight: 700;
             color: #ffffff;
             letter-spacing: -0.2px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
-        .slogan-desc-line {
-            font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+        .slogan-desc {
+            font-size: clamp(0.9rem, 1.8vw, 1rem);
             font-weight: 500;
             color: #94a3b8;
         }
 
-        /* Glass buttons styling */
-        .cta-center-group {
+        /* Premium Buttons */
+        .cta-corporate-group {
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
@@ -502,77 +484,79 @@ const Hero: React.FC = () => {
             animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
         }
 
-        .btn-futuristic {
+        .btn-corporate {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             padding: 16px 36px;
-            border-radius: 14px; /* Squircle style */
+            border-radius: 14px; /* Sleek Squircle */
             font-size: 0.95rem;
             font-weight: 700;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
             text-transform: uppercase;
         }
 
-        .btn-futuristic-primary {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%);
+        .btn-corporate-primary {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
             color: #ffffff;
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 10px 25px -10px rgba(14, 165, 233, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
         }
-        .btn-futuristic-primary::before {
+        .btn-corporate-primary::before {
             content: '';
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transform: translateX(-150%) skewX(-20deg);
+            transform: skewX(-20deg);
             transition: transform 0.8s ease;
         }
-        .btn-futuristic-primary:hover {
+        .btn-corporate-primary:hover {
             transform: translateY(-4px) scale(1.04);
-            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.7), 0 0 15px rgba(56, 189, 248, 0.4);
-            border-color: rgba(56, 189, 248, 0.6);
+            box-shadow: 0 18px 35px -10px rgba(14, 165, 233, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+            border-color: rgba(56, 189, 248, 0.5);
         }
-        .btn-futuristic-primary:hover::before {
-            transform: translateX(150%) skewX(-20deg);
+        .btn-corporate-primary:hover::before {
+            transform: translateX(150%);
         }
-        .btn-futuristic-primary:hover .slide-arrow {
+        .btn-corporate-primary:hover .slide-arrow {
             transform: translateX(6px);
         }
         .slide-arrow {
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .btn-futuristic-secondary {
+        .btn-corporate-secondary {
             background: rgba(255, 255, 255, 0.02);
             color: #f1f5f9;
-            border: 1.5px solid rgba(56, 189, 248, 0.25);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
         }
-        .btn-futuristic-secondary:hover {
+        .btn-corporate-secondary:hover {
             transform: translateY(-4px) scale(1.04);
-            background: rgba(14, 165, 233, 0.1);
-            border-color: rgba(56, 189, 248, 0.6);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.3);
             color: #ffffff;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+            box-shadow: 0 12px 30px -10px rgba(255, 255, 255, 0.1);
         }
-        .btn-futuristic-secondary:hover .spin-chat {
-            transform: scale(1.2);
-            filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
+        .btn-corporate-secondary:hover .spin-chat {
+            transform: scale(1.15);
         }
         .spin-chat {
             transition: all 0.3s ease;
         }
 
-        /* RIGHT PANEL: Command Center Telemetry Board */
-        .right-telemetry-panel {
+        /* RIGHT PANEL: Professional Corporate Achievements Board */
+        .right-corporate-panel {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -580,118 +564,116 @@ const Hero: React.FC = () => {
             animation: slideInRightBlur 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .telemetry-card {
+        .achievement-dashboard {
             width: 100%;
             max-width: 440px;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(3, 7, 18, 0.75) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(56, 189, 248, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
             padding: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 
-                        inset 0 1px 1px rgba(255, 255, 255, 0.05),
-                        0 0 40px rgba(14, 165, 233, 0.05);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.05);
             position: relative;
-            overflow: hidden;
-            transition: all 0.4s ease;
         }
-        .telemetry-card:hover {
-            border-color: rgba(56, 189, 248, 0.35);
-            box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.85), 
-                        inset 0 1px 1px rgba(255, 255, 255, 0.1),
-                        0 0 40px rgba(14, 165, 233, 0.15);
-            transform: translateY(-5px);
-        }
-
-        /* Card glowing corners */
-        .card-corner-glow {
+        .achievement-dashboard::before {
+            content: '';
             position: absolute;
             top: 0;
+            left: 0;
             right: 0;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
-            pointer-events: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
         }
 
-        /* Card Header & Radar sweep */
-        .telemetry-header {
+        .dashboard-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 16px;
+            padding-bottom: 18px;
             margin-bottom: 24px;
         }
-        .system-status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .telemetry-radar-dot {
-            width: 6px;
-            height: 6px;
-            background-color: #38bdf8;
-            border-radius: 50%;
-            animation: radarPing 1.5s infinite;
-        }
-
-        /* Interactive Oscilloscope Waveform */
-        .oscilloscope-wave-container {
-            margin-bottom: 24px;
-            background: rgba(3, 7, 18, 0.5);
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .wave-grid-line {
-            stroke-dasharray: 2 4;
-        }
-        .oscilloscope-path {
-            stroke-dasharray: 120;
-            animation: waveMotion 2.5s linear infinite;
-        }
-
-        /* Telemetry Stats Rows */
-        .telemetry-stats-list {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-        .telemetry-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .telemetry-row-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.88rem;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-        .telemetry-row-value {
-            font-size: 1.05rem;
+        .dashboard-header-text {
+            font-size: 0.8rem;
             font-weight: 700;
-            color: #ffffff;
-            letter-spacing: -0.2px;
+            letter-spacing: 2px;
+            color: #38bdf8;
+            text-transform: uppercase;
         }
 
-        /* Scrolling partners logo track inside telemetry */
-        .telemetry-partners-scroller {
-            margin-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 16px;
+        /* Corporate Stats Grid */
+        .corporate-stats-rows {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 20px;
         }
-        .partner-scroller-track {
+        .stat-card-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+        .stat-card-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(56, 189, 248, 0.2);
+            transform: translateX(5px);
+        }
+        .icon-circle {
+            width: 44px;
+            height: 44px;
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #38bdf8;
+        }
+        .stat-card-data {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-card-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+        .stat-card-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .stat-card-desc {
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+
+        /* Partner Ticker */
+        .partner-ticker-section {
+            margin-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 18px;
+        }
+        .partner-ticker-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #475569;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .partner-ticker-track {
             display: flex;
             gap: 16px;
             overflow: hidden;
@@ -700,21 +682,20 @@ const Hero: React.FC = () => {
             mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
             -webkit-mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
         }
-        .partner-scroller-items {
+        .partner-ticker-items {
             display: inline-flex;
-            gap: 20px;
+            gap: 24px;
             animation: infiniteTicker 15s linear infinite;
         }
-        .scroller-item {
-            font-size: 0.78rem;
+        .ticker-brand-name {
+            font-size: 0.8rem;
             font-weight: 700;
             color: #64748b;
-            text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        /* Mouse Scroll Icon 2027 */
-        .scroll-indicator-breakthrough {
+        /* Mouse Scroll Icon */
+        .scroll-indicator-corporate {
             position: absolute;
             bottom: 30px;
             left: 50%;
@@ -727,7 +708,7 @@ const Hero: React.FC = () => {
             cursor: pointer;
             animation: bounceScroll 2.4s infinite;
         }
-        .scroller-mouse-shell {
+        .mouse-shell {
             width: 22px;
             height: 36px;
             border: 2px solid rgba(255, 255, 255, 0.35);
@@ -736,7 +717,7 @@ const Hero: React.FC = () => {
             justify-content: center;
             padding-top: 6px;
         }
-        .scroller-mouse-wheel {
+        .mouse-wheel {
             width: 4px;
             height: 8px;
             background-color: #38bdf8;
@@ -744,23 +725,10 @@ const Hero: React.FC = () => {
             animation: scrollWheelAnim 2s infinite;
         }
 
-        /* Animation Keyframes definitions */
+        /* Animation Keyframes */
         @keyframes pulseWaveAnim {
             0% { transform: scale(0.5); opacity: 1; }
             100% { transform: scale(2.2); opacity: 0; }
-        }
-        @keyframes radarPing {
-            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.6); }
-            70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
-        }
-        @keyframes breatheLight {
-            0% { transform: scale(1) translate(0, 0); opacity: 0.5; }
-            100% { transform: scale(1.1) translate(30px, -20px); opacity: 0.7; }
-        }
-        @keyframes waveMotion {
-            0% { stroke-dashoffset: 120; }
-            100% { stroke-dashoffset: 0; }
         }
         @keyframes infiniteTicker {
             0% { transform: translateX(0); }
@@ -789,123 +757,131 @@ const Hero: React.FC = () => {
             100% { transform: translateY(0); opacity: 1; }
         }
 
-        /* === CROSS-PLATFORM RESPONSIVENESS OVERRIDES === */
+        /* === CROSS-PLATFORM RESPONSIVENESS === */
 
         /* Laptop / Small Desktop (1025px - 1200px) */
         @media (max-width: 1200px) {
-            .command-center-layout {
-                gap: 30px;
+            .corporate-layout {
+                gap: 40px;
                 padding: 0 24px;
+                grid-template-columns: 1.1fr 0.9fr;
             }
-            .cyber-filled-text, .cyber-gradient-text {
-                font-size: 3.5rem;
-            }
-            .telemetry-card {
-                padding: 24px;
+            .title-main-bold, .title-main-gradient {
+                font-size: 3.2rem;
             }
         }
 
         /* Tablets & Large Phones (768px - 1024px) */
         @media (max-width: 1024px) {
-            .hero-breakthrough {
+            .hero-corporate {
                 height: auto;
                 min-height: 100vh;
-                padding: 100px 0 60px;
+                padding: 110px 0 60px;
             }
-            .command-center-layout {
+            .corporate-layout {
                 grid-template-columns: 1fr;
                 gap: 50px;
                 text-align: center;
                 justify-items: center;
             }
-            .left-center-panel {
+            .left-corporate-panel {
                 align-items: center;
             }
-            .creative-slogan-wrapper {
+            .corporate-slogan-box {
                 align-items: center;
                 border-left: none;
-                border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+                border-bottom: 2px solid rgba(14, 165, 233, 0.3);
                 padding-left: 0;
                 padding-bottom: 20px;
             }
-            .cta-center-group {
+            .cta-corporate-group {
                 justify-content: center;
             }
-            .telemetry-card {
+            .achievement-dashboard {
                 max-width: 480px;
             }
         }
 
         /* Small Phones (320px - 767px) */
         @media (max-width: 767px) {
-            .hero-breakthrough {
-                padding: 90px 0 40px;
+            .hero-corporate {
+                padding: 100px 0 40px;
             }
-            .command-center-layout {
+            .corporate-layout {
                 padding: 0 16px;
                 gap: 40px;
             }
-            .futuristic-capsule {
+            .corporate-badge-capsule {
                 padding: 8px 18px;
                 margin-bottom: 24px;
             }
-            .capsule-badge-text {
+            .badge-capsule-text {
                 font-size: 0.75rem;
                 letter-spacing: 2px;
             }
-            .cyber-outline-text {
+            .title-upper-outline {
                 letter-spacing: 4px;
                 font-size: 0.85rem;
             }
-            .cyber-filled-text, .cyber-gradient-text {
-                font-size: 2rem;
+            .title-main-bold, .title-main-gradient {
+                font-size: 1.85rem;
                 letter-spacing: -0.5px;
             }
-            .cyber-gradient-text {
+            .title-main-gradient {
                 margin-bottom: 24px;
+                white-space: normal; /* Wrap text nicely on mobile */
             }
-            .creative-slogan-wrapper {
+            .corporate-slogan-box {
                 margin-bottom: 30px;
             }
-            .slogan-bold-line {
+            .slogan-strong {
                 font-size: 1.15rem;
             }
-            .slogan-desc-line {
+            .slogan-desc {
                 font-size: 0.82rem;
                 padding: 0 8px;
             }
-            .cta-center-group {
+            .cta-corporate-group {
                 flex-direction: column;
                 align-items: center;
                 gap: 12px;
             }
-            .btn-futuristic {
+            .btn-corporate {
                 width: 100%;
                 max-width: 280px;
                 padding: 14px 28px;
             }
-            .telemetry-card {
+            .achievement-dashboard {
                 padding: 20px;
                 border-radius: 18px;
             }
-            .telemetry-header {
+            .dashboard-header {
                 margin-bottom: 16px;
                 padding-bottom: 12px;
             }
-            .telemetry-row-label {
-                font-size: 0.8rem;
+            .stat-card-row {
+                padding: 12px;
+                gap: 12px;
             }
-            .telemetry-row-value {
-                font-size: 0.95rem;
+            .icon-circle {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
             }
-            .scroll-indicator-breakthrough {
+            .stat-card-val {
+                font-size: 1.1rem;
+            }
+            .stat-card-title {
+                font-size: 0.7rem;
+            }
+            .scroll-indicator-corporate {
                 display: none;
             }
         }
       `}} />
 
-      <section className="hero-breakthrough">
-        {/* Telecommunication & Infrastructure Background Video */}
+      <section className="hero-corporate">
+        {/* Core Corporate Video Background */}
         <video 
           ref={videoRef}
           className="hero-video-render" 
@@ -920,50 +896,49 @@ const Hero: React.FC = () => {
           Your browser does not support the video tag.
         </video>
 
-        {/* Ambient Overlay Masks */}
+        {/* Dynamic Dark Masks */}
         <div className="dark-grad-mask"></div>
         <div className="gradient-dark-overlay"></div>
-        <div className="perspective-neon-grid"></div>
-        <div className="grid-cyber-glow"></div>
+        <div className="blueprint-lines"></div>
         
-        {/* Glow Spheres */}
-        <div className="cyber-mesh-glow-left"></div>
-        <div className="cyber-mesh-glow-right"></div>
+        {/* Soft Corporate Glow Spheres */}
+        <div className="corporate-aura-glow aura-left"></div>
+        <div className="corporate-aura-glow aura-right"></div>
 
-        {/* Dynamic Command Layout */}
-        <div className="command-center-layout">
+        {/* Corporate Grid Layout */}
+        <div className="corporate-layout">
           
-          {/* LEFT COMMAND PANEL: Typography & Brand info */}
-          <div className="left-center-panel">
-            {/* Interactive Status Badge */}
-            <div className="futuristic-capsule">
-              <span className="radar-pulse-ring"></span>
+          {/* LEFT PANEL: Branding & Slogans */}
+          <div className="left-corporate-panel">
+            {/* National Brand Verification Badge */}
+            <div className="corporate-badge-capsule">
+              <span className="green-pulse-dot"></span>
               <Building2 size={14} className="text-sky-400" />
-              <span className="capsule-badge-text">{currentHero.badge}</span>
+              <span className="badge-capsule-text">{currentHero.badge}</span>
             </div>
 
-            {/* Architectural Outline & Solid Typography */}
-            <div className="cyber-outline-text">{currentHero.titleOutline}</div>
-            <h1 className="cyber-filled-text">{currentHero.titleFilled}</h1>
-            <h1 className="cyber-gradient-text">{currentHero.titleGradient}</h1>
+            {/* Typography Stack */}
+            <div className="title-upper-outline">{currentHero.titleOutline}</div>
+            <h1 className="title-main-bold">{currentHero.titleFilled}</h1>
+            <h1 className="title-main-gradient">{currentHero.titleGradient}</h1>
 
-            {/* Slogan ticker */}
-            <div className="creative-slogan-wrapper">
-              <div className={`slogan-anim-card ${animClass === 'slogan-enter' ? 'slogan-fade-in' : 'slogan-fade-out'}`}>
-                <div className="slogan-bold-line">
+            {/* Slogans Container */}
+            <div className="corporate-slogan-box">
+              <div className={`slogan-card-body ${animClass === 'slogan-enter' ? 'slogan-show' : 'slogan-hide'}`}>
+                <div className="slogan-strong">
                   {currentHero.slogans[sloganIdx].text}
                 </div>
                 {currentHero.slogans[sloganIdx].text !== currentHero.slogans[0].text && (
-                  <div className="slogan-desc-line">
-                    Chuyên gia hạ tầng mạng - CTC Telecom
+                  <div className="slogan-desc">
+                    Hạ tầng kỹ thuật & Công trình viễn thông - CTC
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Modern Interactive Buttons */}
-            <div className="cta-center-group">
-              <button onClick={handleScrollToNext} className="btn-futuristic btn-futuristic-primary">
+            {/* Premium Corporate Actions */}
+            <div className="cta-corporate-group">
+              <button onClick={handleScrollToNext} className="btn-corporate btn-corporate-primary">
                 <span>{currentHero.ctaPrimary}</span>
                 <ArrowRight size={18} className="slide-arrow" />
               </button>
@@ -972,7 +947,7 @@ const Hero: React.FC = () => {
                 href="https://zalo.me/0915059666" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="btn-futuristic btn-futuristic-secondary"
+                className="btn-corporate btn-corporate-secondary"
               >
                 <MessageSquare size={18} className="spin-chat text-sky-400" />
                 <span>{currentHero.ctaSecondary}</span>
@@ -980,94 +955,74 @@ const Hero: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT COMMAND PANEL: High-Tech Telemetry Dashboard */}
-          <div className="right-telemetry-panel">
-            <div className="telemetry-card">
-              <div className="card-corner-glow"></div>
+          {/* RIGHT PANEL: Elegant Achievements Dashboard */}
+          <div className="right-corporate-panel">
+            <div className="achievement-dashboard">
               
-              {/* Telemetry Title */}
-              <div className="telemetry-header">
-                <div className="system-status-indicator">
-                  <span className="telemetry-radar-dot"></span>
-                  <span className="text-xs font-bold tracking-wider text-sky-400 uppercase">
-                    {currentHero.telemetryTitle}
-                  </span>
+              {/* Dashboard Header */}
+              <div className="dashboard-header">
+                <Trophy size={16} className="text-sky-400 animate-pulse" />
+                <span className="dashboard-header-text">
+                  {currentHero.panelTitle}
+                </span>
+              </div>
+
+              {/* Achievements Rows */}
+              <div className="corporate-stats-rows">
+                {/* Row 1 */}
+                <div className="stat-card-row">
+                  <div className="icon-circle">
+                    <Trophy size={18} />
+                  </div>
+                  <div className="stat-card-data">
+                    <div className="stat-card-title">{currentHero.stat1Title}</div>
+                    <div className="stat-card-val">{currentHero.stat1Val}</div>
+                    <div className="stat-card-desc">{currentHero.stat1Desc}</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 bg-sky-500/10 border border-sky-500/25 px-2.5 py-1 rounded-full">
-                  <ShieldCheck size={12} className="text-sky-400" />
-                  <span className="text-[10px] font-bold tracking-wider text-sky-300 uppercase">
-                    ONLINE
-                  </span>
+
+                {/* Row 2 */}
+                <div className="stat-card-row">
+                  <div className="icon-circle">
+                    <Briefcase size={18} />
+                  </div>
+                  <div className="stat-card-data">
+                    <div className="stat-card-title">{currentHero.stat2Title}</div>
+                    <div className="stat-card-val">{currentHero.stat2Val}</div>
+                    <div className="stat-card-desc">{currentHero.stat2Desc}</div>
+                  </div>
+                </div>
+
+                {/* Row 3 */}
+                <div className="stat-card-row">
+                  <div className="icon-circle">
+                    <Globe size={18} />
+                  </div>
+                  <div className="stat-card-data">
+                    <div className="stat-card-title">{currentHero.stat3Title}</div>
+                    <div className="stat-card-val">{currentHero.stat3Val}</div>
+                    <div className="stat-card-desc">{currentHero.stat3Desc}</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Oscilloscope Electric Grid Wave */}
-              <div className="oscilloscope-wave-container">
-                <div className="flex justify-between items-center px-1">
-                  <div className="flex items-center gap-1">
-                    <Activity size={12} className="text-emerald-400 animate-pulse" />
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                      Oscilloscope Feed
-                    </span>
-                  </div>
-                  <span className="text-[9px] font-mono text-emerald-400/80 animate-pulse">
-                    {currentHero.telemetryStatus}
-                  </span>
+              {/* Corporate Partners Ticker */}
+              <div className="partner-ticker-section">
+                <div className="partner-ticker-label">
+                  {currentHero.partnerTitle}
                 </div>
                 
-                {/* SVG Oscilloscope wave */}
-                <svg viewBox="0 0 100 25" className="w-full h-10">
-                  <line x1="0" y1="12.5" x2="100" y2="12.5" stroke="rgba(56, 189, 248, 0.1)" strokeWidth="0.5" />
-                  <path 
-                    d="M0,12.5 H25 L27,6 L29,19 L31,3 L33,21 L35,10 L37,14 L39,12.5 H100" 
-                    fill="none" 
-                    stroke="#10b981" 
-                    strokeWidth="1.2" 
-                    className="oscilloscope-path"
-                  />
-                </svg>
-              </div>
-
-              {/* Telemetry parameters */}
-              <div className="telemetry-stats-list">
-                <div className="telemetry-row">
-                  <div className="telemetry-row-label">
-                    <Building2 size={16} className="text-sky-400" />
-                    <span>{currentHero.telemetryStat1}</span>
-                  </div>
-                  <div className="telemetry-row-value text-sky-300">
-                    {currentHero.telemetryStat1Val}
-                  </div>
-                </div>
-
-                <div className="telemetry-row">
-                  <div className="telemetry-row-label">
-                    <Zap size={16} className="text-amber-400" />
-                    <span>{currentHero.telemetryStat2}</span>
-                  </div>
-                  <div className="telemetry-row-value text-amber-300">
-                    {currentHero.telemetryStat2Val}
-                  </div>
-                </div>
-              </div>
-
-              {/* Infinite Partners scrolling logo loop */}
-              <div className="telemetry-partners-scroller">
-                <div className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">
-                  {currentHero.telemetryStat3}
-                </div>
-                
-                <div className="partner-scroller-track">
-                  <div className="partner-scroller-items">
-                    <span className="scroller-item">VIETTEL</span>
-                    <span className="scroller-item">VNPT</span>
-                    <span className="scroller-item">MOBIFONE</span>
-                    <span className="scroller-item">EVN</span>
-                    {/* Repeat for seamless loop */}
-                    <span className="scroller-item">VIETTEL</span>
-                    <span className="scroller-item">VNPT</span>
-                    <span className="scroller-item">MOBIFONE</span>
-                    <span className="scroller-item">EVN</span>
+                <div className="partner-ticker-track">
+                  <div className="partner-ticker-items">
+                    <span className="ticker-brand-name">VIETTEL</span>
+                    <span className="ticker-brand-name">VNPT</span>
+                    <span className="ticker-brand-name">MOBIFONE</span>
+                    <span className="ticker-brand-name">EVN</span>
+                    {/* Repeat for seamless infinite loop */}
+                    <span className="ticker-brand-name">VIETTEL</span>
+                    <span className="ticker-brand-name">VNPT</span>
+                    <span className="ticker-brand-name">MOBIFONE</span>
+                    <span className="ticker-brand-name">EVN</span>
                   </div>
                 </div>
               </div>
@@ -1078,11 +1033,11 @@ const Hero: React.FC = () => {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="scroll-indicator-breakthrough" onClick={handleScrollToNext}>
-          <div className="scroller-mouse-shell">
-            <div className="scroller-mouse-wheel"></div>
+        <div className="scroll-indicator-corporate" onClick={handleScrollToNext}>
+          <div className="mouse-shell">
+            <div className="mouse-wheel"></div>
           </div>
-          <span className="text-[9px] font-bold tracking-widest text-sky-400/50 uppercase">SCROLL</span>
+          <span className="text-[9px] font-bold tracking-widest text-sky-400/50 uppercase mt-1">SCROLL</span>
         </div>
       </section>
     </>
