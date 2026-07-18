@@ -140,7 +140,7 @@ const Stats: React.FC = () => {
   );
 };
 
-// Component helper để chạy hiệu ứng nhảy số
+// Component helper để chạy hiệu ứng nhảy số lặp lại
 const AnimatedNumber: React.FC<{ valueStr: string; isInView: boolean }> = ({ valueStr, isInView }) => {
   const [count, setCount] = React.useState(0);
   
@@ -150,27 +150,42 @@ const AnimatedNumber: React.FC<{ valueStr: string; isInView: boolean }> = ({ val
   const suffix = match ? match[2] : valueStr;
 
   React.useEffect(() => {
-    if (!isInView || targetNum === 0) return;
+    // Khi cuộn ra khỏi vùng nhìn thấy, reset lại bộ đếm về 0
+    if (!isInView) {
+      setCount(0);
+      return;
+    }
+    
+    if (targetNum === 0) return;
     
     let startTimestamp: number | null = null;
-    const duration = 2500; // 2.5 seconds
+    let animationFrameId: number;
+    const duration = 2000; // 2 seconds
 
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      // Ease out function cho mượt
+      
+      // Ease out expo function cho mượt
       const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       
       setCount(Math.floor(easeOut * targetNum));
       
       if (progress < 1) {
-        window.requestAnimationFrame(step);
+        animationFrameId = window.requestAnimationFrame(step);
       } else {
         setCount(targetNum); // Đảm bảo số cuối cùng chính xác tuyệt đối
       }
     };
     
-    window.requestAnimationFrame(step);
+    animationFrameId = window.requestAnimationFrame(step);
+    
+    // Dọn dẹp animation khi unmount hoặc khi thay đổi trạng thái
+    return () => {
+      if (animationFrameId) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
   }, [isInView, targetNum]);
 
   if (!match) return <>{valueStr}</>;
