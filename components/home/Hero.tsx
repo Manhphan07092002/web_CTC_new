@@ -300,40 +300,52 @@ const Hero: React.FC = () => {
         .brand-badge-wrapper {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.03);
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.45); /* Nền kính mờ tối màu tích hợp tốt với video */
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Viền mảnh trong suốt */
             border-radius: 100px;
             padding: 10px 24px;
             margin-bottom: 28px;
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
             transform: scale(0.95);
             animation: scaleInBadge 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .brand-badge-wrapper:hover {
-            transform: scale(1) translateY(-3px);
-            border-color: rgba(56, 189, 248, 0.3);
-            box-shadow: 0 15px 35px -10px rgba(56, 189, 248, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            transform: scale(0.98) translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 15px 35px -10px rgba(56, 189, 248, 0.25);
+            background: rgba(15, 23, 42, 0.6);
         }
         .pulse-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background-color: #10b981;
             border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
-            animation: badgeDotPulse 2s infinite;
+            position: relative;
+            display: inline-block;
+        }
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1.5px solid #10b981;
+            animation: badgeDotPulse2 2s infinite ease-out;
+        }
+        @keyframes badgeDotPulse2 {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2.2); opacity: 0; }
         }
         .badge-text {
-            font-size: 0.85rem;
+            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, #ffffff, #e2e8f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px; /* Giãn chữ đều như hình */
+            color: #f1f5f9;
         }
 
         /* 2027 Typography: Giant text gradients & text outlines */
