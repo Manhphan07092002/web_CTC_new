@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Building2, Info, MessageSquare, ArrowDown } from 'lucide-react';
+import { Building2, Info, MessageSquare, ArrowDown, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const Hero: React.FC = () => {
@@ -430,54 +430,82 @@ const Hero: React.FC = () => {
             align-items: center;
             justify-content: center;
             gap: 12px;
-            padding: 18px 40px;
-            border-radius: 100px;
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            padding: 16px 36px;
+            border-radius: 14px; /* Sleek Squircle geometry */
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.4);
+            text-transform: uppercase;
         }
 
         /* Glowing blue gradient CTA */
         .btn-modern-primary {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0c4a6e 100%);
             color: #ffffff;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            box-shadow: 0 15px 35px -10px rgba(14, 165, 233, 0.4);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.2);
         }
-        .btn-modern-primary::after {
+        
+        /* Gloss glare shine sweep animation */
+        .btn-modern-primary::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transform: skewX(-25deg);
+            transition: 0.75s ease;
         }
+        
         .btn-modern-primary:hover {
-            transform: translateY(-4px) scale(1.03);
-            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.6);
-            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.65), 0 0 15px rgba(56, 189, 248, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+            border-color: rgba(56, 189, 248, 0.6);
         }
-        .btn-modern-primary:hover::after {
-            transform: translateX(100%);
+        
+        .btn-modern-primary:hover::before {
+            left: 150%;
+        }
+
+        .btn-modern-primary:hover .arrow-icon {
+            transform: translateX(6px);
+        }
+
+        .arrow-icon {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* Glassmorphic border CTA */
         .btn-modern-secondary {
             background: rgba(255, 255, 255, 0.02);
             color: #f1f5f9;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(56, 189, 248, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
         }
+        
         .btn-modern-secondary:hover {
-            transform: translateY(-4px) scale(1.03);
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 15px 35px -10px rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px) scale(1.04);
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(56, 189, 248, 0.6);
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-modern-secondary:hover .chat-icon {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
+        }
+
+        .chat-icon {
+            transition: all 0.3s ease;
         }
 
         /* Pulsing indicator loop */
@@ -784,8 +812,8 @@ const Hero: React.FC = () => {
           {/* 2027 Custom Buttons */}
           <div className="cta-buttons-container">
             <button onClick={handleScrollToNext} className="btn-modern btn-modern-primary">
-              <Info size={18} />
               <span>{currentHero.ctaPrimary}</span>
+              <ArrowRight size={18} className="arrow-icon ml-1" />
             </button>
             
             <a 
@@ -794,7 +822,7 @@ const Hero: React.FC = () => {
               rel="noopener noreferrer" 
               className="btn-modern btn-modern-secondary"
             >
-              <MessageSquare size={18} className="text-sky-400" />
+              <MessageSquare size={18} className="chat-icon text-sky-400" />
               <span>{currentHero.ctaSecondary}</span>
             </a>
           </div>
