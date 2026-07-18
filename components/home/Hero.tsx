@@ -491,10 +491,10 @@ const Hero: React.FC = () => {
             justify-content: center;
             gap: 12px;
             padding: 16px 36px;
-            border-radius: 14px; /* Sleek Squircle */
+            border-radius: 16px; /* Matched to 16px rounded-2xl of the cards in Image 2 */
             font-size: 0.95rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
@@ -502,10 +502,12 @@ const Hero: React.FC = () => {
         }
 
         .btn-corporate-primary {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.85) 0%, rgba(3, 105, 161, 0.85) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             color: #ffffff;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            box-shadow: 0 10px 25px -10px rgba(14, 165, 233, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.4), inset 0 1px 1.5px rgba(255, 255, 255, 0.25);
         }
         .btn-corporate-primary::before {
             content: '';
@@ -514,14 +516,15 @@ const Hero: React.FC = () => {
             left: -150%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
             transform: skewX(-20deg);
             transition: transform 0.8s ease;
         }
         .btn-corporate-primary:hover {
-            transform: translateY(-4px) scale(1.04);
-            box-shadow: 0 18px 35px -10px rgba(14, 165, 233, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.25);
-            border-color: rgba(56, 189, 248, 0.5);
+            transform: translateY(-3px) scale(1.03);
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.95) 0%, rgba(3, 105, 161, 0.95) 100%);
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+            border-color: rgba(56, 189, 248, 0.65);
         }
         .btn-corporate-primary:hover::before {
             transform: translateX(150%);
@@ -535,18 +538,18 @@ const Hero: React.FC = () => {
 
         .btn-corporate-secondary {
             background: rgba(255, 255, 255, 0.02);
-            color: #f1f5f9;
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.03);
         }
         .btn-corporate-secondary:hover {
-            transform: translateY(-4px) scale(1.04);
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px) scale(1.03);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(56, 189, 248, 0.35);
             color: #ffffff;
-            box-shadow: 0 12px 30px -10px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.3);
         }
         .btn-corporate-secondary:hover .spin-chat {
             transform: scale(1.15);
