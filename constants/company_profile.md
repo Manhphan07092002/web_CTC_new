@@ -76,6 +76,6 @@ CTC cung cấp dịch vụ khép kín từ: **Tư vấn $\rightarrow$ Khảo sá
 3.  **Doanh thu 2025**: `288+ tỷ VNĐ`.
 4.  **Tổng tài sản**: `181+ tỷ VNĐ`.
 5.  **Cán bộ kỹ thuật chủ chốt**: `53+`.
-6.  **Dự án tương tự đã thực hiện**: `200+` (Theo chứng minh HSNL).
+6.  **Dự án tương tự đã thực hiện**: `500+` (Tổng số công trình).
 7.  **Lĩnh vực hoạt động**: `6+`.
 8.  **Chứng chỉ năng lực**: `02`.
