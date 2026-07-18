@@ -239,13 +239,13 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Right Action Button (Orange capsule button like screenshot) */}
+          {/* Right Action Button (Blue capsule button matching website theme) */}
           <div className="hidden lg:flex items-center gap-4">
             <a 
               href="https://zalo.me/0915059666" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 transition-all hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-lg shadow-sky-500/10 hover:shadow-sky-500/25 transition-all hover:scale-105 active:scale-95"
             >
               <Phone size={14} className="animate-bounce" />
               <span>Liên hệ</span>
@@ -315,7 +315,7 @@ const Header: React.FC = () => {
             <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
               <a 
                 href="https://zalo.me/0915059666"
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-full shadow-lg"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-full shadow-lg shadow-sky-500/10"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Phone size={14} />
