@@ -44,7 +44,7 @@ function execCommand(command, description) {
 
 async function setupFirstTime() {
   log('\n' + '='.repeat(60), 'bright');
-  log('🚀 SETUP LẦN ĐẦU - TRAN LE ELECTRICITY', 'bright');
+  log('🚀 SETUP LẦN ĐẦU - CTC WEB', 'bright');
   log('='.repeat(60) + '\n', 'bright');
 
   // Step 1: Check Node version
@@ -74,7 +74,7 @@ async function setupFirstTime() {
     log('   Tạo file .env.local mẫu...', 'cyan');
     
     const envTemplate = `# MongoDB
-MONGO_URI=mongodb://localhost:27017/web-tranle1
+MONGO_URI=mongodb://localhost:27017/ctc_web_new
 
 # Server
 PORT=4000
@@ -89,9 +89,6 @@ SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 EMAIL_FROM=your-email@gmail.com
 CONTACT_RECIPIENT=contac@ctcdn.vn
-
-# Google AI (optional)
-GOOGLE_AI_API_KEY=your-google-ai-api-key
 `;
     
     fs.writeFileSync(envLocalPath, envTemplate, 'utf8');
@@ -105,7 +102,7 @@ GOOGLE_AI_API_KEY=your-google-ai-api-key
   log('\n📋 Bước 4: Kiểm tra kết nối MongoDB', 'yellow');
   try {
     const { default: mongoose } = await import('mongoose');
-    const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+    const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
     
     log(`   Đang kết nối: ${MONGO_URI}`, 'blue');
     await mongoose.connect(MONGO_URI);
@@ -169,8 +166,8 @@ GOOGLE_AI_API_KEY=your-google-ai-api-key
   
   log('\n📝 Các bước tiếp theo:', 'yellow');
   log('   1. Cập nhật thông tin trong .env.local (nếu cần)', 'blue');
-  log('   2. Import dữ liệu (nếu có backup):', 'blue');
-  log('      npm run import-data exports/backup-xxx', 'cyan');
+  log('   2. Import dữ liệu mặc định (seed-data):', 'blue');
+  log('      npm run import-data', 'cyan');
   log('   3. Hoặc tạo admin user mới:', 'blue');
   log('      npm run seed-admin', 'cyan');
   log('   4. Khởi động server:', 'blue');

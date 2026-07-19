@@ -1,0 +1,24 @@
+[
+  {
+    "_id": "6a5b3bc65cf9276e6b83d614",
+    "name": "Anh Hùng",
+    "role": "Chủ hộ gia đình",
+    "content": "Hệ thống điện mặt trời giúp gia đình tôi tiết kiệm 2 triệu tiền điện mỗi tháng. Rất cảm ơn đội ngũ!",
+    "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80",
+    "translations": {},
+    "__v": 0,
+    "createdAt": "2026-07-18T08:39:34.231Z",
+    "updatedAt": "2026-07-18T08:39:34.231Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e6b83d615",
+    "name": "Chị Mai",
+    "role": "Giám đốc Công ty TNHH",
+    "content": "Thi công chuyên nghiệp, đúng tiến độ. Hệ thống chạy rất ổn định.",
+    "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80",
+    "translations": {},
+    "__v": 0,
+    "createdAt": "2026-07-18T08:39:34.231Z",
+    "updatedAt": "2026-07-18T08:39:34.231Z"
+  }
+]

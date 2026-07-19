@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "6a5c646d5a2780d0681855db",
+    "type": "success",
+    "title": "New consultation request",
+    "message": "d (78) is interested in \"Tư vấn giải pháp EPC\". Email: a@g.c",
+    "icon": "📧",
+    "link": "/admin/contacts",
+    "isRead": false,
+    "createdAt": "2026-07-19T05:45:17.386Z",
+    "updatedAt": "2026-07-19T05:45:17.386Z",
+    "__v": 0
+  }
+]

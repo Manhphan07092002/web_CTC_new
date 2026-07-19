@@ -1,4 +1,6 @@
 // Import all MongoDB data from JSON files
+import dotenv from 'dotenv';
+dotenv.config();
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
@@ -7,12 +9,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 async function importAllData() {
   try {
-    // Get backup directory from command line or use latest
-    const backupDir = process.argv[2];
+    // Get backup directory from command line or use 'seed-data' default
+    const backupDir = process.argv[2] || 'seed-data';
     
     if (!backupDir) {
       console.error('❌ Please provide backup directory path');

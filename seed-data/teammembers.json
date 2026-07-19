@@ -1,0 +1,28 @@
+[
+  {
+    "_id": "6a5b3bc65cf9276e6b83d611",
+    "name": "Nguyễn Văn A",
+    "role": "Giám đốc Điều hành",
+    "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80",
+    "email": "a@ctcdn.vn",
+    "phone": "0901234567",
+    "order": 1,
+    "isActive": true,
+    "__v": 0,
+    "createdAt": "2026-07-18T08:39:34.229Z",
+    "updatedAt": "2026-07-18T08:39:34.229Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e6b83d612",
+    "name": "Trần Thị B",
+    "role": "Kỹ sư trưởng",
+    "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80",
+    "email": "b@ctcdn.vn",
+    "phone": "0909876543",
+    "order": 2,
+    "isActive": true,
+    "__v": 0,
+    "createdAt": "2026-07-18T08:39:34.229Z",
+    "updatedAt": "2026-07-18T08:39:34.229Z"
+  }
+]

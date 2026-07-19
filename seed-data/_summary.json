@@ -1,0 +1,78 @@
+{
+  "exportDate": "2026-07-19T09:18:31.295Z",
+  "database": "mongodb://localhost:27017/ctc_web_new",
+  "totalCollections": 14,
+  "totalDocuments": 253,
+  "collections": [
+    {
+      "collection": "products",
+      "count": 12,
+      "file": "products.json"
+    },
+    {
+      "collection": "productcategories",
+      "count": 7,
+      "file": "productcategories.json"
+    },
+    {
+      "collection": "projects",
+      "count": 41,
+      "file": "projects.json"
+    },
+    {
+      "collection": "projectcategories",
+      "count": 8,
+      "file": "projectcategories.json"
+    },
+    {
+      "collection": "news",
+      "count": 1,
+      "file": "news.json"
+    },
+    {
+      "collection": "newscategories",
+      "count": 1,
+      "file": "newscategories.json"
+    },
+    {
+      "collection": "testimonials",
+      "count": 2,
+      "file": "testimonials.json"
+    },
+    {
+      "collection": "partners",
+      "count": 12,
+      "file": "partners.json"
+    },
+    {
+      "collection": "users",
+      "count": 2,
+      "file": "users.json"
+    },
+    {
+      "collection": "teammembers",
+      "count": 2,
+      "file": "teammembers.json"
+    },
+    {
+      "collection": "contacts",
+      "count": 1,
+      "file": "contacts.json"
+    },
+    {
+      "collection": "notifications",
+      "count": 1,
+      "file": "notifications.json"
+    },
+    {
+      "collection": "settings",
+      "count": 1,
+      "file": "settings.json"
+    },
+    {
+      "collection": "analyticsevents",
+      "count": 162,
+      "file": "analyticsevents.json"
+    }
+  ]
+}

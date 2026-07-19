@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "6a5c646b5a2780d0681855d9",
+    "name": "d",
+    "phone": "78",
+    "email": "a@g.c",
+    "service": "Tư vấn giải pháp EPC",
+    "message": "a",
+    "status": "new",
+    "createdAt": "2026-07-19T05:45:15.307Z",
+    "updatedAt": "2026-07-19T05:45:15.307Z",
+    "__v": 0
+  }
+]

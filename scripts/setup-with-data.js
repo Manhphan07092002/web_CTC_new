@@ -68,7 +68,7 @@ async function setupWithData() {
   log('\n📋 Bước 3/5: Kiểm tra cấu hình', 'yellow');
   const envLocalPath = path.join(__dirname, '..', '.env.local');
   if (!fs.existsSync(envLocalPath)) {
-    const envTemplate = `MONGO_URI=mongodb://localhost:27017/web-tranle1
+    const envTemplate = `MONGO_URI=mongodb://localhost:27017/ctc_web_new
 PORT=4000
 JWT_SECRET=change-this-secret-key-in-production
 `;
@@ -81,7 +81,7 @@ JWT_SECRET=change-this-secret-key-in-production
   let backupPath = process.argv[2];
   
   if (!backupPath) {
-    // Auto find latest backup
+    // Auto find latest backup in exports/
     const exportsDir = path.join(__dirname, '..', 'exports');
     if (fs.existsSync(exportsDir)) {
       const backups = fs.readdirSync(exportsDir)
@@ -91,7 +91,16 @@ JWT_SECRET=change-this-secret-key-in-production
       
       if (backups.length > 0) {
         backupPath = path.join(exportsDir, backups[0]);
-        log(`   📦 Tìm thấy backup: ${backups[0]}`, 'green');
+        log(`   📦 Tìm thấy backup trong exports: ${backups[0]}`, 'green');
+      }
+    }
+    
+    // If still no backup path, use the permanent seed-data
+    if (!backupPath) {
+      const seedDataDir = path.join(__dirname, '..', 'seed-data');
+      if (fs.existsSync(seedDataDir)) {
+        backupPath = seedDataDir;
+        log(`   📦 Sử dụng dữ liệu mặc định từ thư mục 'seed-data'`, 'green');
       }
     }
   } else {
@@ -114,7 +123,7 @@ JWT_SECRET=change-this-secret-key-in-production
   log(`   📁 Từ: ${backupPath}`, 'blue');
 
   try {
-    const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+    const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
     
     log('   🔌 Kết nối MongoDB...', 'cyan');
     await mongoose.connect(MONGO_URI);

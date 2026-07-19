@@ -1,0 +1,122 @@
+[
+  {
+    "_id": "6a5c812229fede92498fc411",
+    "name": "Huawei",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Huawei-Logo.svg",
+    "website": "https://huawei.com",
+    "tier": "platinum",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc412",
+    "name": "Jinko Solar",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/b/b8/JinkoSolar_Logo.png",
+    "website": "https://jinkosolar.com",
+    "tier": "gold",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc413",
+    "name": "Canadian Solar",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Canadian_Solar_logo.svg",
+    "website": "https://canadiansolar.com",
+    "tier": "gold",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc414",
+    "name": "ABB",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/00/ABB_logo.svg",
+    "website": "https://global.abb",
+    "tier": "platinum",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc415",
+    "name": "SMA Solar",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Sma_solar_technology_logo.png",
+    "website": "https://sma.de",
+    "tier": "gold",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc416",
+    "name": "Dell Technologies",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg",
+    "website": "https://dell.com",
+    "tier": "gold",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc417",
+    "name": "Mobifone",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Logo_MobiFone.svg",
+    "website": "https://mobifone.vn",
+    "tier": "platinum",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc418",
+    "name": "VNPT",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/05/VNPT_Logo.svg",
+    "website": "https://vnpt.com.vn",
+    "tier": "platinum",
+    "type": "supplier",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc419",
+    "name": "VietinBank",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/9/91/Logo_VietinBank.svg",
+    "website": "https://vietinbank.vn",
+    "tier": "gold",
+    "type": "financial",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc41a",
+    "name": "BIDV",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_BIDV.svg",
+    "website": "https://bidv.com.vn",
+    "tier": "gold",
+    "type": "financial",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc41b",
+    "name": "Vietcombank",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Vietcombank_logo.svg",
+    "website": "https://vietcombank.com.vn",
+    "tier": "platinum",
+    "type": "financial",
+    "status": "active",
+    "__v": 0
+  },
+  {
+    "_id": "6a5c812229fede92498fc41c",
+    "name": "Agribank",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Agribank_Logo.svg",
+    "website": "https://agribank.com.vn",
+    "tier": "gold",
+    "type": "financial",
+    "status": "active",
+    "__v": 0
+  }
+]
