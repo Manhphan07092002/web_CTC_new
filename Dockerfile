@@ -41,6 +41,8 @@ COPY tsconfig.json ./tsconfig.json
 COPY locales ./locales
 COPY constants ./constants
 COPY utils ./utils
+COPY scripts ./scripts
+COPY seed-data ./seed-data
 
 
 
