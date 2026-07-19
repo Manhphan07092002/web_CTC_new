@@ -181,7 +181,7 @@ app.use('/uploads', express.static(uploadsPath));
 // ROUTES
 // ============================================
 
-app.get('/', (req: any, res) => {
+app.get('/api', (req: any, res) => {
   const t = req.t;
   res.json({ 
     status: 'ok', 
