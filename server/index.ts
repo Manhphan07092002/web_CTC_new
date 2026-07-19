@@ -237,6 +237,31 @@ app.use('/api/document-categories', documentCategoriesRouter);
 app.use('/', seoRouter);
 
 // ============================================
+// SERVE REACT FRONTEND IN PRODUCTION
+// ============================================
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(process.cwd(), 'dist');
+  app.use(express.static(distPath, {
+    maxAge: '7d',
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+      // Don't cache index.html (always fresh)
+      if (filePath.endsWith('index.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    },
+  }));
+
+  // SPA fallback – serve index.html for all non-API routes
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
+  });
+}
+
+// ============================================
 // ERROR HANDLERS
 // ============================================
 

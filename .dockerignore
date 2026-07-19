@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files (nhạy cảm - không push lên git)
+.env
+.env.local
+.env.production
+
+# Uploads (dữ liệu runtime)
+uploads/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# MongoDB data (nếu chạy local)
+mongodb_data/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+nginx/ssl/
+
+# Dev tools
+.codex-vite.*
+*.md
+scratch/
+test-permissions.md
+translation-report.json
