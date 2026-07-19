@@ -144,7 +144,7 @@ export const db = {
   },
 
   projects: {
-    getFeatured: async (limit: number = 5) => { const projects = await Project.find({ isFeatured: true }).sort({ createdAt: -1 }).limit(limit); return projects.map(toPlainObject<IProject>); },
+    getFeatured: async (limit: number = 4) => { const projects = await Project.find().sort({ createdAt: -1 }).limit(limit); return projects.map(toPlainObject<IProject>); },
     getAll: async () => {
       const projects = await Project.find().sort({ createdAt: -1 });
       return projects.map(toPlainObject<IProject>);

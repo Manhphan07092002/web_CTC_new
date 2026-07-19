@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 router.get('/featured', async (req, res) => {
   try {
     const lang = getLanguage(req);
-    const limit = Number(req.query.limit) || 2;
+    const limit = Number(req.query.limit) || 4;
     let projects = await db.projects.getFeatured(limit);
     
     if (lang !== 'vi') {

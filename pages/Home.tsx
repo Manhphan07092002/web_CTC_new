@@ -74,7 +74,7 @@ const Home: React.FC = () => {
         api.products.getFeatured(4)
           .then(data => { if (!cancelled) setFeaturedProducts(data); })
           .finally(() => markLoaded('products')),
-        api.projects.getFeatured(2)
+        api.projects.getFeatured(4)
           .then(data => { if (!cancelled) setFeaturedProjects(data); })
           .finally(() => markLoaded('projects')),
         api.news.getLatest(3)
