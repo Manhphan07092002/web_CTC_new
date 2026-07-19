@@ -12,11 +12,14 @@ router.post('/track', async (req, res) => {
       return res.status(400).json({ error: 'eventType and sessionId are required' });
     }
     
+    const isValidObjectId = (id: any) => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+    const cleanProductId = isValidObjectId(productId) ? productId : undefined;
+
     const event = await db.analytics.trackEvent({
       eventType,
       userId,
       sessionId,
-      productId,
+      productId: cleanProductId,
       metadata,
       ipAddress: ipAddress || req.ip,
       userAgent: userAgent || req.headers['user-agent'],

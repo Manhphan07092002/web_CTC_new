@@ -3,11 +3,23 @@ import { db } from '../../services/db-mongodb';
 
 const router = Router();
 
+const cleanSettingsUrls = (settings: any) => {
+  if (!settings) return settings;
+  const cleaned = { ...settings };
+  const urlFields = ['logo', 'logoHeader', 'logoFooter', 'favicon', 'appleTouchIcon'];
+  for (const field of urlFields) {
+    if (typeof cleaned[field] === 'string' && cleaned[field].includes('localhost:')) {
+      cleaned[field] = cleaned[field].replace(/^https?:\/\/localhost:\d+/, '');
+    }
+  }
+  return cleaned;
+};
+
 // GET /api/settings - Get site settings
 router.get('/', async (req, res) => {
   try {
     const settings = await db.settings.get();
-    res.json(settings);
+    res.json(cleanSettingsUrls(settings));
   } catch (error) {
     console.error('Error getting settings', error);
     res.status(500).json({ message: 'Failed to get settings' });
