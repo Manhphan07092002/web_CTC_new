@@ -114,14 +114,25 @@ app.use(ipFilter);
 // 4. Security Headers
 app.use(securityHeaders);
 
-// 4. CORS - cấu hình chi tiết hơn
-const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Cho phép requests không có origin (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
+const corsOptionsDelegate = (req: express.Request, callback: (err: Error | null, options?: any) => void) => {
+  const origin = req.header('Origin');
+  const host = req.header('Host') || '';
+  
+  let isAllowed = false;
+  
+  if (!origin) {
+    isAllowed = true;
+  } else {
+    // 1. Check if same-origin (same host, ignoring ports)
+    let isSameHost = false;
+    try {
+      const originUrl = new URL(origin);
+      isSameHost = originUrl.host.split(':')[0] === host.split(':')[0];
+    } catch (e) {
+      // Ignore URL parsing errors
+    }
     
-    // Cho phép tất cả origins trong development
-    // Trong production, thay bằng whitelist cụ thể
+    // 2. Check whitelist configuration from env variables
     const envOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(o => o.trim()) : [];
     const envFrontend = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL.trim()] : [];
 
@@ -133,23 +144,25 @@ const corsOptions = {
       ...envFrontend
     ];
     
-    const isAllowed = allowedOrigins.some(allowed => {
+    const isWhitelisted = allowedOrigins.some(allowed => {
       if (allowed instanceof RegExp) return allowed.test(origin);
       return allowed === origin;
     });
     
-    if (isAllowed || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  maxAge: 86400, // 24 hours
+    isAllowed = isSameHost || isWhitelisted;
+  }
+
+  const corsOptions = {
+    origin: isAllowed || process.env.NODE_ENV !== 'production',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    maxAge: 86400, // 24 hours
+  };
+
+  callback(null, corsOptions);
 };
-app.use('/api', cors(corsOptions));
+app.use('/api', cors(corsOptionsDelegate));
 
 // 5. Rate Limiting - chống DDoS
 app.use('/api/', generalRateLimiter);
