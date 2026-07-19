@@ -149,7 +149,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   maxAge: 86400, // 24 hours
 };
-app.use(cors(corsOptions));
+app.use('/api', cors(corsOptions));
 
 // 5. Rate Limiting - chống DDoS
 app.use('/api/', generalRateLimiter);
