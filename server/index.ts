@@ -122,10 +122,15 @@ const corsOptions = {
     
     // Cho phép tất cả origins trong development
     // Trong production, thay bằng whitelist cụ thể
+    const envOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(o => o.trim()) : [];
+    const envFrontend = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL.trim()] : [];
+
     const allowedOrigins = [
       'http://localhost:3000',
       'http://127.0.0.1:3000',
       /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?$/, // Local network
+      ...envOrigins,
+      ...envFrontend
     ];
     
     const isAllowed = allowedOrigins.some(allowed => {
