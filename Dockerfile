@@ -41,9 +41,7 @@ COPY tsconfig.json ./tsconfig.json
 COPY locales ./locales
 COPY constants ./constants
 
-# Copy tsx runtime (needed to run TS server directly)
-COPY --from=builder /app/node_modules/.bin/tsx /app/node_modules/.bin/tsx
-COPY --from=builder /app/node_modules/tsx ./node_modules/tsx
+
 
 # Create uploads directory (for persistent volume mount)
 RUN mkdir -p uploads
