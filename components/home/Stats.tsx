@@ -5,7 +5,7 @@ import { useInView } from '../../hooks/useInView';
 
 const Stats: React.FC = () => {
   const { t, language } = useLanguage();
-  const { ref: statsRef, isInView } = useInView(0.1);
+  const { ref: statsRef, isInView } = useInView(0.1, false);
 
   const statsList = [
     { icon: Wallet, value: language === 'vi' ? '181+ Tỷ' : '181+B', label: t('home.stat_assets') },

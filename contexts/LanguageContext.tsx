@@ -39,7 +39,7 @@ const translations: Record<Language, Translations> = {
       contact_title: 'Liên hệ',
       desc: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). Doanh nghiệp hàng đầu trong lĩnh vực xây lắp và năng lượng tái tạo.',
       address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
-      copyright: '© 2024 CTC. Bảo lưu mọi quyền.'
+      copyright: '© 2026 CTC. Bảo lưu mọi quyền.'
     },
     common: {
       loading: 'Đang tải...',
@@ -141,17 +141,17 @@ const translations: Record<Language, Translations> = {
       // FAQ
       support_badge: 'Hỗ trợ',
       faq_title: 'Câu hỏi thường gặp',
-      faq_desc: 'Giải đáp những thắc mắc phổ biến của khách hàng về điện năng lượng mặt trời.',
+      faq_desc: 'Giải đáp những thắc mắc phổ biến của khách hàng về dịch vụ EPC, viễn thông và năng lượng tái tạo của CTC.',
       need_help: 'Cần hỗ trợ thêm?',
       contact_advisor: 'Liên hệ tư vấn viên',
-      faq_1_q: "Hệ thống điện mặt trời có hoạt động khi mất điện lưới không?", 
-      faq_1_a: "Với hệ thống hòa lưới bám tải thông thường, inverter sẽ tự ngắt khi mất điện lưới để đảm bảo an toàn. Tuy nhiên, nếu bạn lắp đặt hệ thống Hybrid (có lưu trữ), bạn vẫn có điện sử dụng cho các thiết bị ưu tiên khi lưới điện gặp sự cố.",
-      faq_2_q: "Tuổi thọ của tấm pin năng lượng mặt trời là bao lâu?", 
-      faq_2_a: "Các tấm pin mặt trời Tier 1 hiện nay có tuổi thọ thiết kế lên đến 30-35 năm. CTC cam kết bảo hành hiệu suất trên 80% trong vòng 25 năm.",
-      faq_3_q: "Chi phí bảo trì hệ thống có cao không?", 
-      faq_3_a: "Hệ thống điện mặt trời rất bền và ít hỏng hóc. Chi phí bảo trì chủ yếu là việc vệ sinh tấm pin định kỳ (3-6 tháng/lần) để đảm bảo hiệu suất cao nhất, chi phí này rất thấp.",
-      faq_4_q: "Thời gian thi công lắp đặt mất bao lâu?", 
-      faq_4_a: "Với hệ thống hộ gia đình (3kW - 10kW), thời gian thi công trọn gói chỉ từ 1-2 ngày. Các dự án công nghiệp sẽ tùy thuộc vào quy mô, thường từ 2-4 tuần.",
+      faq_1_q: "CTC cung cấp những dịch vụ EPC nào?",
+      faq_1_a: "CTC cung cấp dịch vụ EPC (Engineering – Procurement – Construction) trọn gói cho các lĩnh vực:\n• Hạ tầng viễn thông (Trạm BTS, tuyến cáp quang, mạng OSP ngoại vi)\n• CNTT & Data Center (Hệ thống máy chủ, lưu trữ, giám sát thông minh)\n• Năng lượng tái tạo (Điện mặt trời mái nhà C&I, Solar Farm, Điện gió)\n• Hạ tầng kỹ thuật, đường dây và trạm biến áp đến 110kV\nChúng tôi đảm nhận trọn gói từ khảo sát, thiết kế, cung ứng thiết bị đến thi công và O&M.",
+      faq_2_q: "CTC có kinh nghiệm thi công các dự án quy mô lớn không?",
+      faq_2_a: "Có. CTC đã triển khai thành công hơn 500 dự án trong hơn 32 năm phát triển, tiêu biểu gồm:\n• Nhà máy điện gió Hướng Linh 1 & 2, Hướng Hiệp 1\n• Các dự án trạm BTS viễn thông lớn cho Mobifone, Vinaphone trên toàn quốc\n• Hệ thống cáp quang truyền dẫn cho VNPT và Bộ Công an\n• Các dự án điện mặt trời áp mái nhà xưởng quy mô 2-5MWp cho đối tác FDI",
+      faq_3_q: "CTC có chứng chỉ năng lực xây dựng không?",
+      faq_3_a: "Có. CTC được Bộ Xây dựng cấp Chứng chỉ năng lực hoạt động xây dựng với thứ hạng cao cho các lĩnh vực:\n• Thi công xây dựng công trình Hạ tầng kỹ thuật, Công nghiệp, Dân dụng\n• Thiết kế và giám sát thi công đường dây & trạm biến áp đến 110kV\n• Lắp đặt thiết bị chuyên biệt hệ thống Viễn thông, Điện tử & Công nghệ thông tin\nĐây là bảo chứng vững chắc cho chất lượng kỹ thuật của chúng tôi.",
+      faq_4_q: "Quy trình ký hợp đồng và triển khai dự án với CTC như thế nào?",
+      faq_4_a: "Quy trình triển khai 5 bước tiêu chuẩn quốc tế:\n1. Tiếp nhận thông tin & khảo sát thực địa miễn phí trong 24 giờ.\n2. Lập phương án thiết kế kỹ thuật tối ưu & dự toán ngân sách chi tiết.\n3. Thương thảo và tiến hành ký kết hợp đồng EPC trọn gói.\n4. Tổ chức thi công chuyên nghiệp, đảm bảo an toàn, chất lượng & tiến độ.\n5. Nghiệm thu bàn giao đưa vào vận hành, hỗ trợ thủ tục đấu nối & O&M định kỳ.\nLiên hệ Hotline 0915.059.666 để bắt đầu khảo sát ngay!",
       
       // About Company
       about_badge: 'VỀ CHÚNG TÔI',
@@ -450,7 +450,7 @@ const translations: Record<Language, Translations> = {
       contact_title: 'Contact Info',
       desc: 'Central Vietnam Posts and Telecommunications Construction Joint Stock Company (CTC). Pioneering in renewable energy.',
       address: '50B Nguyen Du, Hai Chau, Da Nang',
-      copyright: '© 2024 CTC. All rights reserved.'
+      copyright: '© 2026 CTC. All rights reserved.'
     },
     common: {
       loading: 'Loading...',
@@ -483,7 +483,7 @@ const translations: Record<Language, Translations> = {
       all: 'All'
     },
     home: {
-      hero_badge: 'Latest AI Inverter Technology 2024',
+      hero_badge: 'Latest AI Inverter Technology 2026',
       hero_title: 'Clean Energy',
       hero_subtitle: 'Sustainable Investment',
       hero_desc: 'CTC provides comprehensive solar solutions, helping you save costs and build a green future.',
@@ -552,17 +552,17 @@ const translations: Record<Language, Translations> = {
       // FAQ
       support_badge: 'Support',
       faq_title: 'Frequently Asked Questions',
-      faq_desc: 'Answering common questions about solar energy.',
+      faq_desc: 'Answers to common questions about CTC EPC services, telecom infrastructure, and renewable energy.',
       need_help: 'Need more help?',
       contact_advisor: 'Contact an Advisor',
-      faq_1_q: "Does the solar system work during a grid outage?", 
-      faq_1_a: "With standard grid-tied systems, the inverter cuts off during outages for safety. However, with a Hybrid system (storage), you still have power for critical loads.",
-      faq_2_q: "What is the lifespan of solar panels?", 
-      faq_2_a: "Current Tier 1 solar panels have a design life of up to 30-35 years. CTC warrants performance over 80% for 25 years.",
-      faq_3_q: "Is maintenance cost high?", 
-      faq_3_a: "Solar systems are durable. Maintenance mainly involves periodic cleaning (every 3-6 months), which is very low cost.",
-      faq_4_q: "How long does installation take?", 
-      faq_4_a: "For households (3kW - 10kW), installation takes 1-2 days. Industrial projects vary by scale, usually 2-4 weeks.",
+      faq_1_q: "What EPC services does CTC provide?",
+      faq_1_a: "CTC offers turnkey EPC (Engineering – Procurement – Construction) services in:\n• Telecom infrastructure (BTS stations, fiber optic networks, external OSP network)\n• IT & Data Center systems (servers, storage, smart surveillance)\n• Renewable energy (industrial rooftop solar, solar farms, wind power)\n• Technical infrastructure, power grid transmission up to 110kV\nWe manage the full lifecycle from surveying and design to deployment and O&M.",
+      faq_2_q: "Does CTC have experience with large-scale projects?",
+      faq_2_a: "Yes. CTC has completed over 500 large-scale projects during 32+ years of operation, including:\n• Huong Linh 1 & 2, Huong Hiep 1 wind power plants\n• Nationwide telecom BTS station networks for major telcos (Mobifone, Vinaphone)\n• Core backbone fiber transmission for VNPT and Ministry of Public Security\n• Rooftop solar projects for multi-MWp scale factories.",
+      faq_3_q: "Does CTC hold construction capability certificates?",
+      faq_3_a: "Yes. CTC is certified by the Ministry of Construction for key capabilities:\n• Construction of Technical Infrastructure, Industrial, and Civil works\n• Engineering design & construction inspection of power lines & substations up to 110kV\n• Installation of specialized telecom, electronics & IT technology equipment\nThis represents a gold guarantee for CTC's quality standards.",
+      faq_4_q: "What is the project signing and execution process with CTC?",
+      faq_4_a: "We follow a standardized 5-step process:\n1. Receive customer request & perform free on-site survey within 24 hours.\n2. Develop optimal engineering design & detailed cost estimation.\n3. Negotiate terms and execute the complete turnkey EPC contract.\n4. Mobilize resources, construct safely with strict quality control.\n5. Commissioning, handover, support utility grid connection & periodic O&M.\nCall Hotline 0915.059.666 to start your survey today!",
       
       // About Company
       about_badge: 'ABOUT US',
@@ -861,7 +861,7 @@ const translations: Record<Language, Translations> = {
       contact_title: '연락처',
       desc: 'CTC 전기 건설 및 컨설팅 주식회사(CTC). 재생 에너지 분야의 선구자.',
       address: '259 The Lu, Son Tra, Da Nang',
-      copyright: '© 2024 CTC. 모든 권리 보유.'
+      copyright: '© 2026 CTC. 모든 권리 보유.'
     },
     common: {
       loading: '로딩 중...',
@@ -1255,7 +1255,7 @@ const translations: Record<Language, Translations> = {
       contact_title: '連絡先',
       desc: 'CTC電気建設コンサルティング株式会社（CTC）。再生可能エネルギー分野のパイオニア。',
       address: '259 The Lu, Son Tra, Da Nang',
-      copyright: '© 2024 CTC. 全著作権所有。'
+      copyright: '© 2026 CTC. 全著作権所有。'
     },
     common: {
       loading: '読み込み中...',

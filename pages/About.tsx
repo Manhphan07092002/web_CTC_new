@@ -82,7 +82,7 @@ const About: React.FC = () => {
 
                <div className="relative rounded-2xl overflow-hidden shadow-2xl border-[8px] border-white z-10">
                   <img 
-                    src="/uploads/images/Images_web/1764042731577-57377200.jpg" 
+                    src="/images/about_solar_install.png" 
                     alt="CEO Tran Thanh Xuan" 
                     className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
                   />

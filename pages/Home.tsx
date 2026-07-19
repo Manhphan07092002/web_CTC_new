@@ -10,6 +10,7 @@ import analyticsTracking from '../services/analytics-tracking';
 import Hero from '../components/home/Hero';
 import Stats from '../components/home/Stats';
 import About from '../components/home/About';
+import Features from '../components/home/Features';
 import Team from '../components/home/Team';
 import WhyChooseUs from '../components/home/WhyChooseUs';
 import Workflow from '../components/home/Workflow';
@@ -296,12 +297,13 @@ const Home: React.FC = () => {
       <Hero />
       <Stats />
       <About onOpenModal={openModal} />
+      <Features />
       <Team teamMembers={teamMembers} />
       <WhyChooseUs onOpenModal={openModal} />
-      <Workflow onOpenWorkflowModal={openWorkflowModal} />
-      <CalculatorWrapper />
-      <FeaturedProjects featuredProjects={featuredProjects} />
       <FeaturedProducts featuredProducts={featuredProducts} />
+      <FeaturedProjects featuredProjects={featuredProjects} />
+      {/* <Workflow onOpenWorkflowModal={openWorkflowModal} /> */}
+      <CalculatorWrapper />
       <FAQ />
       <Testimonials testimonials={testimonials} />
       <News latestNews={latestNews} />

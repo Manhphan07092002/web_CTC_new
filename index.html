@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CTC</title>
     <link rel="icon" type="image/jpeg" href="/uploads/images/logo/1763275681669-913578388.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         darkMode: 'class',
         theme: {
           extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
             colors: {
               primary: '#007CB9', // Light Blue
               secondary: '#009DE8', // Lighter Blue
@@ -148,6 +154,13 @@
       }
     </script>
     <style>
+      body, html {
+        font-family: 'Inter', sans-serif !important;
+      }
+      .nav > li > a {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+      }
       /* Spin animation keyframe */
       @keyframes spin {
         from { transform: rotate(0deg); }

@@ -274,7 +274,7 @@ const Header: React.FC = () => {
               <div key={link.path} className="relative group h-full flex items-center py-2">
                 <Link
                   to={link.path}
-                  className={`flex items-center text-xs xl:text-sm font-extrabold uppercase tracking-wider transition-colors duration-200 ${getNavLinkClass(link.path)}`}
+                  className={`flex items-center text-xs xl:text-sm font-bold uppercase tracking-wider transition-colors duration-200 ${getNavLinkClass(link.path)}`}
                 >
                   {t(`nav.${link.key}`)}
                   {link.submenu && (

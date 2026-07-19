@@ -12,48 +12,64 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, content, onClo
   if (!isOpen || !content) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-slate-800 w-full max-w-xs sm:max-w-lg lg:max-w-2xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden relative z-10 animate-fade-in-up max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 p-2 rounded-full z-20 transition-colors"
-        >
-          <X size={20} className="text-gray-600" />
-        </button>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-md transition-opacity duration-300" onClick={onClose}></div>
+      
+      {/* Modal Container */}
+      <div className="bg-white/75 dark:bg-[#060d1d]/70 backdrop-blur-2xl w-full max-w-md sm:max-w-lg lg:max-w-xl rounded-3xl border border-white/50 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden relative z-10 animate-fade-in-up max-h-[90vh] flex flex-col transition-all duration-300">
         
-        <div className="p-4 sm:p-6 lg:p-8">
-          <div className="text-center mb-4 sm:mb-6">
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4">
+        {/* Glow Effects */}
+        <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        {/* Header / Close button */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100/50 dark:border-slate-800/50 relative z-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">Thông tin chi tiết</span>
+          <button 
+            onClick={onClose} 
+            className="bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 p-2 rounded-full transition-all hover:rotate-90 duration-300"
+          >
+            <X size={18} className="text-gray-600 dark:text-slate-300" />
+          </button>
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6 sm:p-8 overflow-y-auto flex-1 relative z-10 space-y-6">
+          <div className="space-y-3">
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
               {content.title}
             </h3>
-            <p className="text-base sm:text-lg text-gray-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-light">
               {content.desc}
             </p>
           </div>
           
-          <div className="border-t border-gray-100 dark:border-slate-700 pt-4 sm:pt-6">
-            <h4 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Chi tiết</h4>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-slate-300 leading-relaxed text-justify indent-4 sm:indent-8">
-              {content.details}
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-100 dark:border-slate-700">
-            <Link 
-              to="/contact" 
-              className="flex-1 bg-gradient-to-r from-primary to-orange-500 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all duration-300 text-center"
-              onClick={onClose}
-            >
-              Liên hệ tư vấn
-            </Link>
-            <button 
-              onClick={onClose}
-              className="flex-1 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
-            >
-              Đóng
-            </button>
-          </div>
+          {content.details && (
+            <div className="bg-white/40 dark:bg-slate-950/20 p-5 rounded-2xl border border-white/30 dark:border-white/5">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">Chi tiết</h4>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed text-justify whitespace-pre-line">
+                {content.details}
+              </p>
+            </div>
+          )}
+        </div>
+        
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-gray-100/50 dark:border-slate-800/50 bg-gray-50/50 dark:bg-slate-950/20 relative z-10 flex gap-4">
+          <button 
+            onClick={onClose}
+            className="flex-1 bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-200 py-3.5 rounded-xl font-bold transition-all"
+          >
+            Đóng
+          </button>
+          <Link 
+            to="/contact" 
+            className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white py-3.5 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/20 dark:hover:shadow-blue-500/10 transition-all text-center flex items-center justify-center"
+            onClick={onClose}
+          >
+            Liên hệ tư vấn
+          </Link>
         </div>
       </div>
     </div>
@@ -70,84 +86,94 @@ export const WorkflowModal: React.FC<WorkflowModalProps> = ({ isOpen, selectedSt
   if (!isOpen || !selectedStep) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
-      <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-white dark:bg-slate-800 w-full max-w-sm sm:max-w-4xl lg:max-w-6xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden relative z-10 animate-fade-in-up max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 p-2 rounded-full z-20 transition-colors"
-        >
-          <X size={20} className="text-gray-600" />
-        </button>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-md transition-opacity duration-300" onClick={onClose}></div>
+      
+      {/* Modal Container */}
+      <div className="bg-white/75 dark:bg-[#060d1d]/70 backdrop-blur-2xl w-full max-w-sm sm:max-w-3xl lg:max-w-5xl rounded-3xl border border-white/50 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden relative z-10 animate-fade-in-up max-h-[90vh] flex flex-col transition-all duration-300">
         
-        <div className="p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="text-center mb-6 sm:mb-8">
-            <div className={`w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto rounded-2xl sm:rounded-3xl bg-gradient-to-br ${selectedStep.color} text-white flex items-center justify-center text-xl sm:text-2xl lg:text-3xl font-black mb-3 sm:mb-4 shadow-xl`}>
+        {/* Glow Effects */}
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        {/* Header / Close button */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100/50 dark:border-slate-800/50 relative z-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">Quy trình thực hiện</span>
+          <button 
+            onClick={onClose} 
+            className="bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 p-2 rounded-full transition-all hover:rotate-90 duration-300"
+          >
+            <X size={18} className="text-gray-600 dark:text-slate-300" />
+          </button>
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6 sm:p-8 overflow-y-auto flex-1 relative z-10 space-y-8">
+          
+          {/* Header Description */}
+          <div className="text-center space-y-2">
+            <div className={`w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-gradient-to-br ${selectedStep.color} text-white flex items-center justify-center text-lg sm:text-xl font-black shadow-lg shadow-sky-500/10`}>
               {selectedStep.step}
             </div>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-2">
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
               {selectedStep.title}
             </h3>
-            <p className="text-base sm:text-lg text-gray-600 dark:text-slate-300">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
               {selectedStep.desc}
             </p>
           </div>
           
-          {/* Mind Map */}
-          <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 border border-gray-100 dark:border-slate-700">
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-6 sm:gap-8">
+          {/* Mind Map / Details Grid */}
+          <div className="relative bg-white/40 dark:bg-slate-950/20 rounded-2xl p-6 sm:p-8 border border-white/30 dark:border-white/5">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
               
               {/* Central Node */}
-              <div className="relative">
-                <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${selectedStep.color} text-white flex items-center justify-center shadow-2xl relative z-10`}>
+              <div className="relative flex-shrink-0">
+                <div className={`w-28 h-28 rounded-full bg-gradient-to-br ${selectedStep.color} text-white flex items-center justify-center shadow-xl relative z-10`}>
                   <div className="text-center">
-                    <div className="text-2xl font-black">{selectedStep.step}</div>
-                    <div className="text-xs font-bold opacity-90">BƯỚC</div>
+                    <div className="text-xl font-black">{selectedStep.step}</div>
+                    <div className="text-[10px] font-bold opacity-90 uppercase tracking-wider">BƯỚC</div>
                   </div>
                 </div>
                 
                 {/* Connecting Lines */}
-                <div className="hidden lg:block absolute top-1/2 -left-20 w-20 h-0.5 bg-gradient-to-l from-primary to-transparent"></div>
-                <div className="hidden lg:block absolute top-1/2 -right-20 w-20 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
-                <div className="lg:hidden absolute -top-10 left-1/2 -translate-x-1/2 w-0.5 h-10 bg-gradient-to-t from-primary to-transparent"></div>
-                <div className="lg:hidden absolute -bottom-10 left-1/2 -translate-x-1/2 w-0.5 h-10 bg-gradient-to-b from-primary to-transparent"></div>
+                <div className="hidden lg:block absolute top-1/2 -left-12 w-12 h-0.5 bg-gradient-to-l from-sky-500/50 to-transparent"></div>
+                <div className="hidden lg:block absolute top-1/2 -right-12 w-12 h-0.5 bg-gradient-to-r from-sky-500/50 to-transparent"></div>
               </div>
               
               {/* Detail Branches */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
                 {selectedStep.details.split('. ').filter(detail => detail.trim()).map((detail, index) => (
-                  <div key={index} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-200 dark:border-slate-600 hover:border-primary/30 hover:shadow-lg transition-all duration-300 group">
-                    <div className="flex items-start gap-3">
-                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${selectedStep.color} text-white flex items-center justify-center text-sm font-bold flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                        {index + 1}
-                      </div>
-                      <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                        {detail.trim()}{detail.trim() && '.'}
-                      </p>
+                  <div key={index} className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-white/50 dark:border-white/5 hover:border-sky-500/30 dark:hover:border-sky-400/20 hover:shadow-md transition-all duration-300 group flex items-start gap-3">
+                    <div className={`w-6 h-6 rounded-lg bg-gradient-to-br ${selectedStep.color} text-white flex items-center justify-center text-xs font-bold flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                      {index + 1}
                     </div>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                      {detail.trim()}{detail.trim() && '.'}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
             
             {/* Process Flow Indicators */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 pt-6 border-t border-gray-100/50 dark:border-slate-800/50">
               <div className="flex items-center justify-center gap-4">
                 {['01', '02', '03', '04'].map((step, index) => (
                   <div key={step} className="flex items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       step === selectedStep.step 
-                        ? `bg-gradient-to-br ${selectedStep.color} text-white shadow-lg scale-110` 
-                        : 'bg-gray-200 text-gray-500'
+                        ? `bg-gradient-to-br ${selectedStep.color} text-white shadow-md scale-110` 
+                        : 'bg-black/5 dark:bg-white/5 text-slate-400 dark:text-slate-500 border border-black/5 dark:border-white/5'
                     }`}>
                       {step}
                     </div>
                     {index < 3 && (
-                      <div className={`w-8 h-0.5 mx-2 ${
+                      <div className={`w-6 h-0.5 mx-1 ${
                         parseInt(step) <= parseInt(selectedStep.step) 
-                          ? 'bg-primary' 
-                          : 'bg-gray-300'
+                          ? 'bg-sky-500' 
+                          : 'bg-black/10 dark:bg-white/10'
                       }`}></div>
                     )}
                   </div>
@@ -155,23 +181,23 @@ export const WorkflowModal: React.FC<WorkflowModalProps> = ({ isOpen, selectedSt
               </div>
             </div>
           </div>
-          
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <Link 
-              to="/contact" 
-              className="flex-1 bg-gradient-to-r from-primary to-orange-500 text-white px-6 py-4 rounded-xl font-bold hover:shadow-lg transition-all duration-300 text-center"
-              onClick={onClose}
-            >
-              Bắt đầu {selectedStep.title}
-            </Link>
-            <button 
-              onClick={onClose}
-              className="flex-1 bg-gray-100 text-gray-700 px-6 py-4 rounded-xl font-bold hover:bg-gray-200 transition-colors"
-            >
-              Đóng
-            </button>
-          </div>
+        </div>
+        
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-gray-100/50 dark:border-slate-800/50 bg-gray-50/50 dark:bg-slate-950/20 relative z-10 flex gap-4">
+          <button 
+            onClick={onClose}
+            className="flex-1 bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-200 py-3.5 rounded-xl font-bold transition-all"
+          >
+            Đóng
+          </button>
+          <Link 
+            to="/contact" 
+            className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white py-3.5 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/20 dark:hover:shadow-blue-500/10 transition-all text-center flex items-center justify-center"
+            onClick={onClose}
+          >
+            Bắt đầu {selectedStep.title}
+          </Link>
         </div>
       </div>
     </div>
