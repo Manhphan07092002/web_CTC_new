@@ -46,8 +46,6 @@
     "lucide-react": "^0.553.0",
     "mongodb": "^7.0.0",
     "mongoose": "^8.19.4",
-    "msnodesqlv8": "^5.2.2",
-    "mssql": "^12.7.0",
     "multer": "^1.4.5-lts.1",
     "node-cache": "^5.1.2",
     "node-fetch": "^3.3.2",
