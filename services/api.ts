@@ -12,9 +12,16 @@ const getApiBaseUrl = () => {
     return viteEnv.VITE_API_URL;
   }
   
-  // Tự động detect: dùng cùng hostname với port 4000
   const hostname = window.location.hostname; // localhost, 192.168.1.169, hoặc domain
   const protocol = window.location.protocol; // http: hoặc https:
+  const port = window.location.port;
+
+  // Nếu chạy trên port chuẩn 80/443 (đã cấu hình qua Nginx proxy), dùng relative path để tránh CORS
+  if (!port || port === '80' || port === '443') {
+    return '/api';
+  }
+  
+  // Môi trường phát triển local (Ví dụ frontend chạy port 3000, API chạy port 4000)
   return `${protocol}//${hostname}:4000/api`;
 };
 

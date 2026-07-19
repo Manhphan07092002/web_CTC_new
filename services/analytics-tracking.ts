@@ -45,7 +45,11 @@ class AnalyticsTracking {
   // Track any event
   async trackEvent(data: TrackEventData): Promise<void> {
     try {
-      const apiBase = (import.meta as any).env?.VITE_API_BASE || `${window.location.protocol}//${window.location.hostname}:4000/api`;
+      const port = window.location.port;
+      const defaultApiBase = (!port || port === '80' || port === '443') 
+        ? '/api' 
+        : `${window.location.protocol}//${window.location.hostname}:4000/api`;
+      const apiBase = (import.meta as any).env?.VITE_API_BASE || defaultApiBase;
       await fetch(`${apiBase}/analytics/track`, {
         method: 'POST',
         headers: {
