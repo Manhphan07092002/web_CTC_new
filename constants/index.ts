@@ -1,4 +1,4 @@
-import { Product, Project, NewsItem, User, Testimonial, Partner, Category, TeamMember } from './types';
+import { Product, Project, NewsItem, User, Testimonial, Partner, Category, TeamMember } from '../types';
 import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText } from 'lucide-react';
 
 export const NAV_LINKS = [
