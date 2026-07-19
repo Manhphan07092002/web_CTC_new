@@ -83,8 +83,12 @@ PORT=4000
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 
 # Email (optional)
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+EMAIL_FROM=your-email@gmail.com
+CONTACT_RECIPIENT=contac@ctcdn.vn
 
 # Google AI (optional)
 GOOGLE_AI_API_KEY=your-google-ai-api-key

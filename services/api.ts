@@ -7,9 +7,9 @@
 // Cho phép truy cập từ bất kỳ IP/domain nào mà không cần cấu hình lại
 const getApiBaseUrl = () => {
   // Nếu có VITE_API_URL thì dùng (cho production với domain cố định)
-  // @ts-ignore - Vite env
-  if (import.meta.env?.VITE_API_URL) {
-    return process.env.VITE_API_URL || '';
+  const viteEnv = (import.meta as ImportMeta & { env?: { VITE_API_URL?: string } }).env;
+  if (viteEnv?.VITE_API_URL) {
+    return viteEnv.VITE_API_URL;
   }
   
   // Tự động detect: dùng cùng hostname với port 4000
@@ -106,6 +106,11 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit, useCache = f
       throw new Error(error.message || `HTTP ${response.status}`);
     }
 
+    // Any successful mutation invalidates cached public content immediately.
+    if (!isGet) {
+      requestCache.clear();
+    }
+
     // Handle 204 No Content
     if (response.status === 204) {
       return {} as T;
@@ -131,7 +136,7 @@ export const api = {
     getAll: () => fetchAPI<any[]>('/products'),
     getDeleted: () => fetchAPI<any[]>('/products/deleted'),
     getById: (id: string) => fetchAPI<any>(`/products/${id}`),
-    getFeatured: (limit?: number) => fetchAPI<any[]>(`/products/featured${limit ? `?limit=${limit}` : ''}`),
+    getFeatured: (limit?: number) => fetchAPI<any[]>(`/products/featured${limit ? `?limit=${limit}` : ''}`, undefined, true),
     create: (data: any) => fetchAPI<any>('/products', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -161,7 +166,7 @@ export const api = {
   projects: {
     getAll: () => fetchAPI<any[]>('/projects'),
     getById: (id: string) => fetchAPI<any>(`/projects/${id}`),
-    getFeatured: (limit?: number) => fetchAPI<any[]>(`/projects${limit ? `?limit=${limit}` : ''}`),
+    getFeatured: (limit?: number) => fetchAPI<any[]>(`/projects/featured${limit ? `?limit=${limit}` : ''}`, undefined, true),
     create: (data: any) => fetchAPI<any>('/projects', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -179,7 +184,7 @@ export const api = {
   news: {
     getAll: () => fetchAPI<any[]>('/news'),
     getById: (id: string) => fetchAPI<any>(`/news/${id}`),
-    getLatest: (limit?: number) => fetchAPI<any[]>(`/news?limit=${limit || 3}`),
+    getLatest: (limit?: number) => fetchAPI<any[]>(`/news?limit=${limit || 3}`, undefined, true),
     getFeatured: (limit?: number) => fetchAPI<any[]>(`/news/featured${limit ? `?limit=${limit}` : ''}`),
     create: (data: any) => fetchAPI<any>('/news', {
       method: 'POST',
@@ -264,7 +269,7 @@ export const api = {
 
   // Testimonials
   testimonials: {
-    getAll: () => fetchAPI<any[]>('/testimonials'),
+    getAll: () => fetchAPI<any[]>('/testimonials', undefined, true),
     getById: (id: string) => fetchAPI<any>(`/testimonials/${id}`),
     create: (data: any) => fetchAPI<any>('/testimonials', {
       method: 'POST',
@@ -281,7 +286,7 @@ export const api = {
 
   // Partners
   partners: {
-    getAll: () => fetchAPI<any[]>('/partners'),
+    getAll: () => fetchAPI<any[]>('/partners', undefined, true),
     getById: (id: string) => fetchAPI<any>(`/partners/${id}`),
     create: (data: any) => fetchAPI<any>('/partners', {
       method: 'POST',
@@ -442,7 +447,7 @@ export const api = {
 
   // Team Members
   team: {
-    getAll: () => fetchAPI<any[]>('/team'),
+    getAll: () => fetchAPI<any[]>('/team', undefined, true),
     getById: (id: string) => fetchAPI<any>(`/team/${id}`),
     create: (data: any) => fetchAPI<any>('/team', {
       method: 'POST',

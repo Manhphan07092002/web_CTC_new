@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Battery, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
@@ -7,15 +7,15 @@ import { Product } from '../../types';
 
 interface FeaturedProductsProps {
   featuredProducts: Product[];
+  isLoading?: boolean;
 }
 
-const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts }) => {
-  const navigate = useNavigate();
+const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, isLoading = false }) => {
   const { t } = useLanguage();
   const { ref: productsRef, isInView } = useInView(0.1);
 
   return (
-    <section ref={productsRef} className="py-24 bg-gray-50">
+    <section ref={productsRef} className="py-24 bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
       <div className="container max-w-[1440px] mx-auto px-6">
         <div className={`flex flex-col md:flex-row justify-between items-end mb-12 gap-4 transition-all duration-300 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="max-w-2xl">
@@ -23,23 +23,32 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts })
               <Battery size={18} className="text-primary animate-pulse" />
               <span className="text-sm font-bold text-primary uppercase tracking-wider">Sản phẩm</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">{t('home.latest_products')}</h2>
-            <p className="text-gray-600 text-lg">{t('home.latest_products_desc')}</p>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">{t('home.latest_products')}</h2>
+            <p className="text-gray-600 dark:text-slate-300 text-lg">{t('home.latest_products_desc')}</p>
           </div>
-          <Link to="/products" className="bg-white border-2 border-gray-200 hover:border-primary hover:text-primary text-gray-700 px-6 py-3 rounded-full font-bold transition-all flex items-center gap-2 hover:-translate-y-1 hover:shadow-lg group">
+          <Link to="/products" className="bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-700 hover:border-primary hover:text-primary text-gray-700 dark:text-slate-200 px-6 py-3 rounded-full font-bold transition-all flex items-center gap-2 hover:-translate-y-1 hover:shadow-lg group">
             {t('home.view_all_products')} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-300 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          {featuredProducts.map((product, index) => (
-            <div 
+        <div aria-busy={isLoading} className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-300 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          {isLoading ? Array.from({ length: 4 }, (_, index) => (
+            <div key={`product-skeleton-${index}`} className="bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-slate-800 animate-pulse">
+              <div className="h-64 bg-slate-200 dark:bg-slate-800" />
+              <div className="p-6 space-y-4">
+                <div className="h-6 w-4/5 rounded bg-slate-200 dark:bg-slate-800" />
+                <div className="h-4 w-full rounded bg-slate-200 dark:bg-slate-800" />
+                <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-800" />
+              </div>
+            </div>
+          )) : featuredProducts.map((product, index) => (
+            <Link
               key={`product-${index}-${product._id || product.id}`} 
-              className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-200 border border-gray-100 hover:border-primary/20 flex flex-col hover:-translate-y-2 cursor-pointer"
-              onClick={() => navigate(`/products/${product._id || product.id}`)}
+              to={`/products/${product._id || product.id}`}
+              className="group bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-200 border border-gray-100 dark:border-slate-800 hover:border-primary/20 flex flex-col hover:-translate-y-2"
             >
-              <div className="h-64 overflow-hidden relative bg-gray-50">
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className="h-64 overflow-hidden relative bg-gray-50 dark:bg-slate-800">
+                <img src={product.image} alt={product.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-gray-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-gray-100">
                   {product.category}
                 </span>
@@ -51,19 +60,19 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts })
                 </div>
               </div>
               <div className="p-6 flex-1 flex flex-col">
-                <h3 className="font-bold text-xl text-gray-900 mb-2 line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h3>
-                <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">{product.description}</p>
-                <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-auto">
+                <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-slate-400 line-clamp-2 mb-4 flex-1">{product.description}</p>
+                <div className="flex items-center justify-between border-t border-gray-100 dark:border-slate-800 pt-4 mt-auto">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span className="text-xs font-medium text-gray-600">{t('common.stock')}: {product.stock || 0}</span>
+                    <span className="text-xs font-medium text-gray-600 dark:text-slate-300">{t('common.stock')}: {product.stock || 0}</span>
                   </div>
                   <span className="text-primary font-bold text-sm hover:underline flex items-center gap-1 group-hover/link:translate-x-1 transition-transform">
                     <ArrowRight size={16} />
                   </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

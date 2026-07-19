@@ -16,7 +16,7 @@ const About: React.FC = () => {
       "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
       "alternateName": "CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS  CONSTRUCTION JOINT - STOCK COMPANY",
       "taxID": "0400458940",
-      "foundingDate": "2004-02-11",
+      "foundingDate": "2004-01-30",
       "founder": {
         "@type": "Person",
         "name": "Nguyễn Văn Duy",
@@ -82,7 +82,7 @@ const About: React.FC = () => {
 
                <div className="relative rounded-2xl overflow-hidden shadow-2xl border-[8px] border-white z-10">
                   <img 
-                    src="/images/about_solar_install.png" 
+                    src="/images/about_solar_install.webp"
                     alt="CEO Tran Thanh Xuan" 
                     className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
                   />

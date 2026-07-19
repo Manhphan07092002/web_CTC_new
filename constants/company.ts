@@ -13,7 +13,7 @@ export const COMPANY = {
   
   // Pháp lý
   taxId: '0400458940',
-  foundingDate: '2004-02-11',
+  foundingDate: '2004-01-30',
   founder: 'Nguyễn Văn Duy',
   charterCapital: '9.987.660.000 VNĐ',
   
@@ -29,7 +29,7 @@ export const COMPANY = {
   // Địa chỉ
   address: {
     street: '50B Nguyễn Du',
-    ward: '',
+    ward: 'Phường Thạch Thang',
     district: 'Hải Châu',
     city: 'Đà Nẵng',
     province: 'Đà Nẵng',

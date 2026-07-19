@@ -8,10 +8,10 @@ const Stats: React.FC = () => {
   const { ref: statsRef, isInView } = useInView(0.1, false);
 
   const statsList = [
-    { icon: Wallet, value: language === 'vi' ? '181+ Tỷ' : '181+B', label: t('home.stat_assets') },
-    { icon: Users, value: '1000+', label: t('home.stat_partners') },
-    { icon: Zap, value: '50+ MW', label: t('home.stat_capacity') },
-    { icon: Handshake, value: '50+', label: t('home.stat_satisfaction') }
+    { icon: Wallet, value: language === 'vi' ? '181+ Tỷ VNĐ' : '181+ Billion VND', label: language === 'vi' ? 'Tổng tài sản' : 'Total assets' },
+    { icon: Users, value: '500+', label: language === 'vi' ? 'Dự án đã thực hiện' : 'Projects completed' },
+    { icon: Zap, value: '53+', label: language === 'vi' ? 'Cán bộ kỹ thuật chủ chốt' : 'Key technical officers' },
+    { icon: Handshake, value: language === 'vi' ? '288+ Tỷ VNĐ' : '288+ Billion VND', label: language === 'vi' ? 'Doanh thu năm 2025' : '2025 revenue' }
   ];
 
   return (
@@ -144,7 +144,7 @@ const Stats: React.FC = () => {
 const AnimatedNumber: React.FC<{ valueStr: string; isInView: boolean }> = ({ valueStr, isInView }) => {
   const [count, setCount] = React.useState(0);
   
-  // Tách số và phần chữ (VD: "1000+" -> số: 1000, chữ: "+")
+  // Tách số và phần chữ để chạy animation cho các số liệu chính.
   const match = valueStr.match(/(\d+)(.*)/);
   const targetNum = match ? parseInt(match[1], 10) : 0;
   const suffix = match ? match[2] : valueStr;
@@ -159,7 +159,7 @@ const AnimatedNumber: React.FC<{ valueStr: string; isInView: boolean }> = ({ val
     if (targetNum === 0) return;
     
     let startTimestamp: number | null = null;
-    let animationFrameId: number;
+    let animationFrameId: number | null = null;
     const duration = 2000; // 2 seconds
 
     const step = (timestamp: number) => {
@@ -182,7 +182,7 @@ const AnimatedNumber: React.FC<{ valueStr: string; isInView: boolean }> = ({ val
     
     // Dọn dẹp animation khi unmount hoặc khi thay đổi trạng thái
     return () => {
-      if (animationFrameId) {
+      if (animationFrameId !== null) {
         window.cancelAnimationFrame(animationFrameId);
       }
     };

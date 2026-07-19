@@ -281,18 +281,18 @@ const About: React.FC<AboutProps> = ({ onOpenModal }) => {
             <div className="grid grid-cols-2 gap-6 relative">
               <div className="space-y-6" style={{ transform: `translateY(${parallax.y * 0.3}px)` }}>
                 <div className="about-image-wrapper h-64 lg:h-80 translate-y-12">
-                  <img src="/images/about_solar_install.png" alt="Installation" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                  <img src="/images/about_solar_install.webp" alt="Installation" width="1024" height="1024" loading="lazy" decoding="async" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
                 </div>
                 <div className="about-image-wrapper h-48 lg:h-64 translate-y-12">
-                  <img src="/images/about_telecom.png" alt="Engineers" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                  <img src="/images/about_telecom.webp" alt="Engineers" width="1024" height="1024" loading="lazy" decoding="async" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
                 </div>
               </div>
               <div className="space-y-6" style={{ transform: `translateY(${parallax.y * -0.3}px)` }}>
                 <div className="about-image-wrapper h-48 lg:h-64">
-                  <img src="/images/about_datacenter.png" alt="Office" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                  <img src="/images/about_datacenter.webp" alt="Office" width="1024" height="1024" loading="lazy" decoding="async" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
                 </div>
                 <div className="about-image-wrapper h-64 lg:h-80">
-                  <img src="/images/about_renewable.png" alt="Panels" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                  <img src="/images/about_renewable.webp" alt="Panels" width="1024" height="1024" loading="lazy" decoding="async" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
                 </div>
               </div>
 

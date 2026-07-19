@@ -7,9 +7,10 @@ import { useMouseParallax } from '../../hooks/useMouseParallax';
 
 interface TeamProps {
   teamMembers: any[];
+  isLoading?: boolean;
 }
 
-const Team: React.FC<TeamProps> = ({ teamMembers }) => {
+const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const parallax = useMouseParallax();
@@ -120,8 +121,18 @@ const Team: React.FC<TeamProps> = ({ teamMembers }) => {
           <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed">{t('home.team_desc')}</p>
         </div>
 
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20 transition-all duration-500 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          {teamMembers.map((member, index) => {
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20 transition-all duration-500 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} aria-busy={isLoading}>
+          {isLoading ? [1, 2, 3, 4].map((item) => (
+            <div key={item} className="team-glass-card p-4 rounded-[2.5rem] animate-pulse" aria-hidden="true">
+              <div className="h-72 rounded-[1.8rem] bg-slate-200 dark:bg-slate-800 mb-5" />
+              <div className="h-5 w-2/3 mx-auto rounded bg-slate-200 dark:bg-slate-800 mb-3" />
+              <div className="h-3 w-1/2 mx-auto rounded bg-slate-200 dark:bg-slate-800" />
+            </div>
+          )) : teamMembers.length === 0 ? (
+            <div className="sm:col-span-2 lg:col-span-4 py-10 text-center rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+              {isEn ? 'Our technical team profile is being updated.' : 'Thông tin đội ngũ kỹ thuật đang được cập nhật.'}
+            </div>
+          ) : teamMembers.map((member, index) => {
             return (
               <div
                 key={`team-${index}-${member._id || member.id}`}
@@ -132,6 +143,8 @@ const Team: React.FC<TeamProps> = ({ teamMembers }) => {
                   <img
                     src={member.image}
                     alt={member.name}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute bottom-6 left-6 right-6 text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -201,8 +214,8 @@ const Team: React.FC<TeamProps> = ({ teamMembers }) => {
                   <Target size={28} className="text-orange-500" />
                 </div>
                 <div className="absolute top-1/2 left-1/2 w-40 h-40 team-glass-card rounded-3xl shadow-2xl flex flex-col items-center justify-center z-10 animate-float-center" style={{ animationDelay: '0.3s' }}>
-                  <div className="text-4xl font-black text-slate-900 dark:text-white mb-1">100%</div>
-                  <div className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest">{t('home.opportunity')}</div>
+                  <div className="text-4xl font-black text-slate-900 dark:text-white mb-1">53+</div>
+                  <div className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest">{language === 'en' ? 'TECHNICAL OFFICERS' : 'CÁN BỘ KỸ THUẬT'}</div>
                 </div>
               </div>
             </div>

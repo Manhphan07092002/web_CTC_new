@@ -32,10 +32,10 @@ const BackToTopButton: React.FC = () => {
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-24 right-6 z-40 p-3 bg-white/80 backdrop-blur text-corporate border border-gray-200 rounded-full shadow-lg hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 transform hover:-translate-y-1 group"
+          className="fixed bottom-20 right-3 z-40 rounded-full border border-gray-200 bg-white/80 p-2.5 text-corporate shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:bg-primary hover:text-white group sm:bottom-24 sm:right-6 sm:p-3"
           title="Lên đầu trang"
         >
-          <ArrowUp size={20} className="group-hover:animate-bounce" />
+          <ArrowUp size={18} className="group-hover:animate-bounce sm:h-5 sm:w-5" />
         </button>
       )}
     </>

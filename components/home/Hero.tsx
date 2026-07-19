@@ -5,9 +5,8 @@ import { useLanguage } from '../../contexts/LanguageContext';
 const Hero: React.FC = () => {
   const { language } = useLanguage();
   
-  // Auto-incrementing years of experience starting from 2004 (incorporation date)
-  const currentYear = new Date().getFullYear();
-  const yearsOfExperience = currentYear - 2004;
+  // The official profile counts experience from the 1993 starting point.
+  const yearsOfExperience = 32;
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -34,7 +33,7 @@ const Hero: React.FC = () => {
         { text: 'Chuyên nghiệp trong xây dựng hạ tầng viễn thông' },
         { text: 'Tiên phong trong công nghệ số và truyền thông' },
         { text: 'Đối tác tin cậy của các doanh nghiệp hàng đầu' },
-        { text: 'Hơn 30 năm kinh nghiệm phục vụ khách hàng' }
+        { text: '32+ năm kinh nghiệm phát triển và đồng hành cùng khách hàng' }
       ],
       ctaPrimary: 'Tìm hiểu thêm',
       ctaSecondary: 'Liên hệ Zalo',
@@ -45,9 +44,9 @@ const Hero: React.FC = () => {
       stat2Title: 'Dự án thực hiện',
       stat2Val: '500+ Dự án',
       stat2Desc: 'Đạt chuẩn chất lượng',
-      stat3Title: 'Phạm vi hoạt động',
-      stat3Val: '34 Tỉnh thành',
-      stat3Desc: 'Mạng lưới phủ rộng',
+      stat3Title: 'Lĩnh vực hoạt động',
+      stat3Val: '6+ Lĩnh vực',
+      stat3Desc: 'Viễn thông, CNTT, năng lượng và hạ tầng kỹ thuật',
       partnerTitle: 'ĐỐI TÁC CHIẾN LƯỢC VIỄN THÔNG'
     },
     en: {
@@ -71,9 +70,9 @@ const Hero: React.FC = () => {
       stat2Title: 'Projects Completed',
       stat2Val: '500+ Projects',
       stat2Desc: 'International standards',
-      stat3Title: 'Network Coverage',
-      stat3Val: '34 Provinces',
-      stat3Desc: 'Nationwide operation',
+      stat3Title: 'Active sectors',
+      stat3Val: '6+ Sectors',
+      stat3Desc: 'Telecom, IT, energy and infrastructure',
       partnerTitle: 'TELECOM STRATEGIC PARTNERS'
     },
     ko: {
@@ -97,9 +96,9 @@ const Hero: React.FC = () => {
       stat2Title: '완료된 프로젝트',
       stat2Val: '500+ 프로젝트',
       stat2Desc: '국제 표준 준수',
-      stat3Title: '네트워크 범위',
-      stat3Val: '34개 성·시',
-      stat3Desc: '전국적인 운영망',
+      stat3Title: '활동 분야',
+      stat3Val: '6+ 분야',
+      stat3Desc: '통신, IT, 에너지 및 인프라',
       partnerTitle: '통신 전략적 파트너'
     },
     ja: {
@@ -123,9 +122,9 @@ const Hero: React.FC = () => {
       stat2Title: '完工プロジェクト',
       stat2Val: '500件以上',
       stat2Desc: '高品質規格の達成',
-      stat3Title: '活動範囲',
-      stat3Val: '34省・市',
-      stat3Desc: '全国をカバーするネットワーク',
+      stat3Title: '事業分野',
+      stat3Val: '6+ 分野',
+      stat3Desc: '通信、IT、エネルギー、インフラ',
       partnerTitle: '通信戦略パートナー'
     },
     zh: {
@@ -149,9 +148,9 @@ const Hero: React.FC = () => {
       stat2Title: '已完成项目',
       stat2Val: '500+ 项目',
       stat2Desc: '符合国际标准',
-      stat3Title: '业务覆盖',
-      stat3Val: '34 省市',
-      stat3Desc: '全国服务网络',
+      stat3Title: '业务领域',
+      stat3Val: '6+ 个领域',
+      stat3Desc: '通信、IT、能源和基础设施',
       partnerTitle: '电信战略合作伙伴'
     },
     de: {
@@ -175,15 +174,23 @@ const Hero: React.FC = () => {
       stat2Title: 'Fertiggestellte Projekte',
       stat2Val: '500+ Projekte',
       stat2Desc: 'Höchste Qualitätsstandards',
-      stat3Title: 'Netzabdeckung',
-      stat3Val: '34 Provinzen',
-      stat3Desc: 'Landesweite Präsenz',
+      stat3Title: 'Geschäftsbereiche',
+      stat3Val: '6+ Bereiche',
+      stat3Desc: 'Telekommunikation, IT, Energie und Infrastruktur',
       partnerTitle: 'STRATEGISCHE PARTNER'
     }
   };
 
   const currentLang = language as keyof typeof heroData;
-  const currentHero = heroData[currentLang] || heroData.vi;
+  const baseHero = heroData[currentLang] || heroData.vi;
+  const currentHero = {
+    ...baseHero,
+    stat3Title: currentLang === 'vi' ? 'Lĩnh vực hoạt động' : currentLang === 'en' ? 'Active sectors' : 'Business sectors',
+    stat3Desc: currentLang === 'vi' ? 'Viễn thông, CNTT, năng lượng và hạ tầng kỹ thuật' : currentLang === 'en' ? 'Telecom, IT, energy and technical infrastructure' : 'Telecom, IT, energy and infrastructure',
+    stat1Val: currentLang === 'vi' ? `${yearsOfExperience}+ Năm` : currentLang === 'en' ? `${yearsOfExperience}+ Years` : `${yearsOfExperience}+`,
+    stat2Val: currentLang === 'vi' ? '500+ Dự án' : currentLang === 'en' ? '500+ Projects' : '500+',
+    stat3Val: currentLang === 'vi' ? '6+ Lĩnh vực' : currentLang === 'en' ? '6+ Sectors' : '6+'
+  };
 
   const [sloganIdx, setSloganIdx] = useState(0);
   const [animClass, setAnimClass] = useState('slogan-enter');
@@ -414,6 +421,7 @@ const Hero: React.FC = () => {
         }
         
         .title-main-bold {
+            display: block;
             font-family: 'Montserrat', sans-serif;
             font-size: clamp(2rem, 4.8vw, 3.8rem);
             font-weight: 900;
@@ -427,6 +435,7 @@ const Hero: React.FC = () => {
         }
 
         .title-main-gradient {
+            display: block;
             font-family: 'Montserrat', sans-serif;
             font-size: clamp(2rem, 4.8vw, 3.8rem);
             font-weight: 900;
@@ -704,6 +713,10 @@ const Hero: React.FC = () => {
 
         /* Mouse Scroll Icon */
         .scroll-indicator-corporate {
+            border: 0;
+            padding: 0;
+            background: transparent;
+            color: inherit;
             position: absolute;
             bottom: 30px;
             left: 50%;
@@ -784,7 +797,7 @@ const Hero: React.FC = () => {
             .hero-corporate {
                 height: auto;
                 min-height: 100vh;
-                padding: 110px 0 60px;
+                padding: 145px 0 60px;
             }
             .corporate-layout {
                 grid-template-columns: 1fr;
@@ -813,19 +826,31 @@ const Hero: React.FC = () => {
         /* Small Phones (320px - 767px) */
         @media (max-width: 767px) {
             .hero-corporate {
-                padding: 100px 0 40px;
+                padding: 125px 0 40px;
             }
             .corporate-layout {
                 padding: 0 16px;
                 gap: 40px;
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+            .left-corporate-panel,
+            .right-corporate-panel {
+                width: 100%;
+                min-width: 0;
             }
             .corporate-badge-capsule {
                 padding: 8px 18px;
                 margin-bottom: 24px;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             .badge-capsule-text {
                 font-size: 0.75rem;
                 letter-spacing: 2px;
+                min-width: 0;
+                overflow-wrap: anywhere;
             }
             .title-upper-outline {
                 letter-spacing: 4px;
@@ -860,6 +885,10 @@ const Hero: React.FC = () => {
                 padding: 14px 28px;
             }
             .achievement-dashboard {
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
                 padding: 20px;
                 border-radius: 18px;
             }
@@ -927,8 +956,10 @@ const Hero: React.FC = () => {
 
             {/* Typography Stack */}
             <div className="title-upper-outline">{currentHero.titleOutline}</div>
-            <h1 className="title-main-bold">{currentHero.titleFilled}</h1>
-            <h1 className="title-main-gradient">{currentHero.titleGradient}</h1>
+            <h1>
+              <span className="title-main-bold">{currentHero.titleFilled}</span>
+              <span className="title-main-gradient">{currentHero.titleGradient}</span>
+            </h1>
 
             {/* Slogans Container */}
             <div className="corporate-slogan-box">
@@ -1041,12 +1072,17 @@ const Hero: React.FC = () => {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="scroll-indicator-corporate" onClick={handleScrollToNext}>
+        <button
+          type="button"
+          className="scroll-indicator-corporate"
+          onClick={handleScrollToNext}
+          aria-label={currentHero.ctaPrimary}
+        >
           <div className="mouse-shell">
             <div className="mouse-wheel"></div>
           </div>
           <span className="text-[9px] font-bold tracking-widest text-sky-400/50 uppercase mt-1">SCROLL</span>
-        </div>
+        </button>
       </section>
     </>
   );

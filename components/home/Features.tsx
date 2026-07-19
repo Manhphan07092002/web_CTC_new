@@ -24,7 +24,7 @@ export const Features: React.FC = () => {
       color: "from-blue-500 to-sky-600",
       accentColor: "sky",
       icon: FileText,
-      tag: "CTC-PROFILE-2024",
+      tag: "CTC-PROFILE-2026",
       desc: isEn 
         ? "Comprehensive review of CTC legal credentials, capital, engineering staff, and machinery capacities." 
         : "Tổng hợp toàn diện về năng lực pháp lý, tài chính, đội ngũ nhân sự kỹ thuật cao và trang thiết bị thi công hiện đại của công ty.",
@@ -35,8 +35,8 @@ export const Features: React.FC = () => {
         isEn ? "Strategic partner of VNPT, Mobifone, Viettel, etc." : "Đối tác tin cậy của các tập đoàn Viễn thông, Công nghệ & Năng lượng lớn."
       ],
       stats: [
-        { value: "53+", label: isEn ? "Engineers" : "Kỹ Sư & Cán Bộ" },
-        { value: "22+", label: isEn ? "Years Exp" : "Năm Kinh Nghiệm" }
+        { value: "53+", label: isEn ? "Key technical officers" : "Cán bộ kỹ thuật chủ chốt" },
+        { value: "32+", label: isEn ? "Years of experience" : "Năm kinh nghiệm" }
       ],
       btnText: isEn ? "View Complete Profile" : "Xem Hồ Sơ Năng Lực",
       downloadText: isEn ? "Download docx" : "Tải về bản DOCX",
@@ -49,19 +49,19 @@ export const Features: React.FC = () => {
       color: "from-indigo-500 to-purple-600",
       accentColor: "purple",
       icon: TrendingUp,
-      tag: "CTC-FINANCE-2024",
+      tag: "CTC-FINANCE-2025",
       desc: isEn 
         ? "Audited financial declarations showing CTC financial strength, total assets, and tax duties compliance." 
         : "Công bố chi tiết tình hình tài chính thường niên đã qua kiểm toán, thể hiện quy mô tài sản và tính minh bạch của doanh nghiệp.",
       details: [
         isEn ? "Independent audited reports ensuring transparency" : "Báo cáo kiểm toán độc lập thường niên khách quan, chính xác.",
         isEn ? "Robust asset base with over 181+ Billion VNĐ" : "Tổng quy mô tài sản vững chắc đạt trên 181+ tỷ VNĐ.",
-        isEn ? "Full compliance with state tax and social duties" : "Hoàn thành 100% nghĩa vụ nộp thuế nhà nước (Có giấy xác nhận).",
+        isEn ? "Profit after tax reached 913 million VND in 2025" : "Lợi nhuận sau thuế năm 2025 đạt 913 triệu VNĐ.",
         isEn ? "Optimal capital efficiency and sustainable profit growth" : "Cơ cấu nguồn vốn an toàn, tỷ lệ nợ phải trả luôn trong tầm kiểm soát."
       ],
       stats: [
         { value: "181+ B", label: isEn ? "Total Assets" : "Tổng Tài Sản" },
-        { value: "100%", label: isEn ? "Tax Cleared" : "Hoàn Thành Nghĩa Vụ" }
+        { value: "288+ B", label: isEn ? "2025 Revenue" : "Doanh thu 2025" }
       ],
       btnText: isEn ? "View Financial Audit" : "Xem Kiểm Toán Tài Chính",
       downloadText: isEn ? "Download PDF Reports" : "Tải PDF Báo Cáo",
@@ -85,7 +85,7 @@ export const Features: React.FC = () => {
         isEn ? "System integration and customized enterprise software" : "Tích hợp thiết bị tin học, phòng họp thông minh, phần mềm bản quyền."
       ],
       stats: [
-        { value: "5+", label: isEn ? "Core Pillars" : "Ngành Cốt Lõi" },
+        { value: "6+", label: isEn ? "Active sectors" : "Lĩnh vực hoạt động" },
         { value: "EPC", label: isEn ? "Turnkey Delivery" : "Tổng Thầu EPC" }
       ],
       btnText: isEn ? "Explore Business Sectors" : "Khám Phá Chi Tiết Lĩnh Vực",

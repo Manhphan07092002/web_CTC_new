@@ -157,8 +157,12 @@ const FAQ: React.FC = () => {
             {/* Edge-to-edge bleed visual header */}
             <div className="relative aspect-[16/10] overflow-hidden group">
               <img
-                src="/images/faq-support.png"
+                src="/images/faq-support.webp"
                 alt="CTC Technical Team"
+                width="1024"
+                height="1024"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
@@ -233,7 +237,10 @@ const FAQ: React.FC = () => {
                   className={`faq-glass-item rounded-2xl ${isOpen ? 'faq-active-item' : ''}`}
                 >
                   <button
+                    type="button"
                     onClick={() => toggleFaq(idx)}
+                    aria-expanded={isOpen}
+                    aria-controls={`home-faq-answer-${idx}`}
                     className="w-full flex justify-between items-center gap-4 p-5 sm:p-6 text-left"
                   >
                     <span className="flex items-center gap-4">
@@ -263,7 +270,7 @@ const FAQ: React.FC = () => {
                   </button>
 
                   {/* Expandable answer panel */}
-                  <div className={`overflow-hidden transition-all duration-400 ease-in-out ${
+                  <div id={`home-faq-answer-${idx}`} className={`overflow-hidden transition-all duration-400 ease-in-out ${
                     isOpen ? 'max-h-[500px] border-t border-blue-100/40 dark:border-slate-700/30' : 'max-h-0'
                   }`}>
                     <div className="p-5 sm:p-6 bg-blue-50/20 dark:bg-slate-900/10">

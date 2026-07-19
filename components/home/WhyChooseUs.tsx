@@ -217,8 +217,12 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenModal }) => {
             <div className="relative why-glass-card p-3.5 rounded-[2.8rem] overflow-hidden shadow-2xl z-10">
               <div className="relative aspect-[4/3] rounded-[2.2rem] overflow-hidden">
                 <img 
-                  src="/images/why_choose_us_visual.png" 
+                  src="/images/why_choose_us_visual.webp"
                   alt="Why Choose CTC" 
+                  width="1024"
+                  height="1024"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[1200ms]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent"></div>
@@ -237,7 +241,7 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenModal }) => {
               style={{ animationDelay: '0s' }}
             >
               <span className="text-3xl sm:text-4xl font-black text-sky-500 dark:text-sky-400 tracking-tight leading-none">
-                {companyProfile.hero_statistics.experience_years || "22+"}
+                {companyProfile.hero_statistics.experience_years || "32+"}
               </span>
               <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-200 tracking-wider text-center uppercase mt-2.5 leading-tight max-w-[85px]">
                 {isEn ? "YEARS EXPERIENCE" : "NĂM KINH NGHIỆM"}
@@ -284,10 +288,11 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenModal }) => {
             {/* Vertical glass rows stack */}
             <div className="space-y-4">
               {items.map((item, index) => (
-                <div
+                <button
+                  type="button"
                   key={index}
                   onClick={() => onOpenModal(item.title, item.desc, item.details)}
-                  className="why-glass-row p-4 sm:p-5 rounded-2xl cursor-pointer flex items-center gap-4 sm:gap-5"
+                  className="why-glass-row p-4 sm:p-5 rounded-2xl cursor-pointer flex items-center gap-4 sm:gap-5 w-full text-left"
                 >
                   <div className="flex-shrink-0 relative">
                     <div className={`float-icon pulse-glow-icon w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center text-white shadow-md relative z-10`}>
@@ -307,7 +312,7 @@ const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenModal }) => {
                   <div className="text-slate-400 hover:text-sky-500 flex-shrink-0 self-center transition-colors">
                     <ArrowRight size={16} />
                   </div>
-                </div>
+                </button>
               ))}
             </div>
 

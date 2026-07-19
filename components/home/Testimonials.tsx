@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Star, Quote } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
@@ -6,16 +6,15 @@ import { Testimonial } from '../../types';
 
 interface TestimonialsProps {
   testimonials: Testimonial[];
+  isLoading?: boolean;
 }
 
-const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
-  const { t } = useLanguage();
+const Testimonials: React.FC<TestimonialsProps> = ({ testimonials, isLoading = false }) => {
+  const { t, language } = useLanguage();
   const { ref: testimonialsSection, isInView } = useInView(0.1);
 
-  if (!testimonials || testimonials.length === 0) return null;
-
   // Double-up items for seamless loop
-  const loopItems = [...testimonials, ...testimonials, ...testimonials];
+  const loopItems = testimonials?.length ? [...testimonials, ...testimonials, ...testimonials] : [];
 
   return (
     <section
@@ -158,50 +157,77 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
           </div>
         </div>
 
-        {/* Infinite Scroll Track */}
+        {/* Infinite Scroll Track / loading and empty states */}
         <div
           className={`testi-viewport relative overflow-hidden transition-all duration-700 delay-150 ${isInView ? 'opacity-100' : 'opacity-0'}`}
+          aria-busy={isLoading}
         >
-          <div className="testi-track py-6 px-4">
-            {loopItems.map((item, index) => (
-              <div
-                key={`testi-${index}-${item._id || item.id}`}
-                className="testi-card rounded-2xl p-6 flex flex-col flex-shrink-0 cursor-pointer"
-                style={{ width: '340px', minHeight: '230px' }}
-              >
-                {/* Top: Quote icon + Stars */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex gap-0.5 testi-star-shimmer">
-                    {[1,2,3,4,5].map(i => (
-                      <Star key={i} size={14} className="text-amber-400 fill-amber-400" />
-                    ))}
-                  </div>
-                  <div className="testi-quote-mark w-9 h-9 flex items-center justify-center flex-shrink-0">
-                    <Quote size={16} className="text-indigo-500 dark:text-indigo-400" />
-                  </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 py-6 max-w-6xl mx-auto" role="status">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="testi-card rounded-2xl p-6 min-h-[230px] animate-pulse" aria-hidden="true">
+                  <div className="h-4 w-24 rounded bg-slate-200 dark:bg-slate-700 mb-6" />
+                  <div className="h-3 rounded bg-slate-200 dark:bg-slate-700 mb-3" />
+                  <div className="h-3 w-4/5 rounded bg-slate-200 dark:bg-slate-700 mb-10" />
+                  <div className="h-10 w-40 rounded bg-slate-200 dark:bg-slate-700" />
                 </div>
-
-                {/* Content */}
-                <p className="text-gray-600 dark:text-slate-300 text-sm leading-relaxed italic flex-1 line-clamp-4 mb-5">
-                  "{item.content}"
-                </p>
-
-                {/* Footer: Avatar + Info */}
-                <div className="flex items-center gap-3 pt-4 border-t border-white/60 dark:border-slate-700/40 mt-auto">
-                  <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white dark:ring-slate-600 ring-offset-1 shadow-md">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="font-bold text-gray-900 dark:text-white text-sm truncate">{item.name}</h4>
-                    <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-wider truncate">{item.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+              <span className="sr-only">{language === 'vi' ? 'Đang tải đánh giá khách hàng' : 'Loading customer testimonials'}</span>
+            </div>
+          ) : loopItems.length === 0 ? (
+            <div className="mx-4 py-12 px-6 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-white/60 dark:bg-slate-900/40">
+              <Quote size={28} className="mx-auto mb-4 text-indigo-400" />
+              <p className="text-slate-600 dark:text-slate-300 font-medium">
+                {language === 'vi' ? 'Đánh giá khách hàng đang được cập nhật.' : 'Customer testimonials are being updated.'}
+              </p>
+            </div>
+          ) : (
+            <div className="testi-track py-6 px-4 motion-reduce:[animation-play-state:paused]">
+              {loopItems.map((item, index) => (
+                <TestimonialCard key={`testi-${index}-${item._id || item.id}`} item={item} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
+  );
+};
+
+const TestimonialCard: React.FC<{ item: Testimonial }> = ({ item }) => {
+  const [imageError, setImageError] = useState(false);
+  const initials = item.name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <div className="testi-card rounded-2xl p-6 flex flex-col flex-shrink-0 cursor-pointer" style={{ width: '340px', minHeight: '230px' }}>
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex gap-0.5 testi-star-shimmer" aria-label="5/5 stars">
+          {[1, 2, 3, 4, 5].map((i) => <Star key={i} size={14} className="text-amber-400 fill-amber-400" aria-hidden="true" />)}
+        </div>
+        <div className="testi-quote-mark w-9 h-9 flex items-center justify-center flex-shrink-0">
+          <Quote size={16} className="text-indigo-500 dark:text-indigo-400" aria-hidden="true" />
+        </div>
+      </div>
+      <p className="text-gray-600 dark:text-slate-300 text-sm leading-relaxed italic flex-1 line-clamp-4 mb-5">"{item.content}"</p>
+      <div className="flex items-center gap-3 pt-4 border-t border-white/60 dark:border-slate-700/40 mt-auto">
+        <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white dark:ring-slate-600 ring-offset-1 shadow-md bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
+          {item.image && !imageError ? (
+            <img src={item.image} alt={item.name} loading="lazy" decoding="async" onError={() => setImageError(true)} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-300" aria-hidden="true">{initials}</span>
+          )}
+        </div>
+        <div className="min-w-0">
+          <h4 className="font-bold text-gray-900 dark:text-white text-sm truncate">{item.name}</h4>
+          <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-wider truncate">{item.role}</p>
+        </div>
+      </div>
+    </div>
   );
 };
 

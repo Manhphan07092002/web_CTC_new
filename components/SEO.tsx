@@ -28,7 +28,7 @@ export const COMPANY_INFO = {
   website: 'https://www.ctcdn.vn',
   address: {
     street: '50B Nguyễn Du',
-    ward: '',
+    ward: 'Phường Thạch Thang',
     district: 'Hải Châu',
     city: 'Đà Nẵng',
     postalCode: '550000',
@@ -40,7 +40,7 @@ export const COMPANY_INFO = {
     longitude: 108.2201
   },
   founder: 'Nguyễn Văn Duy',
-  foundingDate: '2004-02-11',
+  foundingDate: '2004-01-30',
   social: {
     facebook: 'https://www.facebook.com/ctcdn',
     youtube: 'https://www.youtube.com/@ctcdn',
@@ -52,7 +52,7 @@ const SEO: React.FC<SEOProps> = ({
   title, 
   description, 
   keywords = "điện mặt trời, solar energy, năng lượng mặt trời, tấm pin mặt trời, inverter, CTC, lắp đặt điện mặt trời Đà Nẵng, hệ thống điện mặt trời, pin năng lượng mặt trời, điện năng lượng tái tạo", 
-  image = "/uploads/images/logo/tran-le-og.jpg",
+  image = "/images/why_choose_us_visual.webp",
   type = 'website',
   schema,
   noindex = false,

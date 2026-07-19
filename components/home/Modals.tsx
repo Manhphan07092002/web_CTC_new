@@ -9,6 +9,19 @@ interface DetailModalProps {
 }
 
 export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, content, onClose }) => {
+  const titleId = React.useId();
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !content) return null;
 
   return (
@@ -17,7 +30,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, content, onClo
       <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-md transition-opacity duration-300" onClick={onClose}></div>
       
       {/* Modal Container */}
-      <div className="bg-white/75 dark:bg-[#060d1d]/70 backdrop-blur-2xl w-full max-w-md sm:max-w-lg lg:max-w-xl rounded-3xl border border-white/50 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden relative z-10 animate-fade-in-up max-h-[90vh] flex flex-col transition-all duration-300">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="bg-white/75 dark:bg-[#060d1d]/70 backdrop-blur-2xl w-full max-w-md sm:max-w-lg lg:max-w-xl rounded-3xl border border-white/50 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden relative z-10 animate-fade-in-up max-h-[90vh] flex flex-col transition-all duration-300"
+      >
         
         {/* Glow Effects */}
         <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -27,7 +45,9 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, content, onClo
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100/50 dark:border-slate-800/50 relative z-10">
           <span className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">Thông tin chi tiết</span>
           <button 
+            type="button"
             onClick={onClose} 
+            aria-label="Close"
             className="bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 p-2 rounded-full transition-all hover:rotate-90 duration-300"
           >
             <X size={18} className="text-gray-600 dark:text-slate-300" />
@@ -37,7 +57,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, content, onClo
         {/* Content Area */}
         <div className="p-6 sm:p-8 overflow-y-auto flex-1 relative z-10 space-y-6">
           <div className="space-y-3">
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h3 id={titleId} className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
               {content.title}
             </h3>
             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-light">
@@ -58,6 +78,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, content, onClo
         {/* Footer Actions */}
         <div className="p-6 border-t border-gray-100/50 dark:border-slate-800/50 bg-gray-50/50 dark:bg-slate-950/20 relative z-10 flex gap-4">
           <button 
+            type="button"
             onClick={onClose}
             className="flex-1 bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-200 py-3.5 rounded-xl font-bold transition-all"
           >

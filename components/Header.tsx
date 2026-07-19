@@ -190,7 +190,7 @@ const Header: React.FC = () => {
       {/* Top Bar (Collapses dynamically when scrolling down) */}
       <div className={getTopBarClass()}>
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <span className="hidden md:block font-sans font-medium tracking-wide">
+          <span className="hidden xl:block font-sans font-medium tracking-wide">
             {settings.siteDescription || t('header.slogan')}
           </span>
           <div className="flex items-center gap-4 justify-between w-full md:w-auto">
@@ -250,7 +250,7 @@ const Header: React.FC = () => {
             </div>
 
             <div className="h-3 w-px bg-white/20 hidden sm:block"></div>
-            <Link to="/admin" className="hover:text-sky-400 transition-colors hidden sm:block font-medium">{t('header.admin')}</Link>
+            <Link to="/admin" className="hover:text-sky-400 transition-colors hidden lg:block font-medium">{t('header.admin')}</Link>
           </div>
         </div>
       </div>

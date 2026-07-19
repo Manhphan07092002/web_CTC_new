@@ -1,71 +1,153 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Zap, ArrowRight, Phone, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, CheckCircle, Loader2, Send } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useToast } from '../../contexts/ToastContext';
+import analyticsTracking from '../../services/analytics-tracking';
+
+const getContactApiUrl = () => {
+  const viteEnv = (import.meta as ImportMeta & { env?: { VITE_API_URL?: string } }).env;
+  if (viteEnv?.VITE_API_URL) return `${viteEnv.VITE_API_URL.replace(/\/+$/, '')}/contact/submit`;
+  return `${window.location.protocol}//${window.location.hostname}:4000/api/contact/submit`;
+};
 
 const CTA: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { showToast } = useToast();
+  const isEn = language === 'en';
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    service: isEn ? 'EPC consultation' : 'Tư vấn giải pháp EPC',
+    message: ''
+  });
+
+  const updateField = (field: keyof typeof formData, value: string) => {
+    setFormData((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus('submitting');
+
+    try {
+      const response = await fetch(getContactApiUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) throw new Error(result.error || 'Failed to submit contact request');
+
+      setStatus('success');
+      showToast('✅ ' + (result.message || (isEn ? 'Your request has been sent.' : 'Đã gửi yêu cầu liên hệ.')), 'success');
+      analyticsTracking.trackContactRequest(formData.service, { name: formData.name, email: formData.email });
+      setFormData({ name: '', phone: '', email: '', service: isEn ? 'EPC consultation' : 'Tư vấn giải pháp EPC', message: '' });
+      window.setTimeout(() => setStatus('idle'), 3500);
+    } catch (error) {
+      console.error('Error submitting CTA contact form:', error);
+      showToast(isEn ? 'Unable to send. Please try again.' : 'Không thể gửi liên hệ. Vui lòng thử lại.', 'error');
+      setStatus('idle');
+    }
+  };
 
   return (
-    <section className="py-32 bg-gradient-to-b from-white via-gray-50/30 to-white dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900 relative overflow-hidden">
-      {/* Subtle Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/3 w-[600px] h-[600px] bg-gradient-to-r from-primary/5 to-orange-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-gradient-to-l from-blue-500/5 to-primary/5 rounded-full blur-3xl"></div>
-      </div>
-      
-      <div className="container max-w-[1440px] mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/10 to-orange-500/10 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-primary/20">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-            <span className="text-sm font-bold text-primary uppercase tracking-wider">{t('home.cta_badge')}</span>
-          </div>
-          
-          {/* Main Heading */}
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-6 sm:mb-8 leading-[1.3] bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-slate-200 dark:to-white bg-clip-text text-transparent max-w-4xl mx-auto text-balance py-2 sm:py-4 px-4 sm:px-0">
-            <span className="block">{t('home.cta_title_1')}</span>
-            <span className="block">{t('home.cta_title_2')}</span>
-          </h2>
-          
-          {/* Description */}
-          <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-slate-300 mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto font-light px-4 sm:px-0">
-            {t('home.ready_desc')}
-          </p>
-          
-          {/* CTA Button */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 px-4 sm:px-0">
-            <Link to="/contact" className="group relative inline-flex bg-gradient-to-r from-primary via-orange-500 to-primary bg-size-200 bg-pos-0 hover:bg-pos-100 text-white px-8 sm:px-12 py-4 sm:py-6 rounded-xl sm:rounded-2xl font-bold transition-all duration-200 transform hover:-translate-y-2 shadow-xl hover:shadow-2xl hover:shadow-primary/30 items-center gap-3 sm:gap-4 text-base sm:text-lg overflow-hidden w-full sm:w-auto">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-              <Zap size={24} className="group-hover:animate-pulse relative z-10" />
-              <span className="relative z-10">{t('home.contact_consult')}</span>
-              <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-300 relative z-10" />
-            </Link>
-            
-            <a href="tel:0915059666" className="group inline-flex items-center gap-3 text-gray-700 dark:text-slate-300 hover:text-primary font-semibold transition-colors duration-300 w-full sm:w-auto justify-center sm:justify-start">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-slate-800 group-hover:bg-primary/10 rounded-full flex items-center justify-center transition-colors duration-300">
-                <Phone size={20} className="group-hover:animate-bounce" />
+    <section className="py-16 sm:py-24 relative overflow-hidden bg-slate-50 dark:bg-[#060d1d] transition-colors duration-300">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .cta-contact-grid {
+          background-image:
+            linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+          background-size: 48px 48px;
+        }
+        .cta-contact-card {
+          box-shadow: 0 30px 80px -30px rgba(0, 59, 92, .35);
+        }
+        .cta-contact-input {
+          background: rgba(255,255,255,.98);
+          color: #172033;
+          border: 1px solid rgba(255,255,255,.78);
+          box-shadow: 0 8px 18px -14px rgba(0,0,0,.35);
+        }
+        .cta-contact-input:focus {
+          outline: none;
+          border-color: #38bdf8;
+          box-shadow: 0 0 0 3px rgba(56,189,248,.2);
+        }
+      `}} />
+
+      <div className="absolute inset-0 opacity-40 cta-contact-grid pointer-events-none" />
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="cta-contact-card max-w-6xl mx-auto overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-[#003b5c] via-[#0069ad] to-[#007cb9]">
+          <div className="grid lg:grid-cols-[1.08fr_.92fr] min-h-[560px]">
+            <div className="relative p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
+              <div className="absolute inset-0 opacity-50 cta-contact-grid pointer-events-none" />
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sky-100 text-xs font-black uppercase tracking-widest mb-6">
+                  <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+                  {isEn ? 'CTC CONTACT CENTER' : 'TRUNG TÂM LIÊN HỆ CTC'}
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-4">
+                  {isEn ? 'Let’s build a better solution' : 'Liên Hệ Hợp Tác'}
+                </h2>
+                <p className="text-sky-100/85 text-sm sm:text-base leading-relaxed max-w-xl mb-8">
+                  {isEn ? 'Tell us about your project. Our technical team will contact you with a suitable EPC or renewable-energy solution.' : 'Hãy chia sẻ nhu cầu của bạn. Đội ngũ kỹ thuật CTC sẽ liên hệ để tư vấn giải pháp EPC và năng lượng tái tạo phù hợp.'}
+                </p>
+
+                {status === 'success' ? (
+                  <div className="rounded-2xl bg-white/10 border border-emerald-300/30 p-6 text-white" role="status">
+                    <CheckCircle size={32} className="text-emerald-300 mb-3" />
+                    <h3 className="font-black text-xl mb-2">{t('contact.success')}</h3>
+                    <p className="text-sky-100/80">{isEn ? 'We will contact you shortly.' : 'CTC sẽ liên hệ với bạn trong thời gian sớm nhất.'}</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                    <div>
+                      <label htmlFor="cta-name" className="block text-xs font-bold text-white mb-1.5">{t('contact.name')} *</label>
+                      <input id="cta-name" required type="text" value={formData.name} onChange={(e) => updateField('name', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm" placeholder={isEn ? 'Your full name' : 'Họ và tên'} />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="cta-phone" className="block text-xs font-bold text-white mb-1.5">{t('contact.phone')} *</label>
+                        <input id="cta-phone" required type="tel" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0915 059 666" />
+                      </div>
+                      <div>
+                        <label htmlFor="cta-email" className="block text-xs font-bold text-white mb-1.5">{t('contact.email')} *</label>
+                        <input id="cta-email" required type="email" value={formData.email} onChange={(e) => updateField('email', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm" placeholder="email@example.com" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="cta-message" className="block text-xs font-bold text-white mb-1.5">{t('contact.message')} *</label>
+                      <textarea id="cta-message" required rows={4} value={formData.message} onChange={(e) => updateField('message', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm resize-y" placeholder={isEn ? 'Tell us about your project...' : 'Nội dung cần tư vấn...'} />
+                    </div>
+
+                    <button type="submit" disabled={status === 'submitting'} className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white px-6 py-3 font-black transition-all hover:-translate-y-0.5 shadow-lg shadow-orange-950/20 disabled:opacity-70 disabled:cursor-not-allowed">
+                      {status === 'submitting' ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                      {status === 'submitting' ? (isEn ? 'Sending...' : 'Đang gửi...') : (t('contact.submit') || (isEn ? 'Send request' : 'Gửi liên hệ'))}
+                      <ArrowRight size={17} />
+                    </button>
+                  </form>
+                )}
               </div>
-              <div className="text-left">
-                <div className="text-sm text-gray-500 dark:text-slate-400">{t('home.call_now')}</div>
-                <div className="font-bold text-base sm:text-lg dark:text-white">0915 059 666</div>
+            </div>
+
+            <div className="relative min-h-[300px] lg:min-h-full overflow-hidden">
+              <img src="/images/about_solar_install.webp" alt={isEn ? 'CTC solar installation team' : 'Đội ngũ CTC thi công điện mặt trời'} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0069ad] via-[#0069ad]/50 to-transparent lg:from-[#0069ad] lg:via-[#0069ad]/15 lg:to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 rounded-2xl bg-slate-950/35 backdrop-blur-md border border-white/20 p-5 text-white">
+                <div className="text-xs uppercase tracking-widest text-sky-100 mb-2">CTC EPC</div>
+                <div className="text-xl font-black">{isEn ? 'Total solutions. Sustainable value.' : 'Giải pháp tổng thể – Giá trị bền vững.'}</div>
+                <div className="mt-3 flex flex-wrap gap-4 text-xs text-sky-100/90">
+                  <span>32+ {isEn ? 'years' : 'năm'}</span>
+                  <span>500+ {isEn ? 'projects' : 'dự án'}</span>
+                  <span>0915 059 666</span>
+                </div>
               </div>
-            </a>
-          </div>
-          
-          {/* Trust Indicators */}
-          <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500 dark:text-slate-400">
-            <div className="flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-500" />
-              <span>{t('home.free_consult')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-500" />
-              <span>{t('home.warranty_25')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-500" />
-              <span>{t('home.save_70')}</span>
             </div>
           </div>
         </div>

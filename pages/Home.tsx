@@ -5,6 +5,7 @@ import PartnerSlider from '../components/PartnerSlider';
 import SEO from '../components/SEO';
 import { useLanguage } from '../contexts/LanguageContext';
 import analyticsTracking from '../services/analytics-tracking';
+import companyProfile from '../constants/company_profile.json';
 
 // Home sub-components
 import Hero from '../components/home/Hero';
@@ -13,7 +14,6 @@ import About from '../components/home/About';
 import Features from '../components/home/Features';
 import Team from '../components/home/Team';
 import WhyChooseUs from '../components/home/WhyChooseUs';
-import Workflow from '../components/home/Workflow';
 import CalculatorWrapper from '../components/home/CalculatorWrapper';
 import FeaturedProjects from '../components/home/FeaturedProjects';
 import FeaturedProducts from '../components/home/FeaturedProducts';
@@ -21,7 +21,7 @@ import FAQ from '../components/home/FAQ';
 import Testimonials from '../components/home/Testimonials';
 import News from '../components/home/News';
 import CTA from '../components/home/CTA';
-import { DetailModal, WorkflowModal } from '../components/home/Modals';
+import { DetailModal } from '../components/home/Modals';
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -29,14 +29,21 @@ const Home: React.FC = () => {
   const [latestNews, setLatestNews] = useState<NewsItem[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [loadingSections, setLoadingSections] = useState({
+    products: true,
+    projects: true,
+    news: true,
+    testimonials: true,
+    team: true
+  });
 
   // Modal States
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<{ title: string; desc: string; details: string } | null>(null);
-  const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
-  const [selectedStep, setSelectedStep] = useState<{ step: string; title: string; desc: string; details: string; color: string } | null>(null);
   
   const { t, language } = useLanguage();
+  const profileLanguage = language === 'en' ? 'en' : 'vi';
+  const profileIntro = companyProfile.intro[profileLanguage];
 
   const openModal = (title: string, desc: string, details: string) => {
     setModalContent({ title, desc, details });
@@ -48,39 +55,45 @@ const Home: React.FC = () => {
     setModalContent(null);
   };
 
-  const openWorkflowModal = (step: string, title: string, desc: string, details: string, color: string) => {
-    setSelectedStep({ step, title, desc, details, color });
-    setWorkflowModalOpen(true);
-  };
-
-  const closeWorkflowModal = () => {
-    setWorkflowModalOpen(false);
-    setSelectedStep(null);
-  };
-
   useEffect(() => {
     // Track page view
     analyticsTracking.trackPageView('/', { title: 'Home Page' });
 
+    let cancelled = false;
+
     const fetchData = async () => {
-      try {
-        const [products, projects, news, testims, team] = await Promise.all([
-          api.products.getFeatured(4),
-          api.projects.getFeatured(2),
-          api.news.getLatest(3),
-          api.testimonials.getAll(),
-          api.team.getAll()
-        ]);
-        setFeaturedProducts(products);
-        setFeaturedProjects(projects);
-        setLatestNews(news);
-        setTestimonials(testims);
-        setTeamMembers(team);
-      } catch (error) {
-        console.error('Error fetching home data:', error);
-      }
+      setLoadingSections({ products: true, projects: true, news: true, testimonials: true, team: true });
+
+      const markLoaded = (section: keyof typeof loadingSections) => {
+        if (!cancelled) {
+          setLoadingSections(current => ({ ...current, [section]: false }));
+        }
+      };
+
+      await Promise.allSettled([
+        api.products.getFeatured(4)
+          .then(data => { if (!cancelled) setFeaturedProducts(data); })
+          .finally(() => markLoaded('products')),
+        api.projects.getFeatured(2)
+          .then(data => { if (!cancelled) setFeaturedProjects(data); })
+          .finally(() => markLoaded('projects')),
+        api.news.getLatest(3)
+          .then(data => { if (!cancelled) setLatestNews(data); })
+          .finally(() => markLoaded('news')),
+        api.testimonials.getAll()
+          .then(data => { if (!cancelled) setTestimonials(data); })
+          .finally(() => markLoaded('testimonials')),
+        api.team.getAll()
+          .then(data => { if (!cancelled) setTeamMembers(data); })
+          .finally(() => markLoaded('team'))
+      ]);
     };
+
     fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [language]);
 
   const faqs = [
@@ -106,9 +119,9 @@ const Home: React.FC = () => {
         "width": 220,
         "height": 60
       },
-      "image": `${window.location.origin}/uploads/images/logo/tran-le-og.jpg`,
+      "image": `${window.location.origin}/images/why_choose_us_visual.webp`,
       "taxID": "0400458940",
-      "foundingDate": "2004-02-11",
+      "foundingDate": "2004-01-30",
       "description": "Công ty chuyên thi công lắp đặt hệ thống điện mặt trời, inverter, tấm pin năng lượng mặt trời tại Đà Nẵng và toàn quốc. Hotline: 0915 059 666",
       "slogan": "Đối tác tin cậy trong lĩnh vực năng lượng mặt trời",
       "address": {
@@ -158,7 +171,7 @@ const Home: React.FC = () => {
       "@type": "ElectricalContractor",
       "@id": `${window.location.origin}/#localbusiness`,
       "name": "CTC - Điện Mặt Trời Đà Nẵng",
-      "image": `${window.location.origin}/uploads/images/logo/tran-le-og.jpg`,
+      "image": `${window.location.origin}/images/why_choose_us_visual.webp`,
       "telephone": "+84-236-3745-555",
       "email": "info@ctcdn.vn",
       "url": "https://www.ctcdn.vn",
@@ -286,11 +299,38 @@ const Home: React.FC = () => {
     }] : [])
   ];
 
+  // Keep structured data aligned with the official company profile.
+  const organizationSchema = homePageSchema[0] as Record<string, any>;
+  organizationSchema.description = profileIntro;
+  organizationSchema.foundingDate = companyProfile.incorporation_date;
+  organizationSchema.founder = {
+    '@type': 'Person',
+    name: companyProfile.representative,
+    jobTitle: 'CEO / Tổng Giám đốc'
+  };
+  organizationSchema.slogan = companyProfile.slogan[profileLanguage];
+  organizationSchema.address = {
+    '@type': 'PostalAddress',
+    streetAddress: '50B Nguyễn Du',
+    addressLocality: 'Phường Thạch Thang, Hải Châu',
+    addressRegion: 'Đà Nẵng',
+    postalCode: '550000',
+    addressCountry: 'VN'
+  };
+  delete organizationSchema.numberOfEmployees;
+  delete organizationSchema.sameAs;
+
+  const localBusinessSchema = homePageSchema[1] as Record<string, any>;
+  localBusinessSchema.telephone = '+84-236-374-5555';
+  localBusinessSchema.email = 'info@ctcdn.vn';
+  localBusinessSchema.address = organizationSchema.address;
+  delete localBusinessSchema.aggregateRating;
+
   return (
     <div className="flex flex-col w-full font-sans text-gray-800 dark:text-slate-200 bg-white dark:bg-slate-900 overflow-hidden">
       <SEO
-        title="CTC - ĐỐI TÁC TIN CẬY CỦA BẠN"
-        description={t('home.hero_desc')}
+        title="CTC – Niềm tin, Chất lượng"
+        description={profileIntro}
         schema={homePageSchema}
       />
 
@@ -298,28 +338,21 @@ const Home: React.FC = () => {
       <Stats />
       <About onOpenModal={openModal} />
       <Features />
-      <Team teamMembers={teamMembers} />
+      <FeaturedProjects featuredProjects={featuredProjects} isLoading={loadingSections.projects} />
+      <FeaturedProducts featuredProducts={featuredProducts} isLoading={loadingSections.products} />
       <WhyChooseUs onOpenModal={openModal} />
-      <FeaturedProducts featuredProducts={featuredProducts} />
-      <FeaturedProjects featuredProjects={featuredProjects} />
-      {/* <Workflow onOpenWorkflowModal={openWorkflowModal} /> */}
       <CalculatorWrapper />
-      <FAQ />
-      <Testimonials testimonials={testimonials} />
-      <News latestNews={latestNews} />
+      <Testimonials testimonials={testimonials} isLoading={loadingSections.testimonials} />
+      <Team teamMembers={teamMembers} isLoading={loadingSections.team} />
+      <News latestNews={latestNews} isLoading={loadingSections.news} />
       <PartnerSlider />
+      <FAQ />
       <CTA />
 
       <DetailModal 
         isOpen={modalOpen} 
         content={modalContent} 
         onClose={closeModal} 
-      />
-
-      <WorkflowModal 
-        isOpen={workflowModalOpen} 
-        selectedStep={selectedStep} 
-        onClose={closeWorkflowModal} 
       />
     </div>
   );

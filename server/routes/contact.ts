@@ -71,27 +71,23 @@ router.post('/submit', async (req: any, res) => {
 
     await contact.save();
 
-    // Send email notifications (async, don't wait)
+    // Send email notifications after saving the request. The contact record is
+    // kept even if SMTP is temporarily unavailable, so no lead is lost.
     if (service.includes('Newsletter')) {
       // Newsletter subscription - Send welcome email only
-      EmailService.sendNewsletterWelcome(email).catch(err => {
-        console.error('Error sending newsletter email:', err);
-      });
-      
-      // Notify admin about newsletter subscription
-      EmailService.sendContactNotification({
-        name,
-        phone,
-        email,
-        service,
-        message: message || ''
-      }).catch(err => {
-        console.error('Error sending admin notification:', err);
-      });
+      await Promise.all([
+        EmailService.sendNewsletterWelcome(email),
+        EmailService.sendContactNotification({
+          name,
+          phone,
+          email,
+          service,
+          message: message || ''
+        })
+      ]);
     } else {
-      // Regular contact form - Send both emails
-      Promise.all([
-        // Email to admin
+      const [notificationSent] = await Promise.all([
+        // Email to the configured CTC contact recipient
         EmailService.sendContactNotification({
           name,
           phone,
@@ -107,9 +103,11 @@ router.post('/submit', async (req: any, res) => {
           service,
           message: message || ''
         })
-      ]).catch(err => {
-        console.error('Error sending emails:', err);
-      });
+      ]);
+
+      if (!notificationSent) {
+        console.warn('Contact saved, but notification email could not be sent. Check SMTP configuration.');
+      }
     }
 
     // Create notification in system

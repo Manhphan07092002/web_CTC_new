@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Zap, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
@@ -7,15 +7,15 @@ import { Project } from '../../types';
 
 interface FeaturedProjectsProps {
   featuredProjects: Project[];
+  isLoading?: boolean;
 }
 
-const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects }) => {
-  const navigate = useNavigate();
+const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, isLoading = false }) => {
   const { t } = useLanguage();
   const { ref: projectsRef, isInView } = useInView(0.1);
 
   return (
-    <section ref={projectsRef} className="py-24 bg-white relative overflow-hidden">
+    <section ref={projectsRef} className="py-24 bg-white dark:bg-slate-900 relative overflow-hidden transition-colors duration-300">
       <div className="container max-w-[1440px] mx-auto px-6">
         <div className={`flex flex-col md:flex-row justify-between items-center mb-16 transition-all duration-300 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div>
@@ -23,8 +23,8 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects })
               <Zap size={18} className="text-primary animate-pulse" />
               <span className="text-sm font-bold text-primary uppercase tracking-wider">{t('home.projects_badge')}</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-2">{t('home.featured_projects')}</h2>
-            <p className="text-gray-600">{t('home.featured_projects_sub')}</p>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-2">{t('home.featured_projects')}</h2>
+            <p className="text-gray-600 dark:text-slate-300">{t('home.featured_projects_sub')}</p>
           </div>
           <Link to="/projects" className="mt-4 md:mt-0 group bg-gradient-to-r from-primary to-orange-500 text-white px-6 py-3 rounded-full font-bold hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 flex items-center gap-2 hover:-translate-y-1 overflow-hidden relative">
             <span className="relative z-10 flex items-center gap-2">
@@ -34,17 +34,21 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects })
           </Link>
         </div>
 
-        <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-300 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          {featuredProjects.slice(0, 3).map((project, index) => (
-            <div 
+        <div aria-busy={isLoading} className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-300 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          {isLoading ? Array.from({ length: 3 }, (_, index) => (
+            <div key={`project-skeleton-${index}`} className="h-[350px] rounded-[2rem] bg-slate-200 dark:bg-slate-800 border border-gray-100 dark:border-slate-800 animate-pulse" />
+          )) : featuredProjects.slice(0, 3).map((project, index) => (
+            <Link
               key={`project-${index}-${project._id || project.id}`} 
-              className="group relative rounded-[2rem] overflow-hidden h-[350px] cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 border border-gray-100"
-              onClick={() => navigate(`/projects/${project._id || project.id}`)}
+              to={`/projects/${project._id || project.id}`}
+              className="group relative rounded-[2rem] overflow-hidden h-[350px] shadow-xl hover:shadow-2xl transition-all duration-700 border border-gray-100 dark:border-slate-800"
             >
               <div className="absolute inset-0 bg-gray-900/20 group-hover:bg-gray-900/10 transition-colors z-10"></div>
               <img 
                 src={project.image} 
                 alt={project.title} 
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 group-hover:rotate-1" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90 group-hover:opacity-80 transition-opacity z-20"></div>
@@ -61,7 +65,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects })
                   <ArrowRight size={20} className="-rotate-45 group-hover:rotate-0 transition-transform duration-200" />
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

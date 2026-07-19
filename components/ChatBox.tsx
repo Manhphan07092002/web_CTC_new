@@ -84,7 +84,7 @@ const ChatBox: React.FC = () => {
   const ZALO_LINK = `https://zalo.me/${HOTLINE}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 font-sans flex flex-col items-end gap-3">
+    <div className="fixed bottom-4 right-3 z-50 flex flex-col items-end gap-2 font-sans sm:bottom-6 sm:right-6 sm:gap-3">
       {/* Floating Contact Buttons (Visible when chat is closed) */}
       {!isOpen && (
         <div className="flex flex-col gap-3 animate-fade-in-up">
@@ -92,7 +92,7 @@ const ChatBox: React.FC = () => {
              href={ZALO_LINK} 
              target="_blank" 
              rel="noreferrer"
-             className="w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 relative group border-2 border-white"
+             className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-white shadow-lg transition-transform hover:scale-110 group sm:h-14 sm:w-14"
              title="Chat Zalo"
            >
              <span className="font-bold text-[10px] absolute -top-2 -left-2 bg-red-500 text-white px-1.5 rounded-full animate-bounce">1</span>
@@ -103,7 +103,7 @@ const ChatBox: React.FC = () => {
            
            <a 
              href={`tel:${HOTLINE}`} 
-             className="w-14 h-14 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 relative group border-2 border-white"
+             className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-red-500 text-white shadow-lg transition-transform hover:scale-110 group sm:h-14 sm:w-14"
              title="Call Hotline"
            >
              <Phone size={24} className="animate-pulse" />
@@ -116,10 +116,10 @@ const ChatBox: React.FC = () => {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="bg-primary hover:bg-secondary text-white w-14 h-14 rounded-full shadow-xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center border-2 border-white group"
+          className="group flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-primary text-white shadow-xl transition-all duration-300 hover:scale-110 hover:bg-secondary sm:h-14 sm:w-14"
           title="Chat với AI CTC"
         >
-          <Bot size={28} className="group-hover:rotate-12 transition-transform" />
+          <Bot size={24} className="transition-transform group-hover:rotate-12 sm:h-7 sm:w-7" />
           {/* Optional Badge/Indicator */}
           <span className="absolute top-0 right-0 flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -130,7 +130,7 @@ const ChatBox: React.FC = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="bg-white w-[350px] sm:w-[380px] rounded-2xl shadow-2xl flex flex-col border border-gray-200 overflow-hidden animate-fade-in-up h-[550px] max-h-[85vh]">
+        <div className="flex h-[550px] max-h-[85vh] w-[calc(100vw-1.5rem)] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl animate-fade-in-up sm:w-[380px]">
           {/* Header */}
           <div className="bg-corporate p-4 text-white">
             <div className="flex justify-between items-start mb-3">

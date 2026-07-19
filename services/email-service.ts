@@ -8,23 +8,49 @@ interface ContactFormData {
   message: string;
 }
 
+const getEmailConfig = () => {
+  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  return {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: Number(process.env.SMTP_PORT || 587),
+    user,
+    pass,
+    from: process.env.EMAIL_FROM || user || 'no-reply@ctcdn.vn',
+    recipient: process.env.CONTACT_RECIPIENT || 'contac@ctcdn.vn'
+  };
+};
+
+const escapeHtml = (value: string) => value
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+
 export class EmailService {
-  private static transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_USER || 'pxmanhctc@gmail.com',
-      pass: process.env.EMAIL_PASS || 'wrutbkloiaiejyyx'
+  private static transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
+
+  private static getTransporter() {
+    if (!this.transporter) {
+      const config = getEmailConfig();
+      this.transporter = nodemailer.createTransport({
+        host: config.host,
+        port: config.port,
+        secure: config.port === 465,
+        auth: config.user && config.pass ? { user: config.user, pass: config.pass } : undefined
+      });
     }
-  });
+    return this.transporter;
+  }
 
   /**
    * Gửi email thông báo khi có yêu cầu tư vấn mới
    */
   static async sendContactNotification(data: ContactFormData): Promise<boolean> {
     try {
-      const adminEmail = process.env.EMAIL_USER || 'pxmanhctc@gmail.com';
+      const emailConfig = getEmailConfig();
+      const adminEmail = emailConfig.recipient;
       
       // Email template cho admin
       const htmlContent = `
@@ -190,27 +216,27 @@ export class EmailService {
             <div class="content">
               <div class="info-card">
                 <div class="info-label">👤 Họ và tên</div>
-                <div class="info-value">${data.name}</div>
+                <div class="info-value">${escapeHtml(data.name)}</div>
               </div>
               
               <div class="info-card">
                 <div class="info-label">📞 Số điện thoại</div>
-                <div class="info-value"><a href="tel:${data.phone}" style="color: #FF6B35; text-decoration: none;">${data.phone}</a></div>
+                <div class="info-value"><a href="tel:${escapeHtml(data.phone)}" style="color: #FF6B35; text-decoration: none;">${escapeHtml(data.phone)}</a></div>
               </div>
               
               <div class="info-card">
                 <div class="info-label">📧 Email</div>
-                <div class="info-value"><a href="mailto:${data.email}" style="color: #FF6B35; text-decoration: none;">${data.email}</a></div>
+                <div class="info-value"><a href="mailto:${escapeHtml(data.email)}" style="color: #FF6B35; text-decoration: none;">${escapeHtml(data.email)}</a></div>
               </div>
               
               <div class="info-card">
                 <div class="info-label">🔧 Dịch vụ quan tâm</div>
-                <div class="info-value">${data.service}</div>
+                <div class="info-value">${escapeHtml(data.service)}</div>
               </div>
               
               <div class="info-card">
                 <div class="info-label">💬 Nội dung</div>
-                <div class="info-value">${data.message || '<em style="color: #999;">Không có nội dung</em>'}</div>
+                <div class="info-value">${data.message ? escapeHtml(data.message) : '<em style="color: #999;">Không có nội dung</em>'}</div>
               </div>
               
               <div class="action-box">
@@ -240,9 +266,10 @@ export class EmailService {
       `;
 
       // Gửi email cho admin
-      await this.transporter.sendMail({
-        from: `"CTC" <${process.env.EMAIL_USER}>`,
+      await this.getTransporter().sendMail({
+        from: `"CTC" <${emailConfig.from}>`,
         to: adminEmail,
+        replyTo: data.email,
         subject: `🔔 Yêu cầu tư vấn mới từ ${data.name}`,
         html: htmlContent
       });
@@ -260,6 +287,7 @@ export class EmailService {
    */
   static async sendCustomerConfirmation(data: ContactFormData): Promise<boolean> {
     try {
+      const emailConfig = getEmailConfig();
       const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -439,20 +467,20 @@ export class EmailService {
             </div>
             
             <div class="content">
-              <p class="greeting">Xin chào <strong>${data.name}</strong>,</p>
+              <p class="greeting">Xin chào <strong>${escapeHtml(data.name)}</strong>,</p>
               
               <div class="message-box">
                 <p>🎉 <strong>Chúng tôi đã nhận được yêu cầu tư vấn của bạn!</strong></p>
-                <p>Cảm ơn bạn đã quan tâm đến dịch vụ <strong>${data.service}</strong> của CTC.</p>
+                <p>Cảm ơn bạn đã quan tâm đến dịch vụ <strong>${escapeHtml(data.service)}</strong> của CTC.</p>
                 <p>Đội ngũ chuyên gia của chúng tôi sẽ liên hệ lại với bạn trong vòng <strong style="color: #28a745;">24 giờ</strong> để tư vấn chi tiết và giải đáp mọi thắc mắc.</p>
               </div>
               
               <div class="info-summary">
                 <strong>📋 Thông tin bạn đã gửi</strong>
-                <div class="info-item">👤 Họ và tên: <strong>${data.name}</strong></div>
-                <div class="info-item">📞 Số điện thoại: <strong>${data.phone}</strong></div>
-                <div class="info-item">📧 Email: <strong>${data.email}</strong></div>
-                <div class="info-item">🔧 Dịch vụ quan tâm: <strong>${data.service}</strong></div>
+                <div class="info-item">👤 Họ và tên: <strong>${escapeHtml(data.name)}</strong></div>
+                <div class="info-item">📞 Số điện thoại: <strong>${escapeHtml(data.phone)}</strong></div>
+                <div class="info-item">📧 Email: <strong>${escapeHtml(data.email)}</strong></div>
+                <div class="info-item">🔧 Dịch vụ quan tâm: <strong>${escapeHtml(data.service)}</strong></div>
               </div>
               
               <div class="contact-box">
@@ -493,8 +521,8 @@ export class EmailService {
       `;
 
       // Gửi email cho khách hàng
-      await this.transporter.sendMail({
-        from: `"CTC" <${process.env.EMAIL_USER}>`,
+      await this.getTransporter().sendMail({
+        from: `"CTC" <${emailConfig.from}>`,
         to: data.email,
         subject: '✅ Xác nhận yêu cầu tư vấn - CTC',
         html: htmlContent
@@ -668,8 +696,8 @@ export class EmailService {
         </html>
       `;
 
-      await this.transporter.sendMail({
-        from: `"CTC" <${process.env.EMAIL_USER}>`,
+      await this.getTransporter().sendMail({
+        from: `"CTC" <${getEmailConfig().from}>`,
         to: email,
         subject: '🎉 Chào mừng bạn đến với CTC!',
         html: htmlContent
@@ -688,7 +716,7 @@ export class EmailService {
    */
   static async testConnection(): Promise<boolean> {
     try {
-      await this.transporter.verify();
+      await this.getTransporter().verify();
       console.log('✅ Email service is ready');
       return true;
     } catch (error) {
