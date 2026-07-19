@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/web-tranle1';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://admin:ctcadmin2024@127.0.0.1:27017/ctc_web_new?authSource=admin';
 
 async function fixAdminPassword() {
   try {
