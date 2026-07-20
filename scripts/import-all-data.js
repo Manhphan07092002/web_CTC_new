@@ -87,8 +87,8 @@ async function importAllData() {
           data = convertIds(data);
           const collection = mongoose.connection.collection(collectionName);
           
-          // Clear existing data (optional - comment out to merge)
-          // await collection.deleteMany({});
+          // Clear existing data to replace corrupt String IDs with clean ObjectIds
+          await collection.deleteMany({});
           
           // Insert data
           await collection.insertMany(data, { ordered: false });
