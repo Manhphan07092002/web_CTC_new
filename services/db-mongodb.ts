@@ -486,10 +486,18 @@ export const db = {
     
     update: async (data: Partial<ISettings>) => {
       let settings = await Settings.findOne();
+      
+      const updateData = { ...data };
+      delete (updateData as any)._id;
+      delete (updateData as any).id;
+      delete (updateData as any).__v;
+      delete (updateData as any).createdAt;
+      delete (updateData as any).updatedAt;
+
       if (!settings) {
-        settings = new Settings(data);
+        settings = new Settings(updateData);
       } else {
-        Object.assign(settings, data);
+        Object.assign(settings, updateData);
       }
       await settings.save();
       return toPlainObject<ISettings>(settings);
