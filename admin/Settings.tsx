@@ -79,7 +79,33 @@ const Settings: React.FC = () => {
   };
 
   const handleImageSelect = (url: string) => {
-    setFormData({ ...formData, [imagePickerTarget]: url });
+    if (imagePickerTarget === 'logo') {
+      const updatedData = { ...formData, logo: url };
+      
+      // Auto-sync logoHeader if it was empty, matched old logo, or points to the deleted default/placeholder
+      if (
+        !formData.logoHeader || 
+        formData.logoHeader === formData.logo || 
+        formData.logoHeader === '/uploads/images/logo/logodo.png' || 
+        formData.logoHeader.includes('1784364717902-440824333')
+      ) {
+        updatedData.logoHeader = url;
+      }
+      
+      // Auto-sync logoFooter if it was empty, matched old logo, or points to the deleted default/placeholder
+      if (
+        !formData.logoFooter || 
+        formData.logoFooter === formData.logo || 
+        formData.logoFooter === '/uploads/images/logo/logodo.png' || 
+        formData.logoFooter.includes('1784364717902-440824333')
+      ) {
+        updatedData.logoFooter = url;
+      }
+      
+      setFormData(updatedData);
+    } else {
+      setFormData({ ...formData, [imagePickerTarget]: url });
+    }
     setShowImagePicker(false);
   };
 
