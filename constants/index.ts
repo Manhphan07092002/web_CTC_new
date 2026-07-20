@@ -10,9 +10,12 @@ export const NAV_LINKS = [
     key: 'solutions',
     submenu: [
       { name: 'GIẢI PHÁP TOÀN DIỆN', path: '/solutions' },
-      { name: 'HỆ THỐNG NĂNG LƯỢNG MẶT TRỜI TRÊN MÁI NHÀ', path: '/solutions/rooftop' },
-      { name: 'TRANG TRẠI NĂNG LƯỢNG MẶT TRỜI', path: '/solutions/farm' },
-      { name: 'HỆ THỐNG NĂNG LƯỢNG MẶT TRỜI NỔI', path: '/solutions/floating' }
+      { name: 'HẠ TẦNG VIỄN THÔNG & CNTT', path: '/solutions/floating' },
+      { name: 'ĐIỆN MẶT TRỜI (SOLAR EPC)', path: '/solutions/rooftop' },
+      { name: 'ĐIỆN GIÓ (WIND POWER EPC)', path: '/solutions/farm' },
+      { name: 'ĐƯỜNG DÂY & TRẠM BIẾN ÁP 110KV', path: '/solutions' },
+      { name: 'DATA CENTER & HẠ TẦNG SỐ', path: '/solutions' },
+      { name: 'XÂY DỰNG DÂN DỤNG & CÔNG NGHIỆP', path: '/solutions' }
     ]
   },
   { 

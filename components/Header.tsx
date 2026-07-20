@@ -284,15 +284,16 @@ const Header: React.FC = () => {
 
                 {/* Submenu Dropdown */}
                 {link.submenu && (
-                  <div className="absolute left-0 top-full pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 z-50">
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl overflow-hidden py-1">
+                  <div className="absolute left-0 top-full pt-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 z-50">
+                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl overflow-hidden py-2">
                       {link.submenu.map((sub, index) => (
                         <Link 
                           key={index}
                           to={sub.path}
-                          className="block px-5 py-3 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-sky-500 dark:hover:text-sky-400 hover:pl-7 transition-all duration-200 border-b border-gray-50 dark:border-slate-800 last:border-0 uppercase"
+                          className="flex items-center gap-3 px-5 py-2.5 text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-200 border-b border-gray-50 dark:border-slate-800/70 last:border-0 uppercase tracking-wide group/sub"
                         >
-                          {t(`nav.${sub.name}`)}
+                          <span className="w-1 h-4 rounded-full bg-sky-500/30 group-hover/sub:bg-sky-500 flex-shrink-0 transition-colors duration-200" />
+                          {sub.name}
                         </Link>
                       ))}
                     </div>
@@ -365,9 +366,10 @@ const Header: React.FC = () => {
                         key={subIdx}
                         to={sub.path}
                         onClick={() => setIsMenuOpen(false)}
-                        className="block px-5 py-3 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 border-b border-gray-100/30 dark:border-slate-800 last:border-0 pl-8 uppercase"
+                        className="flex items-center gap-3 px-5 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 dark:hover:text-sky-400 border-b border-gray-100/30 dark:border-slate-800 last:border-0 uppercase tracking-wide"
                       >
-                        • {t(`nav.${sub.name}`)}
+                        <span className="w-1 h-3.5 rounded-full bg-sky-400/40 flex-shrink-0" />
+                        {sub.name}
                       </Link>
                     ))}
                   </div>
