@@ -11,16 +11,7 @@ const Hero: React.FC = () => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Load Montserrat and Be Vietnam Pro fonts dynamically
-  useEffect(() => {
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap';
-    document.head.appendChild(fontLink);
-    return () => {
-      document.head.removeChild(fontLink);
-    };
-  }, []);
+
 
   // Multi-language corporate data dictionary
   const heroData = {
