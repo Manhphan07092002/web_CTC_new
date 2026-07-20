@@ -189,8 +189,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       
       // If only one file uploaded, auto-select it
       if (body.files && body.files.length === 1) {
-        const fullUrl = `${window.location.origin}${body.files[0].url}`;
-        onSelect(fullUrl);
+        onSelect(body.files[0].url);
         onClose();
       }
     } catch (err) {
@@ -201,8 +200,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
   };
 
   const handleChoose = (url: string) => {
-    const fullUrl = `${window.location.origin}${url}`;
-    onSelect(fullUrl);
+    onSelect(url);
     onClose();
   };
 

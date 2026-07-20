@@ -8,8 +8,9 @@ const cleanSettingsUrls = (settings: any) => {
   const cleaned = { ...settings };
   const urlFields = ['logo', 'logoHeader', 'logoFooter', 'favicon', 'appleTouchIcon'];
   for (const field of urlFields) {
-    if (typeof cleaned[field] === 'string' && cleaned[field].includes('localhost:')) {
-      cleaned[field] = cleaned[field].replace(/^https?:\/\/localhost:\d+/, '');
+    if (typeof cleaned[field] === 'string') {
+      // Convert full URLs containing any host/port pointing to /uploads to relative paths
+      cleaned[field] = cleaned[field].replace(/^https?:\/\/[^\/]+(\/uploads\/)/, '$1');
     }
   }
   return cleaned;
