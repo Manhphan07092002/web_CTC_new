@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Radio, Sun, Wind, Zap, Building2, Server, ArrowRight, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { Radio, Sun, Wind, Zap, Building2, Server, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 /* ─── Data ─────────────────────────────────────────────────────── */
@@ -35,7 +35,7 @@ const SOLUTIONS: SolutionCard[] = [
       { val: '32+', label: 'Năm kinh nghiệm' },
     ],
     highlights: ['Cáp quang ngoại vi (OSP)', 'Trạm BTS/NodeB 4G/5G', 'Metro Network', 'Data Center Tier III'],
-    to: '/solutions/floating',
+    to: '/solutions/telecom',
     img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop',
   },
   {
@@ -53,7 +53,7 @@ const SOLUTIONS: SolutionCard[] = [
       { val: '4-5 năm', label: 'Hoàn vốn' },
     ],
     highlights: ['Solar áp mái hộ gia đình', 'C&I – Nhà máy & KCN', 'Solar Farm kết nối lưới', 'O&M bảo trì dài hạn'],
-    to: '/solutions/rooftop',
+    to: '/solutions/solar',
     img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=800&auto=format&fit=crop',
   },
   {
@@ -71,7 +71,7 @@ const SOLUTIONS: SolutionCard[] = [
       { val: '110kV', label: 'Chuẩn đấu nối' },
     ],
     highlights: ['Điện gió Hướng Linh 1 & 4', 'Điện gió Hướng Hiệp', 'Nền móng trụ gió bê tông', 'Trạm biến áp 110kV'],
-    to: '/solutions/farm',
+    to: '/solutions/wind',
     img: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=800&auto=format&fit=crop',
   },
   {
@@ -89,7 +89,7 @@ const SOLUTIONS: SolutionCard[] = [
       { val: '02', label: 'Chứng chỉ Bộ XD' },
     ],
     highlights: ['Đường dây 110kV/220kV', 'Trạm biến áp 110kV', 'Tiếp địa chống sét', 'UPS & Nguồn dự phòng'],
-    to: '/solutions',
+    to: '/solutions/electrical',
     img: 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?q=80&w=800&auto=format&fit=crop',
   },
   {
@@ -107,7 +107,7 @@ const SOLUTIONS: SolutionCard[] = [
       { val: '24/7', label: 'Giám sát O&M' },
     ],
     highlights: ['Data Center chuẩn Tier III', 'Precision Cooling hệ thống', 'Network & Bảo mật', 'CCTV & Smart Security'],
-    to: '/solutions',
+    to: '/solutions/datacenter',
     img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=700&auto=format&fit=crop',
   },
   {
@@ -125,30 +125,16 @@ const SOLUTIONS: SolutionCard[] = [
       { val: 'EPC', label: 'Tổng thầu trọn gói' },
     ],
     highlights: ['Nhà xưởng & kho công nghiệp', 'Hạ tầng dự án năng lượng', 'Công trình quốc phòng', 'M&E cơ điện'],
-    to: '/solutions',
+    to: '/solutions/construction',
     img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=800&auto=format&fit=crop',
   },
 ];
 
 /* ─── Component ─────────────────────────────────────────────────── */
 const SolutionsOverview: React.FC = () => {
-  const [activeCard, setActiveCard] = useState<string>('telecom');
-  const active = SOLUTIONS.find(s => s.id === activeCard) ?? SOLUTIONS[0];
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  const handleSelect = (id: string) => {
-    if (id === activeCard) return;
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setActiveCard(id);
-      setIsTransitioning(false);
-    }, 180);
-  };
-
   return (
     <section className="py-20 sm:py-28 relative overflow-hidden bg-slate-50 dark:bg-[#060d1d] transition-colors duration-300">
       <style dangerouslySetInnerHTML={{ __html: `
-        /* Blueprint grid - same as Home */
         .sol-blueprint {
           position: absolute; inset: 0;
           background-image:
@@ -168,69 +154,23 @@ const SolutionsOverview: React.FC = () => {
           filter: blur(100px);
           pointer-events: none;
         }
-
-        /* Tab list item */
-        .sol-tab {
-          background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(226,232,240,0.7) 100%);
-          backdrop-filter: blur(16px);
-          border: 1px solid rgba(255,255,255,0.8);
-          border-left: 4px solid transparent;
-          transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-          box-shadow: 0 8px 20px -8px rgba(0,0,0,0.04);
+        .sol-grid-card {
+          background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(241,245,249,.9));
+          border: 1px solid rgba(255,255,255,.95);
+          box-shadow: 0 18px 45px -24px rgba(15,23,42,.28);
+          transition: transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s ease, border-color .4s ease;
         }
-        .dark .sol-tab {
-          background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.65) 100%);
-          border: 1px solid rgba(255,255,255,0.07);
-          border-left: 4px solid transparent;
+        .dark .sol-grid-card {
+          background: linear-gradient(145deg, rgba(15,23,42,.94), rgba(8,15,31,.92));
+          border-color: rgba(255,255,255,.08);
+          box-shadow: 0 18px 45px -24px rgba(0,0,0,.75);
         }
-        .sol-tab:hover {
-          transform: translateX(4px);
-          background: rgba(255,255,255,0.97);
-          box-shadow: 0 12px 28px -10px rgba(0,0,0,0.07);
+        .sol-grid-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 28px 55px -25px rgba(15,23,42,.38);
         }
-        .dark .sol-tab:hover {
-          background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.75) 100%);
-        }
-        .sol-tab.active {
-          transform: translateX(8px);
-          box-shadow: 0 14px 30px -10px rgba(0,0,0,0.1);
-        }
-        .dark .sol-tab.active {
-          box-shadow: 0 14px 30px -10px rgba(0,0,0,0.5);
-        }
-
-        /* Display panel */
-        .sol-panel {
-          background: linear-gradient(135deg, rgba(255,255,255,0.88) 0%, rgba(226,232,240,0.65) 100%);
-          backdrop-filter: blur(28px);
-          border: 1px solid rgba(255,255,255,0.85);
-          box-shadow: 0 24px 60px -15px rgba(0,0,0,0.06);
-        }
-        .dark .sol-panel {
-          background: linear-gradient(135deg, rgba(6,13,29,0.6) 0%, rgba(15,23,42,0.45) 100%);
-          border: 1px solid rgba(255,255,255,0.08);
-          box-shadow: 0 24px 60px -15px rgba(0,0,0,0.5);
-        }
-
-        /* Dot grid inside panel */
-        .sol-dotgrid {
-          position: absolute; inset: 0;
-          background-image: radial-gradient(rgba(14,165,233,0.07) 1px, transparent 1px);
-          background-size: 24px 24px;
-          pointer-events: none;
-        }
-
-        /* Image transition */
-        .sol-img { transition: opacity 0.25s ease, transform 0.4s ease; }
-        .sol-img.fading { opacity: 0; transform: scale(1.03); }
-
-        @keyframes solSlideUp {
-          from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
-          to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
-        }
-        .sol-animate { animation: solSlideUp 0.35s cubic-bezier(0.16,1,0.3,1) both; }
-
-        /* CTA button shimmer */
+        .sol-grid-card:hover .sol-card-image { transform: scale(1.06); }
+        .sol-card-image { transition: transform .7s cubic-bezier(.16,1,.3,1); }
         .sol-cta-btn {
           position: relative; overflow: hidden;
           transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
@@ -260,7 +200,6 @@ const SolutionsOverview: React.FC = () => {
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 
-        {/* ── Section Header ── */}
         <div className="text-center mb-16 space-y-3">
           <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full border border-sky-500/25 bg-sky-500/6 text-xs font-black tracking-widest text-sky-600 dark:text-sky-400 uppercase">
             CTC – GIẢI PHÁP TOÀN DIỆN EPC
@@ -274,123 +213,51 @@ const SolutionsOverview: React.FC = () => {
           <div className="w-14 h-1 bg-gradient-to-r from-sky-500 to-blue-600 mx-auto rounded-full opacity-60" />
         </div>
 
-        {/* ── 2-Column Command Layout ── */}
-        <div className="flex flex-col lg:flex-row gap-6 items-stretch max-w-6xl mx-auto">
+        {/* 3 × 2 desktop grid; 2 columns on tablet; 1 column on mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 max-w-7xl mx-auto">
+          {SOLUTIONS.map((s) => (
+            <article key={s.id} className="sol-grid-card group rounded-[2rem] overflow-hidden flex flex-col h-full">
+              <Link to={s.to} className="relative h-48 overflow-hidden block" aria-label={`Xem ${s.title}`}>
+                <img src={s.img} alt={s.title} className="sol-card-image w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-transparent" />
+                <div className={`absolute top-4 left-4 w-12 h-12 rounded-2xl flex items-center justify-center text-white bg-gradient-to-br ${s.gradient} shadow-xl`}>
+                  {s.icon}
+                </div>
+                <div className="absolute left-5 right-5 bottom-4">
+                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-white/75">{s.tag}</div>
+                  <h3 className="mt-1 text-xl font-black text-white leading-tight">{s.title}</h3>
+                </div>
+              </Link>
 
-          {/* LEFT: Tab list */}
-          <div className="w-full lg:w-5/12 flex flex-col gap-3">
-            {SOLUTIONS.map((s) => {
-              const isActive = s.id === activeCard;
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => handleSelect(s.id)}
-                  className={`sol-tab text-left p-4 sm:p-5 rounded-2xl cursor-pointer flex items-center gap-4 select-none ${isActive ? 'active' : ''}`}
-                  style={isActive ? {
-                    borderLeftColor: s.accent,
-                    boxShadow: `0 14px 30px -10px ${s.glowColor}`,
-                  } : {}}
-                >
-                  {/* Icon */}
-                  <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0 bg-gradient-to-br ${s.gradient} shadow-lg transition-transform duration-300 ${isActive ? 'scale-110' : ''}`}
-                  >
-                    {s.icon}
-                  </div>
+              <div className="p-6 flex flex-col flex-1">
+                <div className="text-xs font-bold" style={{ color: s.accent }}>{s.subtitle}</div>
+                <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300 line-clamp-3">{s.desc}</p>
 
-                  {/* Text */}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5">
-                      {s.tag}
-                    </div>
-                    <div className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white truncate">
-                      {s.title}
-                    </div>
-                    <div className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5 hidden sm:block">
-                      {s.subtitle}
-                    </div>
-                  </div>
-
-                  {/* Chevron */}
-                  <ChevronRight
-                    size={18}
-                    className={`flex-shrink-0 transition-all duration-300 ${isActive ? 'text-slate-900 dark:text-white translate-x-1' : 'text-slate-300 dark:text-slate-700'}`}
-                  />
-                </button>
-              );
-            })}
-          </div>
-
-          {/* RIGHT: Detail panel */}
-          <div className="w-full lg:w-7/12 sol-panel rounded-[2.5rem] relative overflow-hidden flex flex-col min-h-[520px]">
-            <div className="sol-dotgrid" />
-
-            {/* Image */}
-            <div className="relative h-56 sm:h-64 overflow-hidden rounded-t-[2.5rem]">
-              <img
-                src={active.img}
-                alt={active.title}
-                className={`sol-img w-full h-full object-cover ${isTransitioning ? 'fading' : ''}`}
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
-              {/* Tag badge on image */}
-              <div
-                className="absolute bottom-4 left-5 inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-white"
-                style={{ background: `linear-gradient(135deg, ${active.accent}cc, ${active.accent}88)` }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                {active.tag}
-              </div>
-            </div>
-
-            {/* Content body */}
-            <div className={`flex-1 flex flex-col p-6 sm:p-8 relative z-10 ${isTransitioning ? '' : 'sol-animate'}`}>
-
-              {/* Title */}
-              <div className="mb-4">
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-1">
-                  {active.title}
-                </h3>
-                <div className="text-xs text-slate-400 dark:text-slate-500 font-medium mb-3">{active.subtitle}</div>
-                <div className="w-10 h-1 rounded-full" style={{ background: active.accent }} />
-              </div>
-
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-5">
-                {active.desc}
-              </p>
-
-              {/* Highlights */}
-              <div className="grid grid-cols-2 gap-2 mb-6">
-                {active.highlights.map((h, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-white/50 dark:bg-slate-900/30 border border-white/60 dark:border-white/5 rounded-xl px-3 py-2">
-                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: active.accent }} />
-                    <span className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-tight">{h}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Bottom: Stats + CTA */}
-              <div className="mt-auto pt-5 border-t border-slate-200/40 dark:border-slate-800/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                {/* Mini stats */}
-                <div className="flex items-center gap-8">
-                  {active.stats.map((s, i) => (
-                    <div key={i}>
-                      <div className="text-2xl font-black text-slate-900 dark:text-white" style={{ color: active.accent }}>{s.val}</div>
-                      <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{s.label}</div>
+                <div className="grid grid-cols-2 gap-2 mt-5">
+                  {s.highlights.slice(0, 4).map((highlight) => (
+                    <div key={highlight} className="flex items-start gap-2 rounded-xl bg-slate-100/80 dark:bg-white/5 px-3 py-2.5 min-h-[44px]">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.accent }} />
+                      <span className="text-[11px] leading-4 font-medium text-slate-600 dark:text-slate-300">{highlight}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* CTA button */}
-                <Link
-                  to={active.to}
-                  className={`sol-cta-btn inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl text-white font-black text-sm uppercase tracking-wider shadow-xl bg-gradient-to-r ${active.gradient}`}
-                >
-                  Xem chi tiết <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <div className="mt-auto pt-6 flex items-end justify-between gap-4">
+                  <div className="flex gap-5">
+                    {s.stats.map((stat) => (
+                      <div key={stat.label}>
+                        <div className="text-xl font-black" style={{ color: s.accent }}>{stat.val}</div>
+                        <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-400 leading-3">{stat.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <Link to={s.to} className={`sol-cta-btn flex-shrink-0 w-11 h-11 rounded-xl inline-flex items-center justify-center text-white bg-gradient-to-r ${s.gradient} shadow-lg`} aria-label={`Xem chi tiết ${s.title}`}>
+                    <ArrowRight size={18} />
+                  </Link>
+                </div>
               </div>
-            </div>
-          </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

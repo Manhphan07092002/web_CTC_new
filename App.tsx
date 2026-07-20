@@ -31,6 +31,7 @@ const Solutions = lazy(() => import('./pages/Solutions'));
 const SolutionRooftop = lazy(() => import('./pages/SolutionRooftop'));
 const SolutionFarm = lazy(() => import('./pages/SolutionFarm'));
 const SolutionFloating = lazy(() => import('./pages/SolutionFloating'));
+const SolutionDetail = lazy(() => import('./pages/SolutionDetail'));
 const Resources = lazy(() => import('./pages/Resources'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -99,6 +100,7 @@ const App: React.FC = () => {
                     <Route path="/solutions/rooftop" element={<PublicLayout><SolutionRooftop /></PublicLayout>} />
                     <Route path="/solutions/farm" element={<PublicLayout><SolutionFarm /></PublicLayout>} />
                     <Route path="/solutions/floating" element={<PublicLayout><SolutionFloating /></PublicLayout>} />
+                    <Route path="/solutions/:slug" element={<PublicLayout><SolutionDetail /></PublicLayout>} />
 
                     <Route path="/products" element={<PublicLayout><Products /></PublicLayout>} />
                     <Route path="/products/:id" element={<PublicLayout><ProductDetail /></PublicLayout>} />
