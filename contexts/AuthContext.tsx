@@ -153,9 +153,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string, password: string): Promise<LoginResult> => {
     try {
       // Get API base URL dynamically
-      const hostname = window.location.hostname;
-      const protocol = window.location.protocol;
-      const apiUrl = `${protocol}//${hostname}:4000/api/users/login`;
+      const getApiUrl = () => {
+        const viteEnv = (import.meta as any).env;
+        if (viteEnv?.VITE_API_URL) {
+          return `${viteEnv.VITE_API_URL}/users/login`;
+        }
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+        const port = window.location.port;
+
+        if (!port || port === '80' || port === '443') {
+          return '/api/users/login';
+        }
+        return `${protocol}//${hostname}:4000/api/users/login`;
+      };
+      const apiUrl = getApiUrl();
       
       // Call login API to verify credentials
       const response = await fetch(apiUrl, {

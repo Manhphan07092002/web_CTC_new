@@ -11,6 +11,10 @@ interface UploadedFile {
 const getApiBase = () => {
   const hostname = window.location.hostname;
   const protocol = window.location.protocol;
+  const port = window.location.port;
+  if (!port || port === '80' || port === '443') {
+    return '/api/uploads';
+  }
   return `${protocol}//${hostname}:4000/api/uploads`;
 };
 const API_BASE = getApiBase();

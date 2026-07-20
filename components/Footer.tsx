@@ -18,6 +18,10 @@ import { useSettings } from '../contexts/SettingsContext';
 const getApiBase = () => {
   const hostname = window.location.hostname;
   const protocol = window.location.protocol;
+  const port = window.location.port;
+  if (!port || port === '80' || port === '443') {
+    return '/api';
+  }
   return `${protocol}//${hostname}:4000/api`;
 };
 

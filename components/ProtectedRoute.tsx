@@ -21,9 +21,21 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       console.warn('Unauthorized admin access attempt:', logData);
       
       // Send to security logging
-      const hostname = window.location.hostname;
-      const protocol = window.location.protocol;
-      const apiUrl = `${protocol}//${hostname}:4000/api/security/404`;
+      const getApiUrl = () => {
+        const viteEnv = (import.meta as any).env;
+        if (viteEnv?.VITE_API_URL) {
+          return `${viteEnv.VITE_API_URL}/security/404`;
+        }
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+        const port = window.location.port;
+
+        if (!port || port === '80' || port === '443') {
+          return '/api/security/404';
+        }
+        return `${protocol}//${hostname}:4000/api/security/404`;
+      };
+      const apiUrl = getApiUrl();
       
       fetch(apiUrl, {
         method: 'POST',

@@ -26,7 +26,10 @@ const NotFound: React.FC = () => {
     // Send to security logging service
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
-    const apiUrl = `${protocol}//${hostname}:4000/api/security/404`;
+    const port = window.location.port;
+    const apiUrl = (!port || port === '80' || port === '443')
+      ? '/api/security/404'
+      : `${protocol}//${hostname}:4000/api/security/404`;
     
     fetch(apiUrl, {
       method: 'POST',

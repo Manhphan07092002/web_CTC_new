@@ -7,6 +7,10 @@ import analyticsTracking from '../../services/analytics-tracking';
 const getContactApiUrl = () => {
   const viteEnv = (import.meta as ImportMeta & { env?: { VITE_API_URL?: string } }).env;
   if (viteEnv?.VITE_API_URL) return `${viteEnv.VITE_API_URL.replace(/\/+$/, '')}/contact/submit`;
+  const port = window.location.port;
+  if (!port || port === '80' || port === '443') {
+    return '/api/contact/submit';
+  }
   return `${window.location.protocol}//${window.location.hostname}:4000/api/contact/submit`;
 };
 
