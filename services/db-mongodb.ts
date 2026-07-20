@@ -485,8 +485,6 @@ export const db = {
     },
     
     update: async (data: Partial<ISettings>) => {
-      let settings = await Settings.findOne();
-      
       const updateData = { ...data };
       delete (updateData as any)._id;
       delete (updateData as any).id;
@@ -494,12 +492,21 @@ export const db = {
       delete (updateData as any).createdAt;
       delete (updateData as any).updatedAt;
 
+      let settings = await Settings.findOne();
       if (!settings) {
         settings = new Settings(updateData);
+        await settings.save();
       } else {
-        Object.assign(settings, updateData);
+        settings = await Settings.findOneAndUpdate(
+          { _id: settings._id },
+          { $set: updateData },
+          { new: true, runValidators: true }
+        );
+        if (!settings) {
+          settings = new Settings(updateData);
+          await settings.save();
+        }
       }
-      await settings.save();
       return toPlainObject<ISettings>(settings);
     }
   },
