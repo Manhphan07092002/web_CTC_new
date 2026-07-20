@@ -2,6 +2,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import mongoose from 'mongoose';
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -111,6 +112,16 @@ async function importAllData() {
     console.log('='.repeat(60));
 
     await mongoose.disconnect();
+
+    // Automatically seed permissions & assign user roles after importing users
+    try {
+      console.log('\n🔑 Seeding permissions & roles...');
+      execSync('npx tsx server/scripts/seed-permissions.ts', { stdio: 'inherit' });
+      console.log('✅ Permissions and roles seeded successfully');
+    } catch (e) {
+      console.error('⚠️ Failed to seed permissions & roles:', e.message);
+    }
+
     process.exit(0);
   } catch (error) {
     console.error('❌ Import failed:', error);
