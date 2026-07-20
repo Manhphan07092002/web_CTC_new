@@ -58,10 +58,10 @@ export const createRateLimit = (windowMs: number, max: number) => {
   };
 };
 
-// Rate limiters (increased for development)
-export const generalRateLimiter = createRateLimit(15 * 60 * 1000, 500); // 500 req/15min
-export const loginRateLimiter = createRateLimit(15 * 60 * 1000, 20); // 20 req/15min
-export const uploadRateLimiter = createRateLimit(60 * 1000, 30); // 30 req/min
+// Rate limiters (increased significantly for development/testing resilience)
+export const generalRateLimiter = createRateLimit(15 * 60 * 1000, 100000); // 100,000 req/15min
+export const loginRateLimiter = createRateLimit(15 * 60 * 1000, 10000); // 10,000 req/15min
+export const uploadRateLimiter = createRateLimit(60 * 1000, 10000); // 10,000 req/min
 
 // Security headers
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
