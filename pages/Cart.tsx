@@ -161,12 +161,20 @@ const Cart: React.FC = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
               Vui lòng duyệt qua danh mục sản phẩm của chúng tôi và chọn các sản phẩm bạn cần báo giá.
             </p>
-            <Link
-              to="/products"
-              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95"
-            >
-              <ArrowLeft size={16} /> Quay lại mua hàng
-            </Link>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Link
+                to="/products"
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 text-sm"
+              >
+                <ArrowLeft size={16} /> Quay lại mua hàng
+              </Link>
+              <Link
+                to="/track-order"
+                className="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-gray-700 dark:hover:bg-gray-650 text-slate-700 dark:text-slate-200 font-bold py-3 px-6 rounded-xl transition-all active:scale-95 text-sm border border-gray-200/50 dark:border-gray-600"
+              >
+                <FileText size={16} /> Tra cứu đơn hàng
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

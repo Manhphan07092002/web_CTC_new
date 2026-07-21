@@ -74,6 +74,7 @@ const Footer: React.FC = () => {
     ['/projects', t('nav.projects')],
     ['/news', t('nav.news')],
     ['/contact', t('nav.contact')],
+    ['/track-order', 'Tra cứu đơn hàng'],
   ];
 
   const solutionLinks = [
