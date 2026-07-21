@@ -31,6 +31,7 @@ const SolutionsHero: React.FC = () => {
           background-color: #060d1d;
           display: flex;
           align-items: center;
+          padding-top: 120px;
           font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
         }
 
@@ -175,7 +176,7 @@ const SolutionsHero: React.FC = () => {
 
         /* Responsive */
         @media (max-width: 1024px) {
-          .sol-hero { min-height: auto; padding: 110px 0 60px; }
+          .sol-hero { min-height: auto; padding: 120px 0 60px; }
           .sol-layout { grid-template-columns: 1fr !important; }
         }
       `}} />

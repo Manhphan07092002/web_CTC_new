@@ -3,7 +3,7 @@ import { Wind } from 'lucide-react';
 
 const FarmHero: React.FC = () => {
   return (
-    <div className="relative py-32 md:py-40 bg-gray-900 overflow-hidden">
+    <div className="relative pt-36 md:pt-44 pb-20 bg-gray-900 overflow-hidden">
       <img 
         src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=1920&auto=format&fit=crop" 
         alt="Wind Farm CTC"
