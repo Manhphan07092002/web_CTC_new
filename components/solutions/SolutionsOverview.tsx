@@ -119,6 +119,10 @@ const useCountUp = (target: string, trigger: boolean) => {
   const [val, setVal] = useState('0');
   useEffect(() => {
     if (!trigger) return;
+    if (target.includes('/') || target.includes('-')) {
+      setVal(target);
+      return;
+    }
     const num = parseFloat(target.replace(/[^0-9.]/g, ''));
     if (isNaN(num)) { setVal(target); return; }
     const suffix = target.replace(/[0-9.]/g, '');
