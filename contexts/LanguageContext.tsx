@@ -339,7 +339,8 @@ const translations: Record<Language, Translations> = {
         ai_compare: 'AI So sánh',
         key_features: 'Tính năng nổi bật',
         tech_details: 'Chi tiết kỹ thuật',
-        related_products: 'Sản phẩm liên quan'
+        related_products: 'Sản phẩm liên quan',
+        add_to_quote_success: 'Đã thêm sản phẩm vào giỏ hàng thành công!'
     },
     projects: {
         title: 'Dự án đã triển khai',
@@ -750,7 +751,8 @@ const translations: Record<Language, Translations> = {
         ai_compare: 'AI Comparison',
         key_features: 'Key Features',
         tech_details: 'Technical Details',
-        related_products: 'Related Products'
+        related_products: 'Related Products',
+        add_to_quote_success: 'Product added to cart successfully!'
     },
     projects: {
         title: 'Completed Projects',
@@ -1144,7 +1146,8 @@ const translations: Record<Language, Translations> = {
       ai_compare: 'AI 비교',
       key_features: '주요 기능',
       tech_details: '기술 세부사항',
-      related_products: '관련 제품'
+      related_products: '관련 제품',
+      add_to_quote_success: '제품이 장바구니에 추가되었습니다!'
     },
     projects: {
       title: '완료된 프로젝트',
@@ -1514,6 +1517,7 @@ const translations: Record<Language, Translations> = {
       detail_tab_reviews: 'レビュー',
       call_to_buy: '購入のお問い合わせ',
       add_to_quote: '見積もりに追加',
+      add_to_quote_success: '製品がカートに追加されました！',
       share: 'この製品を共有',
       warranty: '保証',
       authentic: '正規品',

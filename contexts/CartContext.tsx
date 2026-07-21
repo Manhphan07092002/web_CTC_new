@@ -33,7 +33,7 @@ const parsePrice = (priceVal: any): number => {
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { showToast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Load from sessionStorage on mount
   useEffect(() => {
@@ -79,10 +79,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     saveCart(updatedItems);
-    showToast(
-      t('products.add_to_quote_success') || `Đã thêm ${product.name} vào báo giá thành công!`,
-      'success'
-    );
+
+    // Multi-language custom success toast with product name interpolation
+    const successMsg = language === 'vi' 
+      ? `Đã thêm "${product.name}" vào giỏ hàng thành công!` 
+      : language === 'en' 
+        ? `Added "${product.name}" to cart successfully!`
+        : language === 'ko'
+          ? `"${product.name}"을(를) 장바구니에 추가했습니다!`
+          : language === 'ja'
+            ? `「${product.name}」をカートに追加しました！`
+            : `Đã thêm "${product.name}" vào giỏ hàng thành công!`;
+
+    showToast(successMsg, 'success');
   };
 
   const removeFromCart = (productId: string) => {
