@@ -39,6 +39,7 @@ const SolutionDetail = lazy(() => import('./pages/SolutionDetail'));
 const Resources = lazy(() => import('./pages/Resources'));
 const Cart = lazy(() => import('./pages/Cart'));
 const TrackOrder = lazy(() => import('./pages/TrackOrder'));
+const Search = lazy(() => import('./pages/Search'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Admin (Lazy Loaded)
@@ -124,6 +125,7 @@ const App: React.FC = () => {
                       <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
                       <Route path="/cart" element={<PublicLayout><Cart /></PublicLayout>} />
                       <Route path="/track-order" element={<PublicLayout><TrackOrder /></PublicLayout>} />
+                      <Route path="/search" element={<PublicLayout><Search /></PublicLayout>} />
 
                       {/* 404 Route */}
                       <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />

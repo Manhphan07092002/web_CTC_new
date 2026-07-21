@@ -537,4 +537,14 @@ export const api = {
       method: 'POST',
     }),
   },
+  search: {
+    query: (q: string, type?: string, page?: number, limit?: number) => {
+      let url = `/search?q=${encodeURIComponent(q.trim())}`;
+      if (type) url += `&type=${type}`;
+      if (page) url += `&page=${page}`;
+      if (limit) url += `&limit=${limit}`;
+      return fetchAPI<any>(url);
+    },
+    live: (q: string) => fetchAPI<any>(`/search/live?q=${encodeURIComponent(q.trim())}`),
+  },
 };
