@@ -13,9 +13,9 @@ export const NAV_LINKS = [
       { name: 'HẠ TẦNG VIỄN THÔNG & CNTT', path: '/solutions/floating' },
       { name: 'ĐIỆN MẶT TRỜI (SOLAR EPC)', path: '/solutions/rooftop' },
       { name: 'ĐIỆN GIÓ (WIND POWER EPC)', path: '/solutions/farm' },
-      { name: 'ĐƯỜNG DÂY & TRẠM BIẾN ÁP 110KV', path: '/solutions' },
-      { name: 'DATA CENTER & HẠ TẦNG SỐ', path: '/solutions' },
-      { name: 'XÂY DỰNG DÂN DỤNG & CÔNG NGHIỆP', path: '/solutions' }
+      { name: 'ĐƯỜNG DÂY & TRẠM BIẾN ÁP 110KV', path: '/solutions/electrical' },
+      { name: 'DATA CENTER & HẠ TẦNG SỐ', path: '/solutions/datacenter' },
+      { name: 'XÂY DỰNG DÂN DỤNG & CÔNG NGHIỆP', path: '/solutions/construction' }
     ]
   },
   { 

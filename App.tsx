@@ -31,6 +31,9 @@ const Solutions = lazy(() => import('./pages/Solutions'));
 const SolutionRooftop = lazy(() => import('./pages/SolutionRooftop'));
 const SolutionFarm = lazy(() => import('./pages/SolutionFarm'));
 const SolutionFloating = lazy(() => import('./pages/SolutionFloating'));
+const SolutionElectrical = lazy(() => import('./pages/SolutionElectrical'));
+const SolutionDataCenter = lazy(() => import('./pages/SolutionDataCenter'));
+const SolutionConstruction = lazy(() => import('./pages/SolutionConstruction'));
 const SolutionDetail = lazy(() => import('./pages/SolutionDetail'));
 const Resources = lazy(() => import('./pages/Resources'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -100,6 +103,9 @@ const App: React.FC = () => {
                     <Route path="/solutions/rooftop" element={<PublicLayout><SolutionRooftop /></PublicLayout>} />
                     <Route path="/solutions/farm" element={<PublicLayout><SolutionFarm /></PublicLayout>} />
                     <Route path="/solutions/floating" element={<PublicLayout><SolutionFloating /></PublicLayout>} />
+                    <Route path="/solutions/electrical" element={<PublicLayout><SolutionElectrical /></PublicLayout>} />
+                    <Route path="/solutions/datacenter" element={<PublicLayout><SolutionDataCenter /></PublicLayout>} />
+                    <Route path="/solutions/construction" element={<PublicLayout><SolutionConstruction /></PublicLayout>} />
                     <Route path="/solutions/:slug" element={<PublicLayout><SolutionDetail /></PublicLayout>} />
 
                     <Route path="/products" element={<PublicLayout><Products /></PublicLayout>} />

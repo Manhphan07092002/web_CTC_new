@@ -1,263 +1,319 @@
-import React from 'react';
-import { Radio, Sun, Wind, Zap, Building2, Server, ArrowRight } from 'lucide-react';
+import React, { useRef, useEffect, useState } from 'react';
+import { Radio, Sun, Wind, Zap, Building2, Server, ArrowRight, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-/* ─── Data ─────────────────────────────────────────────────────── */
-interface SolutionCard {
-  id: string;
-  icon: React.ReactNode;
-  accent: string;
-  gradient: string;
-  glowColor: string;
-  tag: string;
-  title: string;
-  subtitle: string;
-  desc: string;
-  stats: { val: string; label: string }[];
-  highlights: string[];
-  to: string;
-  img: string;
-}
-
-const SOLUTIONS: SolutionCard[] = [
+/* ─── Sector Data ─────────────────────────────────────────── */
+const SECTORS = [
   {
     id: 'telecom',
-    icon: <Radio size={22} />,
-    accent: '#38bdf8',
-    gradient: 'from-sky-500 to-blue-600',
-    glowColor: 'rgba(56,189,248,0.18)',
-    tag: 'VIỄN THÔNG & CNTT',
+    icon: Radio,
+    tag: 'Viễn thông & CNTT',
     title: 'Hạ Tầng Viễn Thông',
-    subtitle: 'Cáp quang • BTS • Data Center',
-    desc: 'Thiết kế và thi công mạng cáp quang OSP, trạm BTS/NodeB, hạ tầng Metro và Data Center chuẩn Tier III cho nhà mạng và cơ quan nhà nước.',
-    stats: [
-      { val: '100+', label: 'Công trình viễn thông' },
-      { val: '32+', label: 'Năm kinh nghiệm' },
-    ],
-    highlights: ['Cáp quang ngoại vi (OSP)', 'Trạm BTS/NodeB 4G/5G', 'Metro Network', 'Data Center Tier III'],
-    to: '/solutions/telecom',
+    sub: 'Cáp quang • BTS • Data Center',
+    desc: 'Thiết kế, thi công mạng cáp quang OSP, trạm BTS/NodeB 4G/5G, Metro Network và Data Center chuẩn Tier III cho nhà mạng & cơ quan nhà nước.',
+    checks: ['Cáp quang ngoại vi (OSP)', 'Trạm BTS/NodeB 4G/5G', 'Metro Network', 'Data Center Tier III'],
+    stat1: '100+', stat1l: 'Công trình',
+    stat2: '32+', stat2l: 'Năm KN',
+    to: '/solutions/floating',
+    gradient: 'linear-gradient(135deg, #0369a1 0%, #0284c7 100%)',
+    glowBg: 'rgba(14,165,233,0.15)',
+    accent: '#38bdf8',
+    borderHover: 'hover:border-sky-400',
     img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop',
+    tagStyle: 'bg-sky-900/60 text-sky-300 border-sky-700/50',
   },
   {
     id: 'solar',
-    icon: <Sun size={22} />,
-    accent: '#f97316',
-    gradient: 'from-orange-500 to-yellow-500',
-    glowColor: 'rgba(249,115,22,0.18)',
-    tag: 'NĂNG LƯỢNG TÁI TẠO',
-    title: 'Điện Mặt Trời Solar',
-    subtitle: 'Áp mái • C&I • Solar Farm',
-    desc: 'Tổng thầu EPC hệ thống Solar cho hộ gia đình, thương mại & công nghiệp (C&I) và trang trại điện mặt trời kết nối lưới quốc gia.',
-    stats: [
-      { val: '500+', label: 'Hệ thống Solar' },
-      { val: '4-5 năm', label: 'Hoàn vốn' },
-    ],
-    highlights: ['Solar áp mái hộ gia đình', 'C&I – Nhà máy & KCN', 'Solar Farm kết nối lưới', 'O&M bảo trì dài hạn'],
-    to: '/solutions/solar',
+    icon: Sun,
+    tag: 'Solar EPC',
+    title: 'Điện Mặt Trời',
+    sub: 'Áp mái • C&I • Solar Farm',
+    desc: 'Tổng thầu EPC trọn gói hệ thống Solar cho hộ gia đình, thương mại & công nghiệp (C&I) và trang trại Solar Farm kết nối lưới quốc gia.',
+    checks: ['Solar áp mái hộ gia đình', 'C&I Nhà máy & KCN', 'Solar Farm kết nối lưới', 'O&M bảo trì dài hạn'],
+    stat1: '500+', stat1l: 'Hệ thống',
+    stat2: '4-5 năm', stat2l: 'Hoàn vốn',
+    to: '/solutions/rooftop',
+    gradient: 'linear-gradient(135deg, #c2410c 0%, #ea580c 100%)',
+    glowBg: 'rgba(249,115,22,0.15)',
+    accent: '#fb923c',
+    borderHover: 'hover:border-orange-400',
     img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=800&auto=format&fit=crop',
+    tagStyle: 'bg-orange-900/60 text-orange-300 border-orange-700/50',
   },
   {
     id: 'wind',
-    icon: <Wind size={22} />,
+    icon: Wind,
+    tag: 'Wind Power EPC',
+    title: 'Điện Gió',
+    sub: 'EPC • Nền móng • Đấu nối 110kV',
+    desc: 'Tổng thầu EPC các dự án điện gió trong đất liền tại Quảng Trị. Nền móng trụ gió, cáp nội bộ, trạm biến áp 110kV và hệ thống SCADA.',
+    checks: ['Điện gió Hướng Linh 1 & 4', 'Điện gió Hướng Hiệp', 'Nền móng trụ gió bê tông', 'Trạm biến áp 110kV'],
+    stat1: '3', stat1l: 'Dự án gió',
+    stat2: '110kV', stat2l: 'Đấu nối',
+    to: '/solutions/farm',
+    gradient: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)',
+    glowBg: 'rgba(20,184,166,0.15)',
     accent: '#2dd4bf',
-    gradient: 'from-teal-500 to-emerald-500',
-    glowColor: 'rgba(45,212,191,0.18)',
-    tag: 'NĂNG LƯỢNG TÁI TẠO',
-    title: 'Điện Gió Wind Power',
-    subtitle: 'EPC • Hạ tầng • Đấu nối lưới 110kV',
-    desc: 'Tổng thầu EPC các dự án điện gió trong đất liền tại Quảng Trị. Nền móng trụ gió, cáp nội bộ, trạm 110kV và vận hành SCADA.',
-    stats: [
-      { val: '3', label: 'Trang trại điện gió' },
-      { val: '110kV', label: 'Chuẩn đấu nối' },
-    ],
-    highlights: ['Điện gió Hướng Linh 1 & 4', 'Điện gió Hướng Hiệp', 'Nền móng trụ gió bê tông', 'Trạm biến áp 110kV'],
-    to: '/solutions/wind',
+    borderHover: 'hover:border-teal-400',
     img: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=800&auto=format&fit=crop',
+    tagStyle: 'bg-teal-900/60 text-teal-300 border-teal-700/50',
   },
   {
     id: 'electrical',
-    icon: <Zap size={22} />,
-    accent: '#eab308',
-    gradient: 'from-yellow-500 to-amber-500',
-    glowColor: 'rgba(234,179,8,0.18)',
-    tag: 'ĐIỆN LỰC & KỸ THUẬT',
+    icon: Zap,
+    tag: 'Điện lực & Kỹ thuật',
     title: 'Đường Dây & Trạm Biến Áp',
-    subtitle: 'Đường dây 110kV • Trạm biến áp',
-    desc: 'Xây dựng đường dây tải điện trung – cao thế và trạm biến áp 110kV đấu nối lưới quốc gia. Hệ thống tiếp địa, chống sét và nguồn dự phòng UPS.',
-    stats: [
-      { val: '110kV', label: 'Điện áp đấu nối' },
-      { val: '02', label: 'Chứng chỉ Bộ XD' },
-    ],
-    highlights: ['Đường dây 110kV/220kV', 'Trạm biến áp 110kV', 'Tiếp địa chống sét', 'UPS & Nguồn dự phòng'],
+    sub: 'Đường dây 110kV • Trạm biến áp',
+    desc: 'Xây dựng đường dây tải điện trung – cao thế và trạm biến áp 110kV đấu nối lưới quốc gia. Hệ thống tiếp địa, chống sét và nguồn dự phòng.',
+    checks: ['Đường dây 110kV/220kV', 'Trạm biến áp 110kV', 'Tiếp địa chống sét', 'UPS & Nguồn dự phòng'],
+    stat1: '02', stat1l: 'Chứng chỉ BXD',
+    stat2: '110kV', stat2l: 'Điện áp',
     to: '/solutions/electrical',
+    gradient: 'linear-gradient(135deg, #a16207 0%, #ca8a04 100%)',
+    glowBg: 'rgba(234,179,8,0.15)',
+    accent: '#fbbf24',
+    borderHover: 'hover:border-yellow-400',
     img: 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?q=80&w=800&auto=format&fit=crop',
+    tagStyle: 'bg-yellow-900/60 text-yellow-300 border-yellow-700/50',
   },
   {
     id: 'datacenter',
-    icon: <Server size={22} />,
-    accent: '#a78bfa',
-    gradient: 'from-violet-500 to-purple-600',
-    glowColor: 'rgba(167,139,250,0.18)',
-    tag: 'HẠ TẦNG SỐ',
+    icon: Server,
+    tag: 'Hạ tầng số',
     title: 'Data Center & CNTT',
-    subtitle: 'Tier III • Cloud • Smart System',
+    sub: 'Tier III • Cloud • Smart System',
     desc: 'Thiết kế, xây dựng và vận hành Data Center chuẩn Tier III. Hệ thống mạng doanh nghiệp, camera an ninh và chuyển đổi số tích hợp.',
-    stats: [
-      { val: 'Tier III', label: 'Chuẩn Data Center' },
-      { val: '24/7', label: 'Giám sát O&M' },
-    ],
-    highlights: ['Data Center chuẩn Tier III', 'Precision Cooling hệ thống', 'Network & Bảo mật', 'CCTV & Smart Security'],
+    checks: ['Data Center chuẩn Tier III', 'Precision Cooling system', 'Network & Bảo mật dữ liệu', 'CCTV & Smart Security'],
+    stat1: 'Tier III', stat1l: 'Chuẩn DC',
+    stat2: '24/7', stat2l: 'Giám sát',
     to: '/solutions/datacenter',
+    gradient: 'linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%)',
+    glowBg: 'rgba(139,92,246,0.15)',
+    accent: '#a78bfa',
+    borderHover: 'hover:border-violet-400',
     img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=700&auto=format&fit=crop',
+    tagStyle: 'bg-violet-900/60 text-violet-300 border-violet-700/50',
   },
   {
     id: 'construction',
-    icon: <Building2 size={22} />,
-    accent: '#94a3b8',
-    gradient: 'from-slate-500 to-gray-600',
-    glowColor: 'rgba(148,163,184,0.18)',
-    tag: 'XÂY DỰNG KỸ THUẬT',
-    title: 'Xây Dựng Dân Dụng & Công Nghiệp',
-    subtitle: 'EPC • Nhà xưởng • Hạ tầng',
-    desc: 'Thi công công trình dân dụng, nhà xưởng công nghiệp và hạ tầng tổng hợp đi kèm các dự án năng lượng và viễn thông.',
-    stats: [
-      { val: '500+', label: 'Công trình hoàn thành' },
-      { val: 'EPC', label: 'Tổng thầu trọn gói' },
-    ],
-    highlights: ['Nhà xưởng & kho công nghiệp', 'Hạ tầng dự án năng lượng', 'Công trình quốc phòng', 'M&E cơ điện'],
+    icon: Building2,
+    tag: 'Xây dựng kỹ thuật',
+    title: 'Xây Dựng Dân Dụng & CN',
+    sub: 'EPC • Nhà xưởng • Hạ tầng',
+    desc: 'Thi công công trình dân dụng, nhà xưởng công nghiệp và hạ tầng tổng hợp đi kèm các dự án năng lượng, viễn thông và quốc phòng.',
+    checks: ['Nhà xưởng & kho công nghiệp', 'Hạ tầng dự án năng lượng', 'Công trình quốc phòng A70', 'M&E cơ điện'],
+    stat1: '500+', stat1l: 'Công trình',
+    stat2: 'EPC', stat2l: 'Tổng thầu',
     to: '/solutions/construction',
+    gradient: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
+    glowBg: 'rgba(100,116,139,0.15)',
+    accent: '#94a3b8',
+    borderHover: 'hover:border-slate-400',
     img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=800&auto=format&fit=crop',
+    tagStyle: 'bg-slate-800/60 text-slate-300 border-slate-600/50',
   },
 ];
 
-/* ─── Component ─────────────────────────────────────────────────── */
-const SolutionsOverview: React.FC = () => {
-  return (
-    <section className="py-20 sm:py-28 relative overflow-hidden bg-slate-50 dark:bg-[#060d1d] transition-colors duration-300">
-      <style dangerouslySetInnerHTML={{ __html: `
-        .sol-blueprint {
-          position: absolute; inset: 0;
-          background-image:
-            linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
-          background-size: 80px 80px;
-          pointer-events: none;
-        }
-        .dark .sol-blueprint {
-          background-image:
-            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-        }
-        .sol-aura {
-          position: absolute;
-          width: 700px; height: 700px;
-          filter: blur(100px);
-          pointer-events: none;
-        }
-        .sol-grid-card {
-          background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(241,245,249,.9));
-          border: 1px solid rgba(255,255,255,.95);
-          box-shadow: 0 18px 45px -24px rgba(15,23,42,.28);
-          transition: transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s ease, border-color .4s ease;
-        }
-        .dark .sol-grid-card {
-          background: linear-gradient(145deg, rgba(15,23,42,.94), rgba(8,15,31,.92));
-          border-color: rgba(255,255,255,.08);
-          box-shadow: 0 18px 45px -24px rgba(0,0,0,.75);
-        }
-        .sol-grid-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 28px 55px -25px rgba(15,23,42,.38);
-        }
-        .sol-grid-card:hover .sol-card-image { transform: scale(1.06); }
-        .sol-card-image { transition: transform .7s cubic-bezier(.16,1,.3,1); }
-        .sol-cta-btn {
-          position: relative; overflow: hidden;
-          transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-        }
-        .sol-cta-btn::before {
-          content: '';
-          position: absolute;
-          top: 0; left: -130%; width: 100%; height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-          transform: skewX(-20deg);
-          transition: transform 0.75s ease;
-        }
-        .sol-cta-btn:hover::before { transform: translateX(260%) skewX(-20deg); }
-        .sol-cta-btn:hover { transform: translateY(-2px) scale(1.02); }
-      `}} />
+/* ─── Animated Number Hook ────────────────────────────────── */
+const useCountUp = (target: string, trigger: boolean) => {
+  const [val, setVal] = useState('0');
+  useEffect(() => {
+    if (!trigger) return;
+    const num = parseFloat(target.replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) { setVal(target); return; }
+    const suffix = target.replace(/[0-9.]/g, '');
+    let start = 0;
+    const step = num / 30;
+    const timer = setInterval(() => {
+      start = Math.min(start + step, num);
+      setVal(Math.round(start) + suffix);
+      if (start >= num) clearInterval(timer);
+    }, 40);
+    return () => clearInterval(timer);
+  }, [trigger, target]);
+  return val;
+};
 
-      {/* Background decorations */}
-      <div className="sol-blueprint z-0" />
-      <div className="sol-aura z-0" style={{
-        top: '-10%', left: '-8%',
-        background: 'radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)'
+/* ─── Card Component ──────────────────────────────────────── */
+const SectorCard: React.FC<{ s: typeof SECTORS[0]; visible: boolean; delay: number }> = ({ s, visible, delay }) => {
+  const Icon = s.icon;
+  const [hovered, setHovered] = useState(false);
+  const val1 = useCountUp(s.stat1, visible);
+  const val2 = useCountUp(s.stat2, visible);
+
+  return (
+    <div
+      className="group relative flex flex-col overflow-hidden rounded-3xl border-2 border-white/8 bg-[#0a1628] cursor-pointer transition-all duration-500"
+      style={{
+        transform: visible ? 'translateY(0) scale(1)' : 'translateY(32px) scale(0.97)',
+        opacity: visible ? 1 : 0,
+        transitionDelay: `${delay}ms`,
+        boxShadow: hovered ? `0 20px 60px -15px ${s.glowBg}, 0 0 0 1px ${s.accent}33` : '0 4px 24px -8px rgba(0,0,0,0.5)',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* ── Glow blob behind card (shows on hover) ── */}
+      <div
+        className="absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ background: `radial-gradient(circle at 50% 0%, ${s.glowBg}, transparent 70%)` }}
+      />
+
+      {/* ── Image strip ── */}
+      <div className="relative h-44 overflow-hidden flex-shrink-0">
+        <img
+          src={s.img}
+          alt={s.title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          loading="lazy"
+        />
+        {/* dark scrim */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-[#0a1628]" />
+
+        {/* Tag pill */}
+        <div className={`absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-sm ${s.tagStyle}`}>
+          <Icon size={12} />
+          {s.tag}
+        </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div className="flex flex-col flex-1 p-6 relative z-10">
+
+        {/* Title + Sub */}
+        <div className="mb-3">
+          <h3 className="text-base font-extrabold text-white leading-snug mb-1 group-hover:text-white transition-colors">
+            {s.title}
+          </h3>
+          <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">{s.sub}</p>
+        </div>
+
+        {/* Divider */}
+        <div className="w-10 h-0.5 mb-3 rounded-full transition-all duration-300 group-hover:w-16"
+          style={{ background: s.accent }} />
+
+        {/* Description */}
+        <p className="text-[13px] text-slate-400 leading-relaxed mb-4 flex-1">{s.desc}</p>
+
+        {/* Feature checks */}
+        <ul className="space-y-1.5 mb-5">
+          {s.checks.map((c, i) => (
+            <li key={i} className="flex items-center gap-2 text-[12px] text-slate-300">
+              <Check size={12} className="flex-shrink-0" style={{ color: s.accent }} />
+              {c}
+            </li>
+          ))}
+        </ul>
+
+        {/* Stats + CTA */}
+        <div className="flex items-center justify-between pt-4 border-t border-white/8">
+          <div className="flex items-center gap-5">
+            <div>
+              <div className="text-xl font-black" style={{ color: s.accent }}>{val1}</div>
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">{s.stat1l}</div>
+            </div>
+            <div className="w-px h-8 bg-white/10" />
+            <div>
+              <div className="text-xl font-black text-white">{val2}</div>
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">{s.stat2l}</div>
+            </div>
+          </div>
+
+          <Link
+            to={s.to}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider text-white transition-all duration-300 group-hover:gap-3"
+            style={{
+              background: s.gradient,
+              boxShadow: hovered ? `0 8px 20px -6px ${s.glowBg}` : 'none',
+            }}
+          >
+            Xem thêm <ArrowRight size={13} />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Main Component ──────────────────────────────────────── */
+const SolutionsOverview: React.FC = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={ref}
+      className="relative py-20 sm:py-28 bg-[#060d1d] overflow-hidden"
+    >
+      {/* Blueprint grid */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+        backgroundSize: '80px 80px',
       }} />
-      <div className="sol-aura z-0" style={{
-        bottom: '-10%', right: '-8%',
-        background: 'radial-gradient(circle, rgba(14,165,233,0.08) 0%, transparent 70%)'
-      }} />
+
+      {/* Ambient glows */}
+      <div className="absolute -top-20 -left-20 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+      <div className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.05) 0%, transparent 70%)', filter: 'blur(80px)' }} />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 
-        <div className="text-center mb-16 space-y-3">
-          <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full border border-sky-500/25 bg-sky-500/6 text-xs font-black tracking-widest text-sky-600 dark:text-sky-400 uppercase">
-            CTC – GIẢI PHÁP TOÀN DIỆN EPC
+        {/* ── Header ── */}
+        <div
+          className="text-center mb-14 transition-all duration-700"
+          style={{ transform: visible ? 'translateY(0)' : 'translateY(20px)', opacity: visible ? 1 : 0 }}
+        >
+          <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full border border-sky-500/25 bg-sky-500/8 text-[11px] font-black tracking-widest text-sky-400 uppercase mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+            CTC – Giải pháp EPC toàn diện
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
-            6 Lĩnh Vực Chiến Lược
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-tight">
+            6 Lĩnh Vực{' '}
+            <span className="text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)'
+            }}>
+              Chiến Lược
+            </span>
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-base max-w-xl mx-auto font-light">
-            Tư vấn → Thiết kế → Thi công → Vận hành & Bảo trì – dịch vụ khép kín 32+ năm kinh nghiệm
+          <p className="text-slate-400 text-base max-w-2xl mx-auto font-light leading-relaxed">
+            Dịch vụ khép kín <strong className="text-slate-300">Tư vấn → Thiết kế → Thi công → Vận hành & Bảo trì</strong> –
+            32+ năm kinh nghiệm, 500+ công trình hoàn thành
           </p>
-          <div className="w-14 h-1 bg-gradient-to-r from-sky-500 to-blue-600 mx-auto rounded-full opacity-60" />
+          <div className="w-16 h-1 bg-gradient-to-r from-sky-500 to-blue-600 mx-auto rounded-full mt-5 opacity-70" />
         </div>
 
-        {/* 3 × 2 desktop grid; 2 columns on tablet; 1 column on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 max-w-7xl mx-auto">
-          {SOLUTIONS.map((s) => (
-            <article key={s.id} className="sol-grid-card group rounded-[2rem] overflow-hidden flex flex-col h-full">
-              <Link to={s.to} className="relative h-48 overflow-hidden block" aria-label={`Xem ${s.title}`}>
-                <img src={s.img} alt={s.title} className="sol-card-image w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-transparent" />
-                <div className={`absolute top-4 left-4 w-12 h-12 rounded-2xl flex items-center justify-center text-white bg-gradient-to-br ${s.gradient} shadow-xl`}>
-                  {s.icon}
-                </div>
-                <div className="absolute left-5 right-5 bottom-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-white/75">{s.tag}</div>
-                  <h3 className="mt-1 text-xl font-black text-white leading-tight">{s.title}</h3>
-                </div>
-              </Link>
-
-              <div className="p-6 flex flex-col flex-1">
-                <div className="text-xs font-bold" style={{ color: s.accent }}>{s.subtitle}</div>
-                <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300 line-clamp-3">{s.desc}</p>
-
-                <div className="grid grid-cols-2 gap-2 mt-5">
-                  {s.highlights.slice(0, 4).map((highlight) => (
-                    <div key={highlight} className="flex items-start gap-2 rounded-xl bg-slate-100/80 dark:bg-white/5 px-3 py-2.5 min-h-[44px]">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.accent }} />
-                      <span className="text-[11px] leading-4 font-medium text-slate-600 dark:text-slate-300">{highlight}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-auto pt-6 flex items-end justify-between gap-4">
-                  <div className="flex gap-5">
-                    {s.stats.map((stat) => (
-                      <div key={stat.label}>
-                        <div className="text-xl font-black" style={{ color: s.accent }}>{stat.val}</div>
-                        <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-400 leading-3">{stat.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <Link to={s.to} className={`sol-cta-btn flex-shrink-0 w-11 h-11 rounded-xl inline-flex items-center justify-center text-white bg-gradient-to-r ${s.gradient} shadow-lg`} aria-label={`Xem chi tiết ${s.title}`}>
-                    <ArrowRight size={18} />
-                  </Link>
-                </div>
-              </div>
-            </article>
+        {/* ── 3×2 Card Grid ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {SECTORS.map((s, i) => (
+            <SectorCard key={s.id} s={s} visible={visible} delay={i * 80} />
           ))}
+        </div>
+
+        {/* ── Bottom CTA strip ── */}
+        <div
+          className="mt-14 text-center transition-all duration-700 delay-500"
+          style={{ transform: visible ? 'translateY(0)' : 'translateY(20px)', opacity: visible ? 1 : 0 }}
+        >
+          <p className="text-slate-400 text-sm mb-5">
+            Cần tư vấn chi tiết? Đội ngũ kỹ sư CTC sẵn sàng hỗ trợ 24/7
+          </p>
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white transition-all hover:scale-105 hover:shadow-sky-500/30 hover:shadow-2xl"
+            style={{ background: 'linear-gradient(135deg, rgba(2,132,199,0.9) 0%, rgba(3,105,161,0.9) 100%)', border: '1px solid rgba(56,189,248,0.4)' }}
+          >
+            Nhận tư vấn miễn phí <ArrowRight size={16} />
+          </Link>
         </div>
       </div>
     </section>
