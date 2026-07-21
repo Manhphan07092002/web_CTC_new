@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 // Product Schema (simplified)
 const ProductSchema = new mongoose.Schema({

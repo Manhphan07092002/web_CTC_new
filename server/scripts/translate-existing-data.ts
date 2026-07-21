@@ -11,7 +11,7 @@ import { Product, Project, News, Testimonial, ProductCategory, NewsCategory, Pro
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 

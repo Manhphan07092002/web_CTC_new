@@ -6,6 +6,8 @@ import { ArrowLeft, Calendar, User, Eye, Share2, ChevronRight, Home, Tag } from 
 import { useLanguage } from '../contexts/LanguageContext';
 import SEO from '../components/SEO';
 
+import Loading from '../components/Loading';
+
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [news, setNews] = useState<NewsItem | null>(null);
@@ -36,7 +38,7 @@ const NewsDetail: React.FC = () => {
     fetchNews();
   }, [id]);
 
-  if (loading) return <div className="w-full h-[60vh] flex items-center justify-center"><div className="animate-spin-slow text-primary text-4xl">☀️</div></div>;
+  if (loading) return <Loading fullScreen={false} className="h-[60vh]" />;
 
   if (!news) return (
     <div className="container mx-auto px-4 py-20 text-center">

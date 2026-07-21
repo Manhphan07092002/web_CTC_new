@@ -34,7 +34,11 @@ import {
   type IContact,
   type INotification,
   type ISettings,
-  type ITeamMember
+  type ITeamMember,
+  Order,
+  OrderItem,
+  type IOrder,
+  type IOrderItem
 } from '../models';
 
 // Helper to convert MongoDB document to plain object with id
@@ -705,6 +709,53 @@ export const db = {
 
       await product.save();
       return true;
+    }
+  },
+
+  orders: {
+    getAll: async (filter: any = {}) => {
+      const orders = await Order.find(filter).sort({ createdAt: -1 });
+      return orders.map(toPlainObject<IOrder>);
+    },
+    getById: async (id: string) => {
+      const order = await Order.findById(id);
+      if (!order) return null;
+      const items = await OrderItem.find({ orderId: order._id });
+      return {
+        ...toPlainObject<IOrder>(order),
+        items: items.map(toPlainObject<IOrderItem>)
+      };
+    },
+    create: async (orderData: Partial<IOrder>, itemsData: Array<Partial<IOrderItem>>) => {
+      const order = new Order(orderData);
+      await order.save();
+      
+      const createdItems = [];
+      for (const item of itemsData) {
+        const orderItem = new OrderItem({
+          ...item,
+          orderId: order._id
+        });
+        await orderItem.save();
+        createdItems.push(toPlainObject<IOrderItem>(orderItem));
+      }
+      
+      return {
+        ...toPlainObject<IOrder>(order),
+        items: createdItems
+      };
+    },
+    updateStatus: async (id: string, status: string) => {
+      const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
+      return order ? toPlainObject<IOrder>(order) : null;
+    },
+    delete: async (id: string) => {
+      await OrderItem.deleteMany({ orderId: id });
+      const result = await Order.findByIdAndDelete(id);
+      return !!result;
+    },
+    getPendingCount: async () => {
+      return await Order.countDocuments({ status: 'pending' });
     }
   }
 };

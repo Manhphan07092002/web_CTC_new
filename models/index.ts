@@ -809,3 +809,53 @@ const ResourceSchema = new Schema<IResource>({
 }, { timestamps: true });
 
 export const Resource = mongoose.model<IResource>('Resource', ResourceSchema);
+
+// ==================== ORDER INTERFACES & SCHEMAS ====================
+export interface IOrder extends BaseDocument {
+  orderCode: string;
+  customerName: string;
+  phone: string;
+  email: string;
+  address: string;
+  note?: string;
+  totalAmount: number;
+  status: 'pending' | 'confirmed' | 'processing' | 'shipping' | 'completed' | 'cancelled';
+}
+
+const OrderSchema = new Schema<IOrder>({
+  orderCode: { type: String, required: true, unique: true },
+  customerName: { type: String, required: true },
+  phone: { type: String, required: true },
+  email: { type: String, required: true },
+  address: { type: String, required: true },
+  note: { type: String },
+  totalAmount: { type: Number, required: true, default: 0 },
+  status: { 
+    type: String, 
+    enum: ['pending', 'confirmed', 'processing', 'shipping', 'completed', 'cancelled'], 
+    default: 'pending' 
+  }
+}, { timestamps: true });
+
+export const Order = mongoose.model<IOrder>('Order', OrderSchema);
+
+export interface IOrderItem extends BaseDocument {
+  orderId: mongoose.Types.ObjectId;
+  productId: mongoose.Types.ObjectId;
+  productName: string;
+  price: number;
+  quantity: number;
+  subtotal: number;
+}
+
+const OrderItemSchema = new Schema<IOrderItem>({
+  orderId: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
+  productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  productName: { type: String, required: true },
+  price: { type: Number, required: true },
+  quantity: { type: Number, required: true },
+  subtotal: { type: Number, required: true }
+}, { timestamps: true });
+
+export const OrderItem = mongoose.model<IOrderItem>('OrderItem', OrderItemSchema);
+

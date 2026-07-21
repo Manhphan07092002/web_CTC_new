@@ -111,7 +111,7 @@ ${summary.map(s => `- ${s.collection}: ${s.count} documents`).join('\n')}
 ## How to Import
 \`\`\`bash
 # Import single collection
-mongoimport --db web-tranle1 --collection products --file products.json --jsonArray
+mongoimport --db ctc_web_new --collection products --file products.json --jsonArray
 
 # Import all collections
 npm run import-data

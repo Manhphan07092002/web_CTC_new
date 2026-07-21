@@ -712,6 +712,262 @@ export class EmailService {
   }
 
   /**
+   * Gửi email xác nhận đơn hàng cho khách hàng
+   */
+  static async sendOrderConfirmation(orderData: {
+    customerName: string;
+    email: string;
+    phone: string;
+    address: string;
+    orderCode: string;
+    totalAmount: number;
+    items: Array<{ productName: string; quantity: number; price: number; subtotal: number }>;
+    note?: string;
+  }): Promise<boolean> {
+    try {
+      const emailConfig = getEmailConfig();
+      const now = new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+      });
+
+      const itemsRows = orderData.items.map(item => `
+        <tr style="border-bottom: 1px solid #f0f0f0;">
+          <td style="padding: 12px 16px; color: #2c3e50; font-size: 14px;">${escapeHtml(item.productName)}</td>
+          <td style="padding: 12px 16px; text-align: center; color: #555; font-size: 14px;">${item.quantity}</td>
+          <td style="padding: 12px 16px; text-align: right; color: #555; font-size: 14px;">${item.price > 0 ? item.price.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'}</td>
+          <td style="padding: 12px 16px; text-align: right; font-weight: bold; color: #2c3e50; font-size: 14px;">${item.price > 0 ? item.subtotal.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'}</td>
+        </tr>
+      `).join('');
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin:0;padding:0;background:#f4f7fa;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+          <div style="max-width:650px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+            
+            <!-- Header -->
+            <div style="background:linear-gradient(135deg,#1a5276 0%,#2980b9 100%);color:white;padding:45px 30px;text-align:center;">
+              <div style="font-size:56px;margin-bottom:12px;">🛒</div>
+              <h1 style="margin:0 0 10px;font-size:28px;font-weight:700;">Đặt Hàng Thành Công!</h1>
+              <p style="margin:0;font-size:15px;opacity:0.9;">Cảm ơn bạn đã tin tưởng sử dụng sản phẩm của CTC</p>
+              <div style="display:inline-block;margin-top:16px;padding:8px 24px;background:rgba(255,255,255,0.2);border-radius:25px;font-size:13px;font-weight:bold;letter-spacing:1px;">
+                Mã đơn: ${escapeHtml(orderData.orderCode)}
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div style="padding:40px 35px;">
+              <p style="font-size:17px;color:#2c3e50;margin:0 0 25px;">
+                Xin chào <strong>${escapeHtml(orderData.customerName)}</strong>,
+              </p>
+
+              <!-- Success Box -->
+              <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);padding:22px 25px;border-radius:12px;border-left:5px solid #28a745;margin-bottom:28px;">
+                <p style="margin:0 0 8px;font-size:15px;color:#1b5e20;">
+                  ✅ <strong>Yêu cầu báo giá của bạn đã được ghi nhận!</strong>
+                </p>
+                <p style="margin:0;font-size:14px;color:#2e7d32;line-height:1.7;">
+                  Đội ngũ kỹ sư tư vấn của CTC sẽ liên hệ lại với bạn trong vòng <strong>24 giờ</strong> để xác nhận thông tin và báo giá ưu đãi tốt nhất.
+                </p>
+              </div>
+
+              <!-- Order Details -->
+              <div style="background:#f8f9fa;border-radius:12px;padding:22px 25px;margin-bottom:28px;border:1px solid #e9ecef;">
+                <h3 style="margin:0 0 16px;font-size:15px;font-weight:700;color:#495057;text-transform:uppercase;letter-spacing:0.5px;">📋 Thông tin đơn hàng</h3>
+                <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                  <tr><td style="padding:6px 0;color:#6c757d;width:130px;">Mã đơn hàng:</td><td style="padding:6px 0;font-weight:bold;color:#1a5276;font-family:monospace;">${escapeHtml(orderData.orderCode)}</td></tr>
+                  <tr><td style="padding:6px 0;color:#6c757d;">Ngày đặt:</td><td style="padding:6px 0;font-weight:600;color:#2c3e50;">${now}</td></tr>
+                  <tr><td style="padding:6px 0;color:#6c757d;">Số điện thoại:</td><td style="padding:6px 0;font-weight:600;color:#2c3e50;">${escapeHtml(orderData.phone)}</td></tr>
+                  <tr><td style="padding:6px 0;color:#6c757d;">Địa chỉ:</td><td style="padding:6px 0;font-weight:600;color:#2c3e50;">${escapeHtml(orderData.address)}</td></tr>
+                  ${orderData.note ? `<tr><td style="padding:6px 0;color:#6c757d;vertical-align:top;">Ghi chú:</td><td style="padding:6px 0;color:#555;font-style:italic;">${escapeHtml(orderData.note)}</td></tr>` : ''}
+                </table>
+              </div>
+
+              <!-- Items Table -->
+              <h3 style="margin:0 0 12px;font-size:15px;font-weight:700;color:#495057;text-transform:uppercase;letter-spacing:0.5px;">🛍️ Danh sách sản phẩm</h3>
+              <table style="width:100%;border-collapse:collapse;border:1px solid #e9ecef;border-radius:12px;overflow:hidden;margin-bottom:20px;">
+                <thead>
+                  <tr style="background:linear-gradient(135deg,#1a5276,#2980b9);color:white;">
+                    <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:600;">Sản phẩm</th>
+                    <th style="padding:12px 16px;text-align:center;font-size:13px;font-weight:600;">SL</th>
+                    <th style="padding:12px 16px;text-align:right;font-size:13px;font-weight:600;">Đơn giá</th>
+                    <th style="padding:12px 16px;text-align:right;font-size:13px;font-weight:600;">Thành tiền</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsRows}
+                </tbody>
+                <tfoot>
+                  <tr style="background:#f8f9fa;">
+                    <td colspan="3" style="padding:14px 16px;font-weight:700;color:#495057;font-size:14px;">Tổng tiền dự kiến:</td>
+                    <td style="padding:14px 16px;text-align:right;font-weight:800;font-size:18px;color:#1a5276;">${orderData.totalAmount > 0 ? orderData.totalAmount.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'}</td>
+                  </tr>
+                </tfoot>
+              </table>
+              <p style="font-size:12px;color:#999;font-style:italic;margin:0 0 28px;">* Giá dự kiến, kỹ sư sẽ báo giá chính xác sau khi khảo sát.</p>
+
+              <!-- Hotline -->
+              <div style="background:linear-gradient(135deg,#fff3cd,#ffe69c);padding:22px 25px;border-radius:12px;border-left:5px solid #ffc107;margin-bottom:28px;">
+                <p style="margin:0 0 8px;font-weight:700;color:#856404;font-size:15px;">⚡ Cần hỗ trợ gấp?</p>
+                <p style="margin:0;color:#856404;font-size:14px;line-height:1.7;">
+                  📞 Hotline: <strong>0915 059 666</strong><br>
+                  📧 Email: <strong>info@ctcdn.vn</strong><br>
+                  🕒 Thứ 2 - Thứ 7: 8:00 - 17:30
+                </p>
+              </div>
+
+              <!-- CTA -->
+              <div style="text-align:center;margin-bottom:20px;">
+                <a href="http://localhost:3000/#/track-order" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#FF6B35,#F7931E);color:white;text-decoration:none;border-radius:30px;font-weight:bold;font-size:15px;box-shadow:0 6px 20px rgba(255,107,53,0.4);">
+                  🔍 Tra cứu trạng thái đơn hàng
+                </a>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background:#2c3e50;color:#ecf0f1;text-align:center;padding:30px;">
+              <p style="font-weight:bold;color:#3498db;font-size:16px;margin:0 0 8px;">⚡ CTC</p>
+              <p style="font-size:13px;margin:0 0 5px;opacity:0.8;">Công ty Cổ phần Xây lắp Bưu điện Miền Trung</p>
+              <p style="font-size:12px;margin:0;opacity:0.6;">📍 50B Nguyễn Du, Quận Hải Châu, TP Đà Nẵng | 📞 0915 059 666</p>
+              <p style="font-size:11px;margin:15px 0 0;opacity:0.5;">© ${new Date().getFullYear()} CTC. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      await this.getTransporter().sendMail({
+        from: `"CTC Solar" <${emailConfig.from}>`,
+        to: orderData.email,
+        subject: `✅ Xác nhận đặt hàng ${orderData.orderCode} - CTC`,
+        html: htmlContent
+      });
+
+      console.log('✅ Order confirmation email sent to:', orderData.email);
+      return true;
+    } catch (error) {
+      console.error('❌ Error sending order confirmation email:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Gửi email thông báo đơn hàng mới cho Admin
+   */
+  static async sendNewOrderNotification(orderData: {
+    customerName: string;
+    email: string;
+    phone: string;
+    address: string;
+    orderCode: string;
+    totalAmount: number;
+    items: Array<{ productName: string; quantity: number; price: number; subtotal: number }>;
+    note?: string;
+  }): Promise<boolean> {
+    try {
+      const emailConfig = getEmailConfig();
+      const adminEmail = emailConfig.recipient;
+      const now = new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+      });
+
+      const itemsList = orderData.items.map(item =>
+        `<li style="padding:6px 0;font-size:14px;color:#2c3e50;border-bottom:1px solid #f0f0f0;">
+          <strong>${escapeHtml(item.productName)}</strong> — SL: ${item.quantity} — ${item.price > 0 ? item.subtotal.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'}
+        </li>`
+      ).join('');
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body style="margin:0;padding:0;background:#f4f7fa;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+          <div style="max-width:620px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+            
+            <!-- Header -->
+            <div style="background:linear-gradient(135deg,#e74c3c 0%,#c0392b 100%);color:white;padding:35px 30px;text-align:center;">
+              <div style="font-size:50px;margin-bottom:10px;">🔔</div>
+              <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;">Đơn Hàng Mới!</h1>
+              <p style="margin:0;opacity:0.9;font-size:14px;">Nhận lúc: ${now}</p>
+              <div style="display:inline-block;margin-top:14px;padding:7px 22px;background:rgba(255,255,255,0.25);border-radius:20px;font-weight:bold;letter-spacing:1px;font-size:13px;">
+                ${escapeHtml(orderData.orderCode)}
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div style="padding:35px;">
+              
+              <!-- Customer Info -->
+              <div style="background:#f8f9fa;border-radius:12px;padding:22px;margin-bottom:24px;border-left:5px solid #e74c3c;">
+                <h3 style="margin:0 0 14px;font-size:14px;font-weight:700;color:#e74c3c;text-transform:uppercase;letter-spacing:0.5px;">👤 Thông tin khách hàng</h3>
+                <table style="width:100%;font-size:14px;border-collapse:collapse;">
+                  <tr><td style="padding:5px 0;color:#6c757d;width:120px;">Họ tên:</td><td style="padding:5px 0;font-weight:700;color:#2c3e50;">${escapeHtml(orderData.customerName)}</td></tr>
+                  <tr><td style="padding:5px 0;color:#6c757d;">SĐT:</td><td style="padding:5px 0;font-weight:700;color:#e74c3c;"><a href="tel:${escapeHtml(orderData.phone)}" style="color:#e74c3c;text-decoration:none;">${escapeHtml(orderData.phone)}</a></td></tr>
+                  <tr><td style="padding:5px 0;color:#6c757d;">Email:</td><td style="padding:5px 0;font-weight:600;"><a href="mailto:${escapeHtml(orderData.email)}" style="color:#2980b9;text-decoration:none;">${escapeHtml(orderData.email)}</a></td></tr>
+                  <tr><td style="padding:5px 0;color:#6c757d;">Địa chỉ:</td><td style="padding:5px 0;color:#2c3e50;">${escapeHtml(orderData.address)}</td></tr>
+                  ${orderData.note ? `<tr><td style="padding:5px 0;color:#6c757d;vertical-align:top;">Ghi chú:</td><td style="padding:5px 0;color:#555;font-style:italic;">${escapeHtml(orderData.note)}</td></tr>` : ''}
+                </table>
+              </div>
+
+              <!-- Items -->
+              <div style="margin-bottom:24px;">
+                <h3 style="margin:0 0 12px;font-size:14px;font-weight:700;color:#495057;text-transform:uppercase;letter-spacing:0.5px;">🛒 Sản phẩm yêu cầu</h3>
+                <ul style="margin:0;padding:0 0 0 0;list-style:none;background:#f8f9fa;border-radius:12px;padding:16px 20px;">
+                  ${itemsList}
+                </ul>
+              </div>
+
+              <!-- Total -->
+              <div style="background:linear-gradient(135deg,#1a5276,#2980b9);color:white;border-radius:12px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+                <span style="font-size:15px;font-weight:600;">Tổng tiền dự kiến:</span>
+                <span style="font-size:24px;font-weight:800;">${orderData.totalAmount > 0 ? orderData.totalAmount.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'}</span>
+              </div>
+
+              <!-- Action box -->
+              <div style="background:linear-gradient(135deg,#fff3cd,#ffe69c);padding:20px;border-radius:12px;border-left:5px solid #ffc107;">
+                <p style="margin:0 0 8px;font-weight:700;color:#856404;font-size:15px;">⚡ Hành động cần làm ngay</p>
+                <p style="margin:0;color:#856404;font-size:14px;line-height:1.7;">
+                  Liên hệ lại khách hàng trong vòng <strong>24 giờ</strong> để xác nhận thông tin và báo giá chính xác.<br>
+                  <a href="http://localhost:4000/admin/orders" style="color:#856404;font-weight:bold;">→ Xem đơn hàng trong Admin</a>
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background:#2c3e50;color:#ecf0f1;text-align:center;padding:25px;">
+              <p style="font-weight:bold;color:#3498db;font-size:15px;margin:0 0 5px;">⚡ CTC Admin System</p>
+              <p style="font-size:12px;margin:0;opacity:0.6;">Email tự động - không cần trả lời</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      await this.getTransporter().sendMail({
+        from: `"CTC System" <${emailConfig.from}>`,
+        to: adminEmail,
+        replyTo: orderData.email,
+        subject: `🔔 Đơn hàng mới #${orderData.orderCode} từ ${orderData.customerName}`,
+        html: htmlContent
+      });
+
+      console.log('✅ New order notification sent to admin:', adminEmail);
+      return true;
+    } catch (error) {
+      console.error('❌ Error sending new order notification:', error);
+      return false;
+    }
+  }
+
+  /**
    * Test email configuration
    */
   static async testConnection(): Promise<boolean> {

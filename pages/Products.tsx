@@ -2,24 +2,24 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { Product, Category } from '../types';
-import { Search, ShoppingCart, Filter, Package, Eye, ChevronRight, List, SlidersHorizontal, Zap, Activity } from 'lucide-react';
+import { Product } from '../types';
+import { Search, Filter, ChevronRight, SlidersHorizontal, ChevronLeft } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import SEO from '../components/SEO';
-import Breadcrumb from '../components/Breadcrumb';
-import ProductSkeleton from '../components/ProductSkeleton';
 import CategoryFilter from '../components/CategoryFilter';
-import PriceDisplay from '../components/PriceDisplay';
 import { useProductCategories } from '../hooks/useCategories';
 import analyticsTracking from '../services/analytics-tracking';
+import { ProductsHero, FilterSidebar, ProductGrid, ProductsCTA } from '../components/products';
+import { useCart } from '../contexts/CartContext';
 
 const Products: React.FC = () => {
+  const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Use MongoDB categories
-  const { categories: productCategories, loading: categoriesLoading, getCategoryById, getActiveCategories } = useProductCategories();
+  const { categories: productCategories, loading: categoriesLoading, getActiveCategories } = useProductCategories();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   // Filter States
@@ -37,6 +37,10 @@ const Products: React.FC = () => {
 
   // UI States
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12; // 3x4 grid
 
   const { t, language } = useLanguage();
   const navigate = useNavigate();
@@ -142,14 +146,39 @@ const Products: React.FC = () => {
     return filtered;
   };
 
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeCategoryKey, selectedCategoryId, techFilters]);
+
   const filteredProducts = getFilteredProducts();
+
+  // Paginated Products calculation
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Smooth scroll down to catalog header when changing pages
+    const catalogHeader = document.getElementById('product-catalog');
+    if (catalogHeader) {
+      catalogHeader.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   // Handlers
   const handleCategoryChange = (key: string) => {
     setActiveCategoryKey(key);
     setSearchParams(key === 'all' ? {} : { cat: key });
     setShowMobileFilter(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Smooth scroll down to catalog header when changing categories
+    const catalogHeader = document.getElementById('product-catalog');
+    if (catalogHeader) {
+      catalogHeader.scrollIntoView({ behavior: 'smooth' });
+    }
 
     // Also update selectedCategoryId for new system
     if (key === 'all') {
@@ -192,228 +221,6 @@ const Products: React.FC = () => {
 
   const PLACEHOLDER_IMAGE = 'data:image/svg+xml,' + encodeURIComponent('<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#F3F4F6"/><g transform="translate(110, 60)"><path d="M160 120L110 60L80 95L30 30L0 120H160Z" fill="#D1D5DB"/><circle cx="130" cy="35" r="20" fill="#D1D5DB"/></g><text x="200" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="500" fill="#9CA3AF">No Image</text></svg>');
 
-  // Sidebar Filters Component (Reusable for desktop and mobile)
-  const FilterSidebarContent = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-32">
-      {/* Categories */}
-      <h3 className="font-bold text-lg text-corporate mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-        <List size={20} /> {t('products.category_list')}
-      </h3>
-      <nav className="space-y-2 mb-8">
-        {/* All categories button */}
-        <button
-          onClick={() => handleCategoryChange('all')}
-          className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-between group ${activeCategoryKey === 'all'
-              ? 'bg-primary text-white shadow-md'
-              : 'text-gray-600 hover:bg-orange-50 hover:text-primary'
-            }`}
-        >
-          {t('common.all_categories')}
-          {activeCategoryKey === 'all' && <ChevronRight size={16} />}
-        </button>
-
-        {/* Categories from database */}
-        {categoriesLoading ? (
-          // Loading skeleton for categories
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="w-full px-4 py-3 rounded-lg bg-gray-100 animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            </div>
-          ))
-        ) : (
-          getActiveCategories().map((category) => (
-            <button
-              key={category.id}
-              onClick={() => handleCategoryChange(category.slug || category.name.toLowerCase())}
-              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-between group ${activeCategoryKey === (category.slug || category.name.toLowerCase())
-                  ? 'bg-primary text-white shadow-md'
-                  : 'text-gray-600 hover:bg-orange-50 hover:text-primary'
-                }`}
-            >
-              <span>{category.name}</span>
-              <span className="text-xs opacity-70">({category.productCount || 0})</span>
-              {activeCategoryKey === (category.slug || category.name.toLowerCase()) && <ChevronRight size={16} />}
-            </button>
-          ))
-        )}
-      </nav>
-
-      {/* Technical Filters */}
-      <h3 className="font-bold text-lg text-corporate mb-4 flex items-center gap-2 border-b border-gray-100 pb-4">
-        <SlidersHorizontal size={20} /> {t('products.filter_tech')}
-      </h3>
-
-      <div className="space-y-6">
-        {/* Power Filter */}
-        <div>
-          <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
-            <Zap size={14} className="text-yellow-500" /> {t('products.power')} (W)
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              placeholder={t('products.min')}
-              min="0"
-              max="100000"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-              value={techFilters.minPower}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '' || (Number(value) >= 0 && Number(value) <= 100000)) {
-                  setTechFilters({ ...techFilters, minPower: value });
-                }
-              }}
-            />
-            <span className="text-gray-400 font-bold">-</span>
-            <input
-              type="number"
-              placeholder={t('products.max')}
-              min="0"
-              max="100000"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-              value={techFilters.maxPower}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '' || (Number(value) >= 0 && Number(value) <= 100000)) {
-                  setTechFilters({ ...techFilters, maxPower: value });
-                }
-              }}
-            />
-          </div>
-          {/* Power range hints */}
-          <div className="mt-2 flex flex-wrap gap-1">
-            {[
-              { label: '< 1kW', min: '', max: '1000' },
-              { label: '1-5kW', min: '1000', max: '5000' },
-              { label: '5-10kW', min: '5000', max: '10000' },
-              { label: '> 10kW', min: '10000', max: '' }
-            ].map((range) => (
-              <button
-                key={range.label}
-                onClick={() => setTechFilters({ ...techFilters, minPower: range.min, maxPower: range.max })}
-                className="px-2 py-1 text-xs bg-gray-100 hover:bg-primary hover:text-white rounded-md transition-colors"
-              >
-                {range.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Efficiency Filter */}
-        <div>
-          <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
-            <Activity size={14} className="text-blue-500" /> {t('products.efficiency')} (%)
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              placeholder={t('products.min')}
-              min="0"
-              max="100"
-              step="0.1"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-              value={techFilters.minEff}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
-                  setTechFilters({ ...techFilters, minEff: value });
-                }
-              }}
-            />
-            <span className="text-gray-400 font-bold">-</span>
-            <input
-              type="number"
-              placeholder={t('products.max')}
-              min="0"
-              max="100"
-              step="0.1"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-              value={techFilters.maxEff}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
-                  setTechFilters({ ...techFilters, maxEff: value });
-                }
-              }}
-            />
-          </div>
-          {/* Efficiency range hints */}
-          <div className="mt-2 flex flex-wrap gap-1">
-            {[
-              { label: t('products.eff_basic'), min: '', max: '90' },
-              { label: t('products.eff_good'), min: '90', max: '95' },
-              { label: t('products.eff_high'), min: '95', max: '' },
-              { label: t('products.eff_optimal'), min: '98', max: '' }
-            ].map((range) => (
-              <button
-                key={range.label}
-                onClick={() => setTechFilters({ ...techFilters, minEff: range.min, maxEff: range.max })}
-                className="px-2 py-1 text-xs bg-gray-100 hover:bg-primary hover:text-white rounded-md transition-colors"
-              >
-                {range.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Filter Results Counter */}
-        {(techFilters.minPower || techFilters.maxPower || techFilters.minEff || techFilters.maxEff) && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-blue-700">
-                🔍 {t('products.found')} <strong>{filteredProducts.length}</strong> {t('products.products')}
-              </span>
-              <button
-                onClick={handleClearFilters}
-                className="text-xs text-red-500 hover:text-red-600 hover:underline font-medium"
-              >
-                {t('products.clear_filter')}
-              </button>
-            </div>
-            
-            {/* Active filters display */}
-            <div className="mt-2 flex flex-wrap gap-1">
-              {techFilters.minPower && (
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">
-                  {t('products.power')} ≥ {techFilters.minPower}W
-                </span>
-              )}
-              {techFilters.maxPower && (
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">
-                  {t('products.power')} ≤ {techFilters.maxPower}W
-                </span>
-              )}
-              {techFilters.minEff && (
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">
-                  {t('products.efficiency')} ≥ {techFilters.minEff}%
-                </span>
-              )}
-              {techFilters.maxEff && (
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">
-                  {t('products.efficiency')} ≤ {techFilters.maxEff}%
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={handleClearFilters}
-          className="w-full text-center text-sm text-red-500 hover:text-red-600 hover:underline font-medium transition-colors"
-        >
-          {t('products.clear_filter')}
-        </button>
-      </div>
-
-      {/* Support Box */}
-      <div className="mt-8 bg-blue-50 p-5 rounded-xl border border-blue-100">
-        <h4 className="font-bold text-corporate text-sm mb-2">{t('products.tech_support')}</h4>
-        <p className="text-xs text-gray-600 mb-3">{t('products.tech_support_desc')}</p>
-        <Link to="/contact" className="text-primary text-xs font-bold hover:underline">{t('products.contact_now')} &rarr;</Link>
-      </div>
-    </div>
-  );
-
   // Get current category name for display
   const getCurrentCategoryName = () => {
     if (activeCategoryKey === 'all') {
@@ -424,26 +231,29 @@ const Products: React.FC = () => {
   };
 
   return (
-    <div className="w-full pb-20 animate-fade-in bg-gray-50 font-sans text-gray-700">
+    <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300">
       <SEO
         title={getCurrentCategoryName()}
         description="Danh mục sản phẩm điện năng lượng mặt trời chính hãng."
       />
 
-      {/* Breadcrumb Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-[60px] z-30 shadow-sm">
+      {/* Hero Banner Section */}
+      <ProductsHero />
+
+      {/* Breadcrumb / Toolbar Header */}
+      <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[60px] z-30 shadow-sm transition-colors duration-300">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center text-sm text-gray-500">
+            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
               <Link to="/" className="hover:text-primary transition-colors">{t('nav.home')}</Link>
               <ChevronRight size={14} className="mx-2" />
-              <span className="font-semibold text-corporate">{t('nav.products')}</span
-              ><ChevronRight size={14} className="mx-2" />
+              <Link to="/products" className="hover:text-primary transition-colors">{t('nav.products')}</Link>
+              <ChevronRight size={14} className="mx-2" />
               <span className="text-primary font-bold uppercase">{getCurrentCategoryName()}</span>
             </div>
 
             <button
-              className="md:hidden flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg font-bold text-gray-700"
+              className="md:hidden flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg font-bold text-gray-700 dark:text-gray-200"
               onClick={() => setShowMobileFilter(!showMobileFilter)}
             >
               <Filter size={18} /> {t('products.filter')}
@@ -456,28 +266,53 @@ const Products: React.FC = () => {
       {showMobileFilter && (
         <div className="fixed inset-0 z-[60] md:hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobileFilter(false)}></div>
-          <div className="absolute right-0 top-0 h-full w-80 bg-white p-6 overflow-y-auto shadow-2xl animate-slide-in-right">
+          <div className="absolute right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 p-6 overflow-y-auto shadow-2xl animate-slide-in-right transition-colors duration-300">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-lg text-gray-800">{t('products.filter')}</h3>
-              <button onClick={() => setShowMobileFilter(false)}><ChevronRight size={24} /></button>
+              <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">{t('products.filter')}</h3>
+              <button onClick={() => setShowMobileFilter(false)} className="text-gray-700 dark:text-gray-300">
+                <ChevronRight size={24} />
+              </button>
             </div>
-            <FilterSidebarContent />
+            <FilterSidebar
+              activeCategoryKey={activeCategoryKey}
+              handleCategoryChange={handleCategoryChange}
+              productCategories={productCategories}
+              categoriesLoading={categoriesLoading}
+              getActiveCategories={getActiveCategories}
+              techFilters={techFilters}
+              setTechFilters={setTechFilters}
+              filteredProductsCount={filteredProducts.length}
+              handleClearFilters={handleClearFilters}
+              t={t}
+            />
           </div>
         </div>
       )}
 
+      {/* Main Grid Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* LEFT SIDEBAR - DESKTOP */}
           <aside className="lg:w-1/4 flex-shrink-0 hidden lg:block">
-            <FilterSidebarContent />
+            <FilterSidebar
+              activeCategoryKey={activeCategoryKey}
+              handleCategoryChange={handleCategoryChange}
+              productCategories={productCategories}
+              categoriesLoading={categoriesLoading}
+              getActiveCategories={getActiveCategories}
+              techFilters={techFilters}
+              setTechFilters={setTechFilters}
+              filteredProductsCount={filteredProducts.length}
+              handleClearFilters={handleClearFilters}
+              t={t}
+            />
           </aside>
 
-          {/* RIGHT CONTENT - PRODUCT GRID */}
+          {/* RIGHT CONTENT - PRODUCT LIST */}
           <div className="flex-1">
-            {/* New Category Filter */}
-            <div className="mb-6">
+            {/* Horizontal Category Tabs Filter - Hidden on Desktop to avoid duplicate filters */}
+            <div className="mb-6 lg:hidden">
               <CategoryFilter
                 type="product"
                 selectedCategoryId={selectedCategoryId}
@@ -486,23 +321,23 @@ const Products: React.FC = () => {
               />
             </div>
 
-            {/* Toolbar */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            {/* Toolbar Search / Sort */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 transition-colors duration-300">
               <div className="relative w-full sm:w-96">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                 <input
                   type="text"
                   placeholder={t('products.search_placeholder')}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-750 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 text-gray-800 dark:text-gray-100 transition-all"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <span className="text-sm text-gray-500 hidden sm:inline">{t('products.sort')}:</span>
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+                <span className="text-sm text-gray-500 dark:text-gray-400 hidden sm:inline">{t('products.sort')}:</span>
                 <div className="relative flex-1 sm:flex-none">
                   <select
-                    className="w-full sm:w-48 appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg focus:outline-none focus:border-primary cursor-pointer text-sm font-medium"
+                    className="w-full sm:w-48 appearance-none bg-gray-50 dark:bg-gray-750 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 pr-8 rounded-lg focus:outline-none focus:border-primary cursor-pointer text-sm font-medium transition-colors duration-300"
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
                   >
@@ -516,84 +351,61 @@ const Products: React.FC = () => {
               </div>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(loading || categoriesLoading) ? (
-                // Render Skeletons
-                Array.from({ length: 6 }).map((_, i) => (
-                  <ProductSkeleton key={i} />
-                ))
-              ) : filteredProducts.length > 0 ? (
-                filteredProducts.map((product, idx) => (
-                  <div key={`${product.id}-${idx}`} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group h-full cursor-pointer" onClick={() => handleProductClick(product.id)}>
-                    <div className="h-56 relative bg-gray-200 overflow-hidden">
-                      <img
-                        src={product.image || PLACEHOLDER_IMAGE}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        onError={(e) => { (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE; }}
-                      />
-                      {/* Badges */}
-                      <div className="absolute top-3 left-3 flex flex-col gap-2">
-                        <span className="bg-white/90 backdrop-blur text-corporate text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase tracking-wider">
-                          {product.category}
-                        </span>
-                        {product.stock === 0 && <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">{t('common.out_of_stock')}</span>}
-                      </div>
+            {/* Product Grid Wrapper */}
+            <ProductGrid
+              loading={loading}
+              categoriesLoading={categoriesLoading}
+              filteredProducts={currentProducts} // Pass sliced products
+              handleProductClick={handleProductClick}
+              onAddToCart={addToCart}
+              handleClearFilters={handleClearFilters}
+              t={t}
+              placeholderImage={PLACEHOLDER_IMAGE}
+            />
 
-                      {/* Quick Actions Overlay */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <button
-                          className="bg-white text-corporate px-5 py-2 rounded-full hover:bg-primary hover:text-white transition-colors shadow-lg transform hover:scale-105 font-bold flex items-center gap-2"
-                        >
-                          <Eye size={18} /> {t('common.view_details')}
-                        </button>
-                      </div>
-                    </div>
+            {/* Pagination Controls */}
+            {!loading && totalPages > 1 && (
+              <div className="mt-12 flex justify-center items-center gap-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary hover:text-primary disabled:opacity-50 disabled:hover:border-gray-200 disabled:hover:text-gray-650 dark:disabled:hover:border-gray-700 dark:disabled:hover:text-gray-350 transition-all flex items-center justify-center active:scale-95"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                
+                {Array.from({ length: totalPages }).map((_, i) => {
+                  const page = i + 1;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-4 py-2 rounded-lg border font-bold text-sm transition-all active:scale-95 ${
+                        currentPage === page
+                          ? 'bg-primary border-primary text-white shadow-md'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary hover:text-primary'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
 
-                    <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-primary transition-colors h-12">{product.name}</h3>
-
-                      {/* Specs Preview */}
-                      {(product.power || product.efficiency) && (
-                        <div className="flex gap-3 mb-3 text-[10px] font-bold uppercase tracking-wide text-gray-500">
-                          {product.power && <span className="bg-gray-100 px-2 py-1 rounded">{product.power}W</span>}
-                          {product.efficiency && <span className="bg-gray-100 px-2 py-1 rounded">Eff: {product.efficiency}%</span>}
-                        </div>
-                      )}
-
-                      <div className="mb-4">
-                        <p className="text-sm text-gray-500 line-clamp-2">{product.description}</p>
-                      </div>
-
-                      <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                        <PriceDisplay 
-                          price={product.price || 0}
-                          originalPrice={product.originalPrice}
-                          contactPrice={product.contactPrice}
-                          size="lg"
-                          layout="vertical"
-                          className="flex-1"
-                        />
-                        <button className="text-gray-400 hover:text-primary transition-colors ml-2">
-                          <ShoppingCart size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="col-span-full py-20 text-center bg-white rounded-xl border border-gray-100 border-dashed">
-                  <Package size={48} className="mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-lg font-bold text-gray-500">{t('products.no_result')}</h3>
-                  <p className="text-gray-400 text-sm">{t('products.no_result_desc')}</p>
-                  <button onClick={handleClearFilters} className="mt-4 text-primary font-bold text-sm hover:underline">{t('products.clear_filter')}</button>
-                </div>
-              )}
-            </div>
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary hover:text-primary disabled:opacity-50 disabled:hover:border-gray-200 disabled:hover:text-gray-650 dark:disabled:hover:border-gray-700 dark:disabled:hover:text-gray-350 transition-all flex items-center justify-center active:scale-95"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Bottom CTA Section */}
+      <ProductsCTA />
     </div>
   );
 };

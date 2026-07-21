@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare } from 'lucide-react';
+import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare, ShoppingCart } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSettings } from '../contexts/SettingsContext';
+import { useCart } from '../contexts/CartContext';
 import { api } from '../services/api';
 import { Category } from '../types';
 
@@ -19,6 +20,7 @@ const Header: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
   const { theme, themeMode, toggleTheme } = useTheme();
   const { settings } = useSettings();
+  const { totalItems } = useCart();
 
   // Scroll handler to toggle transparent vs glassmorphic header
   useEffect(() => {
@@ -305,6 +307,19 @@ const Header: React.FC = () => {
 
           {/* Right Action Button (Blue capsule button matching website theme) */}
           <div className="hidden lg:flex items-center gap-4">
+            <Link 
+              to="/cart" 
+              className="relative p-2.5 text-slate-800 dark:text-white hover:text-primary transition-colors flex items-center gap-1.5 font-bold"
+              style={{ color: isScrolled ? undefined : 'white' }}
+            >
+              <ShoppingCart size={20} />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+
             <a 
               href="https://zalo.me/0915059666" 
               target="_blank" 
@@ -317,17 +332,32 @@ const Header: React.FC = () => {
             </a>
           </div>
 
-          {/* Mobile Menu Toggle Button */}
-          <button 
-            onClick={toggleMenu} 
-            className={`lg:hidden p-2 rounded-xl transition-colors ${
-              isScrolled 
-                ? 'text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800' 
-                : 'text-white hover:bg-white/10'
-            }`}
-          >
-            {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
-          </button>
+          {/* Mobile Menu & Cart Toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <Link 
+              to="/cart" 
+              className="relative p-2"
+              style={{ color: isScrolled ? undefined : 'white' }}
+            >
+              <ShoppingCart size={24} />
+              {totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold shadow-md">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+
+            <button 
+              onClick={toggleMenu} 
+              className={`p-2 rounded-xl transition-colors ${
+                isScrolled 
+                  ? 'text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800' 
+                  : 'text-white hover:bg-white/10'
+              }`}
+            >
+              {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
+          </div>
 
         </div>
       </div>

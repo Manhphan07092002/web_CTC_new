@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import { autoTranslate } from './translate';
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from '../../models';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/web-tranle1';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 // Track last run time
 let lastRunTime: Date | null = null;

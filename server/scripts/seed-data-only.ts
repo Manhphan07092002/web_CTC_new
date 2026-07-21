@@ -5,7 +5,7 @@
 
 import mongoose from 'mongoose';
 
-const MONGODB_URI = 'mongodb://localhost:27017/web-tranle1';
+const MONGODB_URI = 'mongodb://localhost:27017/ctc_web_new';
 
 const generateSlug = (text: string): string => {
   return text

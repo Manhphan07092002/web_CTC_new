@@ -16,7 +16,7 @@ const sqlConfig = {
     driver: 'msnodesqlv8'
 };
 
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 function generateSlug(str) {
     if (!str) return '';

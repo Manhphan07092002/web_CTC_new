@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { Product, ProductCategory } from '../../models';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 async function updateCategoryCounts() {
   try {

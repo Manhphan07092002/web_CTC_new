@@ -6,7 +6,7 @@
 import mongoose from 'mongoose';
 import { translateProduct, translateProject, translateNews, translateCategory, translateTestimonial, translateTeamMember } from '../services/translate';
 
-const MONGODB_URI = 'mongodb://localhost:27017/web-tranle1';
+const MONGODB_URI = 'mongodb://localhost:27017/ctc_web_new';
 
 // Helper to generate slug
 const generateSlug = (text: string): string => {

@@ -7,7 +7,7 @@ import { News } from '../models/index.js';
 
 dotenv.config({ path: '../.env' }); // Mặc định ở server/scripts thì .env nằm ở gốc
 
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

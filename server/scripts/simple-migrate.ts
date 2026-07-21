@@ -9,7 +9,7 @@ async function simpleMigrate() {
 
   try {
     // Connect directly to MongoDB
-    const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/web-tranle1';
+    const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
     await mongoose.connect(MONGO_URI);
     console.log('✅ Database connected\n');
 

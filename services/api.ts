@@ -110,7 +110,7 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit, useCache = f
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
+      throw new Error(error.message || error.error || `HTTP ${response.status}`);
     }
 
     // Any successful mutation invalidates cached public content immediately.
@@ -505,6 +505,36 @@ export const api = {
     }),
     delete: (id: string) => fetchAPI<void>(`/document-categories/${id}`, {
       method: 'DELETE',
+    }),
+  },
+
+  // Orders
+  orders: {
+    getAll: (status?: string, search?: string) => {
+      let query = '';
+      const params = [];
+      if (status) params.push(`status=${status}`);
+      if (search) params.push(`search=${search}`);
+      if (params.length > 0) query = `?${params.join('&')}`;
+      return fetchAPI<{ success: boolean; data: any[] }>(`/orders${query}`);
+    },
+    getById: (id: string) => fetchAPI<any>(`/orders/${id}`),
+    getPendingCount: () => fetchAPI<{ success: boolean; count: number }>('/orders/pending-count'),
+    create: (data: any) => fetchAPI<any>('/orders', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    updateStatus: (id: string, status: string) => fetchAPI<any>(`/orders/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
+    delete: (id: string) => fetchAPI<any>(`/orders/${id}`, {
+      method: 'DELETE',
+    }),
+    track: (query: string) =>
+      fetchAPI<any>(`/orders/track?query=${encodeURIComponent(query.trim())}`),
+    resendEmail: (id: string) => fetchAPI<any>(`/orders/${id}/resend-email`, {
+      method: 'POST',
     }),
   },
 };

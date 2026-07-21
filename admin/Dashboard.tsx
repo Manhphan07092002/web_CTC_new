@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { ADMIN_MENU } from '../constants';
 import { LogOut, Search, Bell, User as UserIcon, Lock, ChevronDown, X, Eye, EyeOff, AlertTriangle } from 'lucide-react';
@@ -32,6 +32,7 @@ import GoalsManagement from './GoalsManagement';
 import SecurityMonitoring from './SecurityMonitoring';
 import MigrationManagement from './MigrationManagement';
 import AccountSettings from './AccountSettings';
+import OrdersManagement from './OrdersManagement';
 
 const SubHeader = () => {
   const location = useLocation();
@@ -84,6 +85,23 @@ const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
+
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const response = await api.orders.getPendingCount();
+        if (response.success) {
+          setPendingOrdersCount(response.count);
+        }
+      } catch (error) {
+        console.error('Error fetching pending orders count:', error);
+      }
+    };
+    fetchPendingCount();
+    const interval = setInterval(fetchPendingCount, 15_000); // Check every 15s
+    return () => clearInterval(interval);
+  }, []);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -175,16 +193,23 @@ const AdminDashboard: React.FC = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
                   isActive 
                     ? 'bg-primary text-white shadow-md' 
                     : 'text-gray-300 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <Icon size={20} />
-                <span className="font-medium text-sm">
-                  {t(`admin.${item.key}`) === item.key ? item.name : t(`admin.${item.key}`)}
-                </span>
+                <div className="flex items-center gap-3">
+                  <Icon size={20} />
+                  <span className="font-medium text-sm">
+                    {t(`admin.${item.key}`) === item.key ? item.name : t(`admin.${item.key}`)}
+                  </span>
+                </div>
+                {item.key === 'orders' && pendingOrdersCount > 0 && (
+                  <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-5 text-center shadow-sm">
+                    {pendingOrdersCount}
+                  </span>
+                )}
               </Link>
             )
           })}
@@ -289,6 +314,7 @@ const AdminDashboard: React.FC = () => {
           <Routes>
             <Route path="/" element={<Overview />} />
             <Route path="/users" element={<UserManagement />} />
+            <Route path="/orders" element={<OrdersManagement />} />
             <Route path="/content" element={<ContentManagement />} />
             <Route path="/products/new" element={<ProductForm />} />
             <Route path="/products/edit/:id" element={<ProductForm />} />

@@ -41,6 +41,28 @@ function execCommand(command, description) {
   }
 }
 
+function convertIds(obj) {
+  if (!obj) return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(convertIds);
+  }
+  if (typeof obj === 'object') {
+    const res = {};
+    for (const key in obj) {
+      const val = obj[key];
+      if (typeof val === 'string' && /^[0-9a-fA-F]{24}$/.test(val)) {
+        res[key] = new mongoose.Types.ObjectId(val);
+      } else if (val && typeof val === 'object') {
+        res[key] = convertIds(val);
+      } else {
+        res[key] = val;
+      }
+    }
+    return res;
+  }
+  return obj;
+}
+
 async function setupWithData() {
   log('\n' + '='.repeat(60), 'bright');
   log('🚀 SETUP VỚI DỮ LIỆU - TRAN LE ELECTRICITY', 'bright');
@@ -157,7 +179,7 @@ JWT_SECRET=change-this-secret-key-in-production
           await collection.deleteMany({});
           
           // Insert data
-          await collection.insertMany(data, { ordered: false });
+          await collection.insertMany(convertIds(data), { ordered: false });
           
           log(`   ✅ ${collectionName.padEnd(25)} ${data.length.toString().padStart(5)} docs`, 'green');
           totalImported += data.length;

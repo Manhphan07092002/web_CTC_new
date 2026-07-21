@@ -1,4 +1,5 @@
 import React from 'react';
+import { MessageSquare, Phone } from 'lucide-react';
 import { formatPrice, calculateDiscount, hasDiscount, SupportedCurrency } from '../utils/priceUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -27,13 +28,22 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
   // If contact price, show contact message
   if (contactPrice) {
     return (
-      <div className={`flex items-center gap-2 ${className}`}>
-        <span className={`font-bold text-primary ${getSizeClasses(size)}`}>
-          💬 {t('products.contact_price') || 'Liên hệ báo giá'}
+      <div className={`flex flex-wrap items-center gap-2 ${className}`}>
+        <span className="flex items-center gap-1.5 font-bold text-primary text-sm hover:text-secondary transition-colors">
+          <MessageSquare size={16} className="text-primary animate-pulse" />
+          <span>{t('products.contact_price') || 'Liên hệ báo giá'}</span>
         </span>
-        <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-primary/10 text-primary text-xs rounded-full font-bold border border-primary/20">
-          📞 {t('header.hotline') || 'Hotline'}
-        </span>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            window.location.href = "tel:0915059666";
+          }}
+          className="flex items-center gap-1 px-3 py-1 bg-primary/10 hover:bg-primary/25 text-primary text-[10px] rounded-full font-bold border border-primary/20 transition-all active:scale-95"
+        >
+          <Phone size={10} />
+          <span>{t('header.hotline') || 'Hotline'}</span>
+        </button>
       </div>
     );
   }

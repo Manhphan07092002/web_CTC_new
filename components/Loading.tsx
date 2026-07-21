@@ -2,18 +2,34 @@
 import React from 'react';
 import { Sun } from 'lucide-react';
 
-const Loading: React.FC = () => {
+interface LoadingProps {
+  fullScreen?: boolean;
+  className?: string;
+}
+
+const Loading: React.FC<LoadingProps> = ({ 
+  fullScreen = true,
+  className = ''
+}) => {
+  const containerClasses = fullScreen
+    ? "fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col items-center justify-center transition-colors duration-300"
+    : `w-full min-h-[300px] flex flex-col items-center justify-center ${className}`;
+
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
-      <div className="relative">
-        <Sun size={64} className="text-yellow-400 animate-spin-slow" />
-        <div className="absolute inset-0 flex items-center justify-center">
-           <div className="w-8 h-8 bg-white rounded-full"></div>
+    <div className={containerClasses}>
+      <div className="relative flex items-center justify-center">
+        {/* Outer glowing spinner ring */}
+        <div className="w-16 h-16 rounded-full border-4 border-primary/10 border-t-primary animate-spin"></div>
+        {/* Inner pulsing sun logo icon */}
+        <div className="absolute flex items-center justify-center">
+          <Sun size={24} className="text-primary animate-pulse" />
         </div>
       </div>
-      <div className="mt-4 text-corporate font-bold text-lg animate-pulse">
-        CTC...
-      </div>
+      {fullScreen && (
+        <div className="mt-4 text-corporate dark:text-white font-bold text-lg tracking-wider animate-pulse">
+          CTC...
+        </div>
+      )}
     </div>
   );
 };
