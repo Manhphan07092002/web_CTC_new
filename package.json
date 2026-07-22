@@ -21,7 +21,8 @@
     "export-data": "node scripts/export-all-data.js",
     "import-data": "node scripts/import-all-data.js",
     "setup-first-time": "node scripts/setup-first-time.js",
-    "setup-with-data": "node scripts/setup-with-data.js"
+    "setup-with-data": "node scripts/setup-with-data.js",
+    "seed:news": "npx tsx server/scripts/seed-30-news.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.1",
