@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface FAQItem {
   number: string;
@@ -40,13 +40,13 @@ const ContactFAQ: React.FC = () => {
   return (
     <div className="mb-12">
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <span className="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-black rounded-full uppercase tracking-widest border border-amber-500/20">
+        <span className="px-3.5 py-1.5 bg-amber-500/15 text-amber-600 dark:text-amber-300 text-xs font-black rounded-full uppercase tracking-widest border border-amber-500/30 backdrop-blur-md">
           GIẢI ĐÁP THẮC MẮC
         </span>
         <h3 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight mt-3 mb-2">
           Câu Hỏi Thường Gặp (FAQ)
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
           Giải đáp các thắc mắc phổ biến của chủ đầu tư trước khi triển khai hệ thống điện mặt trời.
         </p>
       </div>
@@ -56,15 +56,15 @@ const ContactFAQ: React.FC = () => {
           const isOpen = openIndex === idx;
           return (
             <div
-              key={`faq-item-${idx}`}
-              className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/80 shadow-md overflow-hidden transition-all duration-300"
+              key={`glass-faq-item-${idx}`}
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl rounded-3xl border border-white/80 dark:border-gray-700/80 shadow-[0_8px_32px_0_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-300"
             >
               <button
                 onClick={() => toggleFAQ(idx)}
                 className="w-full p-6 text-left flex items-center justify-between gap-4 font-bold text-gray-900 dark:text-white hover:text-amber-500 transition-colors text-base"
               >
                 <div className="flex items-center gap-4">
-                  <span className="w-8 h-8 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-black flex items-center justify-center flex-shrink-0 border border-amber-500/20">
+                  <span className="w-8 h-8 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-300 text-xs font-black flex items-center justify-center flex-shrink-0 border border-amber-500/30 backdrop-blur-md">
                     {faq.number}
                   </span>
                   <span className="leading-snug">{faq.question}</span>
@@ -77,7 +77,7 @@ const ContactFAQ: React.FC = () => {
               </button>
 
               {isOpen && (
-                <div className="px-6 pb-6 text-sm text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-gray-700/60 pt-4 animate-fade-in pl-16">
+                <div className="px-6 pb-6 text-sm text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-200/60 dark:border-gray-700/60 pt-4 animate-fade-in pl-16">
                   {faq.answer}
                 </div>
               )}

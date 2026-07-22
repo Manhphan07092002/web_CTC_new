@@ -8,19 +8,19 @@ const ContactOffices: React.FC = () => {
   return (
     <div className="mb-20">
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <span className="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-black rounded-full uppercase tracking-widest border border-amber-500/20">
+        <span className="px-3.5 py-1.5 bg-amber-500/15 text-amber-600 dark:text-amber-300 text-xs font-black rounded-full uppercase tracking-widest border border-amber-500/30 backdrop-blur-md">
           ĐỊA CHỈ TRỤ SỞ CHÍNH
         </span>
         <h2 className="text-2xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight mt-3 mb-3">
           Văn Phòng Trụ Sở CTC
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed">
           Kính mời quý khách hàng và đối tác đến thăm trực tiếp trụ sở công ty để trao đổi dự án & xem mẫu thiết bị.
         </p>
       </div>
 
-      {/* Single Headquarters Box with Embedded Map */}
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+      {/* Single Headquarters Box with Embedded Map (Glassmorphism Container) */}
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] border border-white/80 dark:border-gray-700/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
         
         {/* Left Headquarters Info */}
         <div className="lg:col-span-5 p-8 md:p-10 flex flex-col justify-between space-y-6">
@@ -68,7 +68,7 @@ const ContactOffices: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-gray-100 dark:border-gray-700 space-y-4">
+          <div className="pt-6 border-t border-gray-200/60 dark:border-gray-700/60 space-y-4">
             <div className="grid grid-cols-2 gap-2 text-xs text-gray-700 dark:text-gray-300 font-semibold">
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={16} className="text-emerald-500" /> Khảo sát tận nơi

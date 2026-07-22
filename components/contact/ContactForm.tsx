@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle2, ShieldCheck, Sparkles, User, Phone, Mail, FileText, MapPin, Award, Zap, Check, ArrowRight } from 'lucide-react';
+import { Send, CheckCircle2, ShieldCheck, Sparkles, User, Phone, Mail, FileText, MapPin, Award, Zap, Check } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '../../contexts/ToastContext';
 import analyticsTracking from '../../services/analytics-tracking';
@@ -86,16 +86,17 @@ const ContactForm: React.FC = () => {
     <div id="form-sec" className="mb-20">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
-        {/* Left Column: CTC Value Proposition Cards */}
-        <div className="lg:col-span-5 flex flex-col justify-between bg-gradient-to-br from-corporate via-[#0f2447] to-[#081730] text-white p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden border border-white/10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Left Column: CTC Value Proposition Cards (Glass Mesh Accent) */}
+        <div className="lg:col-span-5 flex flex-col justify-between bg-gradient-to-br from-corporate via-[#0b192c] to-[#081730] text-white p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden border border-white/15">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
           
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-amber-300 border border-white/15 mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-amber-300 border border-white/20 mb-6 shadow-sm">
               <Sparkles size={14} /> TẠI SAO CHỌN CTC?
             </div>
 
-            <h3 className="text-2xl md:text-3xl font-black mb-4 leading-tight">
+            <h3 className="text-2xl md:text-3xl font-black mb-4 leading-tight drop-shadow-sm">
               Đồng Hành Cùng Doanh Nghiệp Năng Lượng Xanh
             </h3>
 
@@ -106,36 +107,36 @@ const ContactForm: React.FC = () => {
             {/* Benefit List */}
             <div className="space-y-5">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-amber-500/20 text-amber-300 rounded-2xl flex-shrink-0 border border-amber-500/30">
+                <div className="p-3 bg-amber-500/20 text-amber-300 rounded-2xl flex-shrink-0 border border-amber-500/30 backdrop-blur-md shadow-lg">
                   <Zap size={20} />
                 </div>
                 <div>
                   <h4 className="font-bold text-base text-white">Khảo Sát & Mô Phỏng 3D Miễn Phí</h4>
-                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5">
+                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5 font-light">
                     Kỹ sư đến khảo sát thực địa mái nhà xưởng trong 24h & tính toán sản lượng điện năng PV*SOL chính xác 99%.
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-blue-500/20 text-blue-300 rounded-2xl flex-shrink-0 border border-blue-500/30">
+                <div className="p-3 bg-blue-500/20 text-blue-300 rounded-2xl flex-shrink-0 border border-blue-500/30 backdrop-blur-md shadow-lg">
                   <ShieldCheck size={20} />
                 </div>
                 <div>
                   <h4 className="font-bold text-base text-white">Bảo Hành Hiệu Suất 25 Năm</h4>
-                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5">
+                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5 font-light">
                     Cam kết chất lượng thiết bị pin & Inverter chính hãng có chứng chỉ CO/CQ & bảo hiểm Munich RE quốc tế.
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-emerald-500/20 text-emerald-300 rounded-2xl flex-shrink-0 border border-emerald-500/30">
+                <div className="p-3 bg-emerald-500/20 text-emerald-300 rounded-2xl flex-shrink-0 border border-emerald-500/30 backdrop-blur-md shadow-lg">
                   <Award size={20} />
                 </div>
                 <div>
                   <h4 className="font-bold text-base text-white">Thủ Tục Pháp Lý & EVN Trọn Gói</h4>
-                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5">
+                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5 font-light">
                     Hoàn tất thỏa thuận đấu nối EVN, thẩm duyệt PCCC và kiểm định an toàn kết cấu không lo chi phí phát sinh.
                   </p>
                 </div>
@@ -144,24 +145,24 @@ const ContactForm: React.FC = () => {
           </div>
 
           {/* Bottom Direct Call Box */}
-          <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
+          <div className="mt-8 pt-6 border-t border-white/15 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-bold text-gray-400 block uppercase">Cần hỗ trợ gấp?</span>
+              <span className="text-[11px] font-bold text-gray-400 block uppercase tracking-wider">Cần hỗ trợ gấp?</span>
               <a href="tel:0915059666" className="text-lg font-black text-amber-300 hover:underline">
                 0915 059 666
               </a>
             </div>
             <a
               href="tel:0915059666"
-              className="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-gray-950 font-bold text-xs rounded-xl transition-all shadow-lg flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-gray-950 font-extrabold text-xs rounded-xl transition-all shadow-lg flex items-center gap-1.5"
             >
               <Phone size={14} /> Gọi ngay
             </a>
           </div>
         </div>
 
-        {/* Right Column: Contact Form */}
-        <div className="lg:col-span-7 bg-white dark:bg-gray-800 p-8 md:p-10 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700/80 flex flex-col justify-between">
+        {/* Right Column: Contact Form (Glassmorphism Card) */}
+        <div className="lg:col-span-7 bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl p-8 md:p-10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] border border-white/80 dark:border-gray-700/80 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
@@ -172,12 +173,12 @@ const ContactForm: React.FC = () => {
               Yêu Cầu Tư Vấn & Thiết Kế Dự Án
             </h3>
 
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
               Nhập thông tin của bạn vào biểu mẫu bên dưới. Chuyên viên dự án CTC sẽ chủ động gọi điện tư vấn chi tiết.
             </p>
 
             {formStatus === 'success' ? (
-              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 p-8 rounded-2xl text-center animate-fade-in my-6 space-y-4">
+              <div className="bg-emerald-50/80 dark:bg-emerald-950/60 backdrop-blur-xl border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 p-8 rounded-2xl text-center animate-fade-in my-6 space-y-4 shadow-lg">
                 <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/60 rounded-full flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 size={36} />
                 </div>
@@ -208,7 +209,7 @@ const ContactForm: React.FC = () => {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Nguyễn Văn A"
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-gray-200/80 dark:border-gray-600/80 rounded-2xl text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
                       />
                       <User size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
                     </div>
@@ -225,7 +226,7 @@ const ContactForm: React.FC = () => {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="0915 059 666"
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-gray-200/80 dark:border-gray-600/80 rounded-2xl text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
                       />
                       <Phone size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
                     </div>
@@ -244,7 +245,7 @@ const ContactForm: React.FC = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="congty@domain.com"
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-gray-200/80 dark:border-gray-600/80 rounded-2xl text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
                       />
                       <Mail size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
                     </div>
@@ -260,7 +261,7 @@ const ContactForm: React.FC = () => {
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         placeholder="Ví dụ: KCN Hòa Khánh, Đà Nẵng"
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-gray-200/80 dark:border-gray-600/80 rounded-2xl text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
                       />
                       <MapPin size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
                     </div>
@@ -282,8 +283,8 @@ const ContactForm: React.FC = () => {
                           onClick={() => setFormData({ ...formData, service: srv.label })}
                           className={`p-3 rounded-2xl text-xs font-bold text-left transition-all flex items-center justify-between border ${
                             isSelected
-                              ? 'bg-corporate text-white border-corporate shadow-md'
-                              : 'bg-gray-50 dark:bg-gray-700/40 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-amber-400'
+                              ? 'bg-corporate text-white border-corporate shadow-md backdrop-blur-md'
+                              : 'bg-white/60 dark:bg-gray-700/40 text-gray-700 dark:text-gray-300 border-gray-200/80 dark:border-gray-600/80 hover:border-amber-400'
                           }`}
                         >
                           <span className="truncate pr-2">{srv.label}</span>
@@ -305,7 +306,7 @@ const ContactForm: React.FC = () => {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Mô tả diện tích mái xưởng hoặc nhu cầu lắp đặt..."
-                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-gray-200/80 dark:border-gray-600/80 rounded-2xl text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
                     />
                     <FileText size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
                   </div>
@@ -315,7 +316,7 @@ const ContactForm: React.FC = () => {
                 <button
                   type="submit"
                   disabled={formStatus === 'submitting'}
-                  className={`w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-base rounded-2xl transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 ${
+                  className={`w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-base rounded-2xl transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 ${
                     formStatus === 'submitting' ? 'opacity-70 cursor-not-allowed' : ''
                   }`}
                 >
