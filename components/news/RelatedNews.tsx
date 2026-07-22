@@ -1,6 +1,6 @@
 import React from 'react';
 import { NewsItem } from '../../types';
-import { Link } from 'react-router-down'; // Wait, let's use react-router-dom!
+import { Link } from 'react-router-dom';
 import { Calendar, ArrowRight } from 'lucide-react';
 
 interface RelatedNewsProps {
