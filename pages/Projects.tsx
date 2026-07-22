@@ -137,10 +137,7 @@ const Projects: React.FC = () => {
       />
 
       {/* Hero Banner Header */}
-      <ProjectsHero 
-        selectedCategoryId={selectedCategoryId}
-        onCategoryChange={setSelectedCategoryId}
-      />
+      <ProjectsHero />
 
       {/* Main Container with Left Sidebar & Right 3-Column Grid */}
       <div className="container mx-auto px-4 py-12">
