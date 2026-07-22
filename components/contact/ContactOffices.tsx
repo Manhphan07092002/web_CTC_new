@@ -2,8 +2,8 @@ import React from 'react';
 import { Building2, MapPin, Phone, Mail, Navigation, CheckCircle2, Clock, ShieldCheck } from 'lucide-react';
 
 const ContactOffices: React.FC = () => {
-  const headquarterMapEmbedUrl = 'https://maps.google.com/maps?q=50B%20Nguy%E1%BB%85n%20Du,%20Ph%C6%B0%E1%BB%9Dng%20Th%E1%BA%A1ch%20Thang,%20Qu%E1%BA%ADn%20H%E1%BA%A3i%20Ch%C3%A2u,%20%C4%90%C3%A0%20N%E1%BA%B9ng&t=&z=17&ie=UTF8&iwloc=&output=embed';
-  const fullAddress = '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP. Đà Nẵng, Việt Nam';
+  const headquarterMapEmbedUrl = 'https://maps.google.com/maps?q=50B%20Nguy%E1%BB%85n%20Du,%20H%E1%BA%A3i%20Ch%C3%A2u,%20%C4%90%C3%A0%20N%E1%BA%B9ng&t=&z=17&ie=UTF8&iwloc=&output=embed';
+  const fullAddress = '50B Nguyễn Du, Hải Châu, Đà Nẵng';
 
   return (
     <div className="mb-20">

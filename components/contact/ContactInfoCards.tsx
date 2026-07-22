@@ -44,11 +44,11 @@ const ContactInfoCards: React.FC = () => {
       icon: MapPin,
       iconBg: 'from-emerald-500 to-teal-700 text-white shadow-emerald-500/25',
       title: 'Trụ Sở Đà Nẵng',
-      primaryText: '50B Nguyễn Du, P. Thạch Thang',
-      secondaryText: 'Q. Hải Châu, TP. Đà Nẵng, Việt Nam',
+      primaryText: '50B Nguyễn Du, Hải Châu, Đà Nẵng',
+      secondaryText: 'Trụ sở chính công ty CTC',
       actionText: 'Xem bản đồ Google Maps',
-      actionUrl: 'https://maps.google.com/?q=50B+Nguyen+Du+Da+Nang',
-      copyText: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng'
+      actionUrl: 'https://maps.google.com/?q=50B+Nguyen+Du+Hai+Chau+Da+Nang',
+      copyText: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
     },
     {
       badge: 'LỊCH LÀM VIỆC',
