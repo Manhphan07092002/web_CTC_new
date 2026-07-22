@@ -1,21 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { NewsItem } from '../types';
-import { Calendar, User, ArrowRight, ChevronRight, Home, Filter } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import SEO from '../components/SEO';
-import CategoryFilter from '../components/CategoryFilter';
-import { useNewsCategories } from '../hooks/useCategories';
+import Loading from '../components/Loading';
 import analyticsTracking from '../services/analytics-tracking';
+
+import {
+  NewsHero,
+  NewsGrid,
+  NewsFilterSidebar
+} from '../components/news';
+
+const ITEMS_PER_PAGE = 9; // 3 items per row x 3 rows = 9 items per page
 
 const News: React.FC = () => {
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const { t, language } = useLanguage();
-  const { getCategoryById } = useNewsCategories();
 
   useEffect(() => {
     // Track page view
@@ -23,102 +30,140 @@ const News: React.FC = () => {
     
     const fetchNews = async () => {
       setLoading(true);
-      let data = await api.news.getAll();
-      
-      // Filter by category if selected
-      if (selectedCategoryId) {
-        data = data.filter(item => item.categoryId === selectedCategoryId);
+      try {
+        const data = await api.news.getAll();
+        // Sort: Featured first, then by date
+        const sorted = data.sort((a, b) => {
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          if (a.isFeatured && b.isFeatured) {
+            return (a.featuredOrder || 0) - (b.featuredOrder || 0);
+          }
+          return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
+        });
+        setNews(sorted);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      // Sort: Featured first (by featuredOrder), then by date
-      const sorted = data.sort((a, b) => {
-        // Featured items first
-        if (a.isFeatured && !b.isFeatured) return -1;
-        if (!a.isFeatured && b.isFeatured) return 1;
-        // If both featured, sort by featuredOrder
-        if (a.isFeatured && b.isFeatured) {
-          return (a.featuredOrder || 0) - (b.featuredOrder || 0);
-        }
-        // If both not featured, sort by date (newest first)
-        return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
-      });
-      setNews(sorted);
-      setLoading(false);
     };
     fetchNews();
-  }, [selectedCategoryId, language]);
+  }, [language]);
 
-  if (loading) return <div className="w-full py-20 text-center">{t('common.loading')}</div>;
+  // Filter news by category & search query
+  const filteredNews = useMemo(() => {
+    return news.filter((item) => {
+      // Category filter
+      const matchesCategory = selectedCategoryId
+        ? item.categoryId === selectedCategoryId || item.category === selectedCategoryId
+        : true;
+
+      // Search query filter
+      const matchesSearch = searchQuery.trim()
+        ? item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (item.excerpt && item.excerpt.toLowerCase().includes(searchQuery.toLowerCase()))
+        : true;
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [news, selectedCategoryId, searchQuery]);
+
+  // Featured news items for sidebar widget
+  const featuredNews = useMemo(() => {
+    return news.filter(n => n.isFeatured);
+  }, [news]);
+
+  // Reset page when filter or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategoryId, searchQuery]);
+
+  // Pagination calculation
+  const totalPages = Math.ceil(filteredNews.length / ITEMS_PER_PAGE) || 1;
+  const paginatedNews = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredNews.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredNews, currentPage]);
+
+  const handleResetFilters = () => {
+    setSelectedCategoryId(null);
+    setSearchQuery('');
+    setCurrentPage(1);
+  };
+
+  if (loading) return <Loading fullScreen={false} className="h-[60vh]" />;
 
   const itemListSchema = {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      "name": "Tin tức điện mặt trời - CTC",
-      "description": "Tin tức mới nhất về năng lượng mặt trời, công nghệ solar và các dự án của CTC",
-      "itemListElement": news.slice(0, 10).map((item, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "url": `${window.location.origin}/news/${item.id || (item as any)._id}`,
-        "item": {
-          "@type": "NewsArticle",
-          "headline": item.title,
-          "datePublished": item.date,
-          "image": item.image?.startsWith('http') ? item.image : `${window.location.origin}${item.image}`,
-          "description": item.excerpt,
-          "publisher": {
-            "@type": "Organization",
-            "name": "CTC",
-            "url": "https://ctcdn.vn"
-          }
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Tin tức điện mặt trời - CTC",
+    "description": "Tin tức mới nhất về năng lượng mặt trời, công nghệ solar và các dự án của CTC",
+    "itemListElement": filteredNews.slice(0, 10).map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `${window.location.origin}/news/${item.id || (item as any)._id}`,
+      "item": {
+        "@type": "NewsArticle",
+        "headline": item.title,
+        "datePublished": item.date,
+        "image": item.image?.startsWith('http') ? item.image : `${window.location.origin}${item.image}`,
+        "description": item.excerpt,
+        "publisher": {
+          "@type": "Organization",
+          "name": "CTC",
+          "url": "https://ctcdn.vn"
         }
-      }))
+      }
+    }))
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 animate-fade-in">
+    <div className="w-full pb-20 animate-fade-in relative bg-gray-50 dark:bg-gray-900 min-h-screen">
       <SEO 
         title={t('news.title')}
         description={t('news.subtitle')}
         schema={itemListSchema}
       />
 
-      <h1 className="text-3xl font-bold text-corporate mb-8 border-l-4 border-primary pl-4">{t('news.title')}</h1>
-      
-      {/* Category Filter */}
-      <div className="mb-8">
-        <CategoryFilter
-          type="news"
-          selectedCategoryId={selectedCategoryId}
-          onCategoryChange={setSelectedCategoryId}
-          showAll={true}
-        />
-      </div>
+      {/* Hero Banner Header */}
+      <NewsHero />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {news.map((item, idx) => (
-          <div 
-            key={`news-item-${item.id}-${idx}`} 
-            className="bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-300"
-            onClick={() => navigate(`/news/${item.id}`)}
-          >
-            <div className="relative">
-              <img src={item.image} alt={item.title} className="w-full h-48 object-cover rounded-t-lg" />
-              {item.isFeatured && (
-                <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
-                  ⭐ Nổi bật
-                </div>
-              )}
-            </div>
-            <div className="p-6">
-              <span className="text-xs text-gray-500 block mb-2">{item.date}</span>
-              <h3 className="text-lg font-bold text-gray-800 mb-2 hover:text-primary cursor-pointer">{item.title}</h3>
-              <p className="text-gray-600 text-sm">{item.excerpt}</p>
-            </div>
+      {/* Main Container with Left Sidebar & Right 3-Column Grid */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="flex flex-col lg:flex-row gap-8">
+          
+          {/* Left Sidebar (w-full lg:w-1/4) */}
+          <div className="w-full lg:w-1/4 flex-shrink-0">
+            <NewsFilterSidebar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedCategoryId={selectedCategoryId}
+              onCategoryChange={setSelectedCategoryId}
+              totalNews={news.length}
+              filteredCount={filteredNews.length}
+              featuredNews={featuredNews}
+              onNewsClick={(item) => navigate(`/news/${item.id || (item as any)._id}`)}
+              onReset={handleResetFilters}
+            />
           </div>
-        ))}
-        {news.length === 0 && (
-             <div className="col-span-full text-center py-12 text-gray-500">{t('news.no_news')}</div>
-        )}
+
+          {/* Right Main Grid (w-full lg:w-3/4) */}
+          <div className="w-full lg:w-3/4">
+            <NewsGrid 
+              news={paginatedNews}
+              onNewsClick={(item) => navigate(`/news/${item.id || (item as any)._id}`)}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 300, behavior: 'smooth' });
+              }}
+              totalItems={filteredNews.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
