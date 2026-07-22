@@ -1,8 +1,9 @@
 import React from 'react';
-import { Phone, ShoppingCart, Heart, Share2, ShieldCheck, CheckCircle, CreditCard } from 'lucide-react';
+import { Phone, ShoppingCart, Heart, Share2, CheckCircle, CreditCard, Truck } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ProductActionsProps {
+  warranty?: string;
   likes: number;
   shares: number;
   isLiking: boolean;
@@ -16,6 +17,7 @@ interface ProductActionsProps {
 }
 
 const ProductActions: React.FC<ProductActionsProps> = ({
+  warranty,
   likes,
   shares,
   isLiking,
@@ -112,28 +114,27 @@ const ProductActions: React.FC<ProductActionsProps> = ({
       {/* Trust Points */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-8 border-t border-gray-100 dark:border-gray-700">
         <div className="flex items-center gap-3">
-          <ShieldCheck className="text-primary" size={24} />
+          <Truck className="text-primary flex-shrink-0" size={24} />
           <div>
-            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">{t('products.warranty')}</p>
-            <p className="text-xs text-gray-500">12 - 25 {t('products.years')}</p>
+            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">{t('products.shipping')}</p>
+            <p className="text-xs text-gray-500">{t('products.free_shipping_nationwide')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <CheckCircle className="text-primary" size={24} />
+          <CheckCircle className="text-primary flex-shrink-0" size={24} />
           <div>
             <p className="font-bold text-sm text-gray-800 dark:text-gray-200">{t('products.authentic')}</p>
-            <p className="text-xs text-gray-500">100%</p>
+            <p className="text-xs text-gray-500">{t('products.authentic_cocq')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <CreditCard className="text-primary" size={24} />
+          <CreditCard className="text-primary flex-shrink-0" size={24} />
           <div>
             <p className="font-bold text-sm text-gray-800 dark:text-gray-200">{t('products.payment')}</p>
-            <p className="text-xs text-gray-500">Secure</p>
+            <p className="text-xs text-gray-500">{t('products.secure')}</p>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

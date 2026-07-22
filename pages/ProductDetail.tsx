@@ -357,6 +357,7 @@ Sau đó thêm 1-2 câu kết luận ngắn gọn.`;
               />
 
               <ProductActions 
+                warranty={product.warranty}
                 likes={likes}
                 shares={shares}
                 isLiking={isLiking}
