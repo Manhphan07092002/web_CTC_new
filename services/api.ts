@@ -518,15 +518,24 @@ export const api = {
       if (params.length > 0) query = `?${params.join('&')}`;
       return fetchAPI<{ success: boolean; data: any[] }>(`/orders${query}`);
     },
+    getStats: () => fetchAPI<{ success: boolean; data: any }>('/orders/stats'),
     getById: (id: string) => fetchAPI<any>(`/orders/${id}`),
     getPendingCount: () => fetchAPI<{ success: boolean; count: number }>('/orders/pending-count'),
     create: (data: any) => fetchAPI<any>('/orders', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-    updateStatus: (id: string, status: string) => fetchAPI<any>(`/orders/${id}/status`, {
+    adminCreate: (data: any) => fetchAPI<any>('/orders/admin-create', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    updateStatus: (id: string, status: string, extraData?: any) => fetchAPI<any>(`/orders/${id}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, ...extraData }),
+    }),
+    updateShipping: (id: string, shippingData: { shippingProvider?: string; trackingCode?: string; estimatedDeliveryDate?: string }) => fetchAPI<any>(`/orders/${id}/shipping`, {
+      method: 'PATCH',
+      body: JSON.stringify(shippingData),
     }),
     delete: (id: string) => fetchAPI<any>(`/orders/${id}`, {
       method: 'DELETE',

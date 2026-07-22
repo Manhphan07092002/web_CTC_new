@@ -251,7 +251,7 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
           </div>
           
           <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <RadarChart data={radarChartData}>
                 <PolarGrid stroke="#e5e7eb" />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 12 }} />

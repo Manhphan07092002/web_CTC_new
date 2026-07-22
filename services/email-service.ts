@@ -1,4 +1,13 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// Fix Node.js DNS lookup timeout (ETIMEOUT) on local network / ISP DNS for smtp.gmail.com
+try {
+  dns.setDefaultResultOrder('ipv4first');
+  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+} catch (e) {
+  // Ignore DNS config error if restricted
+}
 
 interface ContactFormData {
   name: string;
@@ -28,18 +37,82 @@ const escapeHtml = (value: string) => value
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#039;');
 
+const getCompanyEmailFooterHtml = () => `
+  <div style="background:#1e293b;color:#ecf0f1;text-align:left;padding:28px 24px;border-top:4px solid #FF6B35;font-family:'Segoe UI',Roboto,sans-serif;">
+    <div style="max-width:580px;margin:0 auto;">
+      <h3 style="margin:0 0 6px;color:#FF6B35;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">
+        ⚡ CÔNG TY CỔ PHẦN XÂY LẮP BƯU ĐIỆN MIỀN TRUNG (CTC)
+      </h3>
+      <p style="margin:0 0 12px;color:#94a3b8;font-size:12px;font-weight:600;font-style:italic;">
+        Khẩu hiệu: "CTC – Niềm tin, Chất lượng" | 32+ Năm Kinh Nghiệm (Thành lập 2004 - MST: 0400458940)
+      </p>
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:14px 18px;margin-bottom:14px;font-size:12px;color:#cbd5e1;line-height:1.7;">
+        <p style="margin:2px 0;">📍 <strong>Địa chỉ đăng ký:</strong> 50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng</p>
+        <p style="margin:2px 0;">☎️ <strong>Điện thoại cố định:</strong> 0236 374 5555 | 📱 <strong>Hotline Zalo:</strong> <a href="tel:0915059666" style="color:#38bdf8;font-weight:bold;text-decoration:none;">0915 059 666</a></p>
+        <p style="margin:2px 0;">🏛️ <strong>Đại diện pháp luật:</strong> NGUYỄN VĂN DUY (Tổng Giám đốc) | 📧 <strong>Email hỗ trợ:</strong> <a href="mailto:pxmanhctc@gmail.com" style="color:#38bdf8;text-decoration:none;">pxmanhctc@gmail.com</a></p>
+      </div>
+      <div style="text-align:center;font-size:11px;color:#64748b;margin-top:10px;">
+        <p style="margin:0;">© 2026 CTC Joint-Stock Company. All rights reserved.</p>
+        <p style="margin:3px 0 0;font-style:italic;">Hạ tầng Viễn thông - Năng lượng tái tạo (Điện gió & Mặt trời) - Tổng thầu EPC Công nghiệp</p>
+      </div>
+    </div>
+  </div>
+`;
+
+// Custom DNS lookup with 1.5s fallback to direct Google SMTP IPv4 (bypasses ISP DNS ETIMEOUT)
+const gmailCustomLookup = (hostname: string, options: any, callback: any) => {
+  if (hostname === 'smtp.gmail.com') {
+    let called = false;
+    const timer = setTimeout(() => {
+      if (!called) {
+        called = true;
+        console.log('⚡ DNS lookup for smtp.gmail.com timed out, using direct IPv4 fallback (142.250.157.108)');
+        callback(null, '142.250.157.108', 4);
+      }
+    }, 1500);
+
+    dns.lookup(hostname, options, (err, address, family) => {
+      if (!called) {
+        called = true;
+        clearTimeout(timer);
+        if (err || !address) {
+          console.log('⚡ DNS lookup failed, using direct IPv4 fallback (142.250.157.108)');
+          callback(null, '142.250.157.108', 4);
+        } else {
+          callback(null, address, family);
+        }
+      }
+    });
+    return;
+  }
+  return dns.lookup(hostname, options, callback);
+};
+
 export class EmailService {
-  private static transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
+  private static transporter: any = null;
 
   private static getTransporter() {
     if (!this.transporter) {
       const config = getEmailConfig();
-      this.transporter = nodemailer.createTransport({
+      const isGmail = config.host.includes('gmail');
+      
+      const transportOptions: any = {
         host: config.host,
         port: config.port,
         secure: config.port === 465,
-        auth: config.user && config.pass ? { user: config.user, pass: config.pass } : undefined
-      });
+        auth: config.user && config.pass ? { user: config.user, pass: config.pass } : undefined,
+        lookup: gmailCustomLookup,
+        tls: {
+          servername: 'smtp.gmail.com',
+          rejectUnauthorized: false
+        }
+      };
+
+      if (isGmail) {
+        transportOptions.service = 'gmail';
+      }
+
+      this.transporter = nodemailer.createTransport(transportOptions);
     }
     return this.transporter;
   }
@@ -502,19 +575,7 @@ export class EmailService {
               </div>
             </div>
             
-            <div class="footer">
-              <p class="company-name">⚡ CTC</p>
-              <p>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</p>
-              <p>MST: 0400458940</p>
-              <p style="margin-top: 15px;">📍 50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng</p>
-              <p>📞 0915 059 666 | 📧 info@ctcdn.vn</p>
-              <div class="social-links">
-                <a href="#">Facebook</a> | 
-                <a href="#">Instagram</a> | 
-                <a href="#">YouTube</a>
-              </div>
-              <p style="margin-top: 20px; font-size: 11px; opacity: 0.6;">© 2024 CTC. All rights reserved.</p>
-            </div>
+            ${getCompanyEmailFooterHtml()}
           </div>
         </body>
         </html>
@@ -830,13 +891,7 @@ export class EmailService {
               </div>
             </div>
 
-            <!-- Footer -->
-            <div style="background:#2c3e50;color:#ecf0f1;text-align:center;padding:30px;">
-              <p style="font-weight:bold;color:#3498db;font-size:16px;margin:0 0 8px;">⚡ CTC</p>
-              <p style="font-size:13px;margin:0 0 5px;opacity:0.8;">Công ty Cổ phần Xây lắp Bưu điện Miền Trung</p>
-              <p style="font-size:12px;margin:0;opacity:0.6;">📍 50B Nguyễn Du, Quận Hải Châu, TP Đà Nẵng | 📞 0915 059 666</p>
-              <p style="font-size:11px;margin:15px 0 0;opacity:0.5;">© ${new Date().getFullYear()} CTC. All rights reserved.</p>
-            </div>
+            ${getCompanyEmailFooterHtml()}
           </div>
         </body>
         </html>
@@ -968,6 +1023,141 @@ export class EmailService {
   }
 
   /**
+   * Gửi email thông báo cập nhật trạng thái đơn hàng cho khách hàng
+   */
+  static async sendOrderStatusUpdate(orderData: {
+    customerName: string;
+    email: string;
+    orderCode: string;
+    status: 'pending' | 'confirmed' | 'processing' | 'shipping' | 'completed' | 'cancelled';
+    shippingProvider?: string;
+    trackingCode?: string;
+    estimatedDeliveryDate?: Date | string;
+    cancelledReason?: string;
+    note?: string;
+  }): Promise<boolean> {
+    try {
+      const emailConfig = getEmailConfig();
+
+      const statusMap: Record<string, { title: string; color: string; icon: string; message: string }> = {
+        confirmed: {
+          title: 'Đã Xác Nhận Đơn Hàng',
+          color: '#28a745',
+          icon: '✅',
+          message: 'Đơn hàng của bạn đã được CTC duyệt và xác nhận thành công. Đội ngũ kho vận đang tiến hành kiểm tra thiết bị.'
+        },
+        processing: {
+          title: 'Đang Xử Lý & Đóng Gói',
+          color: '#17a2b8',
+          icon: '⚙️',
+          message: 'Các sản phẩm trong đơn hàng đang được đóng gói cẩn thận và kiểm định chất lượng trước khi bàn giao cho đơn vị vận chuyển.'
+        },
+        shipping: {
+          title: 'Đang Giao Hàng',
+          color: '#6f42c1',
+          icon: '🚚',
+          message: 'Đơn hàng của bạn đã được xuất kho và đang trên đường vận chuyển tới địa chỉ của bạn.'
+        },
+        completed: {
+          title: 'Đơn Hàng Hoàn Thành',
+          color: '#28a745',
+          icon: '🎉',
+          message: 'Đơn hàng đã được giao thành công! Cảm ơn bạn đã tin tưởng lựa chọn sản phẩm và dịch vụ của CTC.'
+        },
+        cancelled: {
+          title: 'Đơn Hàng Đã Hủy',
+          color: '#dc3545',
+          icon: '❌',
+          message: 'Đơn hàng của bạn đã bị hủy trên hệ thống.'
+        }
+      };
+
+      const info = statusMap[orderData.status] || {
+        title: 'Cập Nhật Trạng Thái Đơn Hàng',
+        color: '#FF6B35',
+        icon: '🔔',
+        message: 'Đơn hàng của bạn vừa có cập nhật trạng thái mới.'
+      };
+
+      let shippingHtml = '';
+      if (orderData.status === 'shipping') {
+        shippingHtml = `
+          <div style="background:#f3e8ff;border-radius:12px;padding:20px;margin:20px 0;border-left:5px solid #6f42c1;">
+            <h4 style="margin:0 0 10px;color:#581c87;font-size:15px;">🚚 Thông tin vận chuyển</h4>
+            <p style="margin:4px 0;font-size:14px;color:#3b0764;"><strong>Đơn vị vận chuyển:</strong> ${escapeHtml(orderData.shippingProvider || 'Xe công ty CTC')}</p>
+            ${orderData.trackingCode ? `<p style="margin:4px 0;font-size:14px;color:#3b0764;"><strong>Mã vận đơn:</strong> <span style="font-family:monospace;font-weight:bold;background:#fff;padding:2px 8px;border-radius:4px;">${escapeHtml(orderData.trackingCode)}</span></p>` : ''}
+            ${orderData.estimatedDeliveryDate ? `<p style="margin:4px 0;font-size:14px;color:#3b0764;"><strong>Dự kiến giao:</strong> ${new Date(orderData.estimatedDeliveryDate).toLocaleDateString('vi-VN')}</p>` : ''}
+          </div>
+        `;
+      }
+
+      let cancelledHtml = '';
+      if (orderData.status === 'cancelled' && orderData.cancelledReason) {
+        cancelledHtml = `
+          <div style="background:#f8d7da;border-radius:12px;padding:20px;margin:20px 0;border-left:5px solid #dc3545;">
+            <h4 style="margin:0 0 8px;color:#842029;font-size:15px;">⚠️ Lý do hủy đơn</h4>
+            <p style="margin:0;font-size:14px;color:#842029;font-style:italic;">${escapeHtml(orderData.cancelledReason)}</p>
+          </div>
+        `;
+      }
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body style="margin:0;padding:0;background:#f4f7fa;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+          <div style="max-width:620px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+            <div style="background:${info.color};color:white;padding:35px 30px;text-align:center;">
+              <div style="font-size:48px;margin-bottom:10px;">${info.icon}</div>
+              <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;">${info.title}</h1>
+              <p style="margin:0;opacity:0.9;font-size:14px;">Mã đơn hàng: <strong>${escapeHtml(orderData.orderCode)}</strong></p>
+            </div>
+
+            <div style="padding:35px;">
+              <p style="font-size:16px;color:#2c3e50;margin:0 0 20px;">
+                Xin chào <strong>${escapeHtml(orderData.customerName)}</strong>,
+              </p>
+
+              <div style="background:#f8f9fa;border-radius:12px;padding:20px;border-left:5px solid ${info.color};margin-bottom:20px;">
+                <p style="margin:0;font-size:15px;color:#2c3e50;line-height:1.7;">
+                  ${info.message}
+                </p>
+              </div>
+
+              ${shippingHtml}
+              ${cancelledHtml}
+
+              ${orderData.note ? `<p style="font-size:13px;color:#666;font-style:italic;">Ghi chú từ quản trị viên: ${escapeHtml(orderData.note)}</p>` : ''}
+
+              <div style="text-align:center;margin-top:30px;">
+                <a href="http://localhost:3000/#/track-order?query=${encodeURIComponent(orderData.orderCode)}" style="display:inline-block;padding:12px 28px;background:${info.color};color:white;text-decoration:none;border-radius:25px;font-weight:bold;font-size:14px;">
+                  🔍 Tra cứu tiến trình chi tiết
+                </a>
+              </div>
+            </div>
+
+            ${getCompanyEmailFooterHtml()}
+          </div>
+        </body>
+        </html>
+      `;
+
+      await this.getTransporter().sendMail({
+        from: `"CTC Solar" <${emailConfig.from}>`,
+        to: orderData.email,
+        subject: `${info.icon} ${info.title} #${orderData.orderCode}`,
+        html: htmlContent
+      });
+
+      console.log(`✅ Order status update email sent to ${orderData.email} (Status: ${orderData.status})`);
+      return true;
+    } catch (error) {
+      console.error('❌ Error sending order status email:', error);
+      return false;
+    }
+  }
+
+  /**
    * Test email configuration
    */
   static async testConnection(): Promise<boolean> {
@@ -981,3 +1171,4 @@ export class EmailService {
     }
   }
 }
+

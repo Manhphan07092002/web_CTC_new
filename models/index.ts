@@ -811,6 +811,13 @@ const ResourceSchema = new Schema<IResource>({
 export const Resource = mongoose.model<IResource>('Resource', ResourceSchema);
 
 // ==================== ORDER INTERFACES & SCHEMAS ====================
+export interface IStatusHistory {
+  status: 'pending' | 'confirmed' | 'processing' | 'shipping' | 'completed' | 'cancelled';
+  updatedAt: Date;
+  note?: string;
+  updatedBy?: string;
+}
+
 export interface IOrder extends BaseDocument {
   orderCode: string;
   customerName: string;
@@ -820,6 +827,11 @@ export interface IOrder extends BaseDocument {
   note?: string;
   totalAmount: number;
   status: 'pending' | 'confirmed' | 'processing' | 'shipping' | 'completed' | 'cancelled';
+  shippingProvider?: string;
+  trackingCode?: string;
+  estimatedDeliveryDate?: Date;
+  cancelledReason?: string;
+  statusHistory?: IStatusHistory[];
 }
 
 const OrderSchema = new Schema<IOrder>({
@@ -834,7 +846,17 @@ const OrderSchema = new Schema<IOrder>({
     type: String, 
     enum: ['pending', 'confirmed', 'processing', 'shipping', 'completed', 'cancelled'], 
     default: 'pending' 
-  }
+  },
+  shippingProvider: { type: String },
+  trackingCode: { type: String },
+  estimatedDeliveryDate: { type: Date },
+  cancelledReason: { type: String },
+  statusHistory: [{
+    status: { type: String, required: true },
+    updatedAt: { type: Date, default: Date.now },
+    note: { type: String },
+    updatedBy: { type: String }
+  }]
 }, { timestamps: true });
 
 export const Order = mongoose.model<IOrder>('Order', OrderSchema);

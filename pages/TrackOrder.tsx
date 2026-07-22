@@ -23,6 +23,10 @@ interface OrderTrackData {
   note?: string;
   totalAmount: number;
   status: 'pending' | 'confirmed' | 'processing' | 'shipping' | 'completed' | 'cancelled';
+  shippingProvider?: string;
+  trackingCode?: string;
+  estimatedDeliveryDate?: string;
+  cancelledReason?: string;
   createdAt: string;
   items: TrackItem[];
 }
@@ -333,6 +337,38 @@ const TrackOrder: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Shipping Info Banner if shipping/completed */}
+            {(selectedOrder.shippingProvider || selectedOrder.trackingCode) && (
+              <div className="bg-purple-50 dark:bg-purple-950/20 rounded-2xl border border-purple-200 dark:border-purple-800/40 p-5 shadow-sm space-y-2">
+                <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-bold text-sm">
+                  <Truck size={18} />
+                  <span>Thông tin đơn vị vận chuyển</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                  <div>
+                    <span className="text-gray-500 block">Đơn vị giao hàng:</span>
+                    <strong className="text-gray-800 dark:text-gray-200 text-sm">{selectedOrder.shippingProvider || 'Xe công ty CTC'}</strong>
+                  </div>
+                  {selectedOrder.trackingCode && (
+                    <div>
+                      <span className="text-gray-500 block">Mã vận đơn:</span>
+                      <strong className="font-mono text-purple-700 dark:text-purple-300 text-sm bg-white dark:bg-gray-800 px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800 inline-block mt-0.5">
+                        {selectedOrder.trackingCode}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Cancelled Reason Banner if cancelled */}
+            {isCancelled && selectedOrder.cancelledReason && (
+              <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-800/40 p-5 shadow-sm text-xs space-y-1">
+                <span className="font-bold text-red-700 dark:text-red-300 block">Lý do hủy đơn hàng:</span>
+                <p className="text-red-600 dark:text-red-400 italic">{selectedOrder.cancelledReason}</p>
+              </div>
+            )}
 
             {/* Timeline Progress */}
             {!isCancelled ? (

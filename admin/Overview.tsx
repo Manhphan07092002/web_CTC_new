@@ -525,7 +525,7 @@ const Overview: React.FC = () => {
             </div>
           </div>
           <div className="h-80 min-h-[320px]">
-            <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={300}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <LineChart data={statistics?.monthlyGrowth || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} dy={10} />
@@ -544,7 +544,7 @@ const Overview: React.FC = () => {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
           <h3 className="font-bold text-lg text-gray-800 mb-6">Sản phẩm theo danh mục</h3>
           <div className="flex-1 min-h-[200px] relative">
-            <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
                 <Pie
                   data={projectData}
