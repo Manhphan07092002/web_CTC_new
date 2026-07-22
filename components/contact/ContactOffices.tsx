@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, MapPin, Phone, Mail, Navigation, CheckCircle2 } from 'lucide-react';
+import { Building2, MapPin, Phone, Mail, Navigation, CheckCircle2, ExternalLink } from 'lucide-react';
 
 export interface OfficeBranch {
   id: string;
@@ -16,8 +16,8 @@ const OFFICES: OfficeBranch[] = [
   {
     id: 'danang',
     name: 'Trụ Sở Chính Đà Nẵng',
-    region: 'Miền Trung',
-    address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
+    region: 'MIỀN TRUNG',
+    address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP. Đà Nẵng, Việt Nam',
     phone: '0236 374 5555 - 0915 059 666',
     email: 'info@ctcdn.vn',
     mapEmbedUrl: 'https://maps.google.com/maps?q=50B%20Nguy%E1%BB%85n%20Du,%20Ph%C6%B0%E1%BB%9Dng%20Th%E1%BA%A1ch%20Thang,%20Qu%E1%BA%ADn%20H%E1%BA%A3i%20Ch%C3%A2u,%20%C4%90%C3%A0%20N%E1%BA%B9ng&t=&z=17&ie=UTF8&iwloc=&output=embed',
@@ -26,84 +26,86 @@ const OFFICES: OfficeBranch[] = [
   {
     id: 'hanoi',
     name: 'Chi Nhánh Hà Nội',
-    region: 'Miền Bắc',
-    address: 'Tầng 6, Tòa nhà PVI, Số 1 Phạm Văn Bạch, Quận Cầu Giấy, TP Hà Nội',
+    region: 'MIỀN BẮC',
+    address: 'Tầng 6, Tòa nhà PVI, Số 1 Phạm Văn Bạch, Quận Cầu Giấy, TP. Hà Nội',
     phone: '024 3838 9999 - 0905 123 456',
     email: 'hanoi@ctcdn.vn',
-    mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.321856754023!2d105.78765437588147!3d21.019808980628867!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab52fa315bfb%3A0x550d510255b7aa2a!2zVMOyYSBuaMOgIFBWSSwgMSBQaOG6oW0gVsSDbiBC4bqhY2gsIFnDqm4gSG_DoCwgQ-G6p3UgR2nhuqV5LCBIw6AgTuG7mWksIFZpZXRuYW0!5e0!3m2!1sen!2s!4v1716345678902!5m2!1sen!2s'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=T%C3%B2a%20nh%C3%A0%20PVI,%20S%E1%BB%91%201%20Ph%E1%BA%A1m%20V%C4%83n%20B%E1%BA%A1ch,%20C%E1%BA%A7u%20Gi%E1%BA%A5y,%20H%C3%A0%20N%E1%BB%99i&t=&z=16&ie=UTF8&iwloc=&output=embed'
   },
   {
     id: 'hcm',
     name: 'Chi Nhánh TP. Hồ Chí Minh',
-    region: 'Miền Nam',
+    region: 'MIỀN NAM',
     address: 'Tầng 12, Tòa nhà Viettel Complex, 285 Cách Mạng Tháng 8, Phường 12, Quận 10, TP.HCM',
     phone: '028 3939 8888 - 0915 059 666',
     email: 'hcm@ctcdn.vn',
-    mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.467389182394!2d106.67568537583687!3d10.775475989373264!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f260be55555%3A0x8e833441a156291a!2zVmlldHRlbCBDb21wbGV4IEJ1aWxkaW5nLCAyODUgQ8OhY2ggTeG6oW5nIFRow6FuZyA4LCBQaMaw4budbmcgMTIsIFF14bqtbiAxMCwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oLCBWaWV0bmFt!5e0!3m2!1sen!2s!4v1716345678903!5m2!1sen!2s'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Viettel%20Complex,%20285%20C%C3%A1ch%20M%E1%BA%A1ng%20Th%C3%A1ng%208,%20Qu%E1%BA%ADn%2010,%20TP.HCM&t=&z=16&ie=UTF8&iwloc=&output=embed'
   }
 ];
 
-interface ContactOfficesProps {
-  onOfficeSelect?: (office: OfficeBranch) => void;
-}
-
-const ContactOffices: React.FC<ContactOfficesProps> = () => {
+const ContactOffices: React.FC = () => {
   const [selectedOfficeId, setSelectedOfficeId] = useState<string>('danang');
   const activeOffice = OFFICES.find(o => o.id === selectedOfficeId) || OFFICES[0];
 
   return (
-    <div className="mb-16">
+    <div className="mb-20">
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-corporate dark:text-white tracking-tight mb-3">
-          Mạng Lưới Văn Phòng & Chi Nhánh CTC
+        <span className="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-black rounded-full uppercase tracking-widest border border-amber-500/20">
+          MẠNG LƯỚI TOÀN QUỐC
+        </span>
+        <h2 className="text-2xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight mt-3 mb-3">
+          Văn Phòng & Chi Nhánh CTC
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">
-          CTC hiện có mặt tại cả 3 Miền Bắc - Trung - Nam với đội ngũ kỹ sư sẵn sàng hỗ trợ tư vấn và khảo sát tận nơi.
+        <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base leading-relaxed">
+          CTC sở hữu văn phòng đại diện tại cả 3 miền Bắc - Trung - Nam, sẵn sàng phục vụ tư vấn & hỗ trợ kỹ thuật trực tiếp.
         </p>
       </div>
 
       {/* Office Selector Tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {OFFICES.map((office) => {
           const isSelected = office.id === selectedOfficeId;
           return (
             <button
               key={office.id}
               onClick={() => setSelectedOfficeId(office.id)}
-              className={`p-6 rounded-2xl border text-left transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
+              className={`p-6 rounded-3xl border text-left transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-corporate text-white border-corporate shadow-xl scale-[1.02]'
-                  : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-100 dark:border-gray-700 hover:border-primary hover:shadow-md'
+                  ? 'bg-gradient-to-br from-corporate to-[#0c1f3d] text-white border-corporate shadow-xl scale-[1.02]'
+                  : 'bg-white dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 border-gray-100 dark:border-gray-700/70 hover:border-amber-400 hover:shadow-lg'
               }`}
             >
               {office.isHeadquarter && (
-                <span className={`absolute top-4 right-4 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                  isSelected ? 'bg-yellow-400 text-gray-900' : 'bg-primary/10 text-primary'
+                <span className={`absolute top-4 right-4 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${
+                  isSelected ? 'bg-amber-400 text-gray-950 shadow-md' : 'bg-amber-500/10 text-amber-500'
                 }`}>
                   Trụ sở chính
                 </span>
               )}
 
               <div>
-                <span className={`text-xs font-bold block mb-1 uppercase tracking-wider ${
-                  isSelected ? 'text-yellow-300' : 'text-primary'
+                <span className={`text-xs font-black block mb-2 uppercase tracking-widest ${
+                  isSelected ? 'text-amber-400' : 'text-amber-500'
                 }`}>
                   {office.region}
                 </span>
-                <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-                  <Building2 size={20} /> {office.name}
+                
+                <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+                  <Building2 size={20} className={isSelected ? 'text-amber-400' : 'text-corporate'} />
+                  {office.name}
                 </h3>
+
                 <p className={`text-xs line-clamp-2 mb-4 leading-relaxed ${
-                  isSelected ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                  isSelected ? 'text-gray-300' : 'text-gray-500 dark:text-gray-400'
                 }`}>
                   {office.address}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-white/10 dark:border-gray-700 flex items-center justify-between text-xs font-semibold">
+              <div className="pt-3 border-t border-white/10 dark:border-gray-700 flex items-center justify-between text-xs font-bold">
                 <span>{office.phone.split('-')[0]}</span>
-                <span className="flex items-center gap-1">
-                  Xem bản đồ <Navigation size={12} />
+                <span className="flex items-center gap-1 text-amber-400">
+                  Xem vị trí <Navigation size={12} />
                 </span>
               </div>
             </button>
@@ -112,48 +114,56 @@ const ContactOffices: React.FC<ContactOfficesProps> = () => {
       </div>
 
       {/* Active Office Map & Details View */}
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        
         {/* Left Office Info */}
-        <div className="lg:col-span-5 p-8 flex flex-col justify-between space-y-6">
+        <div className="lg:col-span-5 p-8 md:p-10 flex flex-col justify-between space-y-6">
           <div>
-            <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-extrabold rounded-full uppercase tracking-wider">
-              {activeOffice.region} • {activeOffice.isHeadquarter ? 'Trụ Sở Chính' : 'Văn Phòng Chi Nhánh'}
-            </span>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[11px] font-black rounded-full uppercase tracking-wider border border-amber-500/20">
+                {activeOffice.region} • {activeOffice.isHeadquarter ? 'TRỤ SỞ CHÍNH' : 'CHI NHÁNH VĂN PHÒNG'}
+              </span>
+            </div>
 
-            <h3 className="text-2xl font-extrabold text-corporate dark:text-white mt-3 mb-4">
+            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-5">
               {activeOffice.name}
             </h3>
 
-            <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+            <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
               <div className="flex items-start gap-3">
-                <MapPin size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                <span>{activeOffice.address}</span>
+                <MapPin size={20} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                <span className="leading-relaxed font-medium">{activeOffice.address}</span>
               </div>
+
               <div className="flex items-center gap-3">
-                <Phone size={20} className="text-primary flex-shrink-0" />
-                <span className="font-bold text-gray-900 dark:text-white">{activeOffice.phone}</span>
+                <Phone size={20} className="text-amber-500 flex-shrink-0" />
+                <a href={`tel:${activeOffice.phone.split('-')[0].replace(/\s+/g, '')}`} className="font-bold text-gray-900 dark:text-white hover:text-amber-500 transition-colors">
+                  {activeOffice.phone}
+                </a>
               </div>
+
               <div className="flex items-center gap-3">
-                <Mail size={20} className="text-primary flex-shrink-0" />
-                <span>{activeOffice.email}</span>
+                <Mail size={20} className="text-amber-500 flex-shrink-0" />
+                <a href={`mailto:${activeOffice.email}`} className="font-semibold text-gray-800 dark:text-gray-200 hover:text-amber-500 transition-colors">
+                  {activeOffice.email}
+                </a>
               </div>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-gray-100 dark:border-gray-700 space-y-3">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Dịch Vụ Tại Chi Nhánh:</p>
-            <div className="grid grid-cols-2 gap-2 text-xs text-gray-700 dark:text-gray-300">
-              <div className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 size={14} className="text-green-500" /> Khảo sát tận nơi
+          <div className="pt-6 border-t border-gray-100 dark:border-gray-700 space-y-4">
+            <div className="grid grid-cols-2 gap-2 text-xs text-gray-700 dark:text-gray-300 font-semibold">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-emerald-500" /> Khảo sát 24h
               </div>
-              <div className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 size={14} className="text-green-500" /> Thiết kế bản vẽ EPC
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-emerald-500" /> Bản vẽ thiết kế EPC
               </div>
-              <div className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 size={14} className="text-green-500" /> Thi công lắp đặt
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-emerald-500" /> Đấu nối EVN
               </div>
-              <div className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 size={14} className="text-green-500" /> Bảo hành & O&M
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-emerald-500" /> Bảo hành 25 năm
               </div>
             </div>
 
@@ -161,15 +171,15 @@ const ContactOffices: React.FC<ContactOfficesProps> = () => {
               href={`https://maps.google.com/?q=${encodeURIComponent(activeOffice.address)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full mt-4 py-3 bg-primary hover:bg-secondary text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
+              className="w-full py-3.5 bg-corporate hover:bg-black text-white rounded-2xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
             >
-              <Navigation size={16} /> Dẫn đường Google Maps tới văn phòng
+              <Navigation size={16} className="text-amber-400" /> Dẫn đường Google Maps tới vị trí
             </a>
           </div>
         </div>
 
         {/* Right Embedded Google Map */}
-        <div className="lg:col-span-7 h-80 lg:h-auto min-h-[350px] relative bg-gray-200 dark:bg-gray-700">
+        <div className="lg:col-span-7 h-96 lg:h-auto min-h-[380px] relative bg-gray-200 dark:bg-gray-900">
           <iframe
             src={activeOffice.mapEmbedUrl}
             className="w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-500"

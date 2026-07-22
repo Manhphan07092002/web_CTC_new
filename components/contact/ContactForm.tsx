@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle2, ShieldCheck, Sparkles, User, Phone, Mail, FileText, MapPin } from 'lucide-react';
+import { Send, CheckCircle2, ShieldCheck, Sparkles, User, Phone, Mail, FileText, MapPin, Award, Zap, Check, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '../../contexts/ToastContext';
 import analyticsTracking from '../../services/analytics-tracking';
@@ -16,12 +16,12 @@ const getApiBase = () => {
 const API_BASE = getApiBase();
 
 const SERVICES = [
-  'Điện Mặt Trời Mái Nhà Xưởng / Công Nghiệp',
-  'Điện Mặt Trời Trang Trại Solar Farm',
-  'Điện Mặt Trời Nổi Mặt Nước Floating',
-  'Hệ Thống Lưu Trữ Điện BESS',
-  'Trạm Biến Áp & Đường Dây Truyền Tải',
-  'Cung Cấp Thiết Bị Pin & Inverter Chính Hãng'
+  { id: 'rooftop', label: 'Điện Mặt Trời Mái Nhà Xưởng / Công Nghiệp' },
+  { id: 'farm', label: 'Điện Mặt Trời Trang Trại Solar Farm' },
+  { id: 'floating', label: 'Điện Mặt Trời Nổi Mặt Nước Floating' },
+  { id: 'bess', label: 'Hệ Thống Lưu Trữ Điện BESS Công Nghiệp' },
+  { id: 'station', label: 'Trạm Biến Áp & Đường Dây Truyền Tải' },
+  { id: 'equipment', label: 'Cung Cấp Thiết Bị Pin & Inverter Chính Hãng' }
 ];
 
 const ContactForm: React.FC = () => {
@@ -33,7 +33,7 @@ const ContactForm: React.FC = () => {
     name: '',
     phone: '',
     email: '',
-    service: SERVICES[0],
+    service: SERVICES[0].label,
     address: '',
     message: ''
   });
@@ -66,12 +66,12 @@ const ContactForm: React.FC = () => {
           name: '',
           phone: '',
           email: '',
-          service: SERVICES[0],
+          service: SERVICES[0].label,
           address: '',
           message: ''
         });
 
-        setTimeout(() => setFormStatus('idle'), 5000);
+        setTimeout(() => setFormStatus('idle'), 6000);
       } else {
         throw new Error(result.error || 'Gửi yêu cầu không thành công');
       }
@@ -83,176 +83,260 @@ const ContactForm: React.FC = () => {
   };
 
   return (
-    <div id="form-sec" className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-10 shadow-xl border border-gray-100 dark:border-gray-700">
-      <div className="flex items-center gap-2 mb-2">
-        <Sparkles size={20} className="text-yellow-500" />
-        <span className="text-xs font-bold text-primary uppercase tracking-wider">Tư vấn giải pháp EPC</span>
-      </div>
-
-      <h3 className="text-2xl md:text-3xl font-extrabold text-corporate dark:text-white mb-3">
-        Đăng Ký Nhận Báo Giá & Thiết Kế Miễn Phí
-      </h3>
-
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-        Điền thông tin bên dưới, chuyên viên kỹ thuật CTC sẽ liên hệ hỗ trợ tư vấn và lập phương án tài chính trong vòng <strong className="text-primary font-bold">15 phút</strong>.
-      </p>
-
-      {formStatus === 'success' ? (
-        <div className="bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 p-8 rounded-2xl text-center animate-fade-in my-8 space-y-4">
-          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/60 rounded-full flex items-center justify-center mx-auto text-green-600 dark:text-green-400">
-            <CheckCircle2 size={36} />
-          </div>
-          <h4 className="font-extrabold text-xl">Gửi Yêu Cầu Tư Vấn Thành Công!</h4>
-          <p className="text-sm max-w-md mx-auto leading-relaxed">
-            Cảm ơn quý khách hàng đã tin tưởng CTC. Đội ngũ kỹ sư của chúng tôi sẽ gọi lại trực tiếp qua số điện thoại để hỗ trợ quý khách.
-          </p>
-          <button
-            onClick={() => setFormStatus('idle')}
-            className="px-6 py-2.5 bg-green-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-green-700 transition-all"
-          >
-            Gửi thêm yêu cầu khác
-          </button>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Row 1: Name & Phone */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                Họ và tên khách hàng *
-              </label>
-              <div className="relative">
-                <input
-                  required
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Ví dụ: Nguyễn Văn An"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                />
-                <User size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                Số điện thoại liên hệ *
-              </label>
-              <div className="relative">
-                <input
-                  required
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="0915 059 666"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                />
-                <Phone size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </div>
-          </div>
-
-          {/* Row 2: Email & Address */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                Địa chỉ Email
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="khachhang@ctcdn.vn"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                />
-                <Mail size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                Địa điểm triển khai công trình
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="KCN Hòa Khánh, Đà Nẵng..."
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                />
-                <MapPin size={18} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </div>
-          </div>
-
-          {/* Service Selector Chips */}
+    <div id="form-sec" className="mb-20">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        {/* Left Column: CTC Value Proposition Cards */}
+        <div className="lg:col-span-5 flex flex-col justify-between bg-gradient-to-br from-corporate via-[#0f2447] to-[#081730] text-white p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden border border-white/10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          
           <div>
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-              Dịch vụ / Giải pháp quan tâm
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {SERVICES.map((srv) => (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-amber-300 border border-white/15 mb-6">
+              <Sparkles size={14} /> TẠI SAO CHỌN CTC?
+            </div>
+
+            <h3 className="text-2xl md:text-3xl font-black mb-4 leading-tight">
+              Đồng Hành Cùng Doanh Nghiệp Năng Lượng Xanh
+            </h3>
+
+            <p className="text-sm text-gray-300 leading-relaxed mb-8 font-light">
+              CTC là nhà thầu EPC trọn gói tiên phong mang lại giải pháp điện mặt trời công nghiệp tối ưu chi phí LCOE, tuân thủ nghiêm ngặt quy chuẩn an toàn.
+            </p>
+
+            {/* Benefit List */}
+            <div className="space-y-5">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-amber-500/20 text-amber-300 rounded-2xl flex-shrink-0 border border-amber-500/30">
+                  <Zap size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-white">Khảo Sát & Mô Phỏng 3D Miễn Phí</h4>
+                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5">
+                    Kỹ sư đến khảo sát thực địa mái nhà xưởng trong 24h & tính toán sản lượng điện năng PV*SOL chính xác 99%.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-blue-500/20 text-blue-300 rounded-2xl flex-shrink-0 border border-blue-500/30">
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-white">Bảo Hành Hiệu Suất 25 Năm</h4>
+                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5">
+                    Cam kết chất lượng thiết bị pin & Inverter chính hãng có chứng chỉ CO/CQ & bảo hiểm Munich RE quốc tế.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-emerald-500/20 text-emerald-300 rounded-2xl flex-shrink-0 border border-emerald-500/30">
+                  <Award size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-white">Thủ Tục Pháp Lý & EVN Trọn Gói</h4>
+                  <p className="text-xs text-gray-300 leading-relaxed mt-0.5">
+                    Hoàn tất thỏa thuận đấu nối EVN, thẩm duyệt PCCC và kiểm định an toàn kết cấu không lo chi phí phát sinh.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Direct Call Box */}
+          <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-bold text-gray-400 block uppercase">Cần hỗ trợ gấp?</span>
+              <a href="tel:0915059666" className="text-lg font-black text-amber-300 hover:underline">
+                0915 059 666
+              </a>
+            </div>
+            <a
+              href="tel:0915059666"
+              className="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-gray-950 font-bold text-xs rounded-xl transition-all shadow-lg flex items-center gap-1.5"
+            >
+              <Phone size={14} /> Gọi ngay
+            </a>
+          </div>
+        </div>
+
+        {/* Right Column: Contact Form */}
+        <div className="lg:col-span-7 bg-white dark:bg-gray-800 p-8 md:p-10 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700/80 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+              <span className="text-xs font-bold text-amber-500 uppercase tracking-widest">Đăng ký báo giá EPC</span>
+            </div>
+
+            <h3 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mb-3">
+              Yêu Cầu Tư Vấn & Thiết Kế Dự Án
+            </h3>
+
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+              Nhập thông tin của bạn vào biểu mẫu bên dưới. Chuyên viên dự án CTC sẽ chủ động gọi điện tư vấn chi tiết.
+            </p>
+
+            {formStatus === 'success' ? (
+              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 p-8 rounded-2xl text-center animate-fade-in my-6 space-y-4">
+                <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/60 rounded-full flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 size={36} />
+                </div>
+                <h4 className="font-extrabold text-xl">Gửi Yêu Cầu Tư Vấn Thành Công!</h4>
+                <p className="text-sm max-w-md mx-auto leading-relaxed">
+                  Cảm ơn quý khách hàng. Đội ngũ kỹ sư CTC sẽ liên hệ qua số điện thoại để trao đổi chi tiết phương án thi công.
+                </p>
                 <button
-                  type="button"
-                  key={srv}
-                  onClick={() => setFormData({ ...formData, service: srv })}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-left ${
-                    formData.service === srv
-                      ? 'bg-primary text-white shadow-md shadow-primary/20 scale-[1.02]'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
+                  onClick={() => setFormStatus('idle')}
+                  className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-emerald-700 transition-all"
+                >
+                  Gửi thêm yêu cầu tư vấn khác
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                
+                {/* Inputs: Name & Phone */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+                      Họ và tên *
+                    </label>
+                    <div className="relative">
+                      <input
+                        required
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Nguyễn Văn A"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                      />
+                      <User size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+                      Số điện thoại *
+                    </label>
+                    <div className="relative">
+                      <input
+                        required
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="0915 059 666"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                      />
+                      <Phone size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Inputs: Email & Address */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+                      Địa chỉ Email
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="congty@domain.com"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                      />
+                      <Mail size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+                      Địa điểm dự án / Tỉnh thành
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        placeholder="Ví dụ: KCN Hòa Khánh, Đà Nẵng"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                      />
+                      <MapPin size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Service Choice */}
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2.5">
+                    Hạng mục giải pháp quan tâm
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {SERVICES.map((srv) => {
+                      const isSelected = formData.service === srv.label;
+                      return (
+                        <button
+                          type="button"
+                          key={srv.id}
+                          onClick={() => setFormData({ ...formData, service: srv.label })}
+                          className={`p-3 rounded-2xl text-xs font-bold text-left transition-all flex items-center justify-between border ${
+                            isSelected
+                              ? 'bg-corporate text-white border-corporate shadow-md'
+                              : 'bg-gray-50 dark:bg-gray-700/40 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-amber-400'
+                          }`}
+                        >
+                          <span className="truncate pr-2">{srv.label}</span>
+                          {isSelected && <Check size={16} className="text-amber-400 flex-shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+                    Ghi chú chi tiết / Công suất dự kiến (kWp)
+                  </label>
+                  <div className="relative">
+                    <textarea
+                      rows={3}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      placeholder="Mô tả diện tích mái xưởng hoặc nhu cầu lắp đặt..."
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-2xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all"
+                    />
+                    <FileText size={18} className="absolute left-3.5 top-3.5 text-gray-400" />
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={formStatus === 'submitting'}
+                  className={`w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-base rounded-2xl transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 ${
+                    formStatus === 'submitting' ? 'opacity-70 cursor-not-allowed' : ''
                   }`}
                 >
-                  {srv}
+                  {formStatus === 'submitting' ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Đang xử lý thông tin...
+                    </span>
+                  ) : (
+                    <>
+                      <Send size={18} />
+                      <span>GỬI YÊU CẦU TƯ VẤN NGAY</span>
+                    </>
+                  )}
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Message Textarea */}
-          <div>
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-              Nội dung chi tiết / Yêu cầu công suất (kWp)
-            </label>
-            <div className="relative">
-              <textarea
-                rows={4}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Cần khảo sát tư vấn hệ thống điện mặt trời mái nhà xưởng 500kWp tại Đà Nẵng..."
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-              />
-              <FileText size={18} className="absolute left-3 top-3.5 text-gray-400" />
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={formStatus === 'submitting'}
-            className={`w-full py-4 bg-primary hover:bg-secondary text-white font-extrabold text-base rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${
-              formStatus === 'submitting' ? 'opacity-70 cursor-not-allowed' : ''
-            }`}
-          >
-            {formStatus === 'submitting' ? (
-              <span className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Đang gửi thông tin...
-              </span>
-            ) : (
-              <>
-                <Send size={20} />
-                <span>Gửi Yêu Cầu Báo Giá Ngay</span>
-              </>
+              </form>
             )}
-          </button>
+          </div>
+        </div>
 
-          <p className="text-center text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
-            <ShieldCheck size={14} className="text-green-500" /> Cam kết bảo mật 100% thông tin cá nhân khách hàng.
-          </p>
-        </form>
-      )}
+      </div>
     </div>
   );
 };
