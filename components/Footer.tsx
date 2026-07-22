@@ -77,11 +77,13 @@ const Footer: React.FC = () => {
     ['/track-order', 'Tra cứu đơn hàng'],
   ];
 
-  const solutionLinks = [
-    ['/solutions/rooftop', t('solutions.rooftop')],
-    ['/solutions/farm', t('solutions.farm')],
-    ['/solutions/floating', t('solutions.floating')],
-    ['/solutions', t('solutions.hero_subtitle')],
+  const solutionLinks: [string, string][] = [
+    ['/solutions/rooftop', 'Điện mặt trời Áp mái'],
+    ['/solutions/farm', 'Trang trại Điện mặt trời'],
+    ['/solutions/floating', 'Điện mặt trời Nổi'],
+    ['/solutions/electrical', 'Trạm biến áp & Đường dây'],
+    ['/solutions/datacenter', 'Hạ tầng CNTT & Data Center'],
+    ['/solutions/construction', 'Xây lắp Hạ tầng kỹ thuật'],
   ];
 
   return (
