@@ -106,7 +106,7 @@ const Projects: React.FC = () => {
        "name": project.location,
        "address": project.location
     },
-    "dateCreated": project.completionDate || project.date,
+    "dateCreated": project.completionDate || (project as any).date,
     "creator": {
        "@type": "Organization",
        "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",

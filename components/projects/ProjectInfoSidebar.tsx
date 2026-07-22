@@ -34,7 +34,7 @@ const ProjectInfoSidebar: React.FC<ProjectInfoSidebarProps> = ({ project }) => {
             <Calendar className="text-primary flex-shrink-0" size={20} />
             <div>
               <p className="font-bold text-sm text-gray-800 dark:text-gray-200">Thời gian</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{project.date || project.completionDate}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{(project as any).date || project.completionDate}</p>
             </div>
           </div>
         </div>

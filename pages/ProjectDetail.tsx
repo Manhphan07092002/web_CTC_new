@@ -60,7 +60,7 @@ const ProjectDetail: React.FC = () => {
     "name": p.title,
     "image": p.image?.startsWith('http') ? p.image : `${window.location.origin}${p.image}`,
     "description": p.description,
-    "dateCreated": p.date || p.completionDate,
+    "dateCreated": (p as any).date || p.completionDate,
     "locationCreated": {
       "@type": "Place",
       "name": p.location,

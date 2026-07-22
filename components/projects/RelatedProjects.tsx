@@ -45,7 +45,7 @@ const RelatedProjects: React.FC<RelatedProjectsProps> = ({ projects }) => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar size={14} />
-                  <span>{item.date || item.completionDate}</span>
+                  <span>{(item as any).date || item.completionDate}</span>
                 </div>
               </div>
             </div>

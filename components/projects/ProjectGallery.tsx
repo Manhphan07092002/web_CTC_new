@@ -34,7 +34,7 @@ const ProjectGallery: React.FC<ProjectGalleryProps> = ({ project }) => {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar size={16} />
-                <span>{project.date || project.completionDate}</span>
+                <span>{(project as any).date || project.completionDate}</span>
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, RotateCcw, FolderGrid, Check } from 'lucide-react';
+import { Search, Filter, RotateCcw, Folder, Check } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useProjectCategories } from '../../hooks/useCategories';
 
@@ -74,7 +74,7 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
             }`}
           >
             <span className="flex items-center gap-2">
-              <FolderGrid size={16} /> Tất cả dự án
+              <Folder size={16} /> Tất cả dự án
             </span>
             {selectedCategoryId === null && <Check size={16} />}
           </button>
