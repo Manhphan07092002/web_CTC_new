@@ -36,8 +36,8 @@ const NewsSchema = new Schema({
   featuredOrder: { type: Number, default: 0 }
 }, { timestamps: true });
 
-const NewsCategory = mongoose.models.NewsCategory || mongoose.model('NewsCategory', NewsCategorySchema);
-const News = mongoose.models.News || mongoose.model('News', NewsSchema);
+const NewsCategory: any = mongoose.models.NewsCategory || mongoose.model('NewsCategory', NewsCategorySchema);
+const News: any = mongoose.models.News || mongoose.model('News', NewsSchema);
 
 const DEFAULT_CATEGORIES = [
   { name: 'Tin Tức Công Ty', slug: 'tin-tuc-cong-ty', description: 'Tin tức, sự kiện và thông báo chính thức của CTC', icon: 'Building', color: '#3B82F6', order: 1 },
