@@ -561,7 +561,7 @@ export class EmailService {
                 <p>📞 Hotline: <strong>0915 059 666</strong></p>
                 <p>📧 Email: <strong>info@ctcdn.vn</strong></p>
                 <p>🏢 Địa chỉ: <strong>50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng</strong></p>
-                <p>🕒 Thời gian làm việc: <strong>Thứ 2 - Thứ 7: 8:00 - 17:30</strong></p>
+                <p>🕒 Giờ làm việc: <strong>Thứ 2 - Thứ 6 (08:00 - 17:30)</strong></p>
               </div>
               
               <div style="text-align: center;">

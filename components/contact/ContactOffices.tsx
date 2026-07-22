@@ -61,14 +61,14 @@ const ContactOffices: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Mail size={20} className="text-amber-500 flex-shrink-0" />
                 <a href="mailto:info@ctcdn.vn" className="font-semibold text-gray-800 dark:text-gray-200 hover:text-amber-500 transition-colors">
-                  info@ctcdn.vn - ctc.solar@ctcdn.vn
+                  info@ctcdn.vn - vandat@ctcdn.vn
                 </a>
               </div>
 
               <div className="flex items-center gap-3">
                 <Clock size={20} className="text-amber-500 flex-shrink-0" />
                 <span className="font-medium text-gray-700 dark:text-gray-300">
-                  Thứ 2 - Thứ 7: 08:00 - 17:30 (CN trực Hotline)
+                  Thứ 2 - Thứ 6: 08:00 - 17:30 (T7, CN trực Hotline)
                 </span>
               </div>
             </div>

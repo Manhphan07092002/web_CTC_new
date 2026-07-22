@@ -33,7 +33,7 @@ const ContactInfoCards: React.FC = () => {
       iconBg: 'from-blue-600 via-indigo-600 to-blue-700 text-white shadow-blue-500/30',
       title: 'Hỗ Trợ & Báo Giá',
       primaryText: 'info@ctcdn.vn',
-      secondaryText: 'Dự án: ctc.solar@ctcdn.vn',
+      secondaryText: 'Dự án: vandat@ctcdn.vn',
       actionText: 'Gửi Email báo giá',
       actionUrl: 'mailto:info@ctcdn.vn',
       copyText: 'info@ctcdn.vn'
@@ -56,11 +56,11 @@ const ContactInfoCards: React.FC = () => {
       icon: Clock,
       iconBg: 'from-purple-600 via-indigo-700 to-purple-800 text-white shadow-purple-500/30',
       title: 'Thời Gian Hoạt Động',
-      primaryText: 'Thứ 2 - Thứ 7: 08:00 - 17:30',
-      secondaryText: 'Chủ nhật: Trực Hotline khảo sát 24/7',
+      primaryText: 'Thứ 2 - Thứ 6: 08:00 - 17:30',
+      secondaryText: 'T7 & CN: Trực Hotline khảo sát 24/7',
       actionText: 'Đặt lịch hẹn tư vấn',
       actionUrl: '#form-sec',
-      copyText: 'Thứ 2 - Thứ 7: 08:00 - 17:30'
+      copyText: 'Thứ 2 - Thứ 6: 08:00 - 17:30'
     }
   ];
 
