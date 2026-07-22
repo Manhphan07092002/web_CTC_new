@@ -20,7 +20,7 @@ const OFFICES: OfficeBranch[] = [
     address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
     phone: '0236 374 5555 - 0915 059 666',
     email: 'info@ctcdn.vn',
-    mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.847325759783!2d108.22992137591056!3d16.073407984606735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421823e98d9d19%3A0x51162c0c8358b9c4!2zMjU5IFRo4bq_IEzhu68sIEFuIEjhuqNpIELhuq9jLCBTxqFuIFRyw6AsIMSQw6AgTuG6tW5nIDU1MDAwMCwgVmlldG5hbQ!5e0!3m2!1sen!2s!4v1716345678901!5m2!1sen!2s',
+    mapEmbedUrl: 'https://maps.google.com/maps?q=50B%20Nguy%E1%BB%85n%20Du,%20Ph%C6%B0%E1%BB%9Dng%20Th%E1%BA%A1ch%20Thang,%20Qu%E1%BA%ADn%20H%E1%BA%A3i%20Ch%C3%A2u,%20%C4%90%C3%A0%20N%E1%BA%B9ng&t=&z=17&ie=UTF8&iwloc=&output=embed',
     isHeadquarter: true
   },
   {
