@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ResourceItem } from './ResourceCard';
-import { X, Download, ExternalLink, FileText, Maximize2, Minimize2, Printer, Copy, Check } from 'lucide-react';
+import { X, Download, ExternalLink, FileText, Maximize2, Minimize2, Printer, Copy, Check, RefreshCw, ShieldCheck } from 'lucide-react';
 
 interface DocumentPreviewModalProps {
   resource: ResourceItem | null;
@@ -9,27 +9,32 @@ interface DocumentPreviewModalProps {
 
 const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({ resource, onClose }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [useGoogleViewer, setUseGoogleViewer] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
 
   if (!resource) return null;
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(resource.fileUrl);
+    const fullUrl = resource.fileUrl?.startsWith('http') 
+      ? resource.fileUrl 
+      : `${window.location.origin}${resource.fileUrl}`;
+    navigator.clipboard.writeText(fullUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Helper to determine viewer URL
-  const getViewerUrl = (fileUrl: string) => {
-    if (!fileUrl) return '';
-    // If it's a PDF, render directly or use Google Docs viewer for Office files
-    const lower = fileUrl.toLowerCase();
-    if (lower.endsWith('.pdf') || lower.includes('.pdf')) {
-      return fileUrl;
-    }
-    // Fallback to Google Docs viewer for doc, docx, xlsx, pptx
-    return `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+  const getFullFileUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${window.location.origin}${url}`;
   };
+
+  const fullUrl = getFullFileUrl(resource.fileUrl);
+
+  const viewerUrl = useGoogleViewer
+    ? `https://docs.google.com/gview?url=${encodeURIComponent(fullUrl)}&embedded=true`
+    : fullUrl;
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-2 md:p-6 animate-fade-in">
@@ -64,6 +69,19 @@ const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({ resource, o
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Toggle Viewer Engine */}
+            <button
+              onClick={() => {
+                setUseGoogleViewer(!useGoogleViewer);
+                setIframeError(false);
+              }}
+              className="p-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors text-xs font-semibold flex items-center gap-1.5"
+              title="Đổi trình xem tài liệu"
+            >
+              <RefreshCw size={14} className="text-yellow-400" />
+              <span className="hidden sm:inline">{useGoogleViewer ? 'Đổi sang Trực tiếp' : 'Dùng Google Viewer'}</span>
+            </button>
+
             {/* Copy Link Button */}
             <button
               onClick={handleCopyLink}
@@ -72,15 +90,6 @@ const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({ resource, o
             >
               {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
               <span className="hidden sm:inline">{copied ? 'Đã chép' : 'Link'}</span>
-            </button>
-
-            {/* Print Button */}
-            <button
-              onClick={() => window.print()}
-              className="p-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
-              title="In tài liệu"
-            >
-              <Printer size={18} />
             </button>
 
             {/* Toggle Fullscreen */}
@@ -94,7 +103,7 @@ const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({ resource, o
 
             {/* Direct Download Button */}
             <a
-              href={resource.fileUrl}
+              href={fullUrl}
               target="_blank"
               rel="noopener noreferrer"
               download
@@ -116,27 +125,42 @@ const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({ resource, o
         </div>
 
         {/* In-Browser Document Viewer Frame */}
-        <div className="flex-1 bg-gray-100 dark:bg-gray-950 relative overflow-hidden">
-          {resource.fileUrl ? (
+        <div className="flex-1 bg-gray-100 dark:bg-gray-950 relative overflow-hidden flex flex-col items-center justify-center">
+          {!iframeError ? (
             <iframe
-              src={getViewerUrl(resource.fileUrl)}
+              src={viewerUrl}
               className="w-full h-full border-0"
               title={resource.title}
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              onError={() => setIframeError(true)}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-gray-500">
-              <FileText size={64} className="text-gray-300 dark:text-gray-700 mb-4" />
-              <p className="text-lg font-bold">Không thể tải bản xem trước trực tiếp</p>
-              <p className="text-sm mt-1 mb-6">Bạn có thể tải tài liệu về máy để xem nội dung chi tiết.</p>
-              <a
-                href={resource.fileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-primary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg"
-              >
-                <Download size={18} /> Tải file về máy
-              </a>
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-gray-600 dark:text-gray-300 max-w-lg">
+              <div className="p-4 bg-primary/10 text-primary rounded-full mb-4">
+                <FileText size={48} />
+              </div>
+              <h4 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Xem Trước Trực Tiếp Mới</h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+                Tệp tài liệu <span className="font-semibold text-gray-800 dark:text-white">"{resource.title}"</span> đã sẵn sàng tải về thiết bị của bạn.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href={fullUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="px-6 py-3 bg-primary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:bg-secondary transition-all"
+                >
+                  <Download size={18} /> Tải file về máy ({resource.size || 'PDF/DOC'})
+                </a>
+                <a
+                  href={fullUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-300 transition-all"
+                >
+                  Mở tab riêng <ExternalLink size={16} />
+                </a>
+              </div>
             </div>
           )}
         </div>
@@ -148,15 +172,15 @@ const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({ resource, o
           </p>
           <div className="flex items-center gap-4">
             <span className="text-green-600 dark:text-green-400 font-semibold flex items-center gap-1">
-              ✓ Đã kiểm duyệt an toàn
+              <ShieldCheck size={14} /> Kiểm duyệt chính hãng CTC
             </span>
             <a 
-              href={resource.fileUrl} 
+              href={fullUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-primary hover:underline font-bold flex items-center gap-1"
             >
-              Mở trong cửa sổ mới <ExternalLink size={12} />
+              Mở file gốc <ExternalLink size={12} />
             </a>
           </div>
         </div>
