@@ -14,6 +14,8 @@ const News: React.FC<NewsProps> = ({ latestNews, isLoading = false }) => {
   const { t } = useLanguage();
   const { ref: newsRef, isInView } = useInView(0.1);
 
+  const displayNews = [...latestNews].slice(0, 3);
+
   return (
     <section ref={newsRef} className="py-24 bg-white dark:bg-slate-900 transition-colors duration-300">
       <div className="container max-w-[1440px] mx-auto px-6">
@@ -39,7 +41,7 @@ const News: React.FC<NewsProps> = ({ latestNews, isLoading = false }) => {
                 <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-800" />
               </div>
             </div>
-          )) : latestNews.map((news, index) => (
+          )) : displayNews.map((news, index) => (
             <Link
               key={`news-${index}-${news.id}`} 
               to={`/news/${news.id}`}
