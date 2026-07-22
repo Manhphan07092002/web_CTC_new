@@ -135,6 +135,7 @@ const ProductActions: React.FC<ProductActionsProps> = ({
           </div>
         </div>
       </div>
+    </div>
   );
 };
 
