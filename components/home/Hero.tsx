@@ -5,13 +5,40 @@ import { useLanguage } from '../../contexts/LanguageContext';
 const Hero: React.FC = () => {
   const { language } = useLanguage();
   
-  // Auto-incrementing years of experience starting from 2004 (incorporation date)
-  const currentYear = new Date().getFullYear();
-  const yearsOfExperience = currentYear - 2004;
+  // Animated counter state for Corporate Capabilities
+  const [countExp, setCountExp] = useState(0);
+  const [countProjects, setCountProjects] = useState(0);
+  const [countProvinces, setCountProvinces] = useState(0);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  useEffect(() => {
+    const duration = 2000;
+    const steps = 60;
+    const stepTime = duration / steps;
 
+    let currentStep = 0;
+    const timer = setInterval(() => {
+      currentStep++;
+      const progress = currentStep / steps;
+
+      // Smooth ease-out curve for counter
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+
+      setCountExp(Math.min(32, Math.floor(32 * easeOut)));
+      setCountProjects(Math.min(500, Math.floor(500 * easeOut)));
+      setCountProvinces(Math.min(34, Math.floor(34 * easeOut)));
+
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        setCountExp(32);
+        setCountProjects(500);
+        setCountProvinces(34);
+      }
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Multi-language corporate data dictionary
   const heroData = {
@@ -31,13 +58,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Liên hệ Zalo',
       panelTitle: 'NĂNG LỰC DOANH NGHIỆP',
       stat1Title: 'Kinh nghiệm',
-      stat1Val: `${yearsOfExperience}+ Năm`,
+      stat1Val: `${countExp}+ Năm`,
       stat1Desc: 'Phát triển vững mạnh',
       stat2Title: 'Dự án thực hiện',
-      stat2Val: '500+ Dự án',
+      stat2Val: `${countProjects}+ Dự án`,
       stat2Desc: 'Đạt chuẩn chất lượng',
       stat3Title: 'Phạm vi hoạt động',
-      stat3Val: '34 Tỉnh thành',
+      stat3Val: `${countProvinces} Tỉnh thành`,
       stat3Desc: 'Mạng lưới phủ rộng',
       partnerTitle: 'ĐỐI TÁC CHIẾN LƯỢC VIỄN THÔNG'
     },
@@ -57,13 +84,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Contact Zalo',
       panelTitle: 'CORPORATE CAPABILITIES',
       stat1Title: 'Experience',
-      stat1Val: `${yearsOfExperience}+ Years`,
+      stat1Val: `${countExp}+ Years`,
       stat1Desc: 'Sustainable growth',
       stat2Title: 'Projects Completed',
-      stat2Val: '500+ Projects',
+      stat2Val: `${countProjects}+ Projects`,
       stat2Desc: 'International standards',
       stat3Title: 'Network Coverage',
-      stat3Val: '34 Provinces',
+      stat3Val: `${countProvinces} Provinces`,
       stat3Desc: 'Nationwide operation',
       partnerTitle: 'TELECOM STRATEGIC PARTNERS'
     },
@@ -83,13 +110,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zalo 문의',
       panelTitle: '기업 핵심 역량',
       stat1Title: '경력',
-      stat1Val: `${yearsOfExperience}+ 년`,
+      stat1Val: `${countExp}+ 년`,
       stat1Desc: '지속 가능한 성장',
       stat2Title: '완료된 프로젝트',
-      stat2Val: '500+ 프로젝트',
+      stat2Val: `${countProjects}+ 프로젝트`,
       stat2Desc: '국제 표준 준수',
       stat3Title: '네트워크 범위',
-      stat3Val: '34개 성·시',
+      stat3Val: `${countProvinces}개 성·시`,
       stat3Desc: '전국적인 운영망',
       partnerTitle: '통신 전략적 파트너'
     },
@@ -109,13 +136,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zaloでお問い合わせ',
       panelTitle: '企業実績・能力',
       stat1Title: '事業経験',
-      stat1Val: `${yearsOfExperience}年以上`,
+      stat1Val: `${countExp}年以上`,
       stat1Desc: '持続的な発展と信頼',
       stat2Title: '完工プロジェクト',
-      stat2Val: '500件以上',
+      stat2Val: `${countProjects}件以上`,
       stat2Desc: '高品質規格の達成',
       stat3Title: '活動範囲',
-      stat3Val: '34省・市',
+      stat3Val: `${countProvinces}省・市`,
       stat3Desc: '全国をカバーするネットワーク',
       partnerTitle: '通信戦略パートナー'
     },
@@ -135,13 +162,13 @@ const Hero: React.FC = () => {
       ctaSecondary: '联系 Zalo',
       panelTitle: '企业核心能力',
       stat1Title: '行业经验',
-      stat1Val: `${yearsOfExperience}+ 年`,
+      stat1Val: `${countExp}+ 年`,
       stat1Desc: '稳健持续发展',
       stat2Title: '已完成项目',
-      stat2Val: '500+ 项目',
+      stat2Val: `${countProjects}+ 项目`,
       stat2Desc: '符合国际标准',
       stat3Title: '业务覆盖',
-      stat3Val: '34 省市',
+      stat3Val: `${countProvinces} 省市`,
       stat3Desc: '全国服务网络',
       partnerTitle: '电信战略合作伙伴'
     },
@@ -161,13 +188,13 @@ const Hero: React.FC = () => {
       ctaSecondary: 'Zalo Kontakt',
       panelTitle: 'UNTERNEHMENSKOMPETENZEN',
       stat1Title: 'Erfahrung',
-      stat1Val: `${yearsOfExperience}+ Jahre`,
+      stat1Val: `${countExp}+ Jahre`,
       stat1Desc: 'Nachhaltiges Wachstum',
       stat2Title: 'Fertiggestellte Projekte',
-      stat2Val: '500+ Projekte',
+      stat2Val: `${countProjects}+ Projekte`,
       stat2Desc: 'Höchste Qualitätsstandards',
       stat3Title: 'Netzabdeckung',
-      stat3Val: '34 Provinzen',
+      stat3Val: `${countProvinces} Provinzen`,
       stat3Desc: 'Landesweite Präsenz',
       partnerTitle: 'STRATEGISCHE PARTNER'
     }
