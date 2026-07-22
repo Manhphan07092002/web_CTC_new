@@ -1,9 +1,10 @@
 import React from 'react';
-import { Building2, MapPin, Phone, Mail, Navigation, CheckCircle2, Clock, ShieldCheck } from 'lucide-react';
+import { MapPin, Phone, Mail, Navigation, CheckCircle2, Clock, ShieldCheck, UserCheck } from 'lucide-react';
+import companyProfile from '../../constants/company_profile.json';
 
 const ContactOffices: React.FC = () => {
   const headquarterMapEmbedUrl = 'https://maps.google.com/maps?q=50B%20Nguy%E1%BB%85n%20Du,%20H%E1%BA%A3i%20Ch%C3%A2u,%20%C4%90%C3%A0%20N%E1%BA%B9ng&t=&z=17&ie=UTF8&iwloc=&output=embed';
-  const fullAddress = '50B Nguyễn Du, Hải Châu, Đà Nẵng';
+  const fullAddress = companyProfile.contact.address;
 
   return (
     <div className="mb-20">
@@ -32,12 +33,17 @@ const ContactOffices: React.FC = () => {
             </div>
 
             <h3 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mb-2 leading-tight">
-              CÔNG TY CỔ PHẦN XÂY LẮP BƯU ĐIỆN MIỀN TRUNG
+              {companyProfile.company_name.vi}
             </h3>
             
-            <p className="text-xs text-amber-600 dark:text-amber-400 font-bold mb-6 flex items-center gap-1.5">
-              <ShieldCheck size={16} /> Mã số thuế: 0400458940
-            </p>
+            <div className="space-y-1.5 mb-6 text-xs text-amber-600 dark:text-amber-400 font-bold">
+              <p className="flex items-center gap-1.5">
+                <ShieldCheck size={16} /> Mã số thuế: {companyProfile.tax_code}
+              </p>
+              <p className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                <UserCheck size={16} className="text-amber-500" /> Đại diện PL: {companyProfile.representative} (Tổng Giám Đốc)
+              </p>
+            </div>
 
             <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
               <div className="flex items-start gap-3">
@@ -47,8 +53,8 @@ const ContactOffices: React.FC = () => {
 
               <div className="flex items-center gap-3">
                 <Phone size={20} className="text-amber-500 flex-shrink-0" />
-                <a href="tel:0915059666" className="font-bold text-gray-900 dark:text-white hover:text-amber-500 transition-colors">
-                  0236 374 5555 - Hotline: 0915 059 666
+                <a href={`tel:${companyProfile.contact.hotline}`} className="font-bold text-gray-900 dark:text-white hover:text-amber-500 transition-colors">
+                  {companyProfile.contact.phone} - Hotline: {companyProfile.contact.hotline}
                 </a>
               </div>
 
