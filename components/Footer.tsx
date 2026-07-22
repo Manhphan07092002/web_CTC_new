@@ -78,12 +78,13 @@ const Footer: React.FC = () => {
   ];
 
   const solutionLinks: [string, string][] = [
-    ['/solutions/rooftop', 'Điện mặt trời Áp mái'],
-    ['/solutions/farm', 'Trang trại Điện mặt trời'],
-    ['/solutions/floating', 'Điện mặt trời Nổi'],
-    ['/solutions/electrical', 'Trạm biến áp & Đường dây'],
-    ['/solutions/datacenter', 'Hạ tầng CNTT & Data Center'],
-    ['/solutions/construction', 'Xây lắp Hạ tầng kỹ thuật'],
+    ['/solutions', 'Giải pháp toàn diện'],
+    ['/solutions/floating', 'Hạ tầng Viễn thông & CNTT'],
+    ['/solutions/rooftop', 'Điện mặt trời (Solar EPC)'],
+    ['/solutions/farm', 'Điện gió (Wind Power EPC)'],
+    ['/solutions/electrical', 'Đường dây & Trạm biến áp 110kV'],
+    ['/solutions/datacenter', 'Data Center & Hạ tầng số'],
+    ['/solutions/construction', 'Xây dựng Dân dụng & Công nghiệp'],
   ];
 
   return (
