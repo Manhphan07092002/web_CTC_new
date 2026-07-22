@@ -13,8 +13,6 @@ import {
   NewsFilterSidebar
 } from '../components/news';
 
-const ITEMS_PER_PAGE = 9; // 3 items per row x 3 rows = 9 items per page
-
 const News: React.FC = () => {
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -22,7 +20,11 @@ const News: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
+  // Default view mode: 'list' (1 hàng 1 tin tức)
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const { t, language } = useLanguage();
+
+  const itemsPerPage = viewMode === 'list' ? 6 : 9;
 
   useEffect(() => {
     // Track page view
@@ -74,17 +76,17 @@ const News: React.FC = () => {
     return news.filter(n => n.isFeatured);
   }, [news]);
 
-  // Reset page when filter or search changes
+  // Reset page when filter or search or viewMode changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategoryId, searchQuery]);
+  }, [selectedCategoryId, searchQuery, viewMode]);
 
   // Pagination calculation
-  const totalPages = Math.ceil(filteredNews.length / ITEMS_PER_PAGE) || 1;
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage) || 1;
   const paginatedNews = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredNews.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredNews, currentPage]);
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredNews.slice(start, start + itemsPerPage);
+  }, [filteredNews, currentPage, itemsPerPage]);
 
   const handleResetFilters = () => {
     setSelectedCategoryId(null);
@@ -129,7 +131,7 @@ const News: React.FC = () => {
       {/* Hero Banner Header */}
       <NewsHero />
 
-      {/* Main Container with Left Sidebar & Right 3-Column Grid */}
+      {/* Main Container with Left Sidebar & Right News Section */}
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
           
@@ -148,7 +150,7 @@ const News: React.FC = () => {
             />
           </div>
 
-          {/* Right Main Grid (w-full lg:w-3/4) */}
+          {/* Right Main Content (w-full lg:w-3/4) */}
           <div className="w-full lg:w-3/4">
             <NewsGrid 
               news={paginatedNews}
@@ -160,7 +162,9 @@ const News: React.FC = () => {
                 window.scrollTo({ top: 300, behavior: 'smooth' });
               }}
               totalItems={filteredNews.length}
-              itemsPerPage={ITEMS_PER_PAGE}
+              itemsPerPage={itemsPerPage}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
             />
           </div>
         </div>
