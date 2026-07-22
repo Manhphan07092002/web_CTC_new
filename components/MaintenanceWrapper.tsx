@@ -25,9 +25,8 @@ const MaintenanceWrapper: React.FC<MaintenanceWrapperProps> = ({ children }) => 
     );
   }
 
-  // Check if current route is admin route (using hash for HashRouter)
-  const currentHash = window.location.hash;
-  const isAdminRoute = currentHash.startsWith('#/admin');
+  // Check if current route is admin route
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // If maintenance mode is ON
   if (settings.maintenance) {
