@@ -12,6 +12,7 @@ interface ResourceGridProps {
   itemsPerPage: number;
   viewMode?: 'list' | 'grid';
   onViewModeChange?: (mode: 'list' | 'grid') => void;
+  onPreview?: (resource: ResourceItem) => void;
 }
 
 const ResourceGrid: React.FC<ResourceGridProps> = ({
@@ -22,7 +23,8 @@ const ResourceGrid: React.FC<ResourceGridProps> = ({
   totalItems,
   itemsPerPage,
   viewMode = 'list',
-  onViewModeChange
+  onViewModeChange,
+  onPreview
 }) => {
   const { t } = useLanguage();
 
@@ -88,6 +90,7 @@ const ResourceGrid: React.FC<ResourceGridProps> = ({
               key={`${item._id}-${idx}`}
               resource={item}
               viewMode="list"
+              onPreview={onPreview}
             />
           ))}
         </div>
@@ -99,6 +102,7 @@ const ResourceGrid: React.FC<ResourceGridProps> = ({
               key={`${item._id}-${idx}`}
               resource={item}
               viewMode="grid"
+              onPreview={onPreview}
             />
           ))}
         </div>

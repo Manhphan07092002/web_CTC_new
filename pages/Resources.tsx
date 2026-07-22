@@ -7,6 +7,8 @@ import {
   ResourcesHero,
   ResourceGrid,
   ResourceFilterSidebar,
+  FeaturedResources,
+  DocumentPreviewModal,
   ResourceItem,
   DocumentCategory
 } from '../components/resources';
@@ -18,6 +20,7 @@ const Resources: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [previewResource, setPreviewResource] = useState<ResourceItem | null>(null);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
@@ -131,8 +134,16 @@ const Resources: React.FC = () => {
       {/* Hero Banner Header */}
       <ResourcesHero />
 
-      {/* Main Container with Left Sidebar & Right Grid */}
+      {/* Main Container */}
       <div className="container mx-auto px-4 py-12">
+        
+        {/* Top Featured Documents Section */}
+        <FeaturedResources 
+          resources={enrichedResources}
+          onPreview={(res) => setPreviewResource(res)}
+        />
+
+        {/* Sidebar & Grid Section */}
         <div className="flex flex-col lg:flex-row gap-8">
           
           {/* Left Sidebar (w-full lg:w-1/4) */}
@@ -163,10 +174,17 @@ const Resources: React.FC = () => {
               itemsPerPage={itemsPerPage}
               viewMode={viewMode}
               onViewModeChange={setViewMode}
+              onPreview={(res) => setPreviewResource(res)}
             />
           </div>
         </div>
       </div>
+
+      {/* Interactive Web Document Preview Modal */}
+      <DocumentPreviewModal 
+        resource={previewResource}
+        onClose={() => setPreviewResource(null)}
+      />
     </div>
   );
 };
