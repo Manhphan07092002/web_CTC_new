@@ -16,22 +16,42 @@ if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir);
 }
 
+const ALLOWED_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/svg+xml',
+  'application/pdf',
+]);
+
+const ALLOWED_EXTENSIONS = new Set([
+  '.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.pdf'
+]);
+
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
     // Get path from query params or form data
-    const subPath = req.query.path || req.body.path || '';
-    const targetDir = subPath ? path.join(imagesDir, subPath as string) : imagesDir;
+    const subPath = String(req.query.path || req.body.path || '');
+    const targetDir = subPath ? path.join(imagesDir, subPath) : imagesDir;
     
+    // Security check: prevent directory traversal
+    const resolvedTarget = path.resolve(targetDir);
+    const resolvedImagesDir = path.resolve(imagesDir);
+    if (!resolvedTarget.startsWith(resolvedImagesDir)) {
+      return cb(new Error('Access denied: Invalid upload directory path'), imagesDir);
+    }
+
     // Ensure target directory exists
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
+    if (!fs.existsSync(resolvedTarget)) {
+      fs.mkdirSync(resolvedTarget, { recursive: true });
     }
     
-    cb(null, targetDir);
+    cb(null, resolvedTarget);
   },
   filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname) || '';
+    const ext = path.extname(file.originalname).toLowerCase() || '';
     cb(null, uniqueSuffix + ext);
   },
 });
@@ -40,6 +60,14 @@ const upload = multer({
   storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB max per file
+  },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ALLOWED_MIME_TYPES.has(file.mimetype) && ALLOWED_EXTENSIONS.has(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Invalid file type (${file.mimetype} / ${ext}). Allowed formats: ${Array.from(ALLOWED_EXTENSIONS).join(', ')}`));
+    }
   }
 });
 

@@ -75,8 +75,8 @@ const app = express();
 // SECURITY MIDDLEWARE (Thứ tự quan trọng!)
 // ============================================
 
-// 1. Trust proxy (nếu dùng reverse proxy như nginx)
-app.set('trust proxy', 1);
+// 1. Trust proxy (chỉ tin tưởng loopback/Nginx local để tránh IP spoofing)
+app.set('trust proxy', process.env.TRUST_PROXY || 'loopback');
 
 // 2. Prerender for SEO - serve pre-rendered HTML to bots
 // Only enable in production or when PRERENDER_TOKEN is set

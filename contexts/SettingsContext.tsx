@@ -21,6 +21,14 @@ export interface SiteSettings {
   twoFactorAuth: boolean;
   currency: string;
   taxRate: number;
+  // Cấu hình AI Chatbot
+  aiEnabled?: boolean;
+  aiProvider?: 'gemini' | 'groq' | 'openai' | 'deepseek' | 'custom';
+  aiApiKey?: string;
+  aiModel?: string;
+  aiBaseUrl?: string;
+  aiTemperature?: number;
+  aiSystemInstruction?: string;
 }
 
 interface SettingsContextType {
@@ -44,7 +52,14 @@ const defaultSettings: SiteSettings = {
   notifyEmail: true,
   twoFactorAuth: false,
   currency: 'VND',
-  taxRate: 10
+  taxRate: 10,
+  aiEnabled: true,
+  aiProvider: 'gemini',
+  aiApiKey: '',
+  aiModel: 'gemini-2.5-flash',
+  aiBaseUrl: '',
+  aiTemperature: 0.6,
+  aiSystemInstruction: ''
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { hashPassword, comparePassword, validatePasswordStrength } from '../utils/password';
 import { logger } from '../../utils/logger';
+import { generateToken, requireAuth, requireAdmin } from '../middleware/auth';
 
 const router = Router();
 
@@ -101,7 +102,7 @@ function isAccountLocked(email: string): { locked: boolean; remainingSeconds: nu
   return { locked: false, remainingSeconds: 0 };
 }
 
-router.get('/', async (req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
   try {
     let items = await db.users.getAll();
     
@@ -272,15 +273,24 @@ router.post('/login', async (req, res) => {
     
     // Don't send password to client
     const { password: _, ...sanitized } = userWithPassword;
+    
+    // Generate auth token
+    const token = generateToken({
+      id: sanitized.id || sanitized._id,
+      email: sanitized.email,
+      role: sanitized.role || 'viewer',
+      name: sanitized.name
+    });
+
     logger.info('Login successful:', sanitized.id);
-    res.json(sanitized);
+    res.json({ ...sanitized, token });
   } catch (error) {
     logger.error('Error during login', error);
     res.status(500).json({ message: 'Login failed' });
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const userData = { ...req.body };
     
@@ -311,10 +321,20 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
+    // Only Admin or the user themselves can update their user record
+    if (req.user?.role !== 'admin' && req.user?.id !== req.params.id) {
+      return res.status(403).json({ message: 'Forbidden: Bạn không có quyền sửa tài khoản này.' });
+    }
+
     const userData = { ...req.body };
     
+    // Non-admin cannot escalate their own role
+    if (req.user?.role !== 'admin' && userData.role && userData.role !== req.user?.role) {
+      delete userData.role;
+    }
+
     // If password is provided, validate and hash it
     if (userData.password && userData.password.trim()) {
       const validation = validatePasswordStrength(userData.password);
@@ -354,7 +374,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const ok = await db.users.delete(req.params.id);
     if (!ok) return res.status(404).json({ message: 'User not found' });

@@ -89,9 +89,9 @@ const CalculatorWrapper: React.FC = () => {
 
           {/* Feature list — left column, glassmorphism style */}
           <div className="xl:w-[300px] flex-shrink-0 flex flex-col gap-4">
-            {features.map(({ icon: Icon, title, desc, iconColor, iconBg }) => (
+            {features.map(({ icon: Icon, title, desc, iconColor, iconBg }, index) => (
               <div
-                key={title}
+                key={`${title}-${index}`}
                 className="calc-glass-card group flex items-start gap-4 rounded-2xl p-5 cursor-default"
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg} ${iconColor}`}>

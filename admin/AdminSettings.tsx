@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Image as ImageIcon, Globe, Mail, Phone, MapPin, Facebook, Instagram, Youtube, Linkedin } from 'lucide-react';
+import { Save, Image as ImageIcon, Globe, Mail, Phone, MapPin, Facebook, Instagram, Youtube, Linkedin, Bot, Key, Eye, EyeOff, Sparkles, Cpu, Sliders } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
@@ -27,6 +27,12 @@ interface SettingsData {
   twoFactorAuth: boolean;
   currency: string;
   taxRate: number;
+  // Cấu hình AI Chatbot
+  aiEnabled?: boolean;
+  aiApiKey?: string;
+  aiModel?: string;
+  aiTemperature?: number;
+  aiSystemInstruction?: string;
 }
 
 const Settings: React.FC = () => {
@@ -36,6 +42,7 @@ const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   const [imagePickerTarget, setImagePickerTarget] = useState<'logo' | 'logoHeader' | 'logoFooter' | 'favicon' | 'appleTouchIcon'>('logo');
   
   const [formData, setFormData] = useState<SettingsData>({
@@ -57,7 +64,12 @@ const Settings: React.FC = () => {
     notifyEmail: true,
     twoFactorAuth: false,
     currency: 'VND',
-    taxRate: 10
+    taxRate: 10,
+    aiEnabled: true,
+    aiApiKey: '',
+    aiModel: 'gemini-2.5-flash',
+    aiTemperature: 0.6,
+    aiSystemInstruction: ''
   });
 
   useEffect(() => {
@@ -101,9 +113,14 @@ const Settings: React.FC = () => {
       if (formData.maintenance) {
         showToast('⚠️ Chế độ bảo trì đã BẬT - Website công khai sẽ hiển thị trang bảo trì', 'info');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving settings:', error);
-      showToast('Lỗi khi lưu cài đặt', 'error');
+      const msg = error?.message || '';
+      if (msg.includes('Unauthorized') || msg.includes('401') || msg.includes('Token')) {
+        showToast('🔒 Phiên đăng nhập đã hết hạn hoặc chưa có Token. Vui lòng đăng xuất và đăng nhập lại Admin.', 'error');
+      } else {
+        showToast(`Lỗi khi lưu cài đặt: ${msg || 'Không thể lưu'}`, 'error');
+      }
     }
     setSaving(false);
   };
@@ -499,6 +516,261 @@ const Settings: React.FC = () => {
                   className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 />
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* AI Chatbot & Multi-Provider API Settings */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <Bot size={22} className="text-primary" />
+              Cấu hình AI Chatbot & Nhiều Nhà Cung Cấp API (Multi-Provider AI)
+            </h2>
+            <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase">
+              <Sparkles size={14} /> Gemini • Groq • OpenAI • DeepSeek
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {/* Toggle AI Enabled */}
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50/50 to-sky-50/50 border border-blue-100 rounded-xl">
+              <div>
+                <h3 className="font-bold text-gray-800 flex items-center gap-2">
+                  <Cpu size={18} className="text-primary" /> Kích hoạt Trợ Lý AI Chatbot
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">Bật hoặc tắt tính năng Chatbot tư vấn khách hàng tự động trên toàn website</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, aiEnabled: !formData.aiEnabled })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                  formData.aiEnabled ? 'bg-primary' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                    formData.aiEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Provider & Model Select Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Provider Select */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Globe size={16} className="text-primary" /> Nhà Cung Cấp AI (AI Provider)
+                </label>
+                <select
+                  value={formData.aiProvider || 'gemini'}
+                  onChange={(e) => {
+                    const provider = e.target.value as any;
+                    const defaultModels: Record<string, string> = {
+                      gemini: 'gemini-2.5-flash',
+                      groq: 'llama-3.3-70b-versatile',
+                      openai: 'gpt-4o-mini',
+                      deepseek: 'deepseek-chat',
+                      custom: 'llama-3.3-70b-versatile'
+                    };
+                    setFormData({ 
+                      ...formData, 
+                      aiProvider: provider,
+                      aiModel: defaultModels[provider] || 'gemini-2.5-flash'
+                    });
+                  }}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 font-bold text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+                >
+                  <option value="gemini">✨ Google Gemini AI (Miễn phí & Phản hồi nhanh)</option>
+                  <option value="groq">⚡ Groq Cloud AI (Siêu tốc độ - Llama 3.3 / DeepSeek R1)</option>
+                  <option value="openai">🤖 OpenAI (ChatGPT - GPT-4o / GPT-4o-mini)</option>
+                  <option value="deepseek">🐳 DeepSeek AI (Chính xác & Tiết kiệm)</option>
+                  <option value="custom">🛠️ Custom Endpoint API (OpenAI Compatible API)</option>
+                </select>
+              </div>
+
+              {/* Model Select */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Cpu size={16} className="text-primary" /> Mẫu Mô Hình (Model Name)
+                </label>
+                {(formData.aiProvider || 'gemini') === 'gemini' && (
+                  <select
+                    value={formData.aiModel || 'gemini-2.5-flash'}
+                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                  >
+                    <option value="gemini-2.5-flash">gemini-2.5-flash (Khuyên dùng - Nhanh & Thông minh)</option>
+                    <option value="gemini-2.5-pro">gemini-2.5-pro (Tư vấn chuyên sâu)</option>
+                    <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                    <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                  </select>
+                )}
+
+                {(formData.aiProvider || 'gemini') === 'groq' && (
+                  <select
+                    value={formData.aiModel || 'llama-3.3-70b-versatile'}
+                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                  >
+                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Siêu tốc & Thông minh)</option>
+                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản hồi tức thì)</option>
+                    <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b (Suy luận cao cấp)</option>
+                    <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                  </select>
+                )}
+
+                {(formData.aiProvider || 'gemini') === 'openai' && (
+                  <select
+                    value={formData.aiModel || 'gpt-4o-mini'}
+                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                  >
+                    <option value="gpt-4o-mini">gpt-4o-mini (Nhanh & Rẻ)</option>
+                    <option value="gpt-4o">gpt-4o (Thông minh nhất)</option>
+                    <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                  </select>
+                )}
+
+                {(formData.aiProvider || 'gemini') === 'deepseek' && (
+                  <select
+                    value={formData.aiModel || 'deepseek-chat'}
+                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                  >
+                    <option value="deepseek-chat">deepseek-chat (V3 - Chuẩn tư vấn)</option>
+                    <option value="deepseek-reasoner">deepseek-reasoner (R1 - Suy luận)</option>
+                  </select>
+                )}
+
+                {(formData.aiProvider || 'gemini') === 'custom' && (
+                  <input
+                    type="text"
+                    value={formData.aiModel || ''}
+                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
+                    placeholder="Nhập tên Model (Ví dụ: llama3, mistral, custom-model)"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Custom Base URL (If Custom or custom endpoint) */}
+            {formData.aiProvider === 'custom' && (
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Globe size={16} className="text-primary" /> API Base URL Endpoint
+                </label>
+                <input
+                  type="url"
+                  value={formData.aiBaseUrl || ''}
+                  onChange={(e) => setFormData({ ...formData, aiBaseUrl: e.target.value })}
+                  placeholder="https://api.groq.com/openai/v1 hoặc https://your-domain.com/v1"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 font-mono text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                />
+              </div>
+            )}
+
+            {/* API Key Field (Multi-Key Pool) */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center justify-between flex-wrap gap-2">
+                <span className="flex items-center gap-1.5">
+                  <Key size={16} className="text-amber-500" />
+                  Danh sách API Key (Nhập 1 hoặc nhiều Key)
+                  <span className="bg-amber-100 text-amber-800 text-[11px] px-2 py-0.5 rounded-full font-bold">
+                    🔄 Tự động đổi Key khi hết Quota
+                  </span>
+                </span>
+                
+                {/* Dynamic get API key link */}
+                {(formData.aiProvider || 'gemini') === 'groq' && (
+                  <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" className="text-xs text-primary font-bold hover:underline">
+                    Lấy Groq API Key miễn phí tại console.groq.com &rarr;
+                  </a>
+                )}
+                {(formData.aiProvider || 'gemini') === 'gemini' && (
+                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-xs text-primary font-bold hover:underline">
+                    Lấy Gemini API Key miễn phí tại Google AI Studio &rarr;
+                  </a>
+                )}
+                {(formData.aiProvider || 'gemini') === 'openai' && (
+                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-xs text-primary font-bold hover:underline">
+                    Lấy OpenAI API Key tại platform.openai.com &rarr;
+                  </a>
+                )}
+                {(formData.aiProvider || 'gemini') === 'deepseek' && (
+                  <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener noreferrer" className="text-xs text-primary font-bold hover:underline">
+                    Lấy DeepSeek API Key tại platform.deepseek.com &rarr;
+                  </a>
+                )}
+              </label>
+
+              <div className="relative">
+                <textarea
+                  value={formData.aiApiKey || ''}
+                  onChange={(e) => setFormData({ ...formData, aiApiKey: e.target.value })}
+                  rows={3}
+                  placeholder={
+                    (formData.aiProvider || 'gemini') === 'groq' ? "gsk_key1...\ngsk_key2...\ngsk_key3..." :
+                    (formData.aiProvider || 'gemini') === 'openai' ? "sk-key1...\nsk-key2..." :
+                    (formData.aiProvider || 'gemini') === 'deepseek' ? "sk-key1...\nsk-key2..." :
+                    "AIzaSy_key1...\nAIzaSy_key2..."
+                  }
+                  className="w-full border border-gray-300 rounded-xl pl-4 pr-11 py-2.5 font-mono text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 p-1"
+                  title={showApiKey ? "Ẩn bớt độ nhìn" : "Xem API Key"}
+                >
+                  {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                💡 <strong>Mẹo chống gián đoạn:</strong> Bạn có thể nhập nhiều API Key (mỗi Key 1 dòng hoặc cách nhau bằng dấu phẩy <code>,</code>). Khi 1 Key bị hết Quota hoặc giới hạn số request (HTTP 429), hệ thống sẽ <strong>tự động chuyển sang Key tiếp theo</strong> ngay lập tức!
+              </p>
+            </div>
+
+            {/* Temperature Slider */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Sliders size={16} className="text-sky-500" /> Nhiệt độ sáng tạo (Temperature)
+                </span>
+                <span className="text-xs font-bold text-primary px-2 py-0.5 bg-primary/10 rounded">
+                  {formData.aiTemperature ?? 0.6}
+                </span>
+              </label>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-400 font-medium">0.0 (Chính xác)</span>
+                <input
+                  type="range"
+                  min="0.0"
+                  max="1.0"
+                  step="0.1"
+                  value={formData.aiTemperature ?? 0.6}
+                  onChange={(e) => setFormData({ ...formData, aiTemperature: parseFloat(e.target.value) })}
+                  className="flex-1 accent-primary h-2 bg-gray-200 rounded-lg cursor-pointer"
+                />
+                <span className="text-xs text-gray-400 font-medium">1.0 (Sáng tạo)</span>
+              </div>
+            </div>
+
+            {/* System Prompt / Instructions */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                <Sparkles size={16} className="text-amber-500" /> Kịch bản chỉ dẫn AI (System Prompt)
+              </label>
+              <textarea
+                value={formData.aiSystemInstruction || ''}
+                onChange={(e) => setFormData({ ...formData, aiSystemInstruction: e.target.value })}
+                rows={5}
+                placeholder="Ví dụ: Bạn là trợ lý tư vấn chuyên nghiệp của CTC Solar. Nhiệm vụ của bạn là giải đáp câu hỏi của khách hàng về điện mặt trời..."
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 font-sans text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              />
+              <p className="text-xs text-gray-400 mt-1">💡 Định hình phong cách trả lời, thông tin giá cả, số Hotline và kịch bản chốt sale của AI Chatbot.</p>
             </div>
           </div>
         </div>

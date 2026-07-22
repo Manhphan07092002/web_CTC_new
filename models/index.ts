@@ -427,6 +427,14 @@ export interface ISettings extends BaseDocument {
   twoFactorAuth: boolean;
   currency: string;
   taxRate: number;
+  // Cấu hình AI Chatbot
+  aiEnabled?: boolean;
+  aiProvider?: 'gemini' | 'groq' | 'openai' | 'deepseek' | 'custom';
+  aiApiKey?: string;
+  aiModel?: string;
+  aiBaseUrl?: string;
+  aiTemperature?: number;
+  aiSystemInstruction?: string;
 }
 
 export interface IMigrationLog extends BaseDocument {
@@ -456,7 +464,15 @@ const SettingsSchema = new Schema<ISettings>({
   notifyEmail: { type: Boolean, default: true },
   twoFactorAuth: { type: Boolean, default: false },
   currency: { type: String, default: 'VND' },
-  taxRate: { type: Number, default: 10 }
+  taxRate: { type: Number, default: 10 },
+  // Cấu hình AI Chatbot
+  aiEnabled: { type: Boolean, default: true },
+  aiProvider: { type: String, default: 'gemini' },
+  aiApiKey: { type: String, default: '' },
+  aiModel: { type: String, default: 'gemini-2.5-flash' },
+  aiBaseUrl: { type: String, default: '' },
+  aiTemperature: { type: Number, default: 0.6 },
+  aiSystemInstruction: { type: String, default: '' }
 }, { timestamps: true });
 
 const MigrationLogSchema = new Schema({

@@ -60,10 +60,19 @@ const getCurrentLanguage = (): string => {
   }
 };
 
-// Get auth token from localStorage
+// Get auth token from localStorage / session
 const getAuthToken = (): string | null => {
   try {
-    return localStorage.getItem('token') || localStorage.getItem('auth_token');
+    const directToken = localStorage.getItem('token') || localStorage.getItem('auth_token');
+    if (directToken) return directToken;
+
+    const adminSession = localStorage.getItem('admin_session');
+    if (adminSession) {
+      const parsed = JSON.parse(adminSession);
+      if (parsed?.token) return parsed.token;
+      if (parsed?.user?.token) return parsed.user.token;
+    }
+    return null;
   } catch {
     return null;
   }

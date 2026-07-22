@@ -2,6 +2,21 @@ import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const spaFallbackPlugin = () => ({
+  name: 'spa-fallback-plugin',
+  configureServer(server: any) {
+    server.middlewares.use((req: any, res: any, next: any) => {
+      const url = req.url || '';
+      const acceptsHtml = req.headers.accept?.includes('text/html');
+      // If navigating to an HTML page route without explicit file extension, serve index.html
+      if (req.method === 'GET' && acceptsHtml && !url.startsWith('/api') && !url.includes('.ts') && !url.includes('.js') && !url.includes('.css') && !url.includes('.png') && !url.includes('.jpg') && !url.includes('.svg') && !url.includes('.json')) {
+        req.url = '/index.html';
+      }
+      next();
+    });
+  }
+});
+
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
@@ -16,13 +31,7 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
-      plugins: [react()],
-      define: {
-        // NOTE: Only expose FRONTEND-safe env vars here.
-        // NEVER expose server-side secrets (DB URIs, private keys, etc.)
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      },
+      plugins: [spaFallbackPlugin(), react()],
       build: {
         // Split large vendor libraries into separate cacheable chunks
         rollupOptions: {

@@ -22,7 +22,7 @@ import ProjectForm from './ProjectForm';
 import NewsForm from './NewsForm';
 import TeamManagement from './TeamManagement';
 import FileManager from './FileManager';
-import Settings from './Settings';
+import Settings from './AdminSettings';
 import ChatManagement from './ChatManagement';
 import ContactsManagement from './ContactsManagement';
 import CategoryManagement from './CategoryManagement';

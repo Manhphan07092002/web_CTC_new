@@ -11,6 +11,7 @@ interface User {
 
 interface SessionData {
   user: User;
+  token?: string;
   loginTime: number;
   lastActivity: number;
 }
@@ -46,6 +47,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
     localStorage.removeItem('admin_session');
     localStorage.removeItem('admin_user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('auth_token');
     console.log('Session cleared');
   }, []);
 
@@ -211,6 +214,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       
       // Login successful
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('auth_token', data.token);
+      }
       
       const loggedInUser: User = {
         id: data.id,
@@ -224,6 +231,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const now = Date.now();
       const sessionData: SessionData = {
         user: loggedInUser,
+        token: data.token,
         loginTime: now,
         lastActivity: now
       };

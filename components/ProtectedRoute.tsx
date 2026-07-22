@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Loading from './Loading';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isInitialized } = useAuth();
@@ -53,11 +54,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   // Đợi cho đến khi session được kiểm tra xong
   if (!isInitialized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <Loading fullScreen={true} />;
   }
 
   // Sau khi đã kiểm tra session, nếu không authenticated thì redirect

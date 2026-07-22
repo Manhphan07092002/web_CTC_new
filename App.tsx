@@ -18,17 +18,19 @@ import { SettingsProvider } from './contexts/SettingsContext';
 import { CartProvider } from './contexts/CartContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Lazy Load Pages for Performance
-const Home = lazy(() => import('./pages/Home'));
-const Contact = lazy(() => import('./pages/Contact'));
-const About = lazy(() => import('./pages/About'));
-const Products = lazy(() => import('./pages/Products'));
+// Core Pages (Eagerly imported for Instant 0ms Navigation)
+import Home from './pages/Home';
+import Products from './pages/Products';
+import Projects from './pages/Projects';
+import News from './pages/News';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import Solutions from './pages/Solutions';
+
+// Secondary Pages (Lazy Loaded)
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
-const Projects = lazy(() => import('./pages/Projects'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
-const News = lazy(() => import('./pages/News'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
-const Solutions = lazy(() => import('./pages/Solutions'));
 const SolutionRooftop = lazy(() => import('./pages/SolutionRooftop'));
 const SolutionFarm = lazy(() => import('./pages/SolutionFarm'));
 const SolutionFloating = lazy(() => import('./pages/SolutionFloating'));
@@ -52,7 +54,7 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       <Header />
       <main className="flex-grow w-full dark:text-gray-100">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading fullScreen={false} />}>
           {children}
         </Suspense>
       </main>

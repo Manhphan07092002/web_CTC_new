@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
+import { requireAdmin } from '../middleware/auth';
 
 const router = Router();
 
@@ -47,7 +48,7 @@ router.get('/maintenance', async (req, res) => {
 });
 
 // PUT /api/settings - Update site settings
-router.put('/', async (req, res) => {
+router.put('/', requireAdmin, async (req, res) => {
   try {
     const updated = await db.settings.update(req.body);
     res.json(updated);
