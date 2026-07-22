@@ -174,7 +174,7 @@ const Header: React.FC = () => {
   };
 
   const getLogoClass = () => {
-    return "h-9 sm:h-11 w-auto object-contain transition-all duration-300 rounded-lg shadow-sm border border-white/10";
+    return "h-11 sm:h-13 md:h-14 w-auto object-contain transition-all duration-300 rounded-xl shadow-md border border-white/20 hover:scale-105";
   };
 
   return (
