@@ -29,6 +29,18 @@ function parseJsonEntry(entry: AdmZip.IZipEntry) {
 }
 
 /**
+ * Sanitizes object by removing _id, __v, id to prevent E11000 duplicate key errors
+ */
+function cleanDocForInsert(doc: any) {
+  if (!doc || typeof doc !== 'object') return doc;
+  const clone = { ...doc };
+  delete clone._id;
+  delete clone.__v;
+  delete clone.id;
+  return clone;
+}
+
+/**
  * IMPORT BACKUP (Upload ZIP containing all site JSON collections)
  */
 router.post('/upload', upload.single('file'), async (req, res) => {
@@ -126,7 +138,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(projectCategoriesEntry) || [];
       await ProjectCategory.deleteMany({});
       for (const item of items) {
-        await new ProjectCategory(item).save();
+        try {
+          await new ProjectCategory(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['ProjectCategories'] = items.length;
     }
@@ -137,7 +151,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(projectsEntry) || [];
       await Project.deleteMany({});
       for (const item of items) {
-        await new Project(item).save();
+        try {
+          await new Project(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Projects'] = items.length;
       logs.push(`Đã nhập ${items.length} dự án.`);
@@ -150,7 +166,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(newsCategoriesEntry) || [];
       await NewsCategory.deleteMany({});
       for (const item of items) {
-        await new NewsCategory(item).save();
+        try {
+          await new NewsCategory(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['NewsCategories'] = items.length;
     }
@@ -198,7 +216,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(docCategoriesEntry) || [];
       await DocumentCategory.deleteMany({});
       for (const item of items) {
-        await new DocumentCategory(item).save();
+        try {
+          await new DocumentCategory(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['DocCategories'] = items.length;
     }
@@ -209,7 +229,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(resourcesEntry) || [];
       await Resource.deleteMany({});
       for (const item of items) {
-        await new Resource(item).save();
+        try {
+          await new Resource(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Resources'] = items.length;
       logs.push(`Đã nhập ${items.length} tài liệu kỹ thuật.`);
@@ -222,7 +244,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(ordersEntry) || [];
       await Order.deleteMany({});
       for (const item of items) {
-        await new Order(item).save();
+        try {
+          await new Order(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Orders'] = items.length;
     }
@@ -232,7 +256,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(orderItemsEntry) || [];
       await OrderItem.deleteMany({});
       for (const item of items) {
-        await new OrderItem(item).save();
+        try {
+          await new OrderItem(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
     }
 
@@ -242,7 +268,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(contactsEntry) || [];
       await Contact.deleteMany({});
       for (const item of items) {
-        await new Contact(item).save();
+        try {
+          await new Contact(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Contacts'] = items.length;
     }
@@ -252,7 +280,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(reviewsEntry) || [];
       await Review.deleteMany({});
       for (const item of items) {
-        await new Review(item).save();
+        try {
+          await new Review(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Reviews'] = items.length;
     }
@@ -263,7 +293,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(settingsEntry) || [];
       if (Array.isArray(items) && items.length > 0) {
         await Settings.deleteMany({});
-        await new Settings(items[0]).save();
+        await new Settings(cleanDocForInsert(items[0])).save();
         importCounts['Settings'] = 1;
       }
     }
@@ -273,7 +303,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(teamEntry) || [];
       await TeamMember.deleteMany({});
       for (const item of items) {
-        await new TeamMember(item).save();
+        try {
+          await new TeamMember(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Team'] = items.length;
     }
@@ -283,7 +315,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(testimonialsEntry) || [];
       await Testimonial.deleteMany({});
       for (const item of items) {
-        await new Testimonial(item).save();
+        try {
+          await new Testimonial(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Testimonials'] = items.length;
     }
@@ -293,21 +327,42 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       const items = parseJsonEntry(partnersEntry) || [];
       await Partner.deleteMany({});
       for (const item of items) {
-        await new Partner(item).save();
+        try {
+          await new Partner(cleanDocForInsert(item)).save();
+        } catch (e) {}
       }
       importCounts['Partners'] = items.length;
     }
 
-    // 8. Process Users (Safely restore without deleting active admin)
+    // 8. Process Users (Safely restore without E11000 duplicate key errors)
     const usersEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('users.json'));
     if (usersEntry) {
       const sqlUsers = parseJsonEntry(usersEntry) || [];
       let importedUserCount = 0;
       for (const u of sqlUsers) {
-        const existing = await User.findOne({ username: u.username || u.Username || u.email });
-        if (!existing) {
-          await new User(u).save();
-          importedUserCount++;
+        try {
+          const targetEmail = (u.email || u.username || u.Username || '').toLowerCase();
+          if (!targetEmail) continue;
+
+          // Strip _id and __v to prevent MongoDB duplicate _id error
+          const uClean = cleanDocForInsert(u);
+
+          const existing = await User.findOne({
+            $or: [
+              { email: targetEmail },
+              { username: targetEmail }
+            ]
+          });
+
+          if (!existing) {
+            await new User(uClean).save();
+            importedUserCount++;
+          } else {
+            // Update existing user without touching _id
+            await User.updateOne({ _id: existing._id }, { $set: uClean });
+          }
+        } catch (err: any) {
+          logs.push(`Lỗi Người dùng [${u.email || u.username}]: ${err.message}`);
         }
       }
       importCounts['Users'] = importedUserCount;
