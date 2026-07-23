@@ -1,5 +1,5 @@
 import express from 'express';
-import { Order, OrderItem, Notification } from '../../models';
+import { Order, OrderItem, Notification, Product } from '../../models';
 import { EmailService } from '../../services/email-service';
 import { orderRateLimiter, honeypotCheck } from '../middleware/anti-spam';
 
@@ -220,7 +220,7 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
 
     await order.save();
 
-    // Create and save OrderItems
+    // Create and save OrderItems & deduct stock from inventory
     const savedItems = [];
     for (const itemData of itemsToSave) {
       const orderItem = new OrderItem({
@@ -229,6 +229,23 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
       });
       await orderItem.save();
       savedItems.push(orderItem);
+
+      // Automatic Stock Deduction
+      if (itemData.productId) {
+        try {
+          const product = await Product.findById(itemData.productId);
+          if (product && typeof product.stock === 'number') {
+            const newStock = Math.max(0, product.stock - itemData.quantity);
+            const stockStatus = newStock === 0 ? 'out_of_stock' : product.stockStatus || 'in_stock';
+            await Product.findByIdAndUpdate(itemData.productId, {
+              stock: newStock,
+              stockStatus
+            });
+          }
+        } catch (stockError) {
+          console.error('Failed to deduct stock for product:', itemData.productId, stockError);
+        }
+      }
     }
 
     // Create system notification for Admin
@@ -387,6 +404,23 @@ router.post('/admin-create', async (req: any, res) => {
       });
       await orderItem.save();
       savedItems.push(orderItem);
+
+      // Automatic Stock Deduction (Admin order creation)
+      if (itemData.productId) {
+        try {
+          const product = await Product.findById(itemData.productId);
+          if (product && typeof product.stock === 'number') {
+            const newStock = Math.max(0, product.stock - itemData.quantity);
+            const stockStatus = newStock === 0 ? 'out_of_stock' : product.stockStatus || 'in_stock';
+            await Product.findByIdAndUpdate(itemData.productId, {
+              stock: newStock,
+              stockStatus
+            });
+          }
+        } catch (stockError) {
+          console.error('Failed to deduct stock for admin order product:', itemData.productId, stockError);
+        }
+      }
     }
 
     // Send email notification to customer
@@ -461,6 +495,27 @@ router.patch('/:id/status', async (req: any, res) => {
 
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    // Refund stock if order is cancelled
+    if (status === 'cancelled' && currentOrder.status !== 'cancelled') {
+      try {
+        const items = await OrderItem.find({ orderId: currentOrder._id });
+        for (const item of items) {
+          if (item.productId) {
+            const product = await Product.findById(item.productId);
+            if (product && typeof product.stock === 'number') {
+              const newStock = product.stock + item.quantity;
+              await Product.findByIdAndUpdate(item.productId, {
+                stock: newStock,
+                stockStatus: 'in_stock'
+              });
+            }
+          }
+        }
+      } catch (refundError) {
+        console.error('Failed to refund stock for cancelled order:', currentOrder._id, refundError);
+      }
     }
 
     // Send email notification to customer asynchronously
