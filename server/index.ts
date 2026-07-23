@@ -193,10 +193,17 @@ app.use(i18nMiddleware.handle(i18next));
 app.use(i18nHelpers);
 
 // ============================================
-// STATIC FILES
+// STATIC FILES WITH 30-DAY BROWSER CACHING
 // ============================================
 const uploadsPath = path.join(process.cwd(), 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', express.static(uploadsPath, {
+  maxAge: '30d',
+  etag: true,
+  immutable: true,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+  }
+}));
 
 // ============================================
 // ROUTES

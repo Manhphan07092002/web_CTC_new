@@ -33,6 +33,8 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [spaFallbackPlugin(), react()],
       build: {
+        cssCodeSplit: true,
+        target: 'es2020',
         // Split large vendor libraries into separate cacheable chunks
         rollupOptions: {
           output: {
