@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#007CB9" />
+    <link rel="manifest" href="/manifest.json" />
     <title>CTC</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -685,7 +687,16 @@
           }
         }, 100);
       }
-    }, true);
+    // Register Service Worker for PWA asset caching & offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(reg) {
+          console.log('[PWA] Service Worker registered:', reg.scope);
+        }).catch(function(err) {
+          console.log('[PWA] Service Worker registration failed:', err);
+        });
+      });
+    }
   </script>
 </body>
 </html>

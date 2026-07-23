@@ -65,6 +65,8 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   );
 };
 
+import ProgressBar from './components/ProgressBar';
+
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
@@ -76,6 +78,7 @@ const App: React.FC = () => {
                 <AuthProvider>
                   <PermissionProvider>
                   <Router>
+                    <ProgressBar />
                     <ScrollToTop />
                     <MaintenanceWrapper>
                       <Routes>
