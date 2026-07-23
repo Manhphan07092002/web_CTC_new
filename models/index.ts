@@ -535,6 +535,7 @@ export const User = mongoose.model<IUser>('User', UserSchema);
 export const TeamMember = mongoose.model<ITeamMember>('TeamMember', TeamMemberSchema);
 export const Contact = mongoose.model<IContact>('Contact', ContactSchema);
 export const Notification = mongoose.model<INotification>('Notification', NotificationSchema);
+export const Review = mongoose.model<IReview>('Review', ReviewSchema);
 export const Settings = mongoose.model<ISettings>('Settings', SettingsSchema);
 export const MigrationLog = mongoose.model<IMigrationLog>('MigrationLog', MigrationLogSchema);
 

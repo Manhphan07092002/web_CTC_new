@@ -8,8 +8,8 @@ import {
   DocumentCategory, Resource,
   Order, OrderItem,
   Contact, Review,
-  Settings, Team, Testimonial, Partner,
-  User, MigrationLog 
+  Settings, TeamMember, Testimonial, Partner,
+  Notification, User, MigrationLog 
 } from '../../models';
 
 const router = express.Router();
@@ -271,9 +271,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     const teamEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('team.json'));
     if (teamEntry) {
       const items = parseJsonEntry(teamEntry) || [];
-      await Team.deleteMany({});
+      await TeamMember.deleteMany({});
       for (const item of items) {
-        await new Team(item).save();
+        await new TeamMember(item).save();
       }
       importCounts['Team'] = items.length;
     }
@@ -390,7 +390,7 @@ router.get('/export', async (req, res) => {
     const settings = await Settings.find({}).lean();
     zip.addFile('Settings.json', Buffer.from(JSON.stringify(settings, null, 2), 'utf8'));
 
-    const team = await Team.find({}).lean();
+    const team = await TeamMember.find({}).lean();
     zip.addFile('Team.json', Buffer.from(JSON.stringify(team, null, 2), 'utf8'));
 
     const testimonials = await Testimonial.find({}).lean();
