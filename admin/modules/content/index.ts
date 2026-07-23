@@ -6,3 +6,4 @@ export { default as NewsForm } from '../../NewsForm';
 export { default as CategoryManagement } from '../../CategoryManagement';
 export { default as ReviewsManagement } from '../../ReviewsManagement';
 export { default as ResourceManagement } from '../../ResourceManagement';
+export { default as HeaderManagement } from '../../HeaderManagement';

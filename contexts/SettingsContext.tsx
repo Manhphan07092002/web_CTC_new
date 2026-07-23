@@ -29,6 +29,25 @@ export interface SiteSettings {
   aiBaseUrl?: string;
   aiTemperature?: number;
   aiSystemInstruction?: string;
+  // Cấu hình Dynamic Header
+  headerShowTopbar?: boolean;
+  headerSlogan?: string;
+  headerHotlineLabel?: string;
+  headerHotlinePhone?: string;
+  headerCtaText?: string;
+  headerCtaLink?: string;
+  headerNavLinks?: Array<{
+    id: string;
+    name: string;
+    path: string;
+    key?: string;
+    order: number;
+    submenu?: Array<{
+      id: string;
+      name: string;
+      path: string;
+    }>;
+  }>;
 }
 
 interface SettingsContextType {
@@ -59,7 +78,46 @@ const defaultSettings: SiteSettings = {
   aiModel: 'gemini-2.5-flash',
   aiBaseUrl: '',
   aiTemperature: 0.6,
-  aiSystemInstruction: ''
+  aiSystemInstruction: '',
+  // Header Dynamic Defaults
+  headerShowTopbar: true,
+  headerSlogan: 'CTC – Nhà thầu EPC, Xây lắp điện và Giải pháp Năng lượng tái tạo tại Việt Nam',
+  headerHotlineLabel: 'Hotline',
+  headerHotlinePhone: '023 6374 5555',
+  headerCtaText: 'LIÊN HỆ',
+  headerCtaLink: 'https://zalo.me/0915059666',
+  headerNavLinks: [
+    { id: 'nav-1', name: 'Trang chủ', path: '/', key: 'home', order: 1 },
+    { id: 'nav-2', name: 'Giới thiệu', path: '/about', key: 'about', order: 2 },
+    { 
+      id: 'nav-3', 
+      name: 'Giải pháp', 
+      path: '/solutions', 
+      key: 'solutions', 
+      order: 3,
+      submenu: [
+        { id: 'sub-3-1', name: 'GIẢI PHÁP TOÀN DIỆN', path: '/solutions' },
+        { id: 'sub-3-2', name: 'HẠ TẦNG VIỄN THÔNG & CNTT', path: '/solutions/floating' },
+        { id: 'sub-3-3', name: 'ĐIỆN MẶT TRỜI (SOLAR EPC)', path: '/solutions/rooftop' },
+        { id: 'sub-3-4', name: 'ĐIỆN GIÓ (WIND POWER EPC)', path: '/solutions/farm' },
+        { id: 'sub-3-5', name: 'ĐƯỜNG DÂY & TRẠM BIẾN ÁP 110KV', path: '/solutions/electrical' },
+        { id: 'sub-3-6', name: 'DATA CENTER & HẠ TẦNG SỐ', path: '/solutions/datacenter' },
+        { id: 'sub-3-7', name: 'XÂY DỰNG DÂN DỤNG & CÔNG NGHIỆP', path: '/solutions/construction' }
+      ]
+    },
+    { 
+      id: 'nav-4', 
+      name: 'Sản phẩm', 
+      path: '/products', 
+      key: 'products', 
+      order: 4,
+      submenu: [] // Auto-synced from product categories DB at runtime
+    },
+    { id: 'nav-5', name: 'Dự án', path: '/projects', key: 'projects', order: 5 },
+    { id: 'nav-6', name: 'Tin tức', path: '/news', key: 'news', order: 6 },
+    { id: 'nav-7', name: 'Tài liệu', path: '/resources', key: 'resources', order: 7 },
+    { id: 'nav-8', name: 'Liên hệ', path: '/contact', key: 'contact', order: 8 }
+  ]
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

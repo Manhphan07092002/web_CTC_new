@@ -1,13 +1,12 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, ArrowLeft, HelpCircle, Shield, AlertTriangle } from 'lucide-react';
-import { useSettings } from '../contexts/SettingsContext';
+import { Home, Search, Zap, Layers, Mail, ArrowRight } from 'lucide-react';
 import SEO from '../components/SEO';
 
 const NotFound: React.FC = () => {
-  const { settings } = useSettings();
   const location = useLocation();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Log 404 attempts for security monitoring
   useEffect(() => {
@@ -17,167 +16,196 @@ const NotFound: React.FC = () => {
       search: location.search,
       userAgent: navigator.userAgent,
       referrer: document.referrer || 'direct',
-      ip: 'client-side' // Server-side would have real IP
     };
-
-    // Log to console (in production, send to analytics/security service)
     console.warn('404 Access Attempt:', logData);
-    
-    // Send to security logging service
+
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
     const port = window.location.port;
     const apiUrl = (!port || port === '80' || port === '443')
       ? '/api/security/404'
       : `${protocol}//${hostname}:4000/api/security/404`;
-    
+
     fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(logData)
-    }).catch(() => {
-      // Silent fail - don't break user experience if logging fails
-      console.error('Failed to log 404 attempt to server');
-    });
+    }).catch(() => {});
   }, [location]);
 
+  // Mouse parallax effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setMousePos({
+        x: ((e.clientX - rect.left) / rect.width - 0.5) * 30,
+        y: ((e.clientY - rect.top) / rect.height - 0.5) * 30,
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const quickLinks = [
+    { to: '/', label: 'Trang Chủ', icon: Home, color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/20' },
+    { to: '/products', label: 'Sản Phẩm', icon: Layers, color: 'from-emerald-500 to-green-500', bg: 'bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/20' },
+    { to: '/projects', label: 'Dự Án', icon: Zap, color: 'from-violet-500 to-purple-500', bg: 'bg-violet-500/10 hover:bg-violet-500/20 border-violet-500/20' },
+    { to: '/contact', label: 'Liên Hệ', icon: Mail, color: 'from-orange-500 to-amber-500', bg: 'bg-orange-500/10 hover:bg-orange-500/20 border-orange-500/20' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      <SEO title="404 - Không tìm thấy trang" description="Trang bạn tìm kiếm không tồn tại" noindex={true} />
-      
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+    <div
+      ref={containerRef}
+      className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#060914]"
+      style={{ paddingTop: '0', marginTop: '0' }}
+    >
+      <SEO title="404 — Không tìm thấy trang" description="Trang bạn tìm kiếm không tồn tại" noindex={true} />
 
-      <div className="relative z-10 max-w-4xl w-full">
-        <div className="text-center">
-          {/* 404 Number with Animation */}
-          <div className="mb-8">
-            <h1 className="text-[180px] md:text-[250px] font-extrabold leading-none">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-corporate via-primary to-secondary animate-gradient">
-                404
-              </span>
-            </h1>
+      {/* Animated grid background */}
+      <div className="absolute inset-0 opacity-[0.04]" style={{
+        backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)',
+        backgroundSize: '60px 60px'
+      }} />
+
+      {/* Glowing orbs */}
+      <div
+        className="absolute w-[600px] h-[600px] rounded-full opacity-20 blur-[120px] pointer-events-none transition-transform duration-700"
+        style={{
+          background: 'radial-gradient(circle, #6366f1, #8b5cf6)',
+          top: '10%', left: '5%',
+          transform: `translate(${mousePos.x * 0.6}px, ${mousePos.y * 0.6}px)`
+        }}
+      />
+      <div
+        className="absolute w-[400px] h-[400px] rounded-full opacity-15 blur-[100px] pointer-events-none transition-transform duration-700"
+        style={{
+          background: 'radial-gradient(circle, #0ea5e9, #06b6d4)',
+          bottom: '5%', right: '5%',
+          transform: `translate(${-mousePos.x * 0.4}px, ${-mousePos.y * 0.4}px)`
+        }}
+      />
+      <div
+        className="absolute w-[300px] h-[300px] rounded-full opacity-10 blur-[80px] pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, #f43f5e, #ec4899)',
+          top: '60%', left: '60%',
+        }}
+      />
+
+      {/* Main Content */}
+      <div className="relative z-10 text-center px-6 py-20 max-w-4xl mx-auto w-full">
+
+        {/* 404 Huge Number */}
+        <div
+          className="relative select-none mb-2"
+          style={{ transform: `translate(${mousePos.x * 0.1}px, ${mousePos.y * 0.1}px)`, transition: 'transform 0.3s ease-out' }}
+        >
+          {/* Shadow/ghost layer */}
+          <div
+            className="absolute inset-0 text-[220px] md:text-[320px] font-black leading-none text-center pointer-events-none"
+            style={{
+              WebkitTextStroke: '2px rgba(99,102,241,0.15)',
+              color: 'transparent',
+              filter: 'blur(1px)',
+              transform: 'translate(6px, 6px)',
+              fontFamily: '"Inter", system-ui, sans-serif',
+              letterSpacing: '-0.05em',
+            }}
+          >
+            404
           </div>
+          {/* Main text */}
+          <h1
+            className="text-[220px] md:text-[320px] font-black leading-none"
+            style={{
+              fontFamily: '"Inter", system-ui, sans-serif',
+              letterSpacing: '-0.05em',
+              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #0ea5e9 65%, #6366f1 100%)',
+              backgroundSize: '200% 200%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              animation: 'gradientShift 4s ease infinite',
+            }}
+          >
+            404
+          </h1>
+        </div>
 
-          {/* Icon */}
-          <div className="mb-8 flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-orange-200 rounded-full blur-2xl opacity-50 animate-pulse"></div>
-              <div className="relative w-24 h-24 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-xl">
-                <HelpCircle size={48} className="text-white" />
-              </div>
-            </div>
-          </div>
+        {/* Glowing divider line */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="h-px flex-1 max-w-[120px] bg-gradient-to-r from-transparent to-indigo-500/50" />
+          <div className="w-2 h-2 rounded-full bg-indigo-400 shadow-lg shadow-indigo-400/50 animate-pulse" />
+          <div className="w-3 h-3 rounded-full bg-violet-400 shadow-lg shadow-violet-400/50" />
+          <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50 animate-pulse" />
+          <div className="h-px flex-1 max-w-[120px] bg-gradient-to-l from-transparent to-cyan-500/50" />
+        </div>
 
-          {/* Title & Description */}
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-            Oops! Trang không tồn tại
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-4 leading-relaxed">
-            Xin lỗi, trang bạn đang tìm kiếm có thể đã bị xóa, đổi tên hoặc tạm thời không truy cập được. 
-            Hãy kiểm tra lại URL hoặc quay về trang chủ.
-          </p>
-          
-          {/* Security Notice */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-2xl mx-auto mb-8">
-            <div className="flex items-center gap-2 text-amber-700 mb-2">
-              <Shield size={20} />
-              <span className="font-semibold">Thông báo bảo mật</span>
-            </div>
-            <p className="text-sm text-amber-600">
-              Truy cập này đã được ghi lại để đảm bảo an ninh hệ thống. 
-              Nếu bạn đang tìm kiếm nội dung cụ thể, vui lòng sử dụng menu điều hướng hoặc liên hệ với chúng tôi.
-            </p>
-          </div>
+        {/* Title */}
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+          Trang không{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+            tồn tại
+          </span>
+        </h2>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Link 
-              to="/" 
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-corporate to-primary hover:from-primary hover:to-secondary text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              <Home size={20} /> 
-              Về trang chủ
-            </Link>
-            <Link 
-              to="/products" 
-              className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 text-corporate border-2 border-corporate px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              <Search size={20} /> 
-              Xem sản phẩm
-            </Link>
-          </div>
+        {/* Description */}
+        <p className="text-gray-400 text-base md:text-lg max-w-xl mx-auto mb-2 leading-relaxed">
+          Trang bạn đang tìm có thể đã bị xóa, đổi tên hoặc tạm thời không khả dụng.
+        </p>
+        <p className="text-gray-600 text-sm mb-10 font-mono">
+          <span className="text-indigo-400/70">→</span>{' '}
+          <span className="text-gray-500">{location.pathname}</span>
+        </p>
 
-          {/* Quick Links */}
-          <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl max-w-3xl mx-auto">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">Có thể bạn đang tìm:</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link 
-                to="/" 
-                className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-blue-50 transition-colors group"
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+          <Link
+            to="/"
+            className="group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-white text-base transition-all duration-300 relative overflow-hidden shadow-xl"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+          >
+            <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Home size={20} className="group-hover:scale-110 transition-transform" />
+            Về Trang Chủ
+            <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+          </Link>
+
+          <Link
+            to="/contact"
+            className="group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-white text-base transition-all duration-300 border border-white/10 hover:border-indigo-500/50 bg-white/5 hover:bg-white/10 backdrop-blur-sm"
+          >
+            <Mail size={20} className="group-hover:scale-110 transition-transform text-indigo-400" />
+            Liên Hệ Hỗ Trợ
+          </Link>
+        </div>
+
+        {/* Quick Links Grid */}
+        <div className="border border-white/5 rounded-3xl p-6 md:p-8 bg-white/[0.02] backdrop-blur-sm max-w-2xl mx-auto">
+          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-5">Có thể bạn đang tìm</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {quickLinks.map(({ to, label, icon: Icon, color, bg }) => (
+              <Link
+                key={to}
+                to={to}
+                className={`group flex flex-col items-center gap-3 p-4 rounded-2xl border transition-all duration-300 ${bg}`}
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                  <Home size={24} className="text-blue-600" />
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                  <Icon size={20} className="text-white" />
                 </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Trang chủ</span>
+                <span className="text-xs font-semibold text-gray-300 group-hover:text-white transition-colors">{label}</span>
               </Link>
-              
-              <Link 
-                to="/products" 
-                className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-green-50 transition-colors group"
-              >
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                  <Search size={24} className="text-green-600" />
-                </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sản phẩm</span>
-              </Link>
-              
-              <Link 
-                to="/projects" 
-                className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-purple-50 transition-colors group"
-              >
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Dự án</span>
-              </Link>
-              
-              <Link 
-                to="/contact" 
-                className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-orange-50 transition-colors group"
-              >
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center group-hover:bg-orange-200 transition-colors">
-                  <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Liên hệ</span>
-              </Link>
-            </div>
+            ))}
           </div>
         </div>
       </div>
 
+      {/* Gradient animation keyframe */}
       <style>{`
-        @keyframes gradient {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
-        }
-        .delay-1000 {
-          animation-delay: 1000ms;
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
       `}</style>
     </div>

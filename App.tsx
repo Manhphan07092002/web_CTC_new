@@ -133,7 +133,7 @@ const App: React.FC = () => {
                       <Route path="/search" element={<PublicLayout><Search /></PublicLayout>} />
 
                       {/* 404 Route */}
-                      <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
+                      <Route path="*" element={<Suspense fallback={null}><NotFound /></Suspense>} />
                       </Routes>
                     </MaintenanceWrapper>
                   </Router>

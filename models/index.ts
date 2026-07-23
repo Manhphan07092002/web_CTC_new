@@ -460,6 +460,25 @@ export interface ISettings extends BaseDocument {
   aiBaseUrl?: string;
   aiTemperature?: number;
   aiSystemInstruction?: string;
+  // Cấu hình Header
+  headerShowTopbar?: boolean;
+  headerSlogan?: string;
+  headerHotlineLabel?: string;
+  headerHotlinePhone?: string;
+  headerCtaText?: string;
+  headerCtaLink?: string;
+  headerNavLinks?: Array<{
+    id: string;
+    name: string;
+    path: string;
+    key?: string;
+    order: number;
+    submenu?: Array<{
+      id: string;
+      name: string;
+      path: string;
+    }>;
+  }>;
 }
 
 export interface IMigrationLog extends BaseDocument {
@@ -497,7 +516,15 @@ const SettingsSchema = new Schema<ISettings>({
   aiModel: { type: String, default: 'gemini-2.5-flash' },
   aiBaseUrl: { type: String, default: '' },
   aiTemperature: { type: Number, default: 0.6 },
-  aiSystemInstruction: { type: String, default: '' }
+  aiSystemInstruction: { type: String, default: '' },
+  // Cấu hình Header
+  headerShowTopbar: { type: Boolean, default: true },
+  headerSlogan: { type: String, default: '' },
+  headerHotlineLabel: { type: String, default: 'Hotline' },
+  headerHotlinePhone: { type: String, default: '' },
+  headerCtaText: { type: String, default: 'LIÊN HỆ' },
+  headerCtaLink: { type: String, default: '' },
+  headerNavLinks: { type: Schema.Types.Mixed, default: [] }
 }, { timestamps: true });
 
 const MigrationLogSchema = new Schema({

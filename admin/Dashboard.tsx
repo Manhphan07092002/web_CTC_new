@@ -23,7 +23,8 @@ import {
   NewsForm,
   CategoryManagement,
   ReviewsManagement,
-  ResourceManagement
+  ResourceManagement,
+  HeaderManagement
 } from './modules/content';
 import {
   UserManagement,
@@ -126,6 +127,7 @@ const AdminDashboard: React.FC = () => {
             <Route path="/users" element={<UserManagement />} />
             <Route path="/orders" element={<OrdersManagement />} />
             <Route path="/content" element={<ContentManagement />} />
+            <Route path="/header" element={<HeaderManagement />} />
             <Route path="/products/new" element={<ProductForm />} />
             <Route path="/products/edit/:id" element={<ProductForm />} />
             <Route path="/products/trash" element={<ProductTrash />} />

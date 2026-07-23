@@ -1,5 +1,5 @@
 import { Product, Project, NewsItem, User, Testimonial, Partner, Category, TeamMember } from '../types';
-import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText, ShoppingCart } from 'lucide-react';
+import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText, ShoppingCart, Sliders } from 'lucide-react';
 
 export const NAV_LINKS = [
   { name: 'Trang chủ', path: '/', key: 'home' },
@@ -47,6 +47,7 @@ export const ADMIN_MENU = [
 
   // Group 3: Quản lý nội dung (Content)
   { name: 'Quản lý nội dung', path: '/admin/content', icon: Layers, key: 'content', permission: 'view_content', minLevel: 30, group: 'content' },
+  { name: 'Quản lý Header', path: '/admin/header', icon: Sliders, key: 'header', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý danh mục', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50, group: 'content' },
 
   // Group 4: Hệ thống & Bảo mật (System & Administration)
