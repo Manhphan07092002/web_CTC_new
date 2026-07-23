@@ -127,7 +127,6 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
   // Gauge Chart Component (Custom)
   const GaugeChart: React.FC<{ value: number; max: number; label: string; color: string }> = ({ value, max, label, color }) => {
     const percentage = (value / max) * 100;
-    const rotation = (percentage / 100) * 180 - 90;
 
     return (
       <div className="relative w-full aspect-square">
@@ -136,7 +135,8 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
           <path
             d="M 20 100 A 80 80 0 0 1 180 100"
             fill="none"
-            stroke="#e5e7eb"
+            stroke="currentColor"
+            className="text-gray-200 dark:text-slate-700"
             strokeWidth="20"
             strokeLinecap="round"
           />
@@ -151,10 +151,10 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
             className="transition-all duration-1000"
           />
           {/* Center text */}
-          <text x="100" y="85" textAnchor="middle" className="text-3xl font-bold" fill="#1f2937">
+          <text x="100" y="85" textAnchor="middle" className="text-3xl font-bold fill-gray-800 dark:fill-white">
             {value}%
           </text>
-          <text x="100" y="105" textAnchor="middle" className="text-xs" fill="#6b7280">
+          <text x="100" y="105" textAnchor="middle" className="text-xs fill-gray-500 dark:fill-slate-400">
             {label}
           </text>
         </svg>
@@ -165,16 +165,16 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
   return (
     <div className="space-y-6">
       {/* Performance Gauges */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
         <div className="flex items-center gap-2 mb-6">
           <Zap size={20} className="text-yellow-500" />
-          <h3 className="font-bold text-lg text-gray-800">Hiệu suất tổng quan</h3>
+          <h3 className="font-bold text-lg text-gray-800 dark:text-white">Hiệu suất tổng quan</h3>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="text-center">
             <GaugeChart value={performanceMetrics.overall} max={100} label="Tổng thể" color="#8b5cf6" />
-            <p className="mt-2 text-sm font-bold text-purple-600">{performanceMetrics.rating}</p>
+            <p className="mt-2 text-sm font-bold text-purple-600 dark:text-purple-400">{performanceMetrics.rating}</p>
           </div>
           <div className="text-center">
             <GaugeChart value={performanceMetrics.products} max={100} label="Sản phẩm" color="#3b82f6" />
@@ -194,10 +194,10 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
       {/* Conversion Funnel & Radar Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Funnel Chart */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
           <div className="flex items-center gap-2 mb-6">
             <Target size={20} className="text-blue-500" />
-            <h3 className="font-bold text-lg text-gray-800">Phễu chuyển đổi</h3>
+            <h3 className="font-bold text-lg text-gray-800 dark:text-white">Phễu chuyển đổi</h3>
           </div>
           
           <div className="space-y-2">
@@ -218,7 +218,7 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
                     <span className="text-sm">{stage.stage}</span>
                     <span className="text-lg">{stage.value}</span>
                   </div>
-                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-full ml-2 text-xs text-gray-500">
+                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-full ml-2 text-xs text-gray-500 dark:text-slate-300">
                     {stage.percentage}%
                   </div>
                 </div>
@@ -228,38 +228,38 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
           
           {/* Conversion Rates */}
           <div className="mt-6 grid grid-cols-3 gap-3">
-            <div className="bg-blue-50 p-3 rounded-lg text-center">
-              <p className="text-xs text-gray-600 mb-1">Khách → Lead</p>
-              <p className="text-xl font-bold text-blue-600">{calculatedRates.visitorToLead}%</p>
+            <div className="bg-blue-50 dark:bg-blue-950/40 border border-transparent dark:border-blue-900/40 p-3 rounded-lg text-center">
+              <p className="text-xs text-gray-600 dark:text-slate-300 mb-1">Khách → Lead</p>
+              <p className="text-xl font-bold text-blue-600 dark:text-blue-400">{calculatedRates.visitorToLead}%</p>
             </div>
-            <div className="bg-green-50 p-3 rounded-lg text-center">
-              <p className="text-xs text-gray-600 mb-1">Lead → KH</p>
-              <p className="text-xl font-bold text-green-600">{calculatedRates.leadToCustomer}%</p>
+            <div className="bg-green-50 dark:bg-emerald-950/40 border border-transparent dark:border-emerald-900/40 p-3 rounded-lg text-center">
+              <p className="text-xs text-gray-600 dark:text-slate-300 mb-1">Lead → KH</p>
+              <p className="text-xl font-bold text-green-600 dark:text-emerald-400">{calculatedRates.leadToCustomer}%</p>
             </div>
-            <div className="bg-purple-50 p-3 rounded-lg text-center">
-              <p className="text-xs text-gray-600 mb-1">Tổng thể</p>
-              <p className="text-xl font-bold text-purple-600">{calculatedRates.overallConversion}%</p>
+            <div className="bg-purple-50 dark:bg-purple-950/40 border border-transparent dark:border-purple-900/40 p-3 rounded-lg text-center">
+              <p className="text-xs text-gray-600 dark:text-slate-300 mb-1">Tổng thể</p>
+              <p className="text-xl font-bold text-purple-600 dark:text-purple-400">{calculatedRates.overallConversion}%</p>
             </div>
           </div>
         </div>
 
         {/* Radar Chart */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
           <div className="flex items-center gap-2 mb-6">
             <Award size={20} className="text-purple-500" />
-            <h3 className="font-bold text-lg text-gray-800">So sánh mục tiêu</h3>
+            <h3 className="font-bold text-lg text-gray-800 dark:text-white">So sánh mục tiêu</h3>
           </div>
           
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <RadarChart data={radarChartData}>
-                <PolarGrid stroke="#e5e7eb" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                <PolarRadiusAxis angle={90} domain={[0, 150]} tick={{ fill: '#6b7280', fontSize: 10 }} />
+                <PolarGrid stroke="#334155" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                <PolarRadiusAxis angle={90} domain={[0, 150]} tick={{ fill: '#cbd5e1', fontSize: 10 }} />
                 <Radar name="Hiện tại" dataKey="Hiện tại" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
                 <Radar name="Mục tiêu" dataKey="Mục tiêu" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
                 <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                  contentStyle={{ borderRadius: '12px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#ffffff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
                   formatter={(value: any) => `${value}%`}
                 />
               </RadarChart>
@@ -269,21 +269,21 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
           <div className="flex items-center justify-center gap-6 mt-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-              <span className="text-sm text-gray-600">Hiện tại</span>
+              <span className="text-sm text-gray-600 dark:text-slate-300">Hiện tại</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span className="text-sm text-gray-600">Mục tiêu</span>
+              <span className="text-sm text-gray-600 dark:text-slate-300">Mục tiêu</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Heat Map */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
         <div className="flex items-center gap-2 mb-6">
           <TrendingUp size={20} className="text-red-500" />
-          <h3 className="font-bold text-lg text-gray-800">Bản đồ nhiệt danh mục</h3>
+          <h3 className="font-bold text-lg text-gray-800 dark:text-white">Bản đồ nhiệt danh mục</h3>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -297,7 +297,7 @@ const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ analytics, currentGoal,
               <div 
                 key={idx}
                 className={`${bgColor} p-4 rounded-xl text-white hover:scale-105 transition-transform cursor-pointer`}
-                style={{ opacity: 0.5 + (intensity / 200) }}
+                style={{ opacity: 0.7 + (intensity / 300) }}
               >
                 <p className="font-bold text-lg mb-1">{cat.category}</p>
                 <p className="text-sm opacity-90">{cat.label}</p>

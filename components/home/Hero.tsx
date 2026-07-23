@@ -808,7 +808,7 @@ const Hero: React.FC = () => {
             .hero-corporate {
                 height: auto;
                 min-height: 100vh;
-                padding: 110px 0 60px;
+                padding: 135px 0 60px;
             }
             .corporate-layout {
                 grid-template-columns: 1fr;
@@ -837,7 +837,7 @@ const Hero: React.FC = () => {
         /* Small Phones (320px - 767px) */
         @media (max-width: 767px) {
             .hero-corporate {
-                padding: 100px 0 40px;
+                padding: 145px 0 40px;
             }
             .corporate-layout {
                 padding: 0 16px;

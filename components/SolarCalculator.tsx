@@ -110,14 +110,14 @@ const SolarCalculator: React.FC = () => {
   const savingPercent = monthlyBill > 0 ? Math.min(100, Math.round((monthlySavings / monthlyBill) * 100)) : 0;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 border border-gray-100 dark:border-slate-700/60">
+    <div className="grid grid-cols-1 lg:grid-cols-2 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 border border-gray-100 dark:border-slate-700/60">
 
       {/* ── LEFT: INPUT PANEL ── */}
-      <div className="bg-white dark:bg-slate-900 p-8 flex flex-col gap-7">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 flex flex-col gap-5 sm:gap-7">
 
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Sun size={18} className="text-primary" />
           </div>
           <span className="text-xs font-black uppercase tracking-widest text-primary">{t('calculator.title')}</span>
@@ -126,7 +126,7 @@ const SolarCalculator: React.FC = () => {
         {/* Customer Type */}
         <div>
           <p className="text-xs font-black uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-3">{t('calculator.usage_type')}</p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
             {[
               { key: 'residential' as const, icon: Home, label: t('calculator.household'), sub: t('calculator.household_desc') },
               { key: 'commercial' as const, icon: Building2, label: t('calculator.company'), sub: t('calculator.company_desc') },
@@ -234,7 +234,7 @@ const SolarCalculator: React.FC = () => {
       </div>
 
       {/* ── RIGHT: RESULT PANEL ── */}
-      <div className="relative bg-[#0d1b35] text-white p-8 flex flex-col gap-6 overflow-hidden">
+      <div className="relative bg-[#0d1b35] text-white p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-6 overflow-hidden">
         {/* Decorative blobs */}
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
@@ -252,16 +252,16 @@ const SolarCalculator: React.FC = () => {
         </div>
 
         {/* Big 3 KPIs */}
-        <div className="relative z-10 grid grid-cols-3 gap-3">
+        <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3">
           {[
             { icon: Sun, color: 'text-yellow-400', bg: 'bg-yellow-400/10 border-yellow-400/20', label: 'kWp', value: `${systemSize}` },
             { icon: Zap, color: 'text-emerald-400', bg: 'bg-emerald-400/10 border-emerald-400/20', label: t('calculator.monthly_savings'), value: `${(monthlySavings / 1000000).toFixed(1)}M` },
             { icon: DollarSign, color: 'text-primary', bg: 'bg-primary/10 border-primary/20', label: t('calculator.investment'), value: `${(installationCost / 1000000).toFixed(0)}M` },
           ].map(({ icon: Icon, color, bg, label, value }) => (
-            <div key={label} className={`relative rounded-2xl border p-4 ${bg} flex flex-col items-center text-center gap-1 overflow-hidden`}>
-              <Icon size={18} className={color} />
-              <p className={`text-2xl font-black ${color} leading-none mt-1`}>{value}</p>
-              <p className="text-[9px] text-white/50 uppercase tracking-wide leading-tight mt-0.5">{label}</p>
+            <div key={label} className={`relative rounded-xl sm:rounded-2xl border p-2.5 sm:p-4 ${bg} flex flex-col items-center text-center gap-1 overflow-hidden`}>
+              <Icon size={16} className={`${color} sm:w-5 sm:h-5`} />
+              <p className={`text-base sm:text-2xl font-black ${color} leading-none mt-1`}>{value}</p>
+              <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-wide leading-tight mt-0.5">{label}</p>
             </div>
           ))}
         </div>

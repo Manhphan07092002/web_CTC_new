@@ -51,7 +51,7 @@ const AboutHero: React.FC = () => {
       </div>
 
       {/* Hero Content with top padding to push past the sticky menu */}
-      <div className={`relative z-10 container mx-auto px-6 text-center pt-[100px] md:pt-[120px] transition-all duration-1000 transform ${
+      <div className={`relative z-10 container mx-auto px-6 text-center pt-[140px] md:pt-[130px] transition-all duration-1000 transform ${
         isInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
       }`}>
         {/* Category-style Badge Capsule */}

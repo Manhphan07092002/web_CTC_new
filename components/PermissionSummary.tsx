@@ -75,7 +75,7 @@ const PermissionSummary: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4">
       <div 
         className="flex items-center justify-between cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -88,21 +88,21 @@ const PermissionSummary: React.FC = () => {
             <Shield size={20} />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-800">{role.displayName}</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="font-semibold text-gray-800 dark:text-white">{role.displayName}</h3>
+            <p className="text-sm text-gray-500 dark:text-slate-400">
               Level {roleLevel} • {permissions.length} quyền
             </p>
           </div>
         </div>
-        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        {isExpanded ? <ChevronUp size={20} className="dark:text-slate-400" /> : <ChevronDown size={20} className="dark:text-slate-400" />}
       </div>
 
       {isExpanded && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
           {/* Role Info */}
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <div className="text-xs text-gray-500 mb-1">Thông tin vai trò</div>
-            <div className="text-sm">
+          <div className="mb-4 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+            <div className="text-xs text-gray-500 dark:text-slate-400 mb-1">Thông tin vai trò</div>
+            <div className="text-sm dark:text-slate-200">
               <div><strong>Tên:</strong> {role.name}</div>
               <div><strong>Cấp độ:</strong> {roleLevel}</div>
               <div><strong>Màu sắc:</strong> <span style={{ color: role.color }}>{role.color}</span></div>
@@ -111,17 +111,17 @@ const PermissionSummary: React.FC = () => {
 
           {/* Permissions by Resource */}
           <div className="space-y-3">
-            <div className="text-sm font-medium text-gray-700">Quyền theo tài nguyên:</div>
+            <div className="text-sm font-medium text-gray-700 dark:text-slate-300">Quyền theo tài nguyên:</div>
             {Object.entries(groupedPermissions).map(([resource, actions]) => (
-              <div key={resource} className="border border-gray-200 rounded-lg p-3">
-                <div className="font-medium text-sm text-gray-800 mb-2">
+              <div key={resource} className="border border-gray-200 dark:border-slate-800 rounded-lg p-3">
+                <div className="font-medium text-sm text-gray-800 dark:text-white mb-2">
                   {getResourceLabel(resource)}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {actions.map(action => (
                     <div 
                       key={action}
-                      className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-md text-xs"
+                      className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-slate-800 dark:text-slate-200 rounded-md text-xs"
                     >
                       {getActionIcon(action)}
                       {getActionLabel(action)}
@@ -134,15 +134,15 @@ const PermissionSummary: React.FC = () => {
 
           {/* Additional Permissions */}
           {userPermission?.additionalPermissions && userPermission.additionalPermissions.length > 0 && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div className="text-sm font-medium text-green-800 mb-2">
+            <div className="mt-4 p-3 bg-green-50 dark:bg-emerald-950/40 border border-green-200 dark:border-emerald-900/50 rounded-lg">
+              <div className="text-sm font-medium text-green-800 dark:text-emerald-300 mb-2">
                 Quyền bổ sung ({userPermission.additionalPermissions.length})
               </div>
               <div className="flex flex-wrap gap-1">
                 {userPermission.additionalPermissions.map((perm: any) => (
                   <span 
                     key={perm._id} 
-                    className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs"
+                    className="px-2 py-1 bg-green-100 dark:bg-emerald-900/60 text-green-700 dark:text-emerald-300 rounded text-xs"
                   >
                     {perm.name}
                   </span>
@@ -153,15 +153,15 @@ const PermissionSummary: React.FC = () => {
 
           {/* Denied Permissions */}
           {userPermission?.deniedPermissions && userPermission.deniedPermissions.length > 0 && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <div className="text-sm font-medium text-red-800 mb-2">
+            <div className="mt-4 p-3 bg-red-50 dark:bg-rose-950/40 border border-red-200 dark:border-rose-900/50 rounded-lg">
+              <div className="text-sm font-medium text-red-800 dark:text-rose-300 mb-2">
                 Quyền bị từ chối ({userPermission.deniedPermissions.length})
               </div>
               <div className="flex flex-wrap gap-1">
                 {userPermission.deniedPermissions.map((perm: any) => (
                   <span 
                     key={perm._id} 
-                    className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs"
+                    className="px-2 py-1 bg-red-100 dark:bg-rose-900/60 text-red-700 dark:text-rose-300 rounded text-xs"
                   >
                     {perm.name}
                   </span>

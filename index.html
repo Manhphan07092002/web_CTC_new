@@ -2,7 +2,7 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     <meta name="theme-color" content="#007CB9" />
     <link rel="manifest" href="/manifest.json" />
     <title>CTC</title>
@@ -16,6 +16,15 @@
       tailwind.config = {
         darkMode: 'class',
         theme: {
+          screens: {
+            'xs': '375px',
+            'sm': '640px',
+            'md': '768px',
+            'lg': '1024px',
+            'xl': '1280px',
+            '2xl': '1536px',
+            '3xl': '1920px',
+          },
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
@@ -159,6 +168,24 @@
     <style>
       body, html {
         font-family: 'Inter', sans-serif !important;
+        overflow-x: hidden;
+        max-width: 100vw;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* Responsive container padding helper */
+      .container {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      @media (min-width: 640px) {
+        .container {
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+        }
       }
       .nav > li > a {
         font-family: 'Inter', sans-serif !important;
@@ -316,9 +343,9 @@
         color: #ffffff !important;
       }
       
-      /* Fix for all paragraph and span text */
-      .dark p,
-      .dark span:not([class*="text-primary"]):not([class*="text-white"]):not([class*="text-red"]):not([class*="text-green"]):not([class*="text-blue"]):not([class*="text-yellow"]):not([class*="text-orange"]) {
+      /* Fix for all paragraph and span text without overriding badge colors */
+      .dark p:not([class*="text-sky"]):not([class*="text-blue"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-purple"]):not([class*="text-indigo"]):not([class*="text-rose"]),
+      .dark span:not([class*="text-primary"]):not([class*="text-white"]):not([class*="text-red"]):not([class*="text-green"]):not([class*="text-blue"]):not([class*="text-sky"]):not([class*="text-yellow"]):not([class*="text-amber"]):not([class*="text-emerald"]):not([class*="text-orange"]):not([class*="text-purple"]):not([class*="text-indigo"]):not([class*="text-rose"]) {
         color: #e2e8f0;
       }
       
@@ -416,9 +443,9 @@
         box-shadow: 0 0 0 2px rgba(255, 127, 0, 0.2) !important;
       }
       
-      .dark input::placeholder,
-      .dark textarea::placeholder {
-        color: #64748b !important;
+      .dark select option {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
       }
       
       .dark label {
@@ -443,6 +470,23 @@
       
       .dark tr:hover td {
         background-color: #334155 !important;
+      }
+      
+      /* ===== Recharts Charts in Admin Dark Mode ===== */
+      .dark .recharts-default-tooltip {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
+        color: #ffffff !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+        border-radius: 12px !important;
+      }
+      .dark .recharts-text, 
+      .dark .recharts-legend-item-text {
+        fill: #cbd5e1 !important;
+        color: #cbd5e1 !important;
+      }
+      .dark .recharts-cartesian-grid line {
+        stroke: #334155 !important;
       }
       
       /* ===== Scrollbar ===== */

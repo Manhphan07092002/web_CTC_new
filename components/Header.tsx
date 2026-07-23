@@ -47,11 +47,24 @@ const Header: React.FC = () => {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
-  // Listen for Esc key to close search
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  // Listen for Esc key to close search or menu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         handleCloseSearch();
+        setIsMenuOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -433,70 +446,79 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown Panel */}
+      {/* Mobile Menu Dropdown Panel & Backdrop */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 absolute top-full left-0 w-full shadow-2xl z-[60] max-h-[85vh] overflow-y-auto animate-in slide-in-from-top duration-300">
-          <nav className="flex flex-col p-5 gap-1.5">
-            {navLinks.map((link) => (
-              <div key={link.path} className="border-b border-gray-50 dark:border-slate-800/50 last:border-none">
-                <div className="flex justify-between items-center">
-                  <Link
-                    to={link.path}
-                    onClick={() => !link.submenu && setIsMenuOpen(false)}
-                    className={`flex-1 py-3.5 text-sm font-bold uppercase tracking-wider ${
-                      isActive(link.path) ? 'text-sky-500' : 'text-slate-800 dark:text-slate-200'
-                    }`}
-                  >
-                    {t(`nav.${link.key}`)}
-                  </Link>
-                  {link.submenu && (
-                    <button 
-                      onClick={() => toggleMobileSubmenu(link.key)}
-                      className="p-3 text-slate-400"
+        <>
+          {/* Backdrop overlay */}
+          <div 
+            className="fixed inset-0 top-0 bg-slate-950/60 backdrop-blur-xs z-[55] lg:hidden transition-opacity duration-300" 
+            onClick={() => setIsMenuOpen(false)}
+          />
+          
+          <div className="lg:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 absolute top-full left-0 w-full shadow-2xl z-[60] max-h-[85vh] overflow-y-auto animate-in slide-in-from-top duration-300">
+            <nav className="flex flex-col p-5 gap-1.5">
+              {navLinks.map((link) => (
+                <div key={link.path} className="border-b border-gray-50 dark:border-slate-800/50 last:border-none">
+                  <div className="flex justify-between items-center">
+                    <Link
+                      to={link.path}
+                      onClick={() => !link.submenu && setIsMenuOpen(false)}
+                      className={`flex-1 py-3.5 text-sm font-bold uppercase tracking-wider ${
+                        isActive(link.path) ? 'text-sky-500' : 'text-slate-800 dark:text-slate-200'
+                      }`}
                     >
-                      {expandedMobileMenu === link.key ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
+                      {t(`nav.${link.key}`)}
+                    </Link>
+                    {link.submenu && (
+                      <button 
+                        onClick={() => toggleMobileSubmenu(link.key)}
+                        className="p-3 text-slate-400 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label="Toggle submenu"
+                      >
+                        {expandedMobileMenu === link.key ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Mobile Dropdown Sublinks */}
+                  {link.submenu && expandedMobileMenu === link.key && (
+                    <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800">
+                      {link.submenu.map((sub, subIdx) => (
+                        <Link
+                          key={subIdx}
+                          to={sub.path}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 px-5 py-3.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 dark:hover:text-sky-400 border-b border-gray-100/30 dark:border-slate-800 last:border-0 uppercase tracking-wide"
+                        >
+                          <span className="w-1 h-3.5 rounded-full bg-sky-400/40 flex-shrink-0" />
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
                   )}
                 </div>
-
-                {/* Mobile Dropdown Sublinks */}
-                {link.submenu && expandedMobileMenu === link.key && (
-                  <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800">
-                    {link.submenu.map((sub, subIdx) => (
-                      <Link
-                        key={subIdx}
-                        to={sub.path}
-                        onClick={() => setIsMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-3 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 dark:hover:text-sky-400 border-b border-gray-100/30 dark:border-slate-800 last:border-0 uppercase tracking-wide"
-                      >
-                        <span className="w-1 h-3.5 rounded-full bg-sky-400/40 flex-shrink-0" />
-                        {sub.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+              ))}
+              
+              {/* Mobile Contact Action Button */}
+              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
+                <a 
+                  href="https://zalo.me/0915059666"
+                  className="btn-header-contact flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 rounded-full shadow-lg min-h-[44px]"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="btn-header-contact-shimmer"></span>
+                  <Phone size={14} className="phone-vibe-icon" />
+                  <span>Liên hệ Zalo</span>
+                </a>
+                <div className="flex justify-center gap-6 text-xs text-slate-400 mt-2 pb-2">
+                  <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-sky-500 font-semibold uppercase tracking-wider p-2">
+                    {t('header.admin')}
+                  </Link>
+                </div>
               </div>
-            ))}
-            
-            {/* Mobile Contact Action Button */}
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
-              <a 
-                href="https://zalo.me/0915059666"
-                className="btn-header-contact flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-full shadow-lg"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="btn-header-contact-shimmer"></span>
-                <Phone size={14} className="phone-vibe-icon" />
-                <span>Liên hệ Zalo</span>
-              </a>
-              <div className="flex justify-center gap-6 text-xs text-slate-400 mt-2">
-                <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-sky-500 font-semibold uppercase tracking-wider">
-                  {t('header.admin')}
-                </Link>
-              </div>
-            </div>
-          </nav>
-        </div>
+            </nav>
+          </div>
+        </>
       )}
 
       {/* Live Search Panel Dropdown */}

@@ -47,7 +47,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sticky top-32">
       {/* Categories */}
-      <h3 className="font-bold text-lg text-corporate dark:text-orange-500 mb-6 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
+      <h3 className="font-bold text-lg text-corporate dark:text-sky-400 mb-6 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
         <List size={20} className="text-primary" /> {t('products.category_list')}
       </h3>
       <nav className="space-y-1 mb-8">
@@ -108,7 +108,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </nav>
 
       {/* Technical & Price Filters */}
-      <h3 className="font-bold text-lg text-corporate dark:text-orange-500 mb-4 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
+      <h3 className="font-bold text-lg text-corporate dark:text-sky-400 mb-4 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
         <SlidersHorizontal size={20} className="text-primary" /> {t('products.filter_tech')}
       </h3>
 
@@ -337,7 +337,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
       {/* Support Box */}
       <div className="mt-8 bg-blue-50 dark:bg-blue-950/20 p-5 rounded-xl border border-blue-100 dark:border-blue-900/50">
-        <h4 className="font-bold text-corporate dark:text-orange-500 text-sm mb-2">{t('products.tech_support')}</h4>
+        <h4 className="font-bold text-corporate dark:text-sky-400 text-sm mb-2">{t('products.tech_support')}</h4>
         <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{t('products.tech_support_desc')}</p>
         <Link to="/contact" className="text-primary text-xs font-bold hover:underline">
           {t('products.contact_now')} &rarr;

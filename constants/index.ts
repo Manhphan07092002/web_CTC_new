@@ -36,18 +36,25 @@ export const NAV_LINKS = [
 ];
 
 export const ADMIN_MENU = [
-  { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, key: 'dashboard', permission: null, minLevel: 10 },
-  { name: 'Quản Lý Đơn Hàng', path: '/admin/orders', icon: ShoppingCart, key: 'orders', permission: 'view_customers', minLevel: 40 },
-  { name: 'Quản lý nội dung', path: '/admin/content', icon: Layers, key: 'content', permission: 'view_content', minLevel: 30 },
-  { name: 'Quản Lý Danh Mục', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50 },
-  { name: 'Đánh Giá Khách Hàng', path: '/admin/reviews', icon: Star, key: 'reviews', permission: 'view_content', minLevel: 30 },
-  { name: 'Quản lý Mục tiêu', path: '/admin/goals', icon: Target, key: 'goals', permission: 'view_content', minLevel: 30 },
-  { name: 'Quản Lý Liên Hệ', path: '/admin/contacts', icon: Mail, key: 'contacts', permission: 'view_customers', minLevel: 40 },
-  { name: 'Quản Lý Nhân Viên', path: '/admin/team', icon: Users, key: 'team', permission: 'view_users', minLevel: 50 },
-  { name: 'Quản Lý Tài Khoản', path: '/admin/users', icon: Handshake, key: 'users', permission: 'view_users', minLevel: 90 },
-  { name: 'Giám sát Bảo mật', path: '/admin/security', icon: Shield, key: 'security', permission: 'view_security_logs', minLevel: 90 },
-  { name: 'Nhập Dữ liệu', path: '/admin/migration', icon: Database, key: 'migration', permission: 'settings_manage', minLevel: 90 },
-  { name: 'Cấu hình', path: '/admin/settings', icon: Settings, key: 'settings', permission: 'view_system_settings', minLevel: 90 },
+  // Group 1: Tổng quan (Main)
+  { name: 'Tổng quan', path: '/admin', icon: LayoutDashboard, key: 'dashboard', permission: null, minLevel: 10, group: 'main' },
+
+  // Group 2: Kinh doanh & Khách hàng (Business & Customers)
+  { name: 'Quản lý đơn hàng', path: '/admin/orders', icon: ShoppingCart, key: 'orders', permission: 'view_customers', minLevel: 40, group: 'business' },
+  { name: 'Quản lý liên hệ', path: '/admin/contacts', icon: Mail, key: 'contacts', permission: 'view_customers', minLevel: 40, group: 'business' },
+  { name: 'Đánh giá khách hàng', path: '/admin/reviews', icon: Star, key: 'reviews', permission: 'view_content', minLevel: 30, group: 'business' },
+  { name: 'Quản lý mục tiêu', path: '/admin/goals', icon: Target, key: 'goals', permission: 'view_content', minLevel: 30, group: 'business' },
+
+  // Group 3: Quản lý nội dung (Content)
+  { name: 'Quản lý nội dung', path: '/admin/content', icon: Layers, key: 'content', permission: 'view_content', minLevel: 30, group: 'content' },
+  { name: 'Quản lý danh mục', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50, group: 'content' },
+
+  // Group 4: Hệ thống & Bảo mật (System & Administration)
+  { name: 'Quản lý tài khoản', path: '/admin/users', icon: Handshake, key: 'users', permission: 'view_users', minLevel: 90, group: 'system' },
+  { name: 'Quản lý nhân sự', path: '/admin/team', icon: Users, key: 'team', permission: 'view_users', minLevel: 50, group: 'system' },
+  { name: 'Giám sát bảo mật', path: '/admin/security', icon: Shield, key: 'security', permission: 'view_security_logs', minLevel: 90, group: 'system' },
+  { name: 'Dữ liệu & Migration', path: '/admin/migration', icon: Database, key: 'migration', permission: 'settings_manage', minLevel: 90, group: 'system' },
+  { name: 'Cấu hình hệ thống', path: '/admin/settings', icon: Settings, key: 'settings', permission: 'view_system_settings', minLevel: 90, group: 'system' },
 ];
 
 // ============================================

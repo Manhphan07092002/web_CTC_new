@@ -195,7 +195,7 @@ const Overview: React.FC = () => {
     <div className="space-y-8 animate-fade-in pb-10">
       {/* Role Info Banner */}
       {role && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 border border-blue-200 dark:border-slate-700 rounded-xl p-4">
           <div className="flex items-center gap-3">
             <div 
               className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -207,12 +207,12 @@ const Overview: React.FC = () => {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-800">Vai trò: {role.displayName}</span>
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                <span className="font-semibold text-gray-800 dark:text-white">Vai trò: {role.displayName}</span>
+                <span className="text-xs bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 px-2 py-1 rounded-full">
                   Level {roleLevel}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
                 Bạn có {permissions.length} quyền được phép trong hệ thống
               </p>
             </div>
@@ -222,10 +222,10 @@ const Overview: React.FC = () => {
 
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
-          <p className="text-gray-500 text-sm mt-1">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Dashboard Overview</h2>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">
             Chào mừng quay trở lại, đây là tình hình kinh doanh hôm nay.
-            <span className="ml-2 text-xs text-gray-400">
+            <span className="ml-2 text-xs text-gray-400 dark:text-slate-500">
               Cập nhật: {lastUpdate.toLocaleTimeString('vi-VN')}
             </span>
           </p>
@@ -237,7 +237,7 @@ const Overview: React.FC = () => {
             className={`px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2 ${
               autoRefresh 
                 ? 'bg-green-500 text-white hover:bg-green-600' 
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'
             }`}
           >
             <svg className={`w-4 h-4 ${autoRefresh ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,7 +252,7 @@ const Overview: React.FC = () => {
             className={`px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all ${
               showComparison 
                 ? 'bg-blue-500 text-white hover:bg-blue-600' 
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'
             }`}
           >
             So sánh
@@ -266,10 +266,10 @@ const Overview: React.FC = () => {
               </svg>
               Xuất báo cáo
             </button>
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-200 dark:border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
               <button
                 onClick={handleExportPDF}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700 rounded-t-lg"
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2 text-sm text-gray-700 dark:text-slate-200 rounded-t-lg"
               >
                 <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -278,7 +278,7 @@ const Overview: React.FC = () => {
               </button>
               <button
                 onClick={handleExportExcel}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700"
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2 text-sm text-gray-700 dark:text-slate-200"
               >
                 <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -287,7 +287,7 @@ const Overview: React.FC = () => {
               </button>
               <button
                 onClick={handleExportJSON}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700 rounded-b-lg"
+                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2 text-sm text-gray-700 dark:text-slate-200 rounded-b-lg"
               >
                 <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -302,18 +302,18 @@ const Overview: React.FC = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div key={index} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
               <div className={`p-3 rounded-xl ${stat.color}`}>
                 <stat.icon size={24} />
               </div>
-              <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${stat.isIncrease ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+              <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${stat.isIncrease ? 'bg-green-50 dark:bg-emerald-950/50 text-green-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-rose-950/50 text-red-600 dark:text-rose-400'}`}>
                 {stat.isIncrease ? <ArrowUpRight size={14} className="mr-1"/> : <ArrowDownRight size={14} className="mr-1"/>}
                 {stat.change}
               </span>
             </div>
-            <h3 className="text-gray-500 text-sm font-medium mb-1">{stat.title}</h3>
-            <div className="text-2xl font-bold text-gray-800">{stat.value}</div>
+            <h3 className="text-gray-500 dark:text-slate-400 text-sm font-medium mb-1">{stat.title}</h3>
+            <div className="text-2xl font-bold text-gray-800 dark:text-white">{stat.value}</div>
           </div>
         ))}
       </div>
@@ -337,9 +337,9 @@ const Overview: React.FC = () => {
 
       {/* Reviews & Engagement Section */}
       {(reviewStats || engagementStats) && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
               <Star className="text-yellow-500" size={24} />
               Đánh Giá & Tương Tác Khách Hàng
             </h3>
@@ -356,14 +356,14 @@ const Overview: React.FC = () => {
             {/* Reviews Stats */}
             {reviewStats && (
               <>
-                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-4 rounded-xl border border-yellow-100">
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 p-4 rounded-xl border border-yellow-100 dark:border-amber-900/40">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 bg-yellow-500 rounded-lg">
                       <Star size={20} className="text-white" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600 font-medium">Tổng đánh giá</p>
-                      <p className="text-2xl font-bold text-gray-800">{reviewStats.totalReviews}</p>
+                      <p className="text-xs text-gray-600 dark:text-slate-300 font-medium">Tổng đánh giá</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-white">{reviewStats.totalReviews}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 mt-2">
@@ -371,24 +371,24 @@ const Overview: React.FC = () => {
                       <Star
                         key={star}
                         size={12}
-                        className={star <= Math.round(reviewStats.avgRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}
+                        className={star <= Math.round(reviewStats.avgRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-slate-600'}
                       />
                     ))}
-                    <span className="text-xs text-gray-600 ml-1">
+                    <span className="text-xs text-gray-600 dark:text-slate-300 ml-1">
                       {reviewStats.avgRating.toFixed(1)}/5
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100">
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/40 dark:to-pink-950/40 p-4 rounded-xl border border-purple-100 dark:border-purple-900/40">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-purple-500 rounded-lg">
                       <MessageSquare size={20} className="text-white" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600 font-medium">Phản hồi</p>
-                      <p className="text-2xl font-bold text-gray-800">{reviewStats.totalReviews}</p>
-                      <p className="text-xs text-gray-500 mt-1">Từ khách hàng</p>
+                      <p className="text-xs text-gray-600 dark:text-slate-300 font-medium">Phản hồi</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-white">{reviewStats.totalReviews}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Từ khách hàng</p>
                     </div>
                   </div>
                 </div>
@@ -398,47 +398,47 @@ const Overview: React.FC = () => {
             {/* Engagement Stats */}
             {engagementStats && (
               <>
-                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-100">
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/40 dark:to-cyan-950/40 p-4 rounded-xl border border-blue-100 dark:border-blue-900/40">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-500 rounded-lg">
                       <Eye size={20} className="text-white" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600 font-medium">Lượt xem</p>
-                      <p className="text-2xl font-bold text-gray-800">
+                      <p className="text-xs text-gray-600 dark:text-slate-300 font-medium">Lượt xem</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-white">
                         {engagementStats.totalViews.toLocaleString()}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">Sản phẩm</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Sản phẩm</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-red-50 to-pink-50 p-4 rounded-xl border border-red-100">
+                <div className="bg-gradient-to-br from-red-50 to-pink-50 dark:from-rose-950/40 dark:to-pink-950/40 p-4 rounded-xl border border-red-100 dark:border-rose-900/40">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-red-500 rounded-lg">
                       <Heart size={20} className="text-white" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600 font-medium">Lượt thích</p>
-                      <p className="text-2xl font-bold text-gray-800">
+                      <p className="text-xs text-gray-600 dark:text-slate-300 font-medium">Lượt thích</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-white">
                         {engagementStats.totalLikes.toLocaleString()}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">Tương tác</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Tương tác</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-emerald-950/40 dark:to-teal-950/40 p-4 rounded-xl border border-green-100 dark:border-emerald-900/40">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-green-500 rounded-lg">
                       <Share2 size={20} className="text-white" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600 font-medium">Lượt chia sẻ</p>
-                      <p className="text-2xl font-bold text-gray-800">
+                      <p className="text-xs text-gray-600 dark:text-slate-300 font-medium">Lượt chia sẻ</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-white">
                         {engagementStats.totalShares.toLocaleString()}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">Lan tỏa</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Lan tỏa</p>
                     </div>
                   </div>
                 </div>
@@ -447,17 +447,17 @@ const Overview: React.FC = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="mt-6 pt-6 border-t border-gray-100 flex gap-3">
+          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-800 flex gap-3">
             <Link
               to="/admin/reviews"
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-colors font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-yellow-50 dark:bg-amber-950/40 text-yellow-700 dark:text-amber-300 rounded-lg hover:bg-yellow-100 dark:hover:bg-amber-900/60 transition-colors font-medium"
             >
               <Star size={18} />
               Quản lý đánh giá
             </Link>
             <Link
               to="/admin/engagement"
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors font-medium"
             >
               <TrendingUp size={18} />
               Xem tương tác
@@ -516,22 +516,22 @@ const Overview: React.FC = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Growth Trend Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-lg text-gray-800">Xu hướng tăng trưởng (6 tháng)</h3>
+            <h3 className="font-bold text-lg text-gray-800 dark:text-white">Xu hướng tăng trưởng (6 tháng)</h3>
             <div className="flex items-center gap-2 text-sm">
-              <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-blue-500"></div> Sản phẩm</span>
-              <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-green-500"></div> Dự án</span>
+              <span className="flex items-center gap-1 dark:text-slate-300"><div className="w-3 h-3 rounded-full bg-blue-500"></div> Sản phẩm</span>
+              <span className="flex items-center gap-1 dark:text-slate-300"><div className="w-3 h-3 rounded-full bg-green-500"></div> Dự án</span>
             </div>
           </div>
           <div className="h-80 min-h-[320px]">
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <LineChart data={statistics?.monthlyGrowth || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 12}} />
                 <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                  contentStyle={{ borderRadius: '12px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#ffffff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
                 />
                 <Line type="monotone" dataKey="products" stroke="#3B82F6" strokeWidth={3} dot={{ fill: '#3B82F6', r: 4 }} />
                 <Line type="monotone" dataKey="projects" stroke="#10B981" strokeWidth={3} dot={{ fill: '#10B981', r: 4 }} />
@@ -541,8 +541,8 @@ const Overview: React.FC = () => {
         </div>
 
         {/* Products by Category Chart */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-          <h3 className="font-bold text-lg text-gray-800 mb-6">Sản phẩm theo danh mục</h3>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col">
+          <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-6">Sản phẩm theo danh mục</h3>
           <div className="flex-1 min-h-[200px] relative">
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
@@ -559,14 +559,14 @@ const Overview: React.FC = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{ borderRadius: '12px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#ffffff' }} />
                 <Legend verticalAlign="bottom" height={36} iconType="circle" />
               </PieChart>
             </ResponsiveContainer>
             {/* Center Text */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-4 text-center pointer-events-none">
-              <span className="block text-3xl font-bold text-gray-800">{statistics?.totalProducts || 0}</span>
-              <span className="text-xs text-gray-500">Tổng sản phẩm</span>
+              <span className="block text-3xl font-bold text-gray-800 dark:text-white">{statistics?.totalProducts || 0}</span>
+              <span className="text-xs text-gray-500 dark:text-slate-400">Tổng sản phẩm</span>
             </div>
           </div>
         </div>
@@ -576,31 +576,31 @@ const Overview: React.FC = () => {
       {statistics?.topPerformers && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top Products */}
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl shadow-sm border border-blue-200">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-900 dark:to-slate-800 p-6 rounded-2xl shadow-sm border border-blue-200 dark:border-slate-700">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-blue-500 rounded-lg">
                   <Package size={20} className="text-white" />
                 </div>
-                <h3 className="font-bold text-lg text-gray-800">Top Sản phẩm</h3>
+                <h3 className="font-bold text-lg text-gray-800 dark:text-white">Top Sản phẩm</h3>
               </div>
-              <Link to="/admin/content?tab=products" className="text-blue-600 text-sm font-bold hover:underline">Xem tất cả</Link>
+              <Link to="/admin/content?tab=products" className="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline">Xem tất cả</Link>
             </div>
             <div className="space-y-3">
               {statistics.topPerformers.products?.map((product: any, idx: number) => (
-                <div key={`top-product-${idx}-${product._id || product.id}`} className="bg-white rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
-                  <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
+                <div key={`top-product-${idx}-${product._id || product.id}`} className="bg-white dark:bg-slate-800 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
+                  <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-950/60 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
                     #{idx + 1}
                   </div>
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
                     <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-800 line-clamp-1">{product.name}</h4>
-                    <p className="text-sm text-gray-500">{product.category}</p>
+                    <h4 className="font-bold text-gray-800 dark:text-white line-clamp-1">{product.name}</h4>
+                    <p className="text-sm text-gray-500 dark:text-slate-400">{product.category}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-blue-600">{product.price?.toLocaleString('vi-VN')}đ</p>
+                    <p className="font-bold text-blue-600 dark:text-blue-400">{product.price?.toLocaleString('vi-VN')}đ</p>
                   </div>
                 </div>
               ))}
@@ -608,31 +608,31 @@ const Overview: React.FC = () => {
           </div>
 
           {/* Top Projects */}
-          <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl shadow-sm border border-green-200">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-slate-900 dark:to-slate-800 p-6 rounded-2xl shadow-sm border border-green-200 dark:border-slate-700">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-green-500 rounded-lg">
                   <Briefcase size={20} className="text-white" />
                 </div>
-                <h3 className="font-bold text-lg text-gray-800">Top Dự án</h3>
+                <h3 className="font-bold text-lg text-gray-800 dark:text-white">Top Dự án</h3>
               </div>
-              <Link to="/admin/content?tab=projects" className="text-green-600 text-sm font-bold hover:underline">Xem tất cả</Link>
+              <Link to="/admin/content?tab=projects" className="text-green-600 dark:text-emerald-400 text-sm font-bold hover:underline">Xem tất cả</Link>
             </div>
             <div className="space-y-3">
               {statistics.topPerformers.projects?.map((project: any, idx: number) => (
-                <div key={`top-project-${idx}-${project._id || project.id}`} className="bg-white rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
-                  <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-lg">
+                <div key={`top-project-${idx}-${project._id || project.id}`} className="bg-white dark:bg-slate-800 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
+                  <div className="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-emerald-950/60 rounded-full flex items-center justify-center text-green-600 dark:text-emerald-400 font-bold text-lg">
                     #{idx + 1}
                   </div>
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
                     <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-800 line-clamp-1">{project.title}</h4>
-                    <p className="text-sm text-gray-500">{project.location}</p>
+                    <h4 className="font-bold text-gray-800 dark:text-white line-clamp-1">{project.title}</h4>
+                    <p className="text-sm text-gray-500 dark:text-slate-400">{project.location}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-green-600">{project.capacity}</p>
+                    <p className="font-bold text-green-600 dark:text-emerald-400">{project.capacity}</p>
                   </div>
                 </div>
               ))}
@@ -644,57 +644,57 @@ const Overview: React.FC = () => {
       {/* Performance Metrics & Recent Activities */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Performance Metrics */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 className="font-bold text-lg text-gray-800 mb-6">Hiệu suất tháng này</h3>
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
+          <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-6">Hiệu suất tháng này</h3>
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-800/80 p-4 rounded-xl border border-blue-200 dark:border-slate-700">
               <div className="flex items-center gap-2 mb-2">
-                <Package size={20} className="text-blue-600" />
-                <span className="text-sm font-medium text-gray-600">Sản phẩm</span>
+                <Package size={20} className="text-blue-600 dark:text-blue-400" />
+                <span className="text-sm font-medium text-gray-600 dark:text-slate-300">Sản phẩm</span>
               </div>
-              <div className="text-3xl font-bold text-blue-600">{statistics?.quickStats?.productsThisMonth || 0}</div>
-              <p className="text-xs text-gray-500 mt-1">Được thêm tháng này</p>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{statistics?.quickStats?.productsThisMonth || 0}</div>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Được thêm tháng này</p>
             </div>
             
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-slate-800 dark:to-slate-800/80 p-4 rounded-xl border border-green-200 dark:border-slate-700">
               <div className="flex items-center gap-2 mb-2">
-                <Activity size={20} className="text-green-600" />
-                <span className="text-sm font-medium text-gray-600">Dự án</span>
+                <Activity size={20} className="text-green-600 dark:text-emerald-400" />
+                <span className="text-sm font-medium text-gray-600 dark:text-slate-300">Dự án</span>
               </div>
-              <div className="text-3xl font-bold text-green-600">{statistics?.quickStats?.projectsThisMonth || 0}</div>
-              <p className="text-xs text-gray-500 mt-1">Được tạo tháng này</p>
+              <div className="text-3xl font-bold text-green-600 dark:text-emerald-400">{statistics?.quickStats?.projectsThisMonth || 0}</div>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Được tạo tháng này</p>
             </div>
             
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-slate-800 dark:to-slate-800/80 p-4 rounded-xl border border-orange-200 dark:border-slate-700">
               <div className="flex items-center gap-2 mb-2">
-                <FileText size={20} className="text-orange-600" />
-                <span className="text-sm font-medium text-gray-600">Tin tức</span>
+                <FileText size={20} className="text-orange-600 dark:text-orange-400" />
+                <span className="text-sm font-medium text-gray-600 dark:text-slate-300">Tin tức</span>
               </div>
-              <div className="text-3xl font-bold text-orange-600">{statistics?.quickStats?.newsThisMonth || 0}</div>
-              <p className="text-xs text-gray-500 mt-1">Được đăng tháng này</p>
+              <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">{statistics?.quickStats?.newsThisMonth || 0}</div>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Được đăng tháng này</p>
             </div>
           </div>
         </div>
 
         {/* Recent Activities Timeline */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 className="font-bold text-lg text-gray-800 mb-6">Hoạt động gần đây</h3>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
+          <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-6">Hoạt động gần đây</h3>
           <div className="space-y-4 max-h-[300px] overflow-y-auto">
             {statistics?.recentActivities?.length > 0 ? (
               statistics.recentActivities.map((activity: any, idx: number) => (
                 <div key={idx} className="flex items-start gap-3 group">
                   <div className={`p-2 rounded-lg flex-shrink-0 ${
-                    activity.type === 'product' ? 'bg-blue-100 text-blue-600' :
-                    activity.type === 'project' ? 'bg-green-100 text-green-600' :
-                    'bg-orange-100 text-orange-600'
+                    activity.type === 'product' ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400' :
+                    activity.type === 'project' ? 'bg-green-100 dark:bg-emerald-950/60 text-green-600 dark:text-emerald-400' :
+                    'bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400'
                   }`}>
                     {activity.type === 'product' && <Package size={16} />}
                     {activity.type === 'project' && <Briefcase size={16} />}
                     {activity.type === 'news' && <FileText size={16} />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800 font-medium line-clamp-2">{activity.title}</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-sm text-gray-800 dark:text-slate-200 font-medium line-clamp-2">{activity.title}</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
                       {new Date(activity.time).toLocaleDateString('vi-VN', { 
                         day: '2-digit', 
                         month: 'short', 
@@ -706,16 +706,16 @@ const Overview: React.FC = () => {
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-400 py-8">Chưa có hoạt động nào</p>
+              <p className="text-center text-gray-400 dark:text-slate-500 py-8">Chưa có hoạt động nào</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Recent Projects Table */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-bold text-lg text-gray-800">Dự án gần đây</h3>
+          <h3 className="font-bold text-lg text-gray-800 dark:text-white">Dự án gần đây</h3>
           <div className="flex items-center gap-3">
             {/* Search Input */}
             <div className="relative">
@@ -724,18 +724,18 @@ const Overview: React.FC = () => {
                 placeholder="Tìm kiếm dự án..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
-              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-400 dark:text-slate-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <Link to="/admin/content?tab=projects" className="text-primary text-sm font-bold hover:underline">Xem tất cả</Link>
+            <Link to="/admin/content?tab=projects" className="text-primary dark:text-sky-400 text-sm font-bold hover:underline">Xem tất cả</Link>
           </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-500 font-medium rounded-lg">
+            <thead className="bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-slate-300 font-medium rounded-lg">
               <tr>
                 <th className="px-4 py-3 rounded-l-lg">Tên dự án</th>
                 <th className="px-4 py-3">Địa điểm</th>
@@ -743,7 +743,7 @@ const Overview: React.FC = () => {
                 <th className="px-4 py-3 rounded-r-lg text-right">Ngày tạo</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
               {statistics?.recentProjects?.length > 0 ? (
                 statistics.recentProjects
                   .filter((project: any) => 
@@ -752,18 +752,18 @@ const Overview: React.FC = () => {
                     project.location.toLowerCase().includes(searchTerm.toLowerCase())
                   )
                   .map((project: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-4 py-3 font-medium text-corporate">{project.title}</td>
-                      <td className="px-4 py-3 text-gray-600">{project.location}</td>
-                      <td className="px-4 py-3 font-bold text-gray-800">{project.capacity}</td>
-                      <td className="px-4 py-3 text-right text-gray-400 text-xs">
+                    <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/60 transition-colors">
+                      <td className="px-4 py-3 font-medium text-corporate dark:text-sky-400">{project.title}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-slate-300">{project.location}</td>
+                      <td className="px-4 py-3 font-bold text-gray-800 dark:text-white">{project.capacity}</td>
+                      <td className="px-4 py-3 text-right text-gray-400 dark:text-slate-500 text-xs">
                         {new Date(project.createdAt).toLocaleDateString('vi-VN')}
                       </td>
                     </tr>
                   ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={4} className="px-4 py-8 text-center text-gray-400 dark:text-slate-500">
                     {searchTerm ? 'Không tìm thấy dự án nào' : 'Chưa có dự án nào'}
                   </td>
                 </tr>

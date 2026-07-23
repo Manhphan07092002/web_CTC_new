@@ -422,6 +422,22 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
         newReview={newReview}
         setNewReview={setNewReview}
       />
+
+      {/* Mobile Sticky Bottom Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-850/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 p-3 shadow-2xl lg:hidden flex items-center gap-3">
+        <a 
+          href="tel:0915059666" 
+          className="flex-1 bg-gradient-to-r from-sky-600 to-blue-800 text-white text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all text-center min-h-[44px]"
+        >
+          📞 Gọi tư vấn
+        </a>
+        <button 
+          onClick={() => addToCart(product)}
+          className="flex-1 bg-primary hover:bg-primary/90 text-white text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all text-center min-h-[44px]"
+        >
+          🛒 Thêm báo giá
+        </button>
+      </div>
     </div>
   );
 };

@@ -27,7 +27,7 @@ export async function optimizeUploadedImage(filePath: string, publicSubPath: str
 
   try {
     // Dynamic import sharp to handle environment where sharp might not be natively loaded yet
-    const sharp = (await import('sharp')).default;
+    const sharp = (await import('sharp' as any)).default;
     const statsBefore = fs.statSync(filePath);
     const parsedPath = path.parse(filePath);
     const webpPath = path.join(parsedPath.dir, `${parsedPath.name}.webp`);

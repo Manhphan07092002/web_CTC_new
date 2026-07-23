@@ -342,6 +342,10 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
+    changePassword: (id: string, oldPassword: string, newPassword: string) => fetchAPI<any>(`/users/${id}/change-password`, {
+      method: 'PUT',
+      body: JSON.stringify({ oldPassword, newPassword }),
+    }),
   },
 
   // Settings
