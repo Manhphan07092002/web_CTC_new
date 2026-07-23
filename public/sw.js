@@ -29,10 +29,14 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event: network first, fallback to cache for static resources
+// Fetch event:// Network-first, fallback to cache for static resources
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests and skip API calls
-  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+  // Only handle GET requests and skip API calls or non-http/https extension requests
+  if (
+    event.request.method !== 'GET' || 
+    event.request.url.includes('/api/') ||
+    !event.request.url.startsWith('http')
+  ) {
     return;
   }
 
@@ -40,10 +44,10 @@ self.addEventListener('fetch', (event) => {
     fetch(event.request)
       .then((response) => {
         // Cache successful responses for static assets
-        if (response && response.status === 200 && response.type === 'basic') {
+        if (response && response.status === 200 && response.type === 'basic' && event.request.url.startsWith('http')) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
+            cache.put(event.request, responseToCache).catch(() => {});
           });
         }
         return response;

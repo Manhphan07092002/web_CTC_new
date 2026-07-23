@@ -2,6 +2,7 @@ import express from 'express';
 import { Order, OrderItem, Notification, Product } from '../../models';
 import { EmailService } from '../../services/email-service';
 import { orderRateLimiter, honeypotCheck } from '../middleware/anti-spam';
+import { notificationStream } from '../services/notificationStream';
 
 const router = express.Router();
 
@@ -257,6 +258,14 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
         icon: '🛒',
         link: '/admin/orders',
         isRead: false
+      });
+
+      // Broadcast SSE real-time notification to all connected Admin clients
+      notificationStream.broadcast({
+        type: 'order:new',
+        title: '🛒 Đơn hàng mới!',
+        message: `Khách hàng ${customerName} vừa đặt đơn #${orderCode} (${totalAmount.toLocaleString('vi-VN')}đ)`,
+        data: { orderId: order._id, orderCode, customerName, totalAmount }
       });
     } catch (notifError) {
       console.error('Failed to create order notification:', notifError);

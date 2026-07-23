@@ -274,6 +274,10 @@ router.post('/login', async (req, res) => {
     // Don't send password to client
     const { password: _, ...sanitized } = userWithPassword;
     
+    // Check if user is using a default weak password
+    const DEFAULT_PASSWORDS = ['CTC@2024', 'TranLe@2024', '123456', 'admin', 'admin123'];
+    const mustChangePassword = DEFAULT_PASSWORDS.includes(password);
+
     // Generate auth token
     const token = generateToken({
       id: sanitized.id || sanitized._id,
@@ -283,7 +287,7 @@ router.post('/login', async (req, res) => {
     });
 
     logger.info('Login successful:', sanitized.id);
-    res.json({ ...sanitized, token });
+    res.json({ ...sanitized, token, mustChangePassword });
   } catch (error) {
     logger.error('Error during login', error);
     res.status(500).json({ message: 'Login failed' });

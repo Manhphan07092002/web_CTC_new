@@ -46,13 +46,33 @@ const ChatBox: React.FC = () => {
 
   const sendMessageToAI = async (text: string) => {
     setIsTyping(true);
+    const botMsgIndex = Date.now();
+    setMessages(prev => [...prev, { text: "", isUser: false, timestamp: botMsgIndex }]);
+
+    let accumulatedText = "";
     try {
-      const responseText = await chatService.sendMessage(text);
-      const botMsg = { text: responseText, isUser: false, timestamp: Date.now() };
-      setMessages(prev => [...prev, botMsg]);
+      await chatService.sendMessageStream(text, (chunk: string) => {
+        accumulatedText += chunk;
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastIdx = updated.length - 1;
+          if (lastIdx >= 0 && !updated[lastIdx].isUser) {
+            updated[lastIdx] = { ...updated[lastIdx], text: accumulatedText };
+          }
+          return updated;
+        });
+      });
     } catch (error) {
-      const errorMsg = { text: "Kết nối gián đoạn. Vui lòng gọi 0915 059 666.", isUser: false, timestamp: Date.now() };
-      setMessages(prev => [...prev, errorMsg]);
+      if (!accumulatedText) {
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastIdx = updated.length - 1;
+          if (lastIdx >= 0 && !updated[lastIdx].isUser) {
+            updated[lastIdx] = { ...updated[lastIdx], text: "Kết nối gián đoạn. Vui lòng gọi 0915 059 666." };
+          }
+          return updated;
+        });
+      }
     } finally {
       setIsTyping(false);
     }

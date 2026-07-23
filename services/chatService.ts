@@ -74,6 +74,46 @@ const executeGeminiCall = async (apiKey: string, modelName: string, temperature:
   return result.text || "";
 };
 
+const executeGeminiCallStream = async (
+  apiKey: string, 
+  modelName: string, 
+  temperature: number, 
+  systemInstruction: string, 
+  text: string, 
+  onChunk: (chunk: string) => void
+): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey });
+  const chat = ai.chats.create({
+    model: modelName,
+    config: {
+      systemInstruction: systemInstruction,
+      temperature: temperature,
+    }
+  });
+  let fullText = "";
+  try {
+    const responseStream = await chat.sendMessageStream({ message: text });
+    for await (const chunk of responseStream) {
+      const textChunk = chunk.text || "";
+      if (textChunk) {
+        fullText += textChunk;
+        onChunk(textChunk);
+      }
+    }
+    return fullText;
+  } catch (err) {
+    if (!fullText) {
+      const result = await chat.sendMessage({ message: text });
+      const textResult = result.text || "";
+      if (textResult) {
+        onChunk(textResult);
+      }
+      return textResult;
+    }
+    return fullText;
+  }
+};
+
 const executeOpenAICall = async (endpoint: string, apiKey: string, modelName: string, temperature: number, systemInstruction: string, text: string): Promise<string> => {
   const response = await fetch(endpoint, {
     method: "POST",
@@ -103,10 +143,86 @@ const executeOpenAICall = async (endpoint: string, apiKey: string, modelName: st
   return data.choices?.[0]?.message?.content || "";
 };
 
+const executeOpenAICallStream = async (
+  endpoint: string,
+  apiKey: string,
+  modelName: string,
+  temperature: number,
+  systemInstruction: string,
+  text: string,
+  onChunk: (chunk: string) => void
+): Promise<string> => {
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: modelName,
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: text }
+      ],
+      temperature: temperature,
+      stream: true
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const message = errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+    const err: any = new Error(message);
+    err.status = response.status;
+    throw err;
+  }
+
+  if (!response.body) {
+    throw new Error("Response body is not readable for streaming");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let fullText = "";
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("data: ")) {
+        const dataStr = trimmed.slice(6);
+        if (dataStr === "[DONE]") break;
+        try {
+          const parsed = JSON.parse(dataStr);
+          const chunkText = parsed.choices?.[0]?.delta?.content || "";
+          if (chunkText) {
+            fullText += chunkText;
+            onChunk(chunkText);
+          }
+        } catch {
+          // ignore chunk parse error
+        }
+      }
+    }
+  }
+
+  return fullText;
+};
+
 export const chatService = {
   sendMessage: async (text: string): Promise<string> => {
+    return chatService.sendMessageStream(text, () => {});
+  },
+
+  sendMessageStream: async (text: string, onChunk: (chunk: string) => void): Promise<string> => {
     try {
-      // 1. Fetch current settings from Admin DB
       let siteSettings: any = null;
       try {
         siteSettings = await api.settings.get();
@@ -114,12 +230,12 @@ export const chatService = {
         console.warn("Could not fetch settings for AI Chat, using environment fallback");
       }
 
-      // Check if AI is disabled in Admin Settings
       if (siteSettings && siteSettings.aiEnabled === false) {
-        return "Trợ lý AI hiện đang tạm bảo trì. Quý khách vui lòng liên hệ Hotline/Zalo: 0915 059 666 để được hỗ trợ trực tiếp ạ.";
+        const msg = "Trợ lý AI hiện đang tạm bảo trì. Quý khách vui lòng liên hệ Hotline/Zalo: 0915 059 666 để được hỗ trợ trực tiếp ạ.";
+        onChunk(msg);
+        return msg;
       }
 
-      // Helper to safely get environment variables in browser without crashing on process.env
       const getEnvVar = (name: string): string => {
         try {
           const metaEnv = (import.meta as any).env;
@@ -133,22 +249,21 @@ export const chatService = {
         return '';
       };
 
-      // Resolve AI Provider
       const provider = siteSettings?.aiProvider || 'gemini';
       const envFallback = getEnvVar('VITE_GEMINI_API_KEY') || getEnvVar('GEMINI_API_KEY');
       const rawApiKeyString = siteSettings?.aiApiKey || envFallback || "";
       
-      // Parse Key Pool (support comma or newline separated keys)
       const keys = rawApiKeyString
         .split(/[\n,;]+/)
         .map((k: string) => k.trim())
         .filter((k: string) => k.length > 0);
 
       if (keys.length === 0) {
-        return `Rất tiếc, API Key cho nhà cung cấp AI (${provider.toUpperCase()}) chưa được cấu hình. Quý khách vui lòng truy cập Cài đặt hệ thống để bổ sung ạ.`;
+        const msg = `Rất tiếc, API Key cho nhà cung cấp AI (${provider.toUpperCase()}) chưa được cấu hình. Quý khách vui lòng truy cập Cài đặt hệ thống để bổ sung ạ.`;
+        onChunk(msg);
+        return msg;
       }
 
-      // Default model mapping per provider
       const defaultModels: Record<string, string> = {
         gemini: 'gemini-2.5-flash',
         groq: 'llama-3.3-70b-versatile',
@@ -159,9 +274,40 @@ export const chatService = {
 
       const modelName = siteSettings?.aiModel || defaultModels[provider] || 'gemini-2.5-flash';
       const temperature = siteSettings?.aiTemperature ?? 0.6;
-      const systemInstruction = siteSettings?.aiSystemInstruction?.trim() || DEFAULT_SYSTEM_INSTRUCTION;
+      let baseSystemInstruction = siteSettings?.aiSystemInstruction?.trim() || DEFAULT_SYSTEM_INSTRUCTION;
 
-      // Base URL for OpenAI compatible providers
+      // ============================================================
+      // RAG CONTEXT RETRIEVAL (Real-Time Database Augmentation)
+      // ============================================================
+      try {
+        const products = await api.products.getAll();
+        if (products && Array.isArray(products) && products.length > 0) {
+          const queryLower = text.toLowerCase();
+          const matchedProducts = products.filter(p => {
+            const nameStr = (p.name || p.title || '').toLowerCase();
+            const catStr = (p.category || '').toLowerCase();
+            const descStr = (p.description || '').toLowerCase();
+            const brandStr = (p.brand || '').toLowerCase();
+            return queryLower.split(/\s+/).some(word => 
+              word.length >= 3 && (nameStr.includes(word) || catStr.includes(word) || descStr.includes(word) || brandStr.includes(word))
+            );
+          }).slice(0, 5);
+
+          const targetList = matchedProducts.length > 0 ? matchedProducts : products.slice(0, 4);
+
+          const ragContext = `\n\n### DỮ LIỆU SẢN PHẨM THỰC TẾ TỪ CƠ SỞ DỮ LIỆU CTC (RAG CONTEXT):\n` +
+            targetList.map(p => 
+              `- **${p.name || p.title}** | Giá: ${p.price ? p.price.toLocaleString('vi-VN') + 'đ' : 'Liên hệ báo giá'} | Danh mục: ${p.category || 'Điện mặt trời'} | Mô tả: ${(p.description || 'Sản phẩm chính hãng CTC, bảo hành dài hạn').slice(0, 150)}`
+            ).join('\n');
+
+          baseSystemInstruction += ragContext;
+        }
+      } catch (ragErr) {
+        console.warn('[RAG Engine] Product context retrieval fallback:', ragErr);
+      }
+
+      const systemInstruction = baseSystemInstruction;
+
       let baseUrl = "";
       if (provider === 'groq') {
         baseUrl = "https://api.groq.com/openai/v1";
@@ -174,11 +320,9 @@ export const chatService = {
       }
       const endpoint = `${baseUrl}/chat/completions`;
 
-      // Active key starting index for failover loop
       const startIndex = activeKeyIndexes[provider] || 0;
       let lastError: any = null;
 
-      // Loop through key pool with automatic failover / rotation
       for (let attempt = 0; attempt < keys.length; attempt++) {
         const keyIndex = (startIndex + attempt) % keys.length;
         const currentKey = keys[keyIndex];
@@ -187,18 +331,23 @@ export const chatService = {
           let responseText = "";
 
           if (provider === 'gemini') {
-            responseText = await executeGeminiCall(currentKey, modelName, temperature, systemInstruction, text);
+            responseText = await executeGeminiCallStream(currentKey, modelName, temperature, systemInstruction, text, onChunk);
           } else {
-            responseText = await executeOpenAICall(endpoint, currentKey, modelName, temperature, systemInstruction, text);
+            responseText = await executeOpenAICallStream(endpoint, currentKey, modelName, temperature, systemInstruction, text, onChunk);
           }
 
-          // Save working key index for future calls
           activeKeyIndexes[provider] = keyIndex;
           if (attempt > 0) {
             console.log(`[AI Key Rotation] Successfully failed over to key #${keyIndex + 1}/${keys.length}`);
           }
 
-          return responseText || "Xin lỗi, hệ thống chưa nhận được phản hồi. Vui lòng thử lại sau.";
+          if (!responseText) {
+            const fallback = "Xin lỗi, hệ thống chưa nhận được phản hồi. Vui lòng thử lại sau.";
+            onChunk(fallback);
+            return fallback;
+          }
+
+          return responseText;
         } catch (err: any) {
           lastError = err;
           const errMsg = err?.message || '';
@@ -207,9 +356,9 @@ export const chatService = {
           if (keys.length > 1) {
             console.warn(`[AI Key Pool Warning] Key #${keyIndex + 1}/${keys.length} hit error (${errMsg}). Auto-rotating to key #${((keyIndex + 1) % keys.length) + 1}...`);
             if (isQuotaOrAuthError(errMsg, errStatus)) {
-              continue; // Exceeded/quota error -> try next key immediately
+              continue;
             }
-            continue; // General error -> also try next key
+            continue;
           } else {
             throw err;
           }
@@ -220,7 +369,9 @@ export const chatService = {
 
     } catch (error: any) {
       console.error("AI Chat Final Error:", error);
-      return `Hiện tại kết nối AI gián đoạn (${error?.message || 'Hết Quota'}). Quý khách vui lòng gọi Hotline/Zalo: 0915 059 666 để được hỗ trợ ngay ạ.`;
+      const errMsg = `Hiện tại kết nối AI gián đoạn (${error?.message || 'Hết Quota'}). Quý khách vui lòng gọi Hotline/Zalo: 0915 059 666 để được hỗ trợ ngay ạ.`;
+      onChunk(errMsg);
+      return errMsg;
     }
   },
 

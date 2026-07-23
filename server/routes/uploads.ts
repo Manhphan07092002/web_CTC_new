@@ -29,6 +29,36 @@ const ALLOWED_EXTENSIONS = new Set([
   '.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.pdf'
 ]);
 
+import crypto from 'crypto';
+
+/**
+ * Generates a secure yet human-readable filename:
+ * Preserves sanitized original filename base + appends a 8-char crypto hash token
+ * Example: "Báo giá điện 2024.jpg" -> "bao-gia-dien-2024_a8f3b2c9.jpg"
+ */
+function generateSecureFilename(originalName: string): string {
+  const ext = path.extname(originalName).toLowerCase() || '';
+  const baseName = path.basename(originalName, ext);
+  
+  // Sanitize base name (remove accents, dangerous chars, spaces to dashes)
+  const cleanBase = baseName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9_-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || 'file';
+
+  // Limit max base length to 60 chars for clean URLs
+  const safeBase = cleanBase.slice(0, 60);
+
+  // Cryptographic random token for uniqueness and security
+  const hashToken = crypto.randomBytes(4).toString('hex');
+
+  return `${safeBase}_${hashToken}${ext}`;
+}
+
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
     // Get path from query params or form data
@@ -50,9 +80,8 @@ const storage = multer.diskStorage({
     cb(null, resolvedTarget);
   },
   filename: (_req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname).toLowerCase() || '';
-    cb(null, uniqueSuffix + ext);
+    const secureName = generateSecureFilename(file.originalname);
+    cb(null, secureName);
   },
 });
 

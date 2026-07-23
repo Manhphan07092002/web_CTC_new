@@ -1,7 +1,21 @@
 import express from 'express';
 import { db } from '../../services/db-mongodb';
+import { notificationStream } from '../services/notificationStream';
 
 const router = express.Router();
+
+// Real-Time Notification SSE Stream for Admin Dashboard
+router.get('/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  notificationStream.addClient(res);
+
+  res.write(`data: ${JSON.stringify({ type: 'connected', message: 'SSE Stream active' })}\n\n`);
+});
 
 // Get all notifications
 router.get('/', async (req, res) => {

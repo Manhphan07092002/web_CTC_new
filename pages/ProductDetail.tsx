@@ -23,6 +23,7 @@ const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [allCatalogProducts, setAllCatalogProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
   const { addToCart } = useCart();
@@ -95,7 +96,8 @@ const ProductDetail: React.FC = () => {
         
         if (productData) {
           const allProducts = await api.products.getAll();
-          const related = allProducts.filter(p => p.category === productData.category && p.id !== productData.id).slice(0, 4);
+          setAllCatalogProducts(allProducts || []);
+          const related = (allProducts || []).filter(p => p.category === productData.category && p.id !== productData.id).slice(0, 4);
           setRelatedProducts(related);
         }
 
@@ -161,29 +163,41 @@ Ngắn gọn, súc tích, tiếng Việt.`;
     }
   };
 
-  const handleAIComparison = async () => {
-    if (!product || aiComparison || relatedProducts.length === 0) return;
+  const handleAIComparison = async (selectedProducts: Product[]) => {
+    if (!product || !selectedProducts || selectedProducts.length < 2) return;
     
     setAiCompareLoading(true);
-    const relatedProduct = relatedProducts[0];
     
-    const prompt = `So sánh 2 sản phẩm sau theo dạng bảng:
+    const productDescs = selectedProducts.map((p, idx) => {
+      const rawPrice = (p as any).price;
+      const formattedPrice = typeof rawPrice === 'number' 
+        ? rawPrice.toLocaleString('vi-VN') + 'đ' 
+        : (rawPrice || 'Liên hệ');
+      const brandStr = (p as any).brand || 'CTC';
+      return `SẢN PHẨM ${idx + 1}: ${p.name}
+- Công suất: ${p.power || 'N/A'}W
+- Hiệu suất: ${p.efficiency || 'N/A'}%
+- Giá: ${formattedPrice}
+- Thương hiệu: ${brandStr}`;
+    }).join('\n\n');
 
-SẢN PHẨM A: ${product.name}
-- Công suất: ${product.power || 'N/A'}W
-- Hiệu suất: ${product.efficiency || 'N/A'}%
-- Giá: ${product.price || 'Liên hệ'}
+    const headers = selectedProducts.map((p) => p.name).join(' | ');
 
-SẢN PHẨM B: ${relatedProduct.name}
-- Công suất: ${relatedProduct.power || 'N/A'}W
-- Hiệu suất: ${relatedProduct.efficiency || 'N/A'}%
-- Giá: ${relatedProduct.price || 'Liên hệ'}
+    const prompt = `Bạn là Chuyên gia Kỹ thuật Điện Mặt trời CTC. Hãy lập BẢNG SO SÁNH MARKDOWN chính xác giữa ${selectedProducts.length} sản phẩm sau:
 
-Hãy trả lời theo format:
-TIÊU CHÍ | SẢN PHẨM A | SẢN PHẨM B
-(Mỗi dòng so sánh 1 tiêu chí: Công suất, Hiệu suất, Giá, Ưu điểm, Phù hợp)
+${productDescs}
 
-Sau đó thêm 1-2 câu kết luận ngắn gọn.`;
+Bắt buộc tuân thủ Cấu trúc Bảng Markdown duy nhất (Cột 1 Luôn luôn có tiêu đề là "TIÊU CHÍ", các cột tiếp theo là Tên sản phẩm):
+
+| TIÊU CHÍ | ${headers} |
+| Tên mẫu | ${headers} |
+| Giá bán | ... | ... |
+| Công suất | ... | ... |
+| Hiệu suất (%) | ... | ... |
+| Điểm nổi bật | ... | ... |
+| Phù hợp nhu cầu | ... | ... |
+
+Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT CỦA AI CTC:" (dùng các dấu gạch đầu dòng - để phân tích rõ từng sản phẩm).`;
 
     try {
       const response = await chatService.sendMessage(prompt);
@@ -375,6 +389,7 @@ Sau đó thêm 1-2 câu kết luận ngắn gọn.`;
 
         {/* AI Analysis Section */}
         <ProductAIPanel 
+          currentProduct={product}
           productName={product.name}
           aiSummary={aiSummary}
           aiComparison={aiComparison}
@@ -383,6 +398,7 @@ Sau đó thêm 1-2 câu kết luận ngắn gọn.`;
           onFetchSummary={handleAISummary}
           onFetchComparison={handleAIComparison}
           hasRelatedProducts={relatedProducts.length > 0}
+          allCatalogProducts={allCatalogProducts}
         />
 
         {/* Details Tabs */}

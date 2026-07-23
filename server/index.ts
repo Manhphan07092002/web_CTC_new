@@ -334,20 +334,23 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 API server listening on http://localhost:${PORT}`);
-      console.log(`🔒 Security features enabled`);
-      console.log(`📊 Audit logging active`);
-      console.log(`🛡️  Rate limiting active`);
-      
-      // Start translation scheduler (auto-translate every 12 hours)
-      startTranslationScheduler();
-      console.log(`🌐 Translation scheduler active (every 12h)`);
-    });
-  })
-  .catch((err) => {
-    console.error('Failed to start server due to DB error', err);
-    process.exit(1);
-  });
+console.log('⚡ Initializing CTC Web API server...');
+
+const server = app.listen(PORT, async () => {
+  console.log(`🚀 API server listening on http://localhost:${PORT}`);
+  console.log(`🔒 Security features enabled`);
+  console.log(`📊 Audit logging active`);
+  console.log(`🛡️  Rate limiting active`);
+
+  try {
+    await connectDB();
+  } catch (err: any) {
+    console.error('❌ DB Connection Warning:', err?.message || err);
+    console.error('💡 Ensure MongoDB is running locally on port 27017 or start it via: net start MongoDB');
+  }
+
+  try {
+    startTranslationScheduler();
+    console.log(`🌐 Translation scheduler active (every 12h)`);
+  } catch (e) {}
+});

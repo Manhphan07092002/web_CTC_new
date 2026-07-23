@@ -212,6 +212,12 @@ class TranslationCache {
   // Preload translations from database
   async preloadFromDatabase(language?: string, namespace?: string): Promise<void> {
     try {
+      const mongoose = await import('mongoose');
+      if (mongoose.default.connection.readyState !== 1) {
+        // Skip preloading if DB is not yet connected (prevents hanging top-level imports)
+        return;
+      }
+
       const filter: any = { status: { $in: ['approved', 'published'] } };
       
       if (language) filter.language = language;

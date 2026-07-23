@@ -29,6 +29,8 @@ const Products: React.FC = () => {
 
   // Technical Filters States
   const [techFilters, setTechFilters] = useState({
+    minPrice: '',
+    maxPrice: '',
     minPower: '',
     maxPower: '',
     minEff: '',
@@ -44,6 +46,14 @@ const Products: React.FC = () => {
 
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+
+  // Helper for numeric price parsing
+  const parseNumericPrice = (val: any): number => {
+    if (typeof val === 'number') return val;
+    if (!val) return 0;
+    const cleaned = String(val).replace(/[^0-9.]/g, '');
+    return parseFloat(cleaned) || 0;
+  };
 
   // 1. Load Data
   useEffect(() => {
@@ -96,45 +106,43 @@ const Products: React.FC = () => {
       filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
 
+    // Filter by Price (VNĐ)
+    if (techFilters.minPrice && !isNaN(Number(techFilters.minPrice))) {
+      const minP = Number(techFilters.minPrice);
+      filtered = filtered.filter(p => parseNumericPrice(p.price) >= minP);
+    }
+    if (techFilters.maxPrice && !isNaN(Number(techFilters.maxPrice))) {
+      const maxP = Number(techFilters.maxPrice);
+      filtered = filtered.filter(p => parseNumericPrice(p.price) <= maxP);
+    }
+
     // Filter by Technical Specs (Power)
     if (techFilters.minPower && !isNaN(Number(techFilters.minPower))) {
       const minPower = Number(techFilters.minPower);
-      filtered = filtered.filter(p => {
-        const productPower = p.power || 0;
-        return productPower >= minPower;
-      });
+      filtered = filtered.filter(p => (p.power || 0) >= minPower);
     }
     if (techFilters.maxPower && !isNaN(Number(techFilters.maxPower))) {
       const maxPower = Number(techFilters.maxPower);
-      filtered = filtered.filter(p => {
-        const productPower = p.power || 0;
-        return productPower <= maxPower;
-      });
+      filtered = filtered.filter(p => (p.power || 0) <= maxPower);
     }
 
     // Filter by Technical Specs (Efficiency)
     if (techFilters.minEff && !isNaN(Number(techFilters.minEff))) {
       const minEff = Number(techFilters.minEff);
-      filtered = filtered.filter(p => {
-        const productEff = p.efficiency || 0;
-        return productEff >= minEff;
-      });
+      filtered = filtered.filter(p => (p.efficiency || 0) >= minEff);
     }
     if (techFilters.maxEff && !isNaN(Number(techFilters.maxEff))) {
       const maxEff = Number(techFilters.maxEff);
-      filtered = filtered.filter(p => {
-        const productEff = p.efficiency || 0;
-        return productEff <= maxEff;
-      });
+      filtered = filtered.filter(p => (p.efficiency || 0) <= maxEff);
     }
 
     // Sort
     switch (sortOption) {
       case 'price-asc':
-        filtered.sort((a, b) => (a.price || '').localeCompare(b.price || ''));
+        filtered.sort((a, b) => parseNumericPrice(a.price) - parseNumericPrice(b.price));
         break;
       case 'price-desc':
-        filtered.sort((a, b) => (b.price || '').localeCompare(a.price || ''));
+        filtered.sort((a, b) => parseNumericPrice(b.price) - parseNumericPrice(a.price));
         break;
       case 'name-asc':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -194,7 +202,14 @@ const Products: React.FC = () => {
   const handleClearFilters = () => {
     setSearchQuery('');
     handleCategoryChange('all');
-    setTechFilters({ minPower: '', maxPower: '', minEff: '', maxEff: '' });
+    setTechFilters({
+      minPrice: '',
+      maxPrice: '',
+      minPower: '',
+      maxPower: '',
+      minEff: '',
+      maxEff: ''
+    });
   };
 
   // Handler for CategoryFilter component (tabs)

@@ -3,6 +3,7 @@ import { db } from '../../services/db-mongodb';
 import { ProductCategory, applyTranslationsToArray, applyTranslations, TRANSLATION_FIELDS, SupportedLanguage, SUPPORTED_LANGUAGES } from '../../models';
 import { logger } from '../../utils/logger';
 import { translateProduct } from '../services/translate';
+import { cacheService } from '../services/cacheService';
 
 const router = Router();
 
@@ -16,6 +17,13 @@ router.get('/', async (req, res) => {
   try {
     const { categoryId } = req.query;
     const lang = getLanguage(req);
+    const cacheKey = `products:list:${categoryId || 'all'}:${lang}`;
+    
+    const cachedData = cacheService.get<any[]>(cacheKey);
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
     let products = await db.products.getAll();
     
     // Filter by category if provided
@@ -28,6 +36,7 @@ router.get('/', async (req, res) => {
       products = applyTranslationsToArray(products, [...TRANSLATION_FIELDS.product], lang);
     }
     
+    cacheService.set(cacheKey, products, 300); // 5 min TTL
     res.json(products);
   } catch (error) {
     logger.error('Error getting products', error);
@@ -110,6 +119,7 @@ router.post('/', async (req, res) => {
     });
     
     const created = await db.products.add(translatedData);
+    cacheService.invalidatePattern('products:');
     
     logger.info('Product created with translations:', created.id);
     res.status(201).json(created);
@@ -127,6 +137,7 @@ router.put('/:id', async (req, res) => {
     const updated = await db.products.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'Product not found' });
     
+    cacheService.invalidatePattern('products:');
     logger.info('Product updated with translations:', req.params.id);
     res.json(updated);
   } catch (error) {
@@ -153,6 +164,7 @@ router.delete('/:id', async (req, res) => {
       }
     }
     
+    cacheService.invalidatePattern('products:');
     logger.info('Product deleted:', req.params.id);
     res.json({ message: 'Product moved to trash' });
   } catch (error) {

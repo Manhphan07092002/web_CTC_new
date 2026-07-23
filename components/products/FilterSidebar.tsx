@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { List, ChevronRight, SlidersHorizontal, Zap, Activity } from 'lucide-react';
+import { List, ChevronRight, SlidersHorizontal, Zap, Activity, DollarSign, Tag } from 'lucide-react';
 import { Category } from '../../types';
 
 interface FilterSidebarProps {
@@ -10,12 +10,16 @@ interface FilterSidebarProps {
   categoriesLoading: boolean;
   getActiveCategories: () => Category[];
   techFilters: {
+    minPrice?: string;
+    maxPrice?: string;
     minPower: string;
     maxPower: string;
     minEff: string;
     maxEff: string;
   };
   setTechFilters: React.Dispatch<React.SetStateAction<{
+    minPrice?: string;
+    maxPrice?: string;
     minPower: string;
     maxPower: string;
     minEff: string;
@@ -38,7 +42,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   handleClearFilters,
   t
 }) => {
-  const isFilterActive = techFilters.minPower || techFilters.maxPower || techFilters.minEff || techFilters.maxEff;
+  const isFilterActive = techFilters.minPrice || techFilters.maxPrice || techFilters.minPower || techFilters.maxPower || techFilters.minEff || techFilters.maxEff;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sticky top-32">
@@ -103,12 +107,62 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         )}
       </nav>
 
-      {/* Technical Filters */}
+      {/* Technical & Price Filters */}
       <h3 className="font-bold text-lg text-corporate dark:text-orange-500 mb-4 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
         <SlidersHorizontal size={20} className="text-primary" /> {t('products.filter_tech')}
       </h3>
 
       <div className="space-y-6">
+        {/* Price Filter (VNĐ) */}
+        <div>
+          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1.5">
+            <DollarSign size={14} className="text-green-500" /> Khoảng Giá (VNĐ)
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              placeholder="Giá từ"
+              min="0"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-primary dark:focus:border-primary text-gray-800 dark:text-gray-100 transition-colors"
+              value={techFilters.minPrice || ''}
+              onChange={(e) => {
+                setTechFilters({ ...techFilters, minPrice: e.target.value });
+              }}
+            />
+            <span className="text-gray-400 font-bold">-</span>
+            <input
+              type="number"
+              placeholder="Đến giá"
+              min="0"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-primary dark:focus:border-primary text-gray-800 dark:text-gray-100 transition-colors"
+              value={techFilters.maxPrice || ''}
+              onChange={(e) => {
+                setTechFilters({ ...techFilters, maxPrice: e.target.value });
+              }}
+            />
+          </div>
+          {/* Quick Price Hints */}
+          <div className="mt-2 flex flex-wrap gap-1">
+            {[
+              { label: '< 5 triệu', min: '', max: '5000000' },
+              { label: '5 - 15 triệu', min: '5000000', max: '15000000' },
+              { label: '15 - 30 triệu', min: '15000000', max: '30000000' },
+              { label: '> 30 triệu', min: '30000000', max: '' }
+            ].map((range) => (
+              <button
+                key={range.label}
+                onClick={() => setTechFilters({ ...techFilters, minPrice: range.min, maxPrice: range.max })}
+                className={`px-2 py-1 text-xs rounded-md transition-colors ${
+                  techFilters.minPrice === range.min && techFilters.maxPrice === range.max
+                    ? 'bg-primary text-white font-bold'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white'
+                }`}
+              >
+                {range.label}
+              </button>
+            ))}
+          </div>
+        </div>
         {/* Power Filter */}
         <div>
           <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1.5">
@@ -238,6 +292,16 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             
             {/* Active filters display */}
             <div className="mt-2 flex flex-wrap gap-1">
+              {techFilters.minPrice && (
+                <span className="px-1.5 py-0.5 bg-green-100 dark:bg-green-800/40 text-green-700 dark:text-green-200 text-[10px] rounded">
+                  Giá ≥ {Number(techFilters.minPrice).toLocaleString('vi-VN')}đ
+                </span>
+              )}
+              {techFilters.maxPrice && (
+                <span className="px-1.5 py-0.5 bg-green-100 dark:bg-green-800/40 text-green-700 dark:text-green-200 text-[10px] rounded">
+                  Giá ≤ {Number(techFilters.maxPrice).toLocaleString('vi-VN')}đ
+                </span>
+              )}
               {techFilters.minPower && (
                 <span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-800/40 text-blue-700 dark:text-blue-200 text-[10px] rounded">
                   {t('products.power').split(' (')[0]} ≥ {techFilters.minPower}W

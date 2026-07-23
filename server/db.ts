@@ -9,11 +9,13 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_ne
 
 export const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(MONGO_URI);
-    console.log(`MongoDB connected: ${conn.connection.host}`);
+    const conn = await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    console.log(`🍃 MongoDB connected: ${conn.connection.host}`);
     return conn;
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error('❌ MongoDB connection error:', (error as Error).message || error);
     throw error;
   }
 };

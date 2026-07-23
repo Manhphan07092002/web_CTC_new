@@ -11,6 +11,7 @@ import { api } from '../services/api';
 import SEO from '../components/SEO';
 import SessionTimer from '../components/SessionTimer';
 import NotificationBell from '../components/NotificationBell';
+import AdminNotificationListener from '../components/AdminNotificationListener';
 
 // Sub Components
 import Overview from './Overview';
@@ -157,6 +158,7 @@ const AdminDashboard: React.FC = () => {
         description="Admin Dashboard"
         noindex={true}
       />
+      <AdminNotificationListener />
 
       {/* Sidebar */}
       <aside className="w-64 bg-corporate text-white flex flex-col flex-shrink-0 transition-all duration-300">

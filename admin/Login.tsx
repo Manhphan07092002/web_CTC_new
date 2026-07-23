@@ -159,7 +159,7 @@ const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                placeholder="admin@ctcdn.vn"
+                placeholder="admin@domain.com"
               />
             </div>
           </div>
@@ -187,10 +187,6 @@ const Login: React.FC = () => {
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-             {/* Hint for Demo Users */}
-             <p className="text-xs text-gray-400 mt-2 text-center italic">
-               Default: admin@ctcdn.vn / CTC@2024
-             </p>
           </div>
 
           <button
