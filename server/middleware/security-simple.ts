@@ -72,28 +72,34 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
   next();
 };
 
-// Basic XSS protection
+// XSS & NoSQL Query Injection Protection Middleware
 export const xssProtection = (req: Request, res: Response, next: NextFunction) => {
-  if (req.body) {
-    const sanitizeValue = (value: any): any => {
-      if (typeof value === 'string') {
-        return value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-      }
-      if (Array.isArray(value)) {
-        return value.map(sanitizeValue);
-      }
-      if (value && typeof value === 'object') {
-        const sanitized: any = {};
-        for (const key in value) {
-          sanitized[key] = sanitizeValue(value[key]);
+  const sanitizeValue = (value: any): any => {
+    if (typeof value === 'string') {
+      return value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    }
+    if (Array.isArray(value)) {
+      return value.map(sanitizeValue);
+    }
+    if (value && typeof value === 'object') {
+      const sanitized: any = {};
+      for (const key of Object.keys(value)) {
+        // Prevent NoSQL Injection: drop keys starting with $ or containing .
+        if (key.startsWith('$') || key.includes('.')) {
+          console.warn(`[SECURITY] NoSQL Injection blocked key "${key}" from IP ${req.ip}`);
+          continue;
         }
-        return sanitized;
+        sanitized[key] = sanitizeValue(value[key]);
       }
-      return value;
-    };
-    
-    req.body = sanitizeValue(req.body);
-  }
+      return sanitized;
+    }
+    return value;
+  };
+
+  if (req.body) req.body = sanitizeValue(req.body);
+  if (req.query) req.query = sanitizeValue(req.query);
+  if (req.params) req.params = sanitizeValue(req.params);
+
   next();
 };
 

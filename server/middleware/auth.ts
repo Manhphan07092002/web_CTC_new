@@ -44,7 +44,10 @@ export function verifyToken(token: string): UserPayload | null {
       .update(`${encodedHeader}.${encodedPayload}`)
       .digest('base64url');
 
-    if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+    const sigBuffer = Buffer.from(signature);
+    const expBuffer = Buffer.from(expectedSignature);
+
+    if (sigBuffer.length !== expBuffer.length || !crypto.timingSafeEqual(sigBuffer, expBuffer)) {
       return null;
     }
 
