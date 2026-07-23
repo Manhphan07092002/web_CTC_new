@@ -1,8 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useSettings } from '../contexts/SettingsContext';
 import { useLanguage } from '../contexts/LanguageContext';
+
+// Helper to convert any favicon image into a PNG data URL with smooth rounded corners
+function getRoundedFaviconUrl(src: string, borderRadiusRatio = 0.22): Promise<string> {
+  return new Promise((resolve) => {
+    if (!src || typeof window === 'undefined') {
+      return resolve(src);
+    }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const size = 64;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(src);
+
+        const radius = size * borderRadiusRatio; // 14px radius for 64px image
+        
+        ctx.beginPath();
+        ctx.moveTo(radius, 0);
+        ctx.lineTo(size - radius, 0);
+        ctx.quadraticCurveTo(size, 0, size, radius);
+        ctx.lineTo(size, size - radius);
+        ctx.quadraticCurveTo(size, size, size - radius, size);
+        ctx.lineTo(radius, size);
+        ctx.quadraticCurveTo(0, size, 0, size - radius);
+        ctx.lineTo(0, radius);
+        ctx.quadraticCurveTo(0, 0, radius, 0);
+        ctx.closePath();
+        ctx.clip();
+
+        ctx.drawImage(img, 0, 0, size, size);
+        resolve(canvas.toDataURL('image/png'));
+      } catch (e) {
+        resolve(src);
+      }
+    };
+    img.onerror = () => resolve(src);
+    img.src = src;
+  });
+}
 
 interface SEOProps {
   title: string;
@@ -66,9 +109,23 @@ const SEO: React.FC<SEOProps> = ({
   const url = `${siteUrl}${location.pathname}`;
   const fullTitle = `${title} | ${settings.siteName || COMPANY_INFO.shortName}`;
   
-  // Favicon URLs
+  // Favicon URLs & Dynamic Rounded Favicon
   const faviconUrl = settings.favicon || settings.logo || '/favicon.ico';
-  const appleIconUrl = settings.appleTouchIcon || settings.favicon || settings.logo;
+  const [processedFavicon, setProcessedFavicon] = useState<string>(faviconUrl);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (faviconUrl) {
+      getRoundedFaviconUrl(faviconUrl).then((roundedUrl) => {
+        if (isMounted) {
+          setProcessedFavicon(roundedUrl);
+        }
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [faviconUrl]);
 
   return (
     <Helmet>
@@ -80,10 +137,10 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
       <link rel="canonical" href={url} />
       
-      {/* Favicon */}
-      <link rel="icon" type="image/x-icon" href={faviconUrl} />
-      <link rel="shortcut icon" href={faviconUrl} />
-      {appleIconUrl && <link rel="apple-touch-icon" href={appleIconUrl} />}
+      {/* Favicon with smooth rounded corners */}
+      <link rel="icon" type="image/png" href={processedFavicon} />
+      <link rel="shortcut icon" href={processedFavicon} />
+      <link rel="apple-touch-icon" href={processedFavicon} />
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />

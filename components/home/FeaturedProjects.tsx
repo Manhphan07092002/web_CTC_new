@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Zap, ArrowRight, MapPin, Calendar, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
@@ -12,6 +12,7 @@ interface FeaturedProjectsProps {
 
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, isLoading = false }) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const { ref: projectsRef, isInView } = useInView(0.1);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -146,6 +147,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
                 <div
                   key={`project-accordion-${index}-${project._id || project.id}`}
                   onMouseEnter={() => setHoveredIndex(index)}
+                  onClick={() => navigate(`/projects/${project._id || project.id}`)}
                   className={`relative overflow-hidden rounded-[2.5rem] border border-slate-250/20 dark:border-slate-800/40 transition-all duration-700 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl
                     ${isAnyActive
                       ? isActive 
@@ -156,7 +158,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
                 >
                   <Link 
                     to={`/projects/${project._id || project.id}`}
-                    className="absolute inset-0 w-full h-full block z-25"
+                    className="absolute inset-0 w-full h-full block z-35"
                   />
 
                   {/* Background Image with slow Ken Burns effect */}

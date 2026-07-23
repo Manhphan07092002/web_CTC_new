@@ -6,8 +6,12 @@ import { Router } from 'express';
 import { ProductCategory, generateSlug, applyTranslations, TRANSLATION_FIELDS, SupportedLanguage, SUPPORTED_LANGUAGES } from '../../models';
 import { logger } from '../../utils/logger';
 import { translateCategory } from '../services/translate';
+import { apiCache } from '../utils/api-cache';
 
 const router = Router();
+
+// Apply cache middleware to GET requests (5 minutes cache)
+router.use(apiCache.middleware(300, '/api/product-categories'));
 
 // Helper to get language from request
 const getLanguage = (req: any): SupportedLanguage => {
@@ -98,6 +102,7 @@ router.post('/', async (req, res) => {
     });
     
     await category.save();
+    apiCache.delByPrefix('/api/product-categories');
     logger.info('Product category created with translations:', category.id);
     res.status(201).json(category);
   } catch (error) {
@@ -147,6 +152,7 @@ router.put('/:id', async (req, res) => {
     }
     
     await category.save();
+    apiCache.delByPrefix('/api/product-categories');
     logger.info('Product category updated with translations:', category.id);
     res.json(category);
   } catch (error) {
@@ -171,6 +177,7 @@ router.delete('/:id', async (req, res) => {
     }
     
     await ProductCategory.findByIdAndDelete(req.params.id);
+    apiCache.delByPrefix('/api/product-categories');
     logger.info('Product category deleted:', req.params.id);
     res.status(204).send();
   } catch (error) {

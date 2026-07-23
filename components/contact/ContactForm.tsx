@@ -27,7 +27,8 @@ const ContactForm: React.FC = () => {
     email: '',
     service: '',
     address: '',
-    message: ''
+    message: '',
+    website_hp: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -193,6 +194,17 @@ const ContactForm: React.FC = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {/* Honeypot field for anti-spam bots */}
+                  <input
+                    type="text"
+                    name="website_hp"
+                    value={formData.website_hp}
+                    onChange={(e) => setFormData({ ...formData, website_hp: e.target.value })}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="hidden absolute left-[-9999px] opacity-0 pointer-events-none"
+                  />
                   
                   {/* Inputs: Name & Phone */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

@@ -46,8 +46,10 @@ router.get('/:id', async (req: any, res) => {
   }
 });
 
-// Submit contact form (Public)
-router.post('/submit', async (req: any, res) => {
+import { contactRateLimiter, honeypotCheck, validateContactInput } from '../middleware/anti-spam';
+
+// Submit contact form (Public with anti-spam & rate limiting)
+router.post('/submit', contactRateLimiter, honeypotCheck, validateContactInput, async (req: any, res) => {
   try {
     const { name, phone, email, service, message } = req.body;
 

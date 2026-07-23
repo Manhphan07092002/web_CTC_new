@@ -71,8 +71,10 @@ const upload = multer({
   }
 });
 
+import { optimizeUploadedImage } from '../utils/image-optimizer';
+
 // Upload single or multiple files (max 5)
-router.post('/images', upload.array('files', 5), (req, res) => {
+router.post('/images', upload.array('files', 5), async (req, res) => {
   const files = (req as any).files as Express.Multer.File[] | undefined;
 
   if (!files || files.length === 0) {
@@ -80,15 +82,23 @@ router.post('/images', upload.array('files', 5), (req, res) => {
   }
 
   // Get the path from query params or form data
-  const subPath = req.query.path || req.body.path || '';
+  const subPath = String(req.query.path || req.body.path || '');
   
-  const results = files.map(file => ({
-    filename: file.filename,
-    url: subPath ? `/uploads/images/${subPath}/${file.filename}` : `/uploads/images/${file.filename}`,
-    size: file.size,
-    mimetype: file.mimetype,
-    originalName: file.originalname,
-  }));
+  const results = await Promise.all(
+    files.map(async file => {
+      const optResult = await optimizeUploadedImage(file.path, subPath);
+      const relativeUrl = subPath ? `/uploads/images/${subPath}/${file.filename}` : `/uploads/images/${file.filename}`;
+      
+      return {
+        filename: file.filename,
+        url: relativeUrl.replace(/\\/g, '/'),
+        webpUrl: optResult.webpUrl,
+        size: file.size,
+        mimetype: file.mimetype,
+        originalName: file.originalname,
+      };
+    })
+  );
 
   res.json({
     message: `Uploaded ${files.length} file(s) successfully`,

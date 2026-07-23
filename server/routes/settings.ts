@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { requireAdmin } from '../middleware/auth';
+import { apiCache } from '../utils/api-cache';
 
 const router = Router();
+
+// Cache GET settings for 5 minutes
+router.use(apiCache.middleware(300, '/api/settings'));
 
 const cleanSettingsUrls = (settings: any) => {
   if (!settings) return settings;
@@ -51,6 +55,7 @@ router.get('/maintenance', async (req, res) => {
 router.put('/', requireAdmin, async (req, res) => {
   try {
     const updated = await db.settings.update(req.body);
+    apiCache.delByPrefix('/api/settings');
     res.json(updated);
   } catch (error) {
     console.error('Error updating settings', error);

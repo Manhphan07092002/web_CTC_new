@@ -158,6 +158,13 @@ const ProductSchema = new Schema<IProduct>({
   translations: createTranslationSchema()
 }, { timestamps: true });
 
+// Product Indexes for fast querying & filtering
+ProductSchema.index({ category: 1, isDeleted: 1 });
+ProductSchema.index({ categoryId: 1, isDeleted: 1 });
+ProductSchema.index({ code: 1 });
+ProductSchema.index({ isFeatured: 1, isDeleted: 1 });
+ProductSchema.index({ isActive: 1, isDeleted: 1, createdAt: -1 });
+
 // Base Category Interface
 export interface IBaseCategory extends BaseDocument {
   name: string;
@@ -204,6 +211,10 @@ const ProductCategorySchema = new Schema<IProductCategory>({
   translations: createTranslationSchema()
 }, { timestamps: true });
 
+// Category Indexes for fast slug lookup & ordering
+ProductCategorySchema.index({ slug: 1 });
+ProductCategorySchema.index({ isActive: 1, order: 1 });
+
 // News Category
 export interface INewsCategory extends IBaseCategory {
   newsCount?: number;
@@ -221,6 +232,9 @@ const NewsCategorySchema = new Schema<INewsCategory>({
   translations: createTranslationSchema()
 }, { timestamps: true });
 
+NewsCategorySchema.index({ slug: 1 });
+NewsCategorySchema.index({ isActive: 1, order: 1 });
+
 // Project Category
 export interface IProjectCategory extends IBaseCategory {
   projectCount?: number;
@@ -237,6 +251,9 @@ const ProjectCategorySchema = new Schema<IProjectCategory>({
   projectCount: { type: Number, default: 0 },
   translations: createTranslationSchema()
 }, { timestamps: true });
+
+ProjectCategorySchema.index({ slug: 1 });
+ProjectCategorySchema.index({ isActive: 1, order: 1 });
 
 // Project Schema
 export interface IProject extends BaseDocument {
@@ -263,6 +280,10 @@ const ProjectSchema = new Schema<IProject>({
   translations: createTranslationSchema()
 }, { timestamps: true });
 
+ProjectSchema.index({ categoryId: 1 });
+ProjectSchema.index({ category: 1 });
+ProjectSchema.index({ createdAt: -1 });
+
 // News Schema
 export interface INewsItem extends BaseDocument {
   title: string;
@@ -287,6 +308,10 @@ const NewsSchema = new Schema<INewsItem>({
   author: { type: String },
   translations: createTranslationSchema()
 }, { timestamps: true });
+
+NewsSchema.index({ categoryId: 1 });
+NewsSchema.index({ category: 1 });
+NewsSchema.index({ createdAt: -1 });
 
 // Testimonial Schema
 export interface ITestimonial extends BaseDocument {

@@ -1,6 +1,7 @@
 import express from 'express';
 import { Order, OrderItem, Notification } from '../../models';
 import { EmailService } from '../../services/email-service';
+import { orderRateLimiter, honeypotCheck } from '../middleware/anti-spam';
 
 const router = express.Router();
 
@@ -54,7 +55,7 @@ router.get('/pending-count', async (req, res) => {
 // ============================================================
 // Public: Track order by a single query (code, phone, or name)
 // ============================================================
-router.get('/track', async (req: any, res) => {
+router.get('/track', orderRateLimiter, async (req: any, res) => {
   try {
     const { query } = req.query;
 
@@ -168,8 +169,8 @@ router.get('/:id', async (req: any, res) => {
   }
 });
 
-// Create new order (Public check-out)
-router.post('/', async (req: any, res) => {
+// Create new order (Public check-out with anti-spam)
+router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
   try {
     const { customerName, phone, email, address, note, items } = req.body;
 

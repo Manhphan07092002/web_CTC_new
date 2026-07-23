@@ -10,19 +10,31 @@ interface ImageWithFallbackProps {
   className?: string;
   fallbackClassName?: string;
   showIcon?: boolean;
+  loadingMode?: 'lazy' | 'eager';
 }
+
+const getWebpCandidate = (url?: string | null): string | null => {
+  if (!url) return null;
+  const match = url.match(/^(.+)\.(jpg|jpeg|png)$/i);
+  if (match) {
+    return `${match[1]}.webp`;
+  }
+  return null;
+};
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
   alt,
   className = '',
   fallbackClassName = '',
-  showIcon = true
+  showIcon = true,
+  loadingMode = 'lazy'
 }) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const hasValidSrc = src && src.trim() !== '';
+  const webpSrc = getWebpCandidate(src);
 
   if (!hasValidSrc || error) {
     return (
@@ -40,16 +52,21 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
           <div className="w-8 h-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
         </div>
       )}
-      <img
-        src={src}
-        alt={alt}
-        className={`${className} ${loading ? 'hidden' : ''}`}
-        onLoad={() => setLoading(false)}
-        onError={() => {
-          setError(true);
-          setLoading(false);
-        }}
-      />
+      <picture className={loading ? 'hidden' : ''}>
+        {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
+        <img
+          src={src}
+          alt={alt}
+          loading={loadingMode}
+          decoding="async"
+          className={className}
+          onLoad={() => setLoading(false)}
+          onError={() => {
+            setError(true);
+            setLoading(false);
+          }}
+        />
+      </picture>
     </>
   );
 };

@@ -302,6 +302,15 @@ const Cart: React.FC = () => {
                   </h3>
                   
                   <form onSubmit={handleSubmitOrder} className="space-y-4">
+                    {/* Honeypot anti-spam field */}
+                    <input
+                      type="text"
+                      name="website_hp"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="hidden absolute left-[-9999px] opacity-0 pointer-events-none"
+                    />
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                         Họ và tên <span className="text-red-500">*</span>
