@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { api } from '../services/api';
 import { Product, Project, NewsItem, Testimonial } from '../types';
-import PartnerSlider from '../components/PartnerSlider';
 import SEO from '../components/SEO';
 import { useLanguage } from '../contexts/LanguageContext';
 import analyticsTracking from '../services/analytics-tracking';
 import companyProfile from '../constants/company_profile.json';
 
-// Home sub-components
+// Critical Above-the-fold components (Eager import for instant 0ms render)
 import Hero from '../components/home/Hero';
 import Stats from '../components/home/Stats';
 import About from '../components/home/About';
 import Features from '../components/home/Features';
-import Team from '../components/home/Team';
-import WhyChooseUs from '../components/home/WhyChooseUs';
-import CalculatorWrapper from '../components/home/CalculatorWrapper';
 import FeaturedProjects from '../components/home/FeaturedProjects';
 import FeaturedProducts from '../components/home/FeaturedProducts';
-import FAQ from '../components/home/FAQ';
-import Testimonials from '../components/home/Testimonials';
-import News from '../components/home/News';
-import CTA from '../components/home/CTA';
-import { DetailModal } from '../components/home/Modals';
+import WhyChooseUs from '../components/home/WhyChooseUs';
+
+// Below-the-fold components (Lazy Loaded for max performance & zero render delay)
+const CalculatorWrapper = lazy(() => import('../components/home/CalculatorWrapper'));
+const Testimonials = lazy(() => import('../components/home/Testimonials'));
+const Team = lazy(() => import('../components/home/Team'));
+const News = lazy(() => import('../components/home/News'));
+const PartnerSlider = lazy(() => import('../components/PartnerSlider'));
+const FAQ = lazy(() => import('../components/home/FAQ'));
+const CTA = lazy(() => import('../components/home/CTA'));
+const DetailModal = lazy(() => import('../components/home/Modals').then(m => ({ default: m.DetailModal })));
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -341,19 +343,21 @@ const Home: React.FC = () => {
       <FeaturedProjects featuredProjects={featuredProjects} isLoading={loadingSections.projects} />
       <FeaturedProducts featuredProducts={featuredProducts} isLoading={loadingSections.products} />
       <WhyChooseUs onOpenModal={openModal} />
-      <CalculatorWrapper />
-      <Testimonials testimonials={testimonials} isLoading={loadingSections.testimonials} />
-      <Team teamMembers={teamMembers} isLoading={loadingSections.team} />
-      <News latestNews={latestNews} isLoading={loadingSections.news} />
-      <PartnerSlider />
-      <FAQ />
-      <CTA />
+      <Suspense fallback={null}>
+        <CalculatorWrapper />
+        <Testimonials testimonials={testimonials} isLoading={loadingSections.testimonials} />
+        <Team teamMembers={teamMembers} isLoading={loadingSections.team} />
+        <News latestNews={latestNews} isLoading={loadingSections.news} />
+        <PartnerSlider />
+        <FAQ />
+        <CTA />
 
-      <DetailModal 
-        isOpen={modalOpen} 
-        content={modalContent} 
-        onClose={closeModal} 
-      />
+        <DetailModal 
+          isOpen={modalOpen} 
+          content={modalContent} 
+          onClose={closeModal} 
+        />
+      </Suspense>
     </div>
   );
 };

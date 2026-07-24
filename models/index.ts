@@ -80,6 +80,8 @@ const ReviewSchema = new Schema<IReview>({
   date: { type: String, required: true }
 }, { timestamps: true });
 
+ReviewSchema.index({ rating: -1, createdAt: -1 });
+
 // Product Schema
 export interface IProduct extends BaseDocument {
   name: string;
@@ -410,6 +412,8 @@ const ContactSchema = new Schema<IContact>({
   notes: { type: String }
 }, { timestamps: true });
 
+ContactSchema.index({ status: 1, createdAt: -1 });
+
 // Notification Schema
 export interface INotification extends BaseDocument {
   type: 'info' | 'success' | 'warning' | 'error';
@@ -599,6 +603,9 @@ const AnalyticsEventSchema = new Schema({
   referrer: { type: String },
   timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
+
+AnalyticsEventSchema.index({ eventType: 1, timestamp: -1 });
+AnalyticsEventSchema.index({ sessionId: 1 });
 
 export interface IAnalyticsEvent extends mongoose.Document {
   eventType: 'page_view' | 'product_view' | 'contact_request' | 'quote_request' | 'purchase';

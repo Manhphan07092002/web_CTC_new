@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { 
   Search, Eye, Trash2, Check, AlertCircle, ShoppingCart, User, Phone, Mail, MapPin, 
   FileText, ChevronRight, X, Send, Truck, Clock, CheckCircle2, XCircle, Plus, 
-  Printer, DollarSign, PackageCheck, ListFilter, ShieldCheck, ExternalLink
+  Printer, DollarSign, PackageCheck, ListFilter, ShieldCheck, ExternalLink, Download
 } from 'lucide-react';
 import Loading from '../components/Loading';
 
@@ -372,6 +372,38 @@ const OrdersManagement: React.FC = () => {
     }
   };
 
+  const handleExportCSV = () => {
+    if (!orders || orders.length === 0) {
+      showToast('Không có dữ liệu đơn hàng để xuất CSV.', 'warning');
+      return;
+    }
+
+    const headers = ['Mã Đơn', 'Khách Hàng', 'SĐT', 'Email', 'Địa Chỉ', 'Tổng Tiền (VND)', 'Trạng Thái', 'Đơn Vị VC', 'Mã Vận Đơn', 'Ngày Tạo'];
+    const rows = orders.map(o => [
+      `"${o.orderCode}"`,
+      `"${(o.customerName || '').replace(/"/g, '""')}"`,
+      `"${o.phone || ''}"`,
+      `"${o.email || ''}"`,
+      `"${(o.address || '').replace(/"/g, '""')}"`,
+      o.totalAmount || 0,
+      `"${STATUS_OPTIONS.find(s => s.value === o.status)?.label || o.status}"`,
+      `"${o.shippingProvider || ''}"`,
+      `"${o.trackingCode || ''}"`,
+      `"${new Date(o.createdAt).toLocaleString('vi-VN')}"`
+    ]);
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `danh-sach-don-hang-CTC-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Đã xuất danh sách đơn hàng ra file CSV thành công!', 'success');
+  };
+
   const getStatusBadge = (status: string) => {
     const opt = STATUS_OPTIONS.find(o => o.value === status) || STATUS_OPTIONS[0];
     return (
@@ -394,12 +426,22 @@ const OrdersManagement: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="bg-primary hover:bg-primary/90 text-white font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-md shadow-primary/20 transition-all cursor-pointer"
-        >
-          <Plus size={18} /> Tạo đơn hàng mới
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCSV}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-md transition-all cursor-pointer"
+            title="Xuất file báo cáo đơn hàng dạng Excel / CSV"
+          >
+            <Download size={18} /> Xuất Excel / CSV
+          </button>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-primary hover:bg-primary/90 text-white font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-md shadow-primary/20 transition-all cursor-pointer"
+          >
+            <Plus size={18} /> Tạo đơn hàng mới
+          </button>
+        </div>
       </div>
 
       {/* KPI Stats Cards */}

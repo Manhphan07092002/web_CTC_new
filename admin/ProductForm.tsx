@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Image as ImageIcon, Plus, Trash2, Star } from 'lucide-react';
+import { Save, X, Image as ImageIcon, Plus, Trash2, Star, Sparkles } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
+import { chatService } from '../services/chatService';
 
 interface ProductCategory {
   id: string;
@@ -49,6 +50,57 @@ const ProductForm: React.FC = () => {
 
   const [techSpecKey, setTechSpecKey] = useState('');
   const [techSpecValue, setTechSpecValue] = useState('');
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+
+  const handleGenerateAIDescription = async () => {
+    if (!formData.name) {
+      showToast('Vui lòng nhập tên sản phẩm trước khi tạo mô tả bằng AI.', 'warning');
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    try {
+      const prompt = `Viết bài mô tả chi tiết sản phẩm cho website Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). 
+Tên sản phẩm: "${formData.name}". 
+Mã sản phẩm: "${formData.code || 'N/A'}". 
+Công suất: ${formData.power ? formData.power + ' kW' : 'Tiêu chuẩn'}. 
+Bảo hành: ${formData.warranty || 'Chính hãng CTC'}. 
+
+Yêu cầu:
+1. Viết 1 đoạn mô tả ngắn (khoảng 2 câu) tóm tắt điểm nổi bật.
+2. Viết 1 bài mô tả chi tiết khoảng 3-4 đoạn trình bày về công nghệ, hiệu suất, tính an toàn và ứng dụng thực tế. 
+3. Trả về kết quả dưới định dạng JSON duy nhất: {"shortDescription": "...", "description": "..."}`;
+
+      const response = await chatService.sendMessage(prompt);
+      let parsed: any = null;
+      try {
+        const match = response.match(/\{[\s\S]*\}/);
+        if (match) {
+          parsed = JSON.parse(match[0]);
+        }
+      } catch (e) {}
+
+      if (parsed && (parsed.description || parsed.shortDescription)) {
+        setFormData(prev => ({
+          ...prev,
+          shortDescription: parsed.shortDescription || prev.shortDescription,
+          description: parsed.description || prev.description,
+        }));
+        showToast('Đã tạo thành công bài mô tả sản phẩm bằng AI Gemini!', 'success');
+      } else if (response) {
+        setFormData(prev => ({
+          ...prev,
+          description: response,
+        }));
+        showToast('Đã tạo mô tả sản phẩm bằng AI thành công!', 'success');
+      }
+    } catch (error) {
+      console.error('Error generating AI description:', error);
+      showToast('Lỗi khi tạo mô tả bằng AI', 'error');
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
 
   useEffect(() => {
     loadCategories();
@@ -383,9 +435,21 @@ const ProductForm: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Mô tả chi tiết <span className="text-red-500">*</span>
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-bold text-gray-700">
+                Mô tả chi tiết <span className="text-red-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleGenerateAIDescription}
+                disabled={isGeneratingAI}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+                title="Tự động tạo mô tả sản phẩm bằng AI Gemini"
+              >
+                <Sparkles size={14} className={isGeneratingAI ? 'animate-spin' : ''} />
+                {isGeneratingAI ? 'Đang tạo mô tả bằng AI...' : '✨ Tạo mô tả bằng AI Gemini'}
+              </button>
+            </div>
             <textarea
               required
               value={formData.description}

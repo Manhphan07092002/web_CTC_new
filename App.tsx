@@ -18,14 +18,14 @@ import { SettingsProvider } from './contexts/SettingsContext';
 import { CartProvider } from './contexts/CartContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Core Pages (Eagerly imported for Instant 0ms Navigation)
-import Home from './pages/Home';
-import Products from './pages/Products';
-import Projects from './pages/Projects';
-import News from './pages/News';
-import Contact from './pages/Contact';
-import About from './pages/About';
-import Solutions from './pages/Solutions';
+// Core & Public Pages (Lazy Loaded for minimal initial bundle size)
+const Home = lazy(() => import('./pages/Home'));
+const Products = lazy(() => import('./pages/Products'));
+const Projects = lazy(() => import('./pages/Projects'));
+const News = lazy(() => import('./pages/News'));
+const Contact = lazy(() => import('./pages/Contact'));
+const About = lazy(() => import('./pages/About'));
+const Solutions = lazy(() => import('./pages/Solutions'));
 
 // Secondary Pages (Lazy Loaded)
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
