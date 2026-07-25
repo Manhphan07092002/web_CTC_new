@@ -4,6 +4,7 @@ import { Users, Briefcase, ArrowRight, Mail, Target } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 import { useMouseParallax } from '../../hooks/useMouseParallax';
+import { getLangText } from '../../utils/translation-helper';
 
 interface TeamProps {
   teamMembers: any[];
@@ -15,7 +16,18 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
   const { t, language } = useLanguage();
   const parallax = useMouseParallax();
   const { ref: teamRef, isInView } = useInView(0.1);
-  const isEn = language === 'en';
+
+  const getTranslatedRole = (role: string) => {
+    if (!role) return '';
+    const r = role.toUpperCase();
+    if (r.includes('GIÁM ĐỐC') || r.includes('EXECUTIVE')) {
+      return getLangText(language, { vi: 'GIÁM ĐỐC ĐIỀU HÀNH', en: 'CHIEF EXECUTIVE OFFICER', ko: '최고 경영자 (CEO)', ja: '最高経営責任者 (CEO)', zh: '首席执行官 (CEO)', de: 'HAUPTGESCHÄFTSFÜHRER (CEO)' });
+    }
+    if (r.includes('KỸ SƯ TRƯỞNG') || r.includes('CHIEF ENGINEER')) {
+      return getLangText(language, { vi: 'KỸ SƯ TRƯỞNG', en: 'CHIEF ENGINEER', ko: '수석 엔지니어', ja: '主任技師', zh: '总工程师', de: 'CHEFINGENIEUR' });
+    }
+    return role;
+  };
 
   return (
     <section ref={teamRef} className="py-24 bg-slate-50 dark:bg-[#060d1d] relative overflow-hidden transition-colors duration-300">
@@ -113,12 +125,37 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
         <div className={`text-center mb-20 max-w-4xl mx-auto transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="team-glass-badge inline-flex items-center gap-2 px-6 py-2 rounded-full mb-6">
             <Users size={20} className="text-sky-500" />
-            <span className="text-sm font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest">{t('home.team_badge')}</span>
+            <span className="text-sm font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest">
+              {getLangText(language, {
+                vi: 'ĐỘI NGŨ CHUYÊN NGHIỆP',
+                en: 'PROFESSIONAL TEAM',
+                ko: '전문가 팀',
+                ja: 'プロフェッショナルチーム',
+                zh: '专业团队',
+                de: 'PROFESSIONELLES TEAM'
+              })}
+            </span>
           </div>
           <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight">
-            {t('home.team_title')}
+            {getLangText(language, {
+              vi: 'Gặp gỡ đội ngũ chuyên gia của chúng tôi',
+              en: 'Meet Our Expert Team',
+              ko: 'CTC 전문가 팀을 소개합니다',
+              ja: '当社の専門家チームをご紹介します',
+              zh: '结识我们的专家团队',
+              de: 'Lernen Sie unser Expertenteam kennen'
+            })}
           </h3>
-          <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed">{t('home.team_desc')}</p>
+          <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed">
+            {getLangText(language, {
+              vi: 'Đội ngũ kỹ sư và chuyên gia giàu kinh nghiệm, tận tâm mang đến giải pháp tối ưu nhất cho khách hàng.',
+              en: 'Experienced engineers and experts dedicated to bringing optimal solutions to clients.',
+              ko: '풍부한 경험과 헌신적인 엔지니어 팀이 고객에게 최적의 솔루션을 제공합니다.',
+              ja: '経験豊富なエンジニアと専門家が、お客様に最適なソリューションを提供します。',
+              zh: '经验丰富的工程师与专家团队，致力于为客户提供最佳解决方案。',
+              de: 'Erfahrene Ingenieure und Experten, die optimale Lösungen bieten.'
+            })}
+          </p>
         </div>
 
         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20 transition-all duration-500 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} aria-busy={isLoading}>
@@ -130,7 +167,14 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
             </div>
           )) : teamMembers.length === 0 ? (
             <div className="sm:col-span-2 lg:col-span-4 py-10 text-center rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400">
-              {isEn ? 'Our technical team profile is being updated.' : 'Thông tin đội ngũ kỹ thuật đang được cập nhật.'}
+              {getLangText(language, {
+                vi: 'Thông tin đội ngũ kỹ thuật đang được cập nhật.',
+                en: 'Our technical team profile is being updated.',
+                ko: '엔지니어링 팀 프로필이 업데이트 중입니다.',
+                ja: 'エンジニアチームのプロフィールを更新中です。',
+                zh: '技术团队信息正在更新中。',
+                de: 'Unser Technikerprofil wird aktualisiert.'
+              })}
             </div>
           ) : teamMembers.map((member, index) => {
             return (
@@ -148,7 +192,7 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
                     className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute bottom-6 left-6 right-6 text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <p className="text-xs font-medium mb-2">{member.bio || (isEn ? 'Solar Energy Expert' : 'Chuyên gia năng lượng mặt trời')}</p>
+                    <p className="text-xs font-medium mb-2">{member.bio || getLangText(language, { vi: 'Chuyên gia năng lượng mặt trời', en: 'Solar Energy Expert', ko: '태양 에너지 전문가', ja: '太陽光エネルギー専門家', zh: '太阳能专家', de: 'Solarenergie-Experte' })}</p>
                     <div className="flex gap-2">
                       <a href={`mailto:${member.email || 'info@ctcdn.vn'}`} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-sky-500 transition-colors">
                         <Mail size={14} className="text-white" />
@@ -158,7 +202,7 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
                 </div>
                 <div className="text-center pb-3">
                   <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-1 group-hover:text-sky-500 transition-colors">{member.name}</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{member.role}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{getTranslatedRole(member.role)}</p>
                 </div>
               </div>
             );

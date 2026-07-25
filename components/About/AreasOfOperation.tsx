@@ -1,149 +1,204 @@
 import React, { useState, useRef } from 'react';
 import { Radio, Server, Sun, Wind, Building2, Wrench, ArrowRight, Check } from 'lucide-react';
 import { useInView } from '../../hooks/useInView';
-
-/* ── Data ────────────────────────────────────────────── */
-const SECTORS = [
-  {
-    id: 'telecom',
-    index: '01',
-    icon: Radio,
-    label: 'Viễn thông',
-    accentColor: '#0ea5e9',
-    gradFrom: '#0ea5e9',
-    gradTo: '#6366f1',
-    title: 'Viễn thông &\nHạ tầng mạng',
-    titleEn: 'TELECOMMUNICATIONS',
-    summary:
-      'Thiết kế, xây dựng và vận hành toàn bộ hạ tầng truyền dẫn, mạng cáp quang, trạm BTS, hầm cáp và OSP từ quy mô đô thị đến toàn quốc.',
-    stat: '500+',
-    statLabel: 'công trình viễn thông',
-    tags: ['Cáp quang', 'BTS / Anten', 'OSP / ISP', 'Hầm cáp', 'Truyền dẫn', 'Tổng đài'],
-    projects: [
-      'Tuyến cáp quang Bộ Công an',
-      'Metro Mobifone toàn quốc',
-      'Hạ tầng OSP / VNPT Net',
-      'Hệ thống trạm BTS chuyên biệt',
-    ],
-  },
-  {
-    id: 'it',
-    index: '02',
-    icon: Server,
-    label: 'CNTT & Data Center',
-    accentColor: '#8b5cf6',
-    gradFrom: '#8b5cf6',
-    gradTo: '#ec4899',
-    title: 'Công nghệ thông tin\n& Data Center',
-    titleEn: 'IT & DATA CENTER',
-    summary:
-      'Triển khai hạ tầng CNTT toàn diện: Data Center tiêu chuẩn quốc tế, Camera AI giám sát, hệ thống mạng doanh nghiệp và giải pháp chuyển đổi số.',
-    stat: 'Tier III',
-    statLabel: 'tiêu chuẩn Data Center',
-    tags: ['Data Center', 'Camera AI', 'Network / Server', 'Bảo mật CNTT', 'Chuyển đổi số', 'Cloud'],
-    projects: [
-      'Trạm BTS & Data Center tiêu chuẩn',
-      'Hệ thống Camera AI an ninh',
-      'Hạ tầng mạng doanh nghiệp',
-      'Giải pháp chuyển đổi số Cloud',
-    ],
-  },
-  {
-    id: 'solar',
-    index: '03',
-    icon: Sun,
-    label: 'Điện mặt trời',
-    accentColor: '#f59e0b',
-    gradFrom: '#f59e0b',
-    gradTo: '#ef4444',
-    title: 'Điện mặt trời\nSolar EPC',
-    titleEn: 'SOLAR POWER',
-    summary:
-      'Tổng thầu EPC toàn trình: khảo sát, thiết kế, cung cấp thiết bị chính hãng, thi công và vận hành bảo trì (O&M) cho mọi quy mô dự án Solar.',
-    stat: 'EPC',
-    statLabel: 'trọn gói đến O&M',
-    tags: ['Rooftop Solar', 'C&I Solar', 'Industrial Solar', 'Telecom Solar', 'EPC Solar', 'O&M Solar'],
-    projects: [
-      'EPC Solar áp mái hộ gia đình & C&I',
-      'Điện mặt trời Telecom (off-grid)',
-      'Hệ thống Solar công nghiệp',
-      'Dịch vụ O&M định kỳ & sửa chữa',
-    ],
-  },
-  {
-    id: 'wind',
-    index: '04',
-    icon: Wind,
-    label: 'Điện gió',
-    accentColor: '#10b981',
-    gradFrom: '#10b981',
-    gradTo: '#0ea5e9',
-    title: 'Điện gió\nWind EPC',
-    titleEn: 'WIND POWER',
-    summary:
-      'Tổng thầu EPC nhà máy điện gió: cột đo gió, đường dây truyền tải, trạm biến áp nội bộ, lắp đặt turbine và vận hành bảo trì dài hạn.',
-    stat: '3',
-    statLabel: 'nhà máy điện gió lớn',
-    tags: ['Wind Farm EPC', 'Wind Mast', 'Trạm biến áp', 'Đường dây 110kV', 'EPC Wind', 'O&M Wind'],
-    projects: [
-      'Nhà máy điện gió Hướng Hiệp (Quảng Trị)',
-      'Điện gió Hướng Linh & Hướng Linh 4',
-      'Trụ đo gió Điện Biên',
-      'Đường dây & trạm biến áp Wind Farm',
-    ],
-  },
-  {
-    id: 'construction',
-    index: '05',
-    icon: Building2,
-    label: 'Xây dựng kỹ thuật',
-    accentColor: '#3b82f6',
-    gradFrom: '#3b82f6',
-    gradTo: '#10b981',
-    title: 'Xây dựng kỹ thuật\n& Hạ tầng',
-    titleEn: 'TECHNICAL CONSTRUCTION',
-    summary:
-      'Thi công công trình dân dụng, công nghiệp, giao thông; xây lắp đường dây tải điện và trạm biến áp; hạ tầng đô thị và công trình quốc phòng.',
-    stat: '110kV',
-    statLabel: 'năng lực trạm biến áp',
-    tags: ['Dân dụng', 'Công nghiệp', 'Giao thông', 'Đường dây điện', 'Trạm biến áp', 'Quốc phòng'],
-    projects: [
-      'Trạm biến áp 110kV',
-      'Hạ tầng kỹ thuật đô thị',
-      'Công trình quốc phòng A70',
-      'Hệ thống nguồn điện dự phòng',
-    ],
-  },
-  {
-    id: 'services',
-    index: '06',
-    icon: Wrench,
-    label: 'Dịch vụ kỹ thuật',
-    accentColor: '#f43f5e',
-    gradFrom: '#f43f5e',
-    gradTo: '#f59e0b',
-    title: 'Dịch vụ kỹ thuật\n& Tư vấn EPC',
-    titleEn: 'TECHNICAL SERVICES',
-    summary:
-      'Cung cấp dịch vụ khép kín: tư vấn đầu tư, khảo sát, thiết kế bản vẽ, giám sát thi công, nghiệm thu và hợp đồng bảo trì O&M dài hạn.',
-    stat: '53+',
-    statLabel: 'kỹ sư chứng chỉ hành nghề',
-    tags: ['EPC Tổng thầu', 'Tư vấn thiết kế', 'Khảo sát', 'Giám sát', 'Bảo trì O&M', 'Nghiệm thu'],
-    projects: [
-      'Tư vấn đầu tư dự án năng lượng',
-      'Khảo sát & thiết kế hạ tầng',
-      'Giám sát thi công độc lập',
-      'Hợp đồng bảo trì O&M dài hạn',
-    ],
-  },
-];
+import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 /* ── Component ──────────────────────────────────────── */
 const AreasOfOperation: React.FC = () => {
+  const { t, language } = useLanguage();
   const { ref, isInView } = useInView(0.05);
   const [active, setActive] = useState(0);
   const [animating, setAnimating] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const isEn = language === 'en';
+  const isKo = language === 'ko';
+  const isJa = language === 'ja';
+  const isZh = language === 'zh';
+  const isDe = language === 'de';
+
+  const SECTORS = [
+    {
+      id: 'telecom',
+      index: '01',
+      icon: Radio,
+      label: isEn ? 'Telecom' : isKo ? '통신' : isJa ? '通信' : isZh ? '电信' : isDe ? 'Telekom' : 'Viễn thông',
+      accentColor: '#0ea5e9',
+      gradFrom: '#0ea5e9',
+      gradTo: '#6366f1',
+      title: isEn ? 'Telecommunications &\nNetwork Infrastructure' : isKo ? '통신 및\n네트워크 인프라' : isJa ? '通信および\nネットワークインフラ' : isZh ? '电信与\n网络基础设施' : isDe ? 'Telekommunikation &\nNetzwerkinfrastruktur' : 'Viễn thông &\nHạ tầng mạng',
+      titleEn: 'TELECOMMUNICATIONS',
+      summary: isEn ? 'Designing, constructing, and operating transmission infrastructure, fiber optic networks, BTS stations, cable trenches, and OSP nationwide.' : isKo ? '전국 규모의 전송 인프라, 광케이블 네트워크, BTS 기지국, 케이블 관로 및 OSP 설계, 시공 및 운영.' : isJa ? '都市規模から全国規模までの伝送インフラ、光ファイバー網、BTS局、ケーブル洞道およびOSPの設計・構築・運用。' : isZh ? '设计、建设和运营从城市到全国范围的传输基础设施、光缆网络、BTS基站、电缆沟和OSP。' : isDe ? 'Planung, Bau und Betrieb von Übertragungsinfrastruktur, Glasfasernetzen, BTS-Stationen und OSP.' : 'Thiết kế, xây dựng và vận hành toàn bộ hạ tầng truyền dẫn, mạng cáp quang, trạm BTS, hầm cáp và OSP từ quy mô đô thị đến toàn quốc.',
+      stat: '500+',
+      statLabel: isEn ? 'Telecom Projects' : isKo ? '통신 프로젝트' : isJa ? '通信工事' : isZh ? '电信工程' : isDe ? 'Telekom-Projekte' : 'công trình viễn thông',
+      tags: isEn ? ['Fiber Optic', 'BTS / Antenna', 'OSP / ISP', 'Cable Trench', 'Transmission', 'Exchange'] : ['Cáp quang', 'BTS / Anten', 'OSP / ISP', 'Hầm cáp', 'Truyền dẫn', 'Tổng đài'],
+      projects: isEn ? [
+        'Ministry of Public Security Fiber Line',
+        'Nationwide Metro Mobifone Network',
+        'OSP Infrastructure / VNPT Net',
+        'Specialized BTS Station System'
+      ] : [
+        'Tuyến cáp quang Bộ Công an',
+        'Metro Mobifone toàn quốc',
+        'Hạ tầng OSP / VNPT Net',
+        'Hệ thống trạm BTS chuyên biệt'
+      ],
+    },
+    {
+      id: 'it',
+      index: '02',
+      icon: Server,
+      label: isEn ? 'IT & Data Center' : isKo ? 'IT 및 데이터 센터' : isJa ? 'IT・データセンター' : isZh ? 'IT与数据中心' : isDe ? 'IT & Rechenzentrum' : 'CNTT & Data Center',
+      accentColor: '#8b5cf6',
+      gradFrom: '#8b5cf6',
+      gradTo: '#ec4899',
+      title: isEn ? 'Information Technology\n& Data Center' : isKo ? '정보기술\n및 데이터 센터' : isJa ? '情報技術\nおよびデータセンター' : isZh ? '信息技术\n与数据中心' : isDe ? 'Informationstechnik\n& Rechenzentrum' : 'Công nghệ thông tin\n& Data Center',
+      titleEn: 'IT & DATA CENTER',
+      summary: isEn ? 'Deploying comprehensive IT infrastructure: International standard Data Centers, AI Camera surveillance, enterprise networks, and digital transformation solutions.' : isKo ? '국제 표준 데이터 센터, AI 감시 카메라, 기업 네트워크 및 디지털 전환 솔루션 등 포괄적인 IT 인프라 구축.' : isJa ? '国際規格データセンター、AI監視カメラ、企業ネットワーク、デジタル変革ソリューションなど、包括的なITインフラを導入。' : isZh ? '部署全面IT基础设施：国际标准数据中心、AI监控摄像头、企业网络及数字化转型解决方案。' : isDe ? 'Umfassende IT-Infrastruktur: Rechenzentren, AI-Kameras, Netzwerke & digitale Transformation.' : 'Triển khai hạ tầng CNTT toàn diện: Data Center tiêu chuẩn quốc tế, Camera AI giám sát, hệ thống mạng doanh nghiệp và giải pháp chuyển đổi số.',
+      stat: 'Tier III',
+      statLabel: isEn ? 'Data Center Standard' : isKo ? '데이터 센터 표준' : isJa ? 'データセンター規格' : isZh ? '数据中心标准' : isDe ? 'Rechenzentrum Standard' : 'tiêu chuẩn Data Center',
+      tags: ['Data Center', 'Camera AI', 'Network / Server', 'IT Security', 'Digital Transformation', 'Cloud'],
+      projects: isEn ? [
+        'Standard BTS & Data Center Stations',
+        'AI Security Camera System',
+        'Enterprise Network Infrastructure',
+        'Cloud Digital Transformation Solutions'
+      ] : [
+        'Trạm BTS & Data Center tiêu chuẩn',
+        'Hệ thống Camera AI an ninh',
+        'Hạ tầng mạng doanh nghiệp',
+        'Giải pháp chuyển đổi số Cloud'
+      ],
+    },
+    {
+      id: 'solar',
+      index: '03',
+      icon: Sun,
+      label: isEn ? 'Solar Power' : isKo ? '태양광 발전' : isJa ? '太陽光発電' : isZh ? '太阳能' : isDe ? 'Solarstrom' : 'Điện mặt trời',
+      accentColor: '#f59e0b',
+      gradFrom: '#f59e0b',
+      gradTo: '#ef4444',
+      title: isEn ? 'Solar Energy\nSolar EPC' : isKo ? '태양광 에너지\nSolar EPC' : isJa ? '太陽光エネルギー\nSolar EPC' : isZh ? '太阳能\nSolar EPC' : isDe ? 'Solarenergie\nSolar EPC' : 'Điện mặt trời\nSolar EPC',
+      titleEn: 'SOLAR POWER',
+      summary: isEn ? 'Full EPC contractor: survey, design, equipment supply, construction, and operation & maintenance (O&M) for all solar project scales.' : isKo ? '모든 규모의 태양광 프로젝트에 대한 현장 조사, 설계, 장비 공급, 시공 및 유지보수(O&M) 총괄 EPC.' : isJa ? 'あらゆる規模の太陽光プロジェクトに対する調査・設計・機器調達・施工・O&Mの一括EPC。' : isZh ? '全流程EPC总承包：勘察、设计、设备供应、施工及全生命周期运维（O&M）。' : isDe ? 'EPC-Generalunternehmer für alle Solarprojektgrößen von Planung bis O&M.' : 'Tổng thầu EPC toàn trình: khảo sát, thiết kế, cung cấp thiết bị chính hãng, thi công và vận hành bảo trì (O&M) cho mọi quy mô dự án Solar.',
+      stat: 'EPC',
+      statLabel: isEn ? 'Full turnkey to O&M' : isKo ? '턴키 시공에서 O&M까지' : isJa ? 'TurnkeyからO&Mまで' : isZh ? '交钥匙工程至运维' : isDe ? 'Schlüsselfertig bis O&M' : 'trọn gói đến O&M',
+      tags: ['Rooftop Solar', 'C&I Solar', 'Industrial Solar', 'Telecom Solar', 'EPC Solar', 'O&M Solar'],
+      projects: isEn ? [
+        'Rooftop Residential & C&I Solar EPC',
+        'Off-grid Telecom Solar Systems',
+        'Industrial Solar Power Systems',
+        'Periodic O&M & Repair Services'
+      ] : [
+        'EPC Solar áp mái hộ gia đình & C&I',
+        'Điện mặt trời Telecom (off-grid)',
+        'Hệ thống Solar công nghiệp',
+        'Dịch vụ O&M định kỳ & sửa chữa'
+      ],
+    },
+    {
+      id: 'wind',
+      index: '04',
+      icon: Wind,
+      label: isEn ? 'Wind Power' : isKo ? '풍력 발전' : isJa ? '風力発電' : isZh ? '风电' : isDe ? 'Windenergie' : 'Điện gió',
+      accentColor: '#10b981',
+      gradFrom: '#10b981',
+      gradTo: '#0ea5e9',
+      title: isEn ? 'Wind Energy\nWind EPC' : isKo ? '풍력 에너지\nWind EPC' : isJa ? '風力エネルギー\nWind EPC' : isZh ? '风力发电\nWind EPC' : isDe ? 'Windenergie\nWind EPC' : 'Điện gió\nWind EPC',
+      titleEn: 'WIND POWER',
+      summary: isEn ? 'EPC contractor for wind power plants: wind measurement masts, transmission lines, internal substations, turbine installation, and long-term O&M.' : isKo ? '풍력 발전소 EPC 총괄: 풍황 계측탑, 송전선, 내부 변전소, 터빈 설치 및 장기 유지보수.' : isJa ? '風力発電所のEPC：風況観測塔、送電線、構内変電所、タービン設置および長期O&M。' : isZh ? '风电场EPC总承包：测风塔、输电线路、站内变电站、风机安装及长期运维。' : isDe ? 'EPC-Generalunternehmer für Windparks: Windmessmasten, Leitungen, Umspannwerke, Turbinen.' : 'Tổng thầu EPC nhà máy điện gió: cột đo gió, đường dây truyền tải, trạm biến áp nội bộ, lắp đặt turbine và vận hành bảo trì dài hạn.',
+      stat: '3',
+      statLabel: isEn ? 'Major Wind Farms' : isKo ? '대형 풍력 발전소' : isJa ? '大型風力発電所' : isZh ? '大型风电场' : isDe ? 'Große Windparks' : 'nhà máy điện gió lớn',
+      tags: ['Wind Farm EPC', 'Wind Mast', 'Substation', '110kV Line', 'EPC Wind', 'O&M Wind'],
+      projects: isEn ? [
+        'Huong Hiep Wind Power Plant (Quang Tri)',
+        'Huong Linh & Huong Linh 4 Wind Farms',
+        'Dien Bien Wind Measurement Mast',
+        'Wind Farm Transmission Line & Substation'
+      ] : [
+        'Nhà máy điện gió Hướng Hiệp (Quảng Trị)',
+        'Điện gió Hướng Linh & Hướng Linh 4',
+        'Trụ đo gió Điện Biên',
+        'Đường dây & trạm biến áp Wind Farm'
+      ],
+    },
+    {
+      id: 'construction',
+      index: '05',
+      icon: Building2,
+      label: isEn ? 'Technical Construction' : isKo ? '기술 건설' : isJa ? '技術建設' : isZh ? '工程建设' : isDe ? 'Technischer Bau' : 'Xây dựng kỹ thuật',
+      accentColor: '#3b82f6',
+      gradFrom: '#3b82f6',
+      gradTo: '#8b5cf6',
+      title: isEn ? 'Civil & Industrial\nTechnical Construction' : isKo ? '민간 및 산업\n기술 건설' : isJa ? '土木・産業\n技術建設' : isZh ? '民用与工业\n工程建设' : isDe ? 'Bau- & Industrie-\nIngenieurbau' : 'Xây dựng dân dụng\n& Công nghiệp',
+      titleEn: 'TECHNICAL CONSTRUCTION',
+      summary: isEn ? 'Grade I certified by Ministry of Construction: power transmission lines, transformer stations up to 110kV, civil and industrial infrastructure.' : isKo ? '건설부 1등급 인증: 110kV 송전선, 변전소, 민간 및 산업 인프라 건축.' : isJa ? '建設省1級認定：110kV送電線、変電所、土木・産業インフラ建築。' : isZh ? '建设部一级资质：110kV输电线路、变电站、民用及工业基础设施建设。' : isDe ? 'Klasse I zertifiziert vom Bauministerium: Leitungen, Umspannwerke bis 110kV, Bauinfrastruktur.' : 'Chứng chỉ Hạng I do Bộ Xây dựng cấp: thi công đường dây truyền tải, trạm biến áp đến 110kV, công trình hạ tầng kỹ thuật dân dụng và công nghiệp.',
+      stat: 'Grade I',
+      statLabel: isEn ? 'Capacity Certificate' : isKo ? '건설 역량 등급' : isJa ? '建設能力等級' : isZh ? '建设能力等级' : isDe ? 'Baukompetenzklasse' : 'chứng chỉ năng lực BXD',
+      tags: ['Substation', '110kV Line', 'Industrial Infra', 'Civil Infra', 'Grade I Certificate', 'SCADA'],
+      projects: isEn ? [
+        'Industrial Substation System',
+        'Inter-provincial 110kV Power Line',
+        'Enterprise Technical Infrastructure',
+        'Industrial Civil Buildings'
+      ] : [
+        'Hệ thống trạm biến áp công nghiệp',
+        'Đường dây điện 110kV liên tỉnh',
+        'Hạ tầng kỹ thuật khu công nghiệp',
+        'Công trình dân dụng công nghiệp'
+      ],
+    },
+    {
+      id: 'services',
+      index: '06',
+      icon: Wrench,
+      label: isEn ? 'Technical Services' : isKo ? '기술 서비스' : isJa ? '技術サービス' : isZh ? '技术服务' : isDe ? 'Technische Dienste' : 'Dịch vụ kỹ thuật',
+      accentColor: '#06b6d4',
+      gradFrom: '#06b6d4',
+      gradTo: '#3b82f6',
+      title: isEn ? 'Technical Services\nO&M Maintenance' : isKo ? '기술 서비스\nO&M 유지보수' : isJa ? '技術サービス\nO&Mメンテナンス' : isZh ? '技术服务\nO&M运维保障' : isDe ? 'Technische Dienste\nO&M-Wartung' : 'Dịch vụ kỹ thuật\n& Bảo trì O&M',
+      titleEn: 'TECHNICAL SERVICES',
+      summary: isEn ? '24/7 technical services: preventive maintenance, troubleshooting, power plant auditing, SCADA system inspection, and equipment replacement.' : isKo ? '24/7 기술 서비스: 예방적 정비, 문제 해결, 발전소 진단, SCADA 시스템 검사 및 장비 교체.' : isJa ? '24/7技術サービス：予防保全、トラブルシューティング、発電所診断、SCADAシステム点検、機器交換。' : isZh ? '24/7全天候技术服务：预防性维护、故障排除、电站检测、SCADA系统巡检及设备更换。' : isDe ? '24/7 Technische Dienste: Präventive Wartung, Fehlerbehebung, Audits, SCADA-Prüfung & Ausrüstungstausch.' : 'Dịch vụ kỹ thuật 24/7: bảo trì định kỳ, xử lý sự cố khẩn cấp, kiểm định công trình, đo kiểm hệ thống SCADA và thay thế thiết bị chuyên dụng.',
+      stat: '24/7',
+      statLabel: isEn ? 'Technical Support' : isKo ? '기술 지원 응답' : isJa ? '24時間技術サポート' : isZh ? '24小时技术支持' : isDe ? '24/7 Technischer Support' : 'hỗ trợ kỹ thuật ứng cứu',
+      tags: ['24/7 Support', 'O&M Maintenance', 'Emergency Repair', 'SCADA Audit', 'Equipment Test', 'System Upgrade'],
+      projects: isEn ? [
+        'Periodic O&M for Telecom Stations',
+        '24/7 Emergency Incident Response',
+        'Solar System Testing & Audit',
+        'SCADA & Automation Upgrade'
+      ] : [
+        'Bảo trì O&M định kỳ trạm viễn thông',
+        'Ứng cứu sự cố khẩn cấp 24/7',
+        'Đo kiểm & nghiệm thu hệ thống Solar',
+        'Nâng cấp SCADA & tự động hóa'
+      ],
+    },
+  ];
+
+  const epcSteps = [
+    getLangText(language, { vi: 'Tư vấn', en: 'Consulting', ko: '상담', ja: 'コンサルティング', zh: '咨询', de: 'Beratung' }),
+    getLangText(language, { vi: 'Thiết kế', en: 'Design', ko: '설계', ja: '設計', zh: '设计', de: 'Planung' }),
+    getLangText(language, { vi: 'Thi công', en: 'Construction', ko: '시공', ja: '施工', zh: '施工', de: 'Bau' }),
+    getLangText(language, { vi: 'Vận hành', en: 'Operations', ko: '운영', ja: '運用', zh: '运营', de: 'Betrieb' }),
+    getLangText(language, { vi: 'Bảo trì O&M', en: 'O&M Maintenance', ko: 'O&M 유지보수', ja: 'O&Mメンテナンス', zh: 'O&M运维', de: 'O&M-Wartung' })
+  ];
+
+  const headerTag = isEn ? 'Areas of Operation' : isKo ? '사업 분야' : isJa ? '事業分野' : isZh ? '业务领域' : isDe ? 'Tätigkeitsbereiche' : 'Lĩnh vực hoạt động';
+  const headerTitle1 = isEn ? 'Business' : isKo ? '사업' : isJa ? '事業' : isZh ? '商业' : isDe ? 'Geschäftsbereiche' : 'Hoạt Động';
+  const headerTitle2 = isEn ? 'Operations' : isKo ? '운영' : isJa ? '活動' : isZh ? '运营' : isDe ? 'Aktivitäten' : 'Kinh Doanh';
+  const headerDesc = getLangText(language, {
+    vi: 'Giải pháp khép kín từ Tư vấn → Thiết kế → Thi công → Vận hành → Bảo trì trên 6 lĩnh vực chiến lược.',
+    en: 'End-to-end solutions from Consulting → Design → Construction → Operations → Maintenance across 6 strategic sectors.',
+    ko: '6개 전략 분야에서 상담 → 설계 → 시공 → 운영 → 유지보수까지 일괄 솔루션 제공.',
+    ja: '6つの戦略分野でコンサルティング → 設計 → 施工 → 運用 → メンテナンスまで一貫ソリューションを提供。',
+    zh: '在6大战略领域提供从 咨询 → 设计 → 施工 → 运营 → 运维 的一站式闭环解决方案。',
+    de: 'End-to-End-Lösungen von Beratung → Planung → Bau → Betrieb → Wartung in 6 strategischen Bereichen.'
+  });
+  const scopeTag = isEn ? 'Service Scope' : isKo ? '서비스 범위' : isJa ? 'サービス範囲' : isZh ? '服务范围' : isDe ? 'Leistungsumfang' : 'Phạm vi dịch vụ';
+  const projTag = isEn ? 'Featured Projects' : isKo ? '대표 프로젝트' : isJa ? '代表的プロジェクト' : isZh ? '代表项目' : isDe ? 'Repräsentative Projekte' : 'Dự án tiêu biểu';
+  const epcTitle = isEn ? 'Turnkey EPC Process' : isKo ? '턴키 EPC 프로세스' : isJa ? '一貫EPCプロセス' : isZh ? '全流程EPC工程' : isDe ? 'Schlüsselfertiger EPC-Prozess' : 'Quy trình EPC khép kín';
 
   const handleSelect = (idx: number) => {
     if (idx === active || animating) return;
@@ -241,24 +296,23 @@ const AreasOfOperation: React.FC = () => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="h-px w-10 bg-gradient-to-r from-transparent to-slate-400 dark:to-white/30" />
-              <span className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 dark:text-white/40">Lĩnh vực hoạt động</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 dark:text-white/40">{headerTag}</span>
             </div>
             <h2
               className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-none"
               style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
-              Hoạt Động{' '}
+              {headerTitle1}{' '}
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: `linear-gradient(135deg, ${s.accentColor}, ${s.gradTo})`, transition: 'background-image 0.5s' }}
               >
-                Kinh Doanh
+                {headerTitle2}
               </span>
             </h2>
           </div>
           <p className="text-slate-500 dark:text-white/40 text-sm leading-relaxed max-w-sm font-light lg:text-right">
-            Giải pháp khép kín từ Tư vấn → Thiết kế → Thi công → Vận hành → Bảo trì trên{' '}
-            <span className="text-slate-700 dark:text-white/70 font-semibold">6 lĩnh vực chiến lược</span>.
+            {headerDesc}
           </p>
         </div>
       </div>
@@ -316,9 +370,9 @@ const AreasOfOperation: React.FC = () => {
 
             {/* EPC Steps */}
             <div className="mt-8 pt-6 border-t border-slate-200/70 dark:border-white/[0.07] px-4">
-              <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/25 font-black mb-3">Quy trình EPC khép kín</p>
+              <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/25 font-black mb-3">{epcTitle}</p>
               <div className="flex flex-col gap-2">
-                {['Tư vấn', 'Thiết kế', 'Thi công', 'Vận hành', 'Bảo trì O&M'].map((step, i) => (
+                {epcSteps.map((step, i) => (
                   <div key={step} className="flex items-center gap-2.5">
                     <span className="w-5 h-5 rounded-md bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-[9px] font-black text-slate-400 dark:text-white/30">
                       {i + 1}
@@ -389,7 +443,7 @@ const AreasOfOperation: React.FC = () => {
 
                   {/* Tags */}
                   <div>
-                    <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/25 font-black mb-2.5">Phạm vi dịch vụ</p>
+                    <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/25 font-black mb-2.5">{scopeTag}</p>
                     <div className="flex flex-wrap gap-2">
                       {s.tags.map((tag) => (
                         <span
@@ -409,7 +463,7 @@ const AreasOfOperation: React.FC = () => {
 
                 {/* RIGHT: Projects */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/25 font-black mb-1">Dự án tiêu biểu</p>
+                  <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/25 font-black mb-1">{projTag}</p>
                   <div>
                     {s.projects.map((proj, i) => (
                       <div
@@ -456,10 +510,10 @@ const AreasOfOperation: React.FC = () => {
       <div className={`relative z-10 border-t border-slate-200/70 dark:border-white/[0.07] transition-all duration-1000 delay-300 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="max-w-7xl mx-auto px-8 lg:px-16 grid grid-cols-2 sm:grid-cols-4 divide-x divide-slate-200/70 dark:divide-white/[0.07]">
           {[
-            { val: '6+', sub: 'Lĩnh vực chiến lược' },
-            { val: '500+', sub: 'Công trình hoàn thành' },
-            { val: '53+', sub: 'Kỹ sư chuyên môn' },
-            { val: '288+', sub: 'Tỷ doanh thu 2025' },
+            { val: '6+', sub: isEn ? 'Strategic Sectors' : isKo ? '전략 분야' : isJa ? '戦略分野' : isZh ? '战略领域' : isDe ? 'Strategische Bereiche' : 'Lĩnh vực chiến lược' },
+            { val: '500+', sub: isEn ? 'Projects Completed' : isKo ? '완료된 프로젝트' : isJa ? '完了プロジェクト' : isZh ? '完成项目' : isDe ? 'Abgeschlossene Projekte' : 'Công trình hoàn thành' },
+            { val: '53+', sub: isEn ? 'Expert Engineers' : isKo ? '전문 엔지니어' : isJa ? '専門エンジニア' : isZh ? '专业工程师' : isDe ? 'Fachingenieure' : 'Kỹ sư chuyên môn' },
+            { val: '288+', sub: isEn ? '$12M Revenue' : isKo ? '288억 동 매출' : isJa ? '2880億ドン収益' : isZh ? '2.88亿营收' : isDe ? '12 Mio. $ Umsatz' : 'Tỷ doanh thu 2025' },
           ].map((st) => (
             <div key={st.sub} className="py-8 px-6 text-center group hover:bg-slate-100/60 dark:hover:bg-white/[0.03] transition-colors duration-300">
               <div

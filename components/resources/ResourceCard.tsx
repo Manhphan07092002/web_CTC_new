@@ -1,6 +1,7 @@
 import React from 'react';
 import { FileText, Download, Eye, HardDrive, FileCheck, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 export interface ResourceItem {
   _id: string;
@@ -34,11 +35,11 @@ const getFileTypeBadge = (fileUrl: string, fileType?: string) => {
   if (ext.includes('dwg') || ext.includes('cad')) {
     return { label: 'CAD/DWG', bg: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800' };
   }
-  return { label: 'TÀI LIỆU', bg: 'bg-primary/10 text-primary border-primary/20' };
+  return { label: 'DOCUMENT', bg: 'bg-primary/10 text-primary border-primary/20' };
 };
 
 const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list', onPreview }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const badge = getFileTypeBadge(resource.fileUrl, resource.fileType);
 
   if (viewMode === 'list') {
@@ -63,7 +64,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list'
                 </span>
               )}
               <span className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
-                <ShieldCheck size={14} /> Chính thức CTC
+                <ShieldCheck size={14} /> {getLangText(language, { vi: 'Chính thức CTC', en: 'Official CTC', ko: 'CTC 공식', ja: 'CTC公式', zh: 'CTC官方', de: 'Offiziell CTC' })}
               </span>
             </div>
 
@@ -72,13 +73,13 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list'
             </h4>
 
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 leading-relaxed">
-              {resource.description || 'Tài liệu thông số kỹ thuật và catalogue hướng dẫn chính thức từ CTC.'}
+              {resource.description || getLangText(language, { vi: 'Tài liệu thông số kỹ thuật và catalogue hướng dẫn chính thức từ CTC.', en: 'Official technical specification document and catalogue from CTC.', ko: 'CTC의 공식 기술 사양 문서 및 카탈로그입니다.', ja: 'CTCの公式技術仕様書およびカタログ。', zh: 'CTC官方技术规格说明书与产品手册。', de: 'Offizielle technische Spezifikation und Katalog von CTC.' })}
             </p>
 
             {resource.size && (
               <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
                 <HardDrive size={13} />
-                <span>Dung lượng: {resource.size}</span>
+                <span>{getLangText(language, { vi: 'Dung lượng: ', en: 'Size: ', ko: '크기: ', ja: 'サイズ: ', zh: '大小: ', de: 'Größe: ' })}{resource.size}</span>
               </div>
             )}
           </div>
@@ -91,10 +92,10 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list'
             <button
               onClick={() => onPreview(resource)}
               className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm"
-              title="Xem trực tiếp trên trình duyệt"
+              title={getLangText(language, { vi: 'Xem trực tiếp trên trình duyệt', en: 'Preview in browser', ko: '브라우저에서 미리보기', ja: 'ブラウザでプレビュー', zh: '在浏览器中预览', de: 'Vorschau im Browser' })}
             >
               <Eye size={16} className="text-primary" />
-              <span>Xem trực tiếp</span>
+              <span>{getLangText(language, { vi: 'Xem trực tiếp', en: 'Preview', ko: '미리보기', ja: 'プレビュー', zh: '在线预览', de: 'Vorschau' })}</span>
             </button>
           )}
 
@@ -105,10 +106,10 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list'
             rel="noopener noreferrer"
             download
             className="flex-1 sm:flex-none px-5 py-2.5 bg-primary hover:bg-secondary text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg"
-            title="Tải về máy tính / thiết bị"
+            title={getLangText(language, { vi: 'Tải về máy tính / thiết bị', en: 'Download file', ko: '파일 다운로드', ja: 'ファイルをダウンロード', zh: '下载文件', de: 'Datei herunterladen' })}
           >
             <Download size={16} />
-            <span>Tải về</span>
+            <span>{getLangText(language, { vi: 'Tải về', en: 'Download', ko: '다운로드', ja: 'ダウンロード', zh: '立即下载', de: 'Herunterladen' })}</span>
           </a>
         </div>
       </div>
@@ -139,15 +140,15 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list'
         </h4>
 
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 line-clamp-3 leading-relaxed">
-          {resource.description || 'Tài liệu kỹ thuật và hướng dẫn chính thức từ nhà sản xuất.'}
+          {resource.description || getLangText(language, { vi: 'Tài liệu kỹ thuật và hướng dẫn chính thức từ nhà sản xuất.', en: 'Technical specification document and official guide.', ko: '기술 사양 문서 및 공식 설명서.', ja: '技術仕様書および公式ガイド。', zh: '技术规格说明书与官方指南。', de: 'Technische Spezifikation und offizieller Leitfaden.' })}
         </p>
       </div>
 
       <div className="pt-4 border-t border-gray-100 dark:border-gray-700 space-y-3">
         <div className="flex items-center justify-between text-xs text-gray-400 font-medium">
-          <span>{resource.size ? `Size: ${resource.size}` : 'Tệp kỹ thuật'}</span>
+          <span>{resource.size ? `${getLangText(language, { vi: 'Dung lượng: ', en: 'Size: ', ko: '크기: ', ja: 'サイズ: ', zh: '大小: ', de: 'Größe: ' })}${resource.size}` : getLangText(language, { vi: 'Tệp kỹ thuật', en: 'Technical File', ko: '기술 파일', ja: '技術ファイル', zh: '技术文件', de: 'Technische Datei' })}</span>
           <span className="text-green-600 dark:text-green-400 font-semibold text-[11px] flex items-center gap-0.5">
-            <FileCheck size={12} /> Đã kiểm duyệt
+            <FileCheck size={12} /> {getLangText(language, { vi: 'Đã kiểm duyệt', en: 'Verified', ko: '검증됨', ja: '検証済み', zh: '已验证', de: 'Geprüft' })}
           </span>
         </div>
 
@@ -157,7 +158,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list'
               onClick={() => onPreview(resource)}
               className="w-full py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all"
             >
-              <Eye size={14} className="text-primary" /> Xem
+              <Eye size={14} className="text-primary" /> {getLangText(language, { vi: 'Xem', en: 'View', ko: '보기', ja: '見る', zh: '查看', de: 'Ansehen' })}
             </button>
           )}
 
@@ -168,7 +169,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, viewMode = 'list'
             download
             className="w-full py-2 bg-primary hover:bg-secondary text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all shadow-sm"
           >
-            <Download size={14} /> Tải về
+            <Download size={14} /> {getLangText(language, { vi: 'Tải về', en: 'Download', ko: '다운로드', ja: 'ダウンロード', zh: '立即下载', de: 'Herunterladen' })}
           </a>
         </div>
       </div>

@@ -1,7 +1,13 @@
 import React from 'react';
 import { Sun } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const RooftopHero: React.FC = () => {
+  const { language } = useLanguage();
+  const isEn = language !== 'vi';
+  const isKo = language === 'ko';
+  const isJa = language === 'ja';
+
   return (
     <div className="relative py-32 md:py-40 bg-gray-900 overflow-hidden">
       <img 
@@ -21,19 +27,21 @@ const RooftopHero: React.FC = () => {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-400/30 text-orange-300 px-5 py-2 rounded-full text-sm font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
             <Sun size={16} className="animate-spin-slow" />
-            Điện Mặt Trời – Solar EPC
+            {isEn ? 'Solar Power – Solar EPC' : isKo ? '태양광 발전 – Solar EPC' : isJa ? '太陽光発電 – Solar EPC' : 'Điện Mặt Trời – Solar EPC'}
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight tracking-tight">
-            Điện Mặt Trời Áp Mái
+            {isEn ? 'Rooftop Solar Systems' : isKo ? '옥상 태양광 시스템' : isJa ? '屋上太陽光システム' : 'Điện Mặt Trời Áp Mái'}
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-300">
-              Hộ Gia Đình & C&I
+              {isEn ? 'Residential & C&I' : isKo ? '주택용 및 C&I' : isJa ? '住宅用およびC&I' : 'Hộ Gia Đình & C&I'}
             </span>
           </h1>
           <p className="text-lg text-gray-200 leading-relaxed max-w-2xl font-light">
-            CTC cung cấp dịch vụ EPC trọn gói hệ thống điện mặt trời áp mái với kinh nghiệm 
-            <strong className="text-white"> 32+ năm</strong> và đội ngũ kỹ sư chuyên nghiệp. 
-            Từ <em>Tư vấn → Thiết kế → Thi công → Vận hành & Bảo trì.</em>
+            {isEn ? (
+              <>CTC provides turnkey EPC services for rooftop solar systems with over <strong className="text-white">32+ years</strong> of experience and a team of professional engineers. From <em>Consulting → Design → Construction → O&M.</em></>
+            ) : (
+              <>CTC cung cấp dịch vụ EPC trọn gói hệ thống điện mặt trời áp mái với kinh nghiệm <strong className="text-white">32+ năm</strong> và đội ngũ kỹ sư chuyên nghiệp. Từ <em>Tư vấn → Thiết kế → Thi công → Vận hành & Bảo trì.</em></>
+            )}
           </p>
         </div>
       </div>

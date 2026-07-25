@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, Phone, Award, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 const SolutionsCTA: React.FC = () => {
+  const { language } = useLanguage();
+
   return (
     <section className="py-20 sm:py-24 relative overflow-hidden bg-slate-50 dark:bg-[#060d1d] transition-colors">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -92,30 +96,39 @@ const SolutionsCTA: React.FC = () => {
             <div className="max-w-xl">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 text-xs font-black text-sky-300 uppercase tracking-widest">
-                <Zap size={12} /> CTC – Niềm tin, Chất lượng
+                <Zap size={12} /> {getLangText(language, { vi: 'CTC – Niềm tin, Chất lượng', en: 'CTC – Trust & Quality', ko: 'CTC – 신뢰, 품질', ja: 'CTC – 信頼・品質', zh: 'CTC – 信任与品质', de: 'CTC – Vertrauen & Qualität' })}
               </div>
 
               {/* Headline */}
               <h3 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 leading-tight uppercase tracking-wide">
-                Sẵn sàng triển khai<br/>
+                {getLangText(language, { vi: 'Sẵn sàng triển khai', en: 'Ready to Deploy', ko: '배포 준비 완료', ja: '次期プロジェクトの', zh: '准备好实施', de: 'Bereit zur Umsetzung' })}<br/>
                 <span className="text-transparent bg-clip-text" style={{
                   backgroundImage: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)'
-                }}>dự án của bạn?</span>
+                }}>{getLangText(language, { vi: 'dự án của bạn?', en: 'your next project?', ko: '다음 프로젝트?', ja: '準備はできていますか？', zh: '您的下一个项目了吗？', de: 'Ihres nächsten Projekts?' })}</span>
               </h3>
               <div className="w-14 h-1 rounded-full bg-sky-500 mb-5 opacity-70" />
 
               <p className="text-slate-300 text-base font-light leading-relaxed mb-7">
-                Với đội ngũ <strong className="text-white">53+ kỹ sư chủ chốt</strong> và kinh nghiệm thi công
-                <strong className="text-white"> 500+ công trình</strong>, CTC cam kết:
-                <em className="text-sky-300"> Chất lượng – An toàn – Tiến độ – Hiệu quả.</em>
+                {getLangText(language, { vi: 'Với đội ngũ ', en: 'With ', ko: '경험 풍부한 ', ja: '実績豊富な ', zh: '凭借拥有 ', de: 'Mit ' })}
+                <strong className="text-white">
+                  {getLangText(language, { vi: '53+ kỹ sư chủ chốt', en: '53+ key engineers', ko: '53명 이상의 핵심 엔지니어', ja: '53名以上の主要エンジニア', zh: '53+名核心工程师', de: '53+ leitenden Ingenieuren' })}
+                </strong>
+                {getLangText(language, { vi: ' và kinh nghiệm thi công ', en: ' and proven experience in ', ko: ' 및 ', ja: 'と ', zh: ' 以及 ', de: ' und bewährter Erfahrung in ' })}
+                <strong className="text-white">
+                  {getLangText(language, { vi: '500+ công trình', en: '500+ projects', ko: '500개 이상의 프로젝트', ja: '500件以上の施工実績', zh: '500+个工程', de: '500+ Projekten' })}
+                </strong>
+                {getLangText(language, { vi: ', CTC cam kết: ', en: ', CTC guarantees: ', ko: '를 바탕으로 CTC는 약속합니다: ', ja: 'で、CTCは保証します：', zh: '，CTC承诺：', de: ' garantiert CTC: ' })}
+                <em className="text-sky-300">
+                  {getLangText(language, { vi: 'Chất lượng – An toàn – Tiến độ – Hiệu quả.', en: 'Quality – Safety – Schedule – Efficiency.', ko: '품질 – 안전 – 일정 – 효율.', ja: '品質 – 安全 – 納期 – 効率。', zh: '质量 – 安全 – 进度 – 高效。', de: 'Qualität – Sicherheit – Zeitplan – Effizienz.' })}
+                </em>
               </p>
 
               {/* Trust badges */}
               <div className="flex flex-wrap gap-3">
                 {[
-                  { icon: <Award size={13} />, text: 'Chứng chỉ Bộ Xây dựng' },
-                  { icon: <Zap size={13} />, text: 'EPC Tổng thầu' },
-                  { icon: <Phone size={13} />, text: 'Hỗ trợ 24/7' },
+                  { icon: <Award size={13} />, text: getLangText(language, { vi: 'Chứng chỉ Bộ Xây dựng', en: 'Ministry Certified', ko: '국토부 인증', ja: '建設省認定', zh: '建设部认证', de: 'Ministeriumszertifiziert' }) },
+                  { icon: <Zap size={13} />, text: getLangText(language, { vi: 'EPC Tổng thầu', en: 'General EPC', ko: 'EPC 총괄', ja: 'EPC一括', zh: 'EPC总承包', de: 'General EPC' }) },
+                  { icon: <Phone size={13} />, text: getLangText(language, { vi: 'Hỗ trợ 24/7', en: '24/7 Support', ko: '24/7 지원', ja: '24/7サポート', zh: '24/7支持', de: '24/7 Support' }) },
                 ].map((b, i) => (
                   <div key={i} className="sol-trust-pill">
                     <span className="text-sky-400">{b.icon}</span>
@@ -131,7 +144,7 @@ const SolutionsCTA: React.FC = () => {
                 to="/contact"
                 className="sol-cta-primary inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white"
               >
-                <Zap size={16} /> Nhận tư vấn miễn phí <ArrowRight size={14} />
+                <Zap size={16} /> {getLangText(language, { vi: 'Nhận tư vấn miễn phí', en: 'Get Free Consultation', ko: '무료 상담 받기', ja: '無料相談を受ける', zh: '获取免费咨询', de: 'Kostenlose Beratung anfordern' })} <ArrowRight size={14} />
               </Link>
               <a
                 href="tel:02363745555"
@@ -145,7 +158,7 @@ const SolutionsCTA: React.FC = () => {
                 rel="noreferrer"
                 className="text-center text-slate-400 text-xs hover:text-sky-400 transition-colors"
               >
-                Zalo hỗ trợ: <strong className="text-sky-400">0915 059 666</strong>
+                {getLangText(language, { vi: 'Zalo hỗ trợ:', en: 'Zalo Support:', ko: 'Zalo 지원:', ja: 'Zaloサポート:', zh: 'Zalo在线客服:', de: 'Zalo Support:' })} <strong className="text-sky-400">0915 059 666</strong>
               </a>
             </div>
           </div>

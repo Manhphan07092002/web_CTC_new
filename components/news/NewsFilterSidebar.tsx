@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Filter, RotateCcw, Folder, Check, Newspaper } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 import { useNewsCategories } from '../../hooks/useCategories';
 import { NewsItem } from '../../types';
 
@@ -27,7 +28,7 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
   onNewsClick,
   onReset,
 }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const { categories, loading } = useNewsCategories();
 
   return (
@@ -35,14 +36,14 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
         <h3 className="font-bold text-lg text-corporate dark:text-white flex items-center gap-2">
-          <Filter size={20} className="text-primary" /> Bộ lọc tin tức
+          <Filter size={20} className="text-primary" /> {getLangText(language, { vi: 'Bộ lọc tin tức', en: 'News Filters', ko: '뉴스 필터', ja: 'ニュースフィルター', zh: '新闻筛选', de: 'Nachrichtenfilter' })}
         </h3>
         {(selectedCategoryId || searchQuery) && (
           <button
             onClick={onReset}
             className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium hover:underline transition-all"
           >
-            <RotateCcw size={14} /> Xóa bộ lọc
+            <RotateCcw size={14} /> {getLangText(language, { vi: 'Xóa bộ lọc', en: 'Clear filters', ko: '필터 초기화', ja: 'フィルターをクリア', zh: '清除筛选', de: 'Filter zurücksetzen' })}
           </button>
         )}
       </div>
@@ -50,14 +51,14 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
       {/* Search Input */}
       <div>
         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-          Tìm kiếm bài viết
+          {getLangText(language, { vi: 'Tìm kiếm bài viết', en: 'Search Articles', ko: '기사 검색', ja: '記事検索', zh: '搜索文章', de: 'Artikel suchen' })}
         </label>
         <div className="relative">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Tên bài viết, chủ đề..."
+            placeholder={getLangText(language, { vi: 'Tên bài viết, chủ đề...', en: 'Article title, topic...', ko: '기사 제목, 주제...', ja: '記事タイトル、トピック...', zh: '文章标题、主题...', de: 'Artikeltitel, Thema...' })}
             className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
           />
           <Search size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -67,7 +68,7 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
       {/* Categories */}
       <div>
         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-          Danh mục tin tức
+          {getLangText(language, { vi: 'Danh mục tin tức', en: 'News Categories', ko: '뉴스 카테고리', ja: 'ニュースカテゴリー', zh: '新闻分类', de: 'Nachrichtenkategorien' })}
         </label>
         <div className="space-y-1">
           <button
@@ -79,7 +80,7 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
             }`}
           >
             <span className="flex items-center gap-2">
-              <Folder size={16} /> Tất cả tin tức
+              <Folder size={16} /> {getLangText(language, { vi: 'Tất cả tin tức', en: 'All News', ko: '모든 뉴스', ja: 'すべてのニュース', zh: '全部新闻', de: 'Alle Nachrichten' })}
             </span>
             {selectedCategoryId === null && <Check size={16} />}
           </button>
@@ -106,7 +107,7 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
       {featuredNews.length > 0 && (
         <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
           <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <Newspaper size={14} className="text-primary" /> Tin nổi bật
+            <Newspaper size={14} className="text-primary" /> {getLangText(language, { vi: 'Tin nổi bật', en: 'Featured News', ko: '주요 뉴스', ja: '注目ニュース', zh: '精选新闻', de: 'Ausgewählte Nachrichten' })}
           </label>
           <div className="space-y-3">
             {featuredNews.slice(0, 3).map((item, idx) => (
@@ -135,11 +136,11 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
       {/* Stats Summary */}
       <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-300 space-y-1.5">
         <p className="flex justify-between">
-          <span>Tổng số bài viết:</span>
+          <span>{getLangText(language, { vi: 'Tổng số bài viết:', en: 'Total articles:', ko: '총 기사 수:', ja: '全記事数:', zh: '文章总数:', de: 'Gesamte Artikel:' })}</span>
           <strong className="text-corporate dark:text-primary font-bold">{totalNews}</strong>
         </p>
         <p className="flex justify-between">
-          <span>Kết quả tìm thấy:</span>
+          <span>{getLangText(language, { vi: 'Kết quả tìm thấy:', en: 'Search results:', ko: '검색 결과:', ja: '検索結果:', zh: '搜索结果:', de: 'Suchergebnisse:' })}</span>
           <strong className="text-green-600 dark:text-green-400 font-bold">{filteredCount}</strong>
         </p>
       </div>

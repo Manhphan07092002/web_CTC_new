@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Handshake } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { getLangText } from '../utils/translation-helper';
 import { api } from '../services/api';
 import { Partner } from '../types';
 
@@ -58,8 +59,35 @@ const getDisplayData = (items: Partner[]) => {
 };
 
 const PartnerSlider: React.FC = () => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const [partners, setPartners] = useState<Partner[]>([]);
+
+  const partnersTitle = getLangText(language, {
+    vi: 'Đối tác công nghệ hàng đầu',
+    en: 'Leading Technology Partners',
+    ko: '주요 기술 파트너',
+    ja: '主要技術パートナー',
+    zh: '主要技术合作伙伴',
+    de: 'Führende Technologiepartner',
+  });
+
+  const supplierLabel = getLangText(language, {
+    vi: 'ĐỐI TÁC CUNG CẤP',
+    en: 'SUPPLIER PARTNERS',
+    ko: '공급 파트너',
+    ja: 'サプライヤーパートナー',
+    zh: '供应商合作伙伴',
+    de: 'LIEFERANTENPARTNER',
+  });
+
+  const financialLabel = getLangText(language, {
+    vi: 'ĐỐI TÁC TÀI CHÍNH',
+    en: 'FINANCIAL PARTNERS',
+    ko: '금융 파트너',
+    ja: '金融パートナー',
+    zh: '金融合作伙伴',
+    de: 'FINANZPARTNER',
+  });
   const supplierRef = usePartnerInView();
   const financialRef = usePartnerInView();
 
@@ -171,10 +199,10 @@ const PartnerSlider: React.FC = () => {
         <div className="mb-14 px-4 text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-gradient-to-r from-indigo-50 to-sky-50 px-5 py-2 shadow-sm dark:border-indigo-800/30 dark:from-indigo-950/40 dark:to-sky-950/40">
             <Handshake size={15} className="text-indigo-600 dark:text-indigo-400" />
-            <span className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">{t('home.partners_title')}</span>
+            <span className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">{partnersTitle}</span>
           </div>
           <h2 className="py-2 text-3xl font-black leading-normal tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-900 to-gray-900 dark:from-white dark:via-indigo-200 dark:to-white sm:text-4xl lg:text-5xl">
-            {t('home.partners_title')}
+            {partnersTitle}
           </h2>
           <div className="mt-3 flex items-center justify-center gap-3">
             <div className="h-px w-16 bg-gradient-to-r from-transparent to-indigo-500/50" />
@@ -184,8 +212,8 @@ const PartnerSlider: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-4">
-          <PartnerRow title={t('home.partners_supplier')} data={suppliers} sectionRef={supplierRef.ref} isInView={supplierRef.isInView} />
-          <PartnerRow title={t('home.partners_financial')} data={financial} sectionRef={financialRef.ref} isInView={financialRef.isInView} />
+          <PartnerRow title={supplierLabel} data={suppliers} sectionRef={supplierRef.ref} isInView={supplierRef.isInView} />
+          <PartnerRow title={financialLabel} data={financial} sectionRef={financialRef.ref} isInView={financialRef.isInView} />
         </div>
       </div>
     </section>

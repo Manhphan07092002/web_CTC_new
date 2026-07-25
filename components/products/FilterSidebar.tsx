@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { List, ChevronRight, SlidersHorizontal, Zap, Activity, DollarSign, Tag } from 'lucide-react';
 import { Category } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 interface FilterSidebarProps {
   activeCategoryKey: string;
@@ -42,6 +44,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   handleClearFilters,
   t
 }) => {
+  const { language } = useLanguage();
   const isFilterActive = techFilters.minPrice || techFilters.maxPrice || techFilters.minPower || techFilters.maxPower || techFilters.minEff || techFilters.maxEff;
 
   return (
@@ -116,12 +119,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         {/* Price Filter (VNĐ) */}
         <div>
           <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1.5">
-            <DollarSign size={14} className="text-green-500" /> Khoảng Giá (VNĐ)
+            <DollarSign size={14} className="text-green-500" /> {getLangText(language, { vi: 'Khoảng Giá (VNĐ)', en: 'Price Range (VND)', ko: '가격 범위 (VND)', ja: '価格帯 (VND)', zh: '价格范围 (VND)', de: 'Preisspanne (VND)' })}
           </label>
           <div className="flex items-center gap-2">
             <input
               type="number"
-              placeholder="Giá từ"
+              placeholder={getLangText(language, { vi: 'Giá từ', en: 'Price from', ko: '최소 가격', ja: '下限', zh: '从', de: 'Ab' })}
               min="0"
               className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-primary dark:focus:border-primary text-gray-800 dark:text-gray-100 transition-colors"
               value={techFilters.minPrice || ''}
@@ -132,7 +135,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             <span className="text-gray-400 font-bold">-</span>
             <input
               type="number"
-              placeholder="Đến giá"
+              placeholder={getLangText(language, { vi: 'Đến giá', en: 'Price to', ko: '최대 가격', ja: '上限', zh: '至', de: 'Bis' })}
               min="0"
               className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-primary dark:focus:border-primary text-gray-800 dark:text-gray-100 transition-colors"
               value={techFilters.maxPrice || ''}
@@ -144,10 +147,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           {/* Quick Price Hints */}
           <div className="mt-2 flex flex-wrap gap-1">
             {[
-              { label: '< 5 triệu', min: '', max: '5000000' },
-              { label: '5 - 15 triệu', min: '5000000', max: '15000000' },
-              { label: '15 - 30 triệu', min: '15000000', max: '30000000' },
-              { label: '> 30 triệu', min: '30000000', max: '' }
+              { label: getLangText(language, { vi: '< 5 triệu', en: '< 5 million', ko: '< 5백만', ja: '< 500万', zh: '< 500万', de: '< 5 Mio.' }), min: '', max: '5000000' },
+              { label: getLangText(language, { vi: '5 - 15 triệu', en: '5 - 15 million', ko: '5 - 15백만', ja: '500-1500万', zh: '500-1500万', de: '5 - 15 Mio.' }), min: '5000000', max: '15000000' },
+              { label: getLangText(language, { vi: '15 - 30 triệu', en: '15 - 30 million', ko: '15 - 30백만', ja: '1500-3000万', zh: '1500-3000万', de: '15 - 30 Mio.' }), min: '15000000', max: '30000000' },
+              { label: getLangText(language, { vi: '> 30 triệu', en: '> 30 million', ko: '> 30백만', ja: '> 3000万', zh: '> 3000万', de: '> 30 Mio.' }), min: '30000000', max: '' }
             ].map((range) => (
               <button
                 key={range.label}

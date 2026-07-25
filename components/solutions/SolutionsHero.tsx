@@ -1,22 +1,26 @@
 import React from 'react';
 import { Sun, Wind, Radio, Zap, Building2, Server, ArrowRight, Trophy, Globe, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 const SolutionsHero: React.FC = () => {
+  const { t, language } = useLanguage();
+
   const stats = [
-    { icon: <Trophy size={18} />, val: '500+', label: 'Công trình' },
-    { icon: <Briefcase size={18} />, val: '32+', label: 'Năm kinh nghiệm' },
-    { icon: <Globe size={18} />, val: '6+', label: 'Lĩnh vực' },
-    { icon: <Zap size={18} />, val: '53+', label: 'Kỹ sư chủ chốt' },
+    { icon: <Trophy size={18} />, val: '500+', label: getLangText(language, { vi: 'Công trình', en: 'Projects', ko: '프로젝트', ja: '工事実績', zh: '完成工程', de: 'Projekte' }) },
+    { icon: <Briefcase size={18} />, val: '32+', label: getLangText(language, { vi: 'Năm kinh nghiệm', en: 'Years Experience', ko: '년 경력', ja: '年の経験', zh: '年经验', de: 'Jahre Erfahrung' }) },
+    { icon: <Globe size={18} />, val: '6+', label: getLangText(language, { vi: 'Lĩnh vực', en: 'Sectors', ko: '분야', ja: '分野', zh: '领域', de: 'Bereiche' }) },
+    { icon: <Zap size={18} />, val: '53+', label: getLangText(language, { vi: 'Kỹ sư chủ chốt', en: 'Key Engineers', ko: '핵심 엔지니어', ja: '主要エンジニア', zh: '核心工程师', de: 'Leitende Ingenieure' }) },
   ];
 
   const sectors = [
-    { icon: <Radio size={16} />, label: 'Viễn thông' },
+    { icon: <Radio size={16} />, label: getLangText(language, { vi: 'Viễn thông', en: 'Telecom', ko: '통신', ja: '通信', zh: '电信', de: 'Telekom' }) },
     { icon: <Sun size={16} />, label: 'Solar EPC' },
     { icon: <Wind size={16} />, label: 'Wind EPC' },
-    { icon: <Zap size={16} />, label: 'Điện lực' },
+    { icon: <Zap size={16} />, label: getLangText(language, { vi: 'Điện lực', en: 'Power Grid', ko: '전력망', ja: '電力網', zh: '电力工程', de: 'Stromnetz' }) },
     { icon: <Server size={16} />, label: 'Data Center' },
-    { icon: <Building2 size={16} />, label: 'Xây dựng' },
+    { icon: <Building2 size={16} />, label: getLangText(language, { vi: 'Xây dựng', en: 'Construction', ko: '건설', ja: '建設', zh: '建筑工程', de: 'Bauwesen' }) },
   ];
 
   return (
@@ -198,30 +202,39 @@ const SolutionsHero: React.FC = () => {
         <div className="sol-glow" style={{ width: 500, height: 500, bottom: '-10%', right: '-5%', background: 'radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)' }} />
 
         {/* Content */}
-        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 py-12">
-          <div className="sol-layout grid gap-16 lg:gap-20" style={{ gridTemplateColumns: '1.2fr 0.8fr' }}>
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-12 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
 
             {/* ── Left: Typographic core ── */}
-            <div className="flex flex-col items-start">
+            <div className="lg:col-span-7 flex flex-col items-start min-w-0">
               {/* Badge */}
               <div className="sol-badge mb-7">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 0 4px rgba(52,211,153,0.25)' }} />
-                Giải pháp EPC toàn diện – CTC
+                {getLangText(language, { vi: 'Giải pháp EPC toàn diện – CTC', en: 'Turnkey EPC Solutions – CTC', ko: '턴키 EPC 솔루션 – CTC', ja: '一貫EPCソリューション – CTC', zh: '全流程EPC解决方案 – CTC', de: 'Schlüsselfertige EPC-Lösungen – CTC' })}
               </div>
 
               {/* Title */}
-              <div className="mb-2 sol-title-outline">GIẢI PHÁP KỸ THUẬT</div>
+              <div className="mb-2 sol-title-outline">
+                {getLangText(language, { vi: 'GIẢI PHÁP KỸ THUẬT', en: 'ENGINEERING SOLUTIONS', ko: '기술 솔루션', ja: 'エンジニアリングソリューション', zh: '工程技术解决方案', de: 'INGENIEURLÖSUNGEN' })}
+              </div>
               <div className="mb-6">
-                <span className="sol-title-white">CTC – TỔNG THẦU</span>
-                <span className="sol-title-gradient">EPC CHUYÊN NGHIỆP</span>
+                <span className="sol-title-white">
+                  {getLangText(language, { vi: 'CTC – TỔNG THẦU', en: 'CTC – PROFESSIONAL', ko: 'CTC – 전문', ja: 'CTC – プロフェッショナル', zh: 'CTC – 专业', de: 'CTC – PROFESSIONELLER' })}
+                </span>
+                <span className="sol-title-gradient">
+                  {getLangText(language, { vi: 'EPC CHUYÊN NGHIỆP', en: 'EPC CONTRACTOR', ko: 'EPC 총괄 시공사', ja: 'EPC一括請負', zh: 'EPC总承包商', de: 'EPC-GENERALUNTERNEHMER' })}
+                </span>
               </div>
 
               {/* Description bar */}
               <div className="border-l-2 border-sky-500/30 pl-5 mb-9" style={{ animation: 'solSlideUp 1.5s 0.35s both' }}>
                 <p className="text-slate-300 text-base sm:text-lg font-light leading-relaxed">
-                  <strong className="text-white">32+ năm kinh nghiệm</strong> – CTC cung cấp dịch vụ khép kín từ
-                  <em className="text-sky-300"> Tư vấn → Thiết kế → Thi công → O&M</em> cho toàn bộ lĩnh vực
-                  hạ tầng viễn thông, năng lượng tái tạo và xây dựng kỹ thuật.
+                  <strong className="text-white">
+                    {getLangText(language, { vi: '32+ năm kinh nghiệm', en: '32+ years of experience', ko: '32년 이상의 경력', ja: '32年以上の実績', zh: '32+年经验', de: '32+ Jahre Erfahrung' })}
+                  </strong> – {getLangText(language, { vi: 'CTC cung cấp dịch vụ khép kín từ ', en: 'CTC provides end-to-end services from ', ko: 'CTC는 다음 분야에서 ', ja: 'CTCは以下において ', zh: 'CTC在以下领域提供从 ', de: 'CTC bietet End-to-End-Dienste von ' })}
+                  <em className="text-sky-300">
+                    {getLangText(language, { vi: 'Tư vấn → Thiết kế → Thi công → O&M', en: 'Consulting → Design → Construction → O&M', ko: '상담 → 설계 → 시공 → O&M', ja: 'コンサルティング → 設計 → 施工 → O&M', zh: '咨询 → Thiết kế → 施工 → 运维', de: 'Beratung → Planung → Bau → O&M' })}
+                  </em> {getLangText(language, { vi: 'cho toàn bộ lĩnh vực hạ tầng viễn thông, năng lượng tái tạo và xây dựng kỹ thuật.', en: 'for telecom infrastructure, renewable energy, and technical construction.', ko: '까지 통신 인프라, 신재생 에너지 및 기술 건설 분야의 일괄 서비스를 제공합니다.', ja: 'まで、通信インフラ、再生可能エネルギー、技術建設分野の全サービスを提供します。', zh: '的一站式服务，涵盖电信基础设施、可再生能源及工程建设。', de: 'für Telekommunikation, erneuerbare Energien und technischen Bau.' })}
                 </p>
               </div>
 
@@ -237,7 +250,7 @@ const SolutionsHero: React.FC = () => {
                     backdropFilter: 'blur(20px)',
                   }}
                 >
-                  Nhận tư vấn <ArrowRight size={16} />
+                  {getLangText(language, { vi: 'Nhận tư vấn', en: 'Get Advice', ko: '상담 신청', ja: '無料相談', zh: '获取咨询', de: 'Beratung anfordern' })} <ArrowRight size={16} />
                 </Link>
                 <a
                   href="tel:0915059666"
@@ -255,7 +268,7 @@ const SolutionsHero: React.FC = () => {
               {/* Sector ticker */}
               <div style={{ animation: 'solSlideUp 1.5s 0.5s both', width: '100%' }}>
                 <div className="text-[10px] font-black uppercase tracking-widest text-slate-600 mb-3">
-                  LĨNH VỰC HOẠT ĐỘNG
+                  {getLangText(language, { vi: 'LĨNH VỰC HOẠT ĐỘNG', en: 'SECTORS OF OPERATION', ko: '사업 분야', ja: '事業分野', zh: '业务领域', de: 'TÄTIGKEITSBEREICHE' })}
                 </div>
                 <div className="sol-sector-track">
                   <div className="sol-sector-items">
@@ -271,16 +284,20 @@ const SolutionsHero: React.FC = () => {
             </div>
 
             {/* ── Right: Dashboard ── */}
-            <div className="relative flex flex-col items-center justify-center">
-              <div className="sol-dashboard w-full max-w-[400px] relative">
+            <div className="lg:col-span-5 relative flex flex-col items-center justify-center w-full min-w-0">
+              <div className="sol-dashboard w-full max-w-[420px] relative overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center gap-3 border-b border-white/8 pb-5 mb-5">
-                  <div className="w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-400/20 flex items-center justify-center text-sky-400">
+                  <div className="w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-400/20 flex items-center justify-center text-sky-400 flex-shrink-0">
                     <Trophy size={18} />
                   </div>
-                  <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-sky-400">NĂNG LỰC DOANH NGHIỆP</div>
-                    <div className="text-sm font-bold text-slate-400">CTC – Dữ liệu cập nhật 2025</div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-sky-400 truncate">
+                      {getLangText(language, { vi: 'NĂNG LỰC DOANH NGHIỆP', en: 'CORPORATE CAPACITY', ko: '기업 역량', ja: '企業能力', zh: '企业能力', de: 'UNTERNEHMENSKAPAZITÄT' })}
+                    </div>
+                    <div className="text-sm font-bold text-slate-400 truncate">
+                      {getLangText(language, { vi: 'CTC – Dữ liệu cập nhật 2025', en: 'CTC – Data Updated 2025', ko: 'CTC – 2025 최신 데이터', ja: 'CTC – 2025年最新データ', zh: 'CTC – 2025最新数据', de: 'CTC – Daten aktualisiert 2025' })}
+                    </div>
                   </div>
                 </div>
 
@@ -291,9 +308,9 @@ const SolutionsHero: React.FC = () => {
                       <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-400/20 flex items-center justify-center text-sky-400 flex-shrink-0">
                         {s.icon}
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <div className="text-xl font-black text-white">{s.val}</div>
-                        <div className="text-xs text-slate-400 uppercase tracking-wide font-semibold">{s.label}</div>
+                        <div className="text-xs text-slate-300 font-semibold leading-tight">{s.label}</div>
                       </div>
                     </div>
                   ))}
@@ -301,7 +318,9 @@ const SolutionsHero: React.FC = () => {
 
                 {/* Clients strip */}
                 <div className="mt-5 pt-4 border-t border-white/8">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-600 mb-3">KHÁCH HÀNG CHIẾN LƯỢC</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-600 mb-3">
+                    {getLangText(language, { vi: 'KHÁCH HÀNG CHIẾN LƯỢC', en: 'STRATEGIC CLIENTS', ko: '전략적 고객사', ja: '主要クライアント', zh: '战略客户', de: 'STRATEGISCHE KUNDEN' })}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {['Bộ Công an', 'Mobifone', 'VNPT Net', 'Dongfang Electric'].map((c, i) => (
                       <span key={i} className="px-3 py-1 text-[10px] font-bold text-slate-400 border border-white/8 rounded-full bg-white/3">

@@ -2,6 +2,7 @@ import React from 'react';
 import { NewsItem } from '../../types';
 import { Calendar, ArrowRight, User } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 interface NewsCardProps {
   item: NewsItem;
@@ -10,7 +11,7 @@ interface NewsCardProps {
 }
 
 const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
 
   if (viewMode === 'list') {
     // 1 Hàng 1 Tin Tức (List View Mode - Horizontal Layout)
@@ -29,7 +30,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
           <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
           {item.isFeatured && (
             <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
-              ⭐ Nổi bật
+              ⭐ {getLangText(language, { vi: 'Nổi bật', en: 'Featured', ko: '주요', ja: '注目', zh: '精选', de: 'Hervorgehoben' })}
             </div>
           )}
           {item.category && (
@@ -66,7 +67,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
 
           <div className="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <span className="text-primary font-bold text-sm flex items-center gap-2 group-hover:text-secondary">
-              Đọc bài viết đầy đủ
+              {getLangText(language, { vi: 'Đọc bài viết đầy đủ', en: 'Read full article', ko: '전체 기사 읽기', ja: '記事をすべて読む', zh: '阅读全文', de: 'Vollständigen Artikel lesen' })}
               <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform" />
             </span>
           </div>
@@ -90,7 +91,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
         {item.isFeatured && (
           <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
-            ⭐ Nổi bật
+            ⭐ {getLangText(language, { vi: 'Nổi bật', en: 'Featured', ko: '주요', ja: '注目', zh: '精选', de: 'Hervorgehoben' })}
           </div>
         )}
         {item.category && (
@@ -115,7 +116,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
         </div>
 
         <div className="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between text-primary font-bold text-sm">
-          <span>Xem chi tiết</span>
+          <span>{getLangText(language, { vi: 'Xem chi tiết', en: 'View detail', ko: '상세보기', ja: '詳細を見る', zh: '查看详情', de: 'Details anzeigen' })}</span>
           <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </div>
       </div>

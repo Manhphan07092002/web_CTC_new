@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { NewsItem } from '../types';
 import { ChevronRight, Home } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { getLangText } from '../utils/translation-helper';
 import SEO from '../components/SEO';
 import Loading from '../components/Loading';
 
@@ -18,7 +19,7 @@ const NewsDetail: React.FC = () => {
   const [news, setNews] = useState<NewsItem | null>(null);
   const [relatedNews, setRelatedNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -47,8 +48,12 @@ const NewsDetail: React.FC = () => {
 
   if (!news) return (
     <div className="container mx-auto px-4 py-20 text-center">
-      <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300">Không tìm thấy bài viết</h2>
-      <Link to="/news" className="text-primary hover:underline mt-4 block font-bold">Xem tất cả tin tức</Link>
+      <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+        {getLangText(language, { vi: 'Không tìm thấy bài viết', en: 'Article not found', ko: '기사를 찾을 수 없습니다', ja: '記事が見つかりません', zh: '未找到文章', de: 'Artikel nicht gefunden' })}
+      </h2>
+      <Link to="/news" className="text-primary hover:underline mt-4 block font-bold">
+        {getLangText(language, { vi: 'Xem tất cả tin tức', en: 'View all news', ko: '모든 뉴스 보기', ja: 'すべてのニュースを見る', zh: '查看所有新闻', de: 'Alle Nachrichten anzeigen' })}
+      </Link>
     </div>
   );
 
@@ -95,7 +100,7 @@ const NewsDetail: React.FC = () => {
           <div className="flex items-center text-sm text-gray-500">
             <Link to="/" className="hover:text-primary flex items-center gap-1"><Home size={14}/> {t('nav.home')}</Link>
             <ChevronRight size={14} className="mx-2"/>
-            <Link to="/news" className="hover:text-primary">Tin tức</Link>
+            <Link to="/news" className="hover:text-primary">{t('nav.news') || getLangText(language, { vi: 'Tin tức', en: 'News', ko: '뉴스', ja: 'ニュース', zh: '新闻', de: 'Nachrichten' })}</Link>
             <ChevronRight size={14} className="mx-2"/>
             <span className="text-corporate dark:text-primary font-semibold truncate">{news.title}</span>
           </div>

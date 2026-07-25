@@ -2,6 +2,7 @@ import React from 'react';
 import { Project } from '../../types';
 import { MapPin, X, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 interface ProjectDetailModalProps {
   project: Project | null;
@@ -9,9 +10,17 @@ interface ProjectDetailModalProps {
 }
 
 const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project, onClose }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   if (!project) return null;
+
+  const scopeItems = [
+    getLangText(language, { vi: 'EPC Tổng thầu', en: 'EPC Turnkey', ko: 'EPC 총괄 시공', ja: 'EPC一括請負', zh: 'EPC总承包', de: 'Schlüsselfertiges EPC' }),
+    getLangText(language, { vi: 'Thiết kế kỹ thuật', en: 'Technical Design', ko: '기술 설계', ja: '技術設計', zh: '工程设计', de: 'Technische Planung' }),
+    getLangText(language, { vi: 'Lắp đặt thiết bị', en: 'Equipment Installation', ko: '장비 설치', ja: '機器設置', zh: '设备安装', de: 'Geräteinstallation' }),
+    getLangText(language, { vi: 'Hòa lưới điện', en: 'Grid Connection', ko: '전력망 연계', ja: '系統連系', zh: '并网接入', de: 'Netzanschluss' }),
+    getLangText(language, { vi: 'Vận hành & Bảo trì (O&M)', en: 'Operation & Maintenance (O&M)', ko: '운영 및 유지보수 (O&M)', ja: '運用および保守 (O&M)', zh: '运营与维护 (O&M)', de: 'Betrieb & Wartung (O&M)' })
+  ];
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -49,7 +58,9 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project, onClos
             </div>
             <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-100 dark:border-gray-600">
               <div className="text-gray-500 dark:text-gray-400 text-xs uppercase mb-1">{t('projects.status')}</div>
-              <div className="text-xl font-bold text-green-600">Operating</div>
+              <div className="text-xl font-bold text-green-600">
+                {getLangText(language, { vi: 'Đang vận hành', en: 'Operating', ko: '운영 중', ja: '稼働中', zh: '运行中', de: 'In Betrieb' })}
+              </div>
             </div>
           </div>
 
@@ -60,9 +71,11 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project, onClos
               {t('home.why_choose_desc')}
             </p>
             
-            <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">Scope of Work:</h4>
+            <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
+              {getLangText(language, { vi: 'Hạng mục thực hiện:', en: 'Scope of Work:', ko: '수행 범위:', ja: '業務範囲:', zh: '服务范围:', de: 'Leistungsumfang:' })}
+            </h4>
             <ul className="grid md:grid-cols-2 gap-2">
-              {['EPC', 'Design', 'Installation', 'Grid Connection', 'O&M'].map((item, i) => (
+              {scopeItems.map((item, i) => (
                 <li key={i} className="flex items-center gap-2">
                   <CheckCircle2 size={16} className="text-primary" /> {item}
                 </li>

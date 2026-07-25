@@ -50,6 +50,18 @@ export interface TranslatableItem {
 }
 
 /**
+ * Quick inline multi-language string getter supporting all 6 languages (vi, en, ko, ja, zh, de)
+ */
+export function getLangText<T = string>(
+  language: Language,
+  texts: { vi: T; en?: T; ko?: T; ja?: T; zh?: T; de?: T }
+): T {
+  if (language === 'vi') return texts.vi;
+  if (texts[language]) return texts[language]!;
+  return texts.en || texts.vi;
+}
+
+/**
  * Lấy giá trị field đã được dịch
  * @param item - Object chứa data (product, project, news, etc.)
  * @param field - Tên field cần dịch
@@ -107,210 +119,91 @@ export function getTranslatedArray<T extends TranslatableItem>(
     if (translated && Array.isArray(translated)) return translated;
   }
   
-  // Fallback về Vietnamese (array gốc)
+  // Fallback về Vietnamese (field gốc)
   return (item[field] as string[]) || [];
 }
 
 /**
- * Transform toàn bộ object với translations (with caching)
- * @param item - Object gốc
- * @param language - Ngôn ngữ cần dịch
- * @param fields - Danh sách fields cần dịch
- * @returns Object đã được dịch
+ * Tự động dịch một object (Product, Project, News, etc.)
+ * Trả về object mới với các field đã được dịch
+ * Sử dụng CACHE để tối ưu performance
  */
 export function getTranslatedObject<T extends TranslatableItem>(
   item: T,
   language: Language,
-  fields: (keyof T)[]
+  fieldsToTranslate: (keyof T)[] = ['name', 'description', 'title', 'content', 'excerpt']
 ): T {
+  if (!item) return item;
+  
+  // Nếu là tiếng Việt, trả về item gốc
   if (language === 'vi') {
-    return item; // Không cần transform
+    return item;
   }
-
-  // Check cache
-  const cacheKey = getCacheKey(item.id || item._id, language);
-  const cached = translationCache.get(cacheKey);
-  if (cached) return cached;
-
-  const translated = { ...item };
-
-  fields.forEach(field => {
-    const value = item[field];
-    
-    if (Array.isArray(value)) {
-      (translated[field] as any) = getTranslatedArray(item, field, language);
-    } else if (typeof value === 'string') {
-      (translated[field] as any) = getTranslatedField(item, field, language);
+  
+  // Thử lấy từ cache
+  const itemId = item._id || item.id;
+  if (itemId) {
+    const cacheKey = getCacheKey(itemId, language);
+    if (translationCache.has(cacheKey)) {
+      return translationCache.get(cacheKey);
+    }
+  }
+  
+  // Tạo object mới với các field đã dịch
+  const translatedItem = { ...item };
+  
+  fieldsToTranslate.forEach(field => {
+    if (field in item) {
+      const val = item[field];
+      if (Array.isArray(val)) {
+        (translatedItem as any)[field] = getTranslatedArray(item, field, language);
+      } else if (typeof val === 'string') {
+        (translatedItem as any)[field] = getTranslatedField(item, field, language);
+      }
     }
   });
-
-  // Save to cache
-  translationCache.set(cacheKey, translated);
-  manageCacheSize();
-
-  return translated;
+  
+  // Lưu vào cache
+  if (itemId) {
+    manageCacheSize();
+    const cacheKey = getCacheKey(itemId, language);
+    translationCache.set(cacheKey, translatedItem);
+  }
+  
+  return translatedItem;
 }
 
 /**
- * Transform Product với translations
- */
-export function getTranslatedProduct(product: any, language: Language) {
-  return getTranslatedObject(product, language, [
-    'name',
-    'description',
-    'shortDescription',
-    'specifications',
-    'categoryLabel',
-    'features'
-  ]);
-}
-
-/**
- * Transform Project với translations
- */
-export function getTranslatedProject(project: any, language: Language) {
-  return getTranslatedObject(project, language, [
-    'name',
-    'description',
-    'location',
-    'client'
-  ]);
-}
-
-/**
- * Transform News với translations
- */
-export function getTranslatedNews(news: any, language: Language) {
-  return getTranslatedObject(news, language, [
-    'title',
-    'content',
-    'excerpt'
-  ]);
-}
-
-/**
- * Transform Category với translations
- */
-export function getTranslatedCategory(category: any, language: Language) {
-  return getTranslatedObject(category, language, [
-    'name',
-    'description'
-  ]);
-}
-
-/**
- * Batch transform array of items (optimized)
+ * Tự động dịch một danh sách các object
+ * Sử dụng cache cho từng item
  */
 export function getTranslatedList<T extends TranslatableItem>(
   items: T[],
   language: Language,
-  fields: (keyof T)[]
+  fieldsToTranslate: (keyof T)[] = ['name', 'description', 'title', 'content', 'excerpt']
 ): T[] {
-  if (language === 'vi') return items; // No transformation needed
-  return items.map(item => getTranslatedObject(item, language, fields));
+  if (!items || !Array.isArray(items)) return [];
+  if (language === 'vi') return items;
+  
+  return items.map(item => getTranslatedObject(item, language, fieldsToTranslate));
 }
 
 /**
- * Clear translation cache (useful when language changes or data updates)
+ * Clear translation cache
+ * Sử dụng khi data thay đổi (create/update/delete)
  */
 export function clearTranslationCache(): void {
   translationCache.clear();
 }
 
-/**
- * Get cache statistics (for debugging)
- */
-export function getCacheStats() {
-  return {
-    size: translationCache.size,
-    limit: CACHE_SIZE_LIMIT,
-    usage: `${((translationCache.size / CACHE_SIZE_LIMIT) * 100).toFixed(1)}%`
-  };
+export function getTranslatedProduct<T extends TranslatableItem>(item: T, language: Language): T {
+  return getTranslatedObject(item, language);
 }
 
-/**
- * Check xem item có translation cho ngôn ngữ cụ thể không
- */
-export function hasTranslation(
-  item: TranslatableItem,
-  language: Language
-): boolean {
-  if (language === 'vi') return true; // Vietnamese là default
-  return !!(item.translations && item.translations[language]);
+export function getTranslatedProject<T extends TranslatableItem>(item: T, language: Language): T {
+  return getTranslatedObject(item, language);
 }
 
-/**
- * Get translation completeness percentage
- */
-export function getTranslationCompleteness(
-  item: TranslatableItem,
-  language: Language,
-  requiredFields: string[]
-): number {
-  if (language === 'vi') return 100;
-  
-  if (!item.translations || !item.translations[language]) {
-    return 0;
-  }
-
-  const translation = item.translations[language];
-  const completedFields = requiredFields.filter(
-    field => translation?.[field] && translation[field] !== ''
-  );
-
-  return Math.round((completedFields.length / requiredFields.length) * 100);
+export function getTranslatedNews<T extends TranslatableItem>(item: T, language: Language): T {
+  return getTranslatedObject(item, language);
 }
-
-/**
- * Get available languages for an item
- */
-export function getAvailableLanguages(item: TranslatableItem): Language[] {
-  const languages: Language[] = ['vi']; // Vietnamese always available
-  
-  if (!item.translations) return languages;
-
-  const translationKeys = Object.keys(item.translations) as Language[];
-  return [...languages, ...translationKeys];
-}
-
-/**
- * React Hook for translated data with automatic caching
- */
-export function useTranslatedData<T extends TranslatableItem>(
-  item: T | null,
-  fields: (keyof T)[],
-  language: Language
-): T | null {
-  if (!item) return null;
-  return getTranslatedObject(item, language, fields);
-}
-
-/**
- * Example usage:
- * 
- * const product = {
- *   id: '123',
- *   name: 'Tấm pin Canadian Solar 550W',
- *   description: 'Tấm pin hiệu suất cao',
- *   translations: {
- *     en: {
- *       name: 'Canadian Solar 550W Panel',
- *       description: 'High-efficiency solar panel'
- *     },
- *     ko: {
- *       name: 'Canadian Solar 550W 패널',
- *       description: '고효율 태양광 패널'
- *     }
- *   }
- * };
- * 
- * // Sử dụng với caching
- * const { language } = useLanguage();
- * const translatedProduct = getTranslatedProduct(product, language);
- * // Lần gọi thứ 2 với cùng product & language sẽ lấy từ cache
- * 
- * console.log(translatedProduct.name); // "Canadian Solar 550W Panel" (nếu language = 'en')
- * 
- * // Clear cache khi cần
- * clearTranslationCache();
- */

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Sun, Zap, DollarSign, ArrowRight, Home, Building2, TrendingDown, AreaChart, Battery, LayoutGrid } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { getLangText } from '../utils/translation-helper';
 
 const SolarCalculator: React.FC = () => {
   const [monthlyBill, setMonthlyBill] = useState<number>(2000000);
@@ -16,7 +17,7 @@ const SolarCalculator: React.FC = () => {
   const [totalSavings, setTotalSavings] = useState<number>(0);
   const [roofArea, setRoofArea] = useState<number>(0);
   const [batteryCapacity, setBatteryCapacity] = useState<number>(0);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     if (customerType === 'residential') setDaytimeUsageRatio(0.30);
@@ -218,7 +219,8 @@ const SolarCalculator: React.FC = () => {
             />
           </div>
           <div className="flex justify-between text-[10px] font-semibold text-gray-300 dark:text-slate-600 mt-2 uppercase tracking-wide">
-            <span>0% (Tất cả ban đêm)</span><span>100% (Tất cả ban ngày)</span>
+            <span>{getLangText(language, { vi: '0% (Tất cả ban đêm)', en: '0% (All Night)', ko: '0% (전부 야간)', ja: '0% (すべて夜間)', zh: '0% (全在夜间)', de: '0% (Nachts)' })}</span>
+            <span>{getLangText(language, { vi: '100% (Tất cả ban ngày)', en: '100% (All Day)', ko: '100% (전부 주간)', ja: '100% (すべて昼間)', zh: '100% (全在白天)', de: '100% (Tagsüber)' })}</span>
           </div>
           <div className={`mt-3 flex items-start gap-2 p-3 rounded-xl text-[11px] leading-relaxed ${
             customerType === 'residential' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
@@ -243,8 +245,8 @@ const SolarCalculator: React.FC = () => {
         {/* Header */}
         <div className="relative z-10 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary/80 mb-1">{t('calculator.system_size')}</p>
-            <h3 className="text-white/90 font-black text-sm">{t('calculator.system_size')}</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-primary/80 mb-1">{t('calculator.system_capacity')}</p>
+            <h3 className="text-white/90 font-black text-sm">{t('calculator.system_capacity')}</h3>
           </div>
           <div className="w-9 h-9 rounded-xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center">
             <Sun size={18} className="text-yellow-400" />
@@ -276,9 +278,9 @@ const SolarCalculator: React.FC = () => {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Tiết kiệm</p>
+            <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{getLangText(language, { vi: 'Tiết kiệm', en: 'Savings', ko: '절감액', ja: '節約額', zh: '节省', de: 'Einsparung' })}</p>
             <p className="text-2xl font-black text-emerald-400 mt-1 leading-none">{savingPercent}%</p>
-            <p className="text-[10px] text-white/30 mt-0.5">hóa đơn/tháng</p>
+            <p className="text-[10px] text-white/30 mt-0.5">{getLangText(language, { vi: 'hóa đơn/tháng', en: 'bill/month', ko: '월 전기요금', ja: '月額請求', zh: '月账单', de: 'Rechnung/Monat' })}</p>
           </div>
         </div>
 

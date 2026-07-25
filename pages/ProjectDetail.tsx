@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { Project } from '../types';
 import { ChevronRight, Home } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { getLangText } from '../utils/translation-helper';
 import SEO from '../components/SEO';
 import Loading from '../components/Loading';
 
@@ -19,7 +20,7 @@ const ProjectDetail: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [relatedProjects, setRelatedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -48,8 +49,12 @@ const ProjectDetail: React.FC = () => {
 
   if (!project) return (
     <div className="container mx-auto px-4 py-20 text-center">
-      <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300">Không tìm thấy dự án</h2>
-      <Link to="/projects" className="text-primary hover:underline mt-4 block font-semibold">Xem tất cả dự án</Link>
+      <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+        {getLangText(language, { vi: 'Không tìm thấy dự án', en: 'Project not found', ko: '프로젝트를 찾을 수 없습니다', ja: 'プロジェクトが見つかりません', zh: '未找到项目', de: 'Projekt nicht gefunden' })}
+      </h2>
+      <Link to="/projects" className="text-primary hover:underline mt-4 block font-semibold">
+        {getLangText(language, { vi: 'Xem tất cả dự án', en: 'View all projects', ko: '모든 프로젝트 보기', ja: 'すべてのプロジェクトを見る', zh: '查看所有项目', de: 'Alle Projekte anzeigen' })}
+      </Link>
     </div>
   );
 
@@ -95,7 +100,7 @@ const ProjectDetail: React.FC = () => {
           <div className="flex items-center text-sm text-gray-500">
             <Link to="/" className="hover:text-primary flex items-center gap-1"><Home size={14}/> {t('nav.home')}</Link>
             <ChevronRight size={14} className="mx-2"/>
-            <Link to="/projects" className="hover:text-primary">Dự án</Link>
+            <Link to="/projects" className="hover:text-primary">{t('nav.projects') || getLangText(language, { vi: 'Dự án', en: 'Projects', ko: '프로젝트', ja: 'プロジェクト', zh: '项目', de: 'Projekte' })}</Link>
             <ChevronRight size={14} className="mx-2"/>
             <span className="text-corporate dark:text-primary font-semibold truncate">{project.title}</span>
           </div>
@@ -115,7 +120,7 @@ const ProjectDetail: React.FC = () => {
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-3">
-                Mô tả dự án
+                {getLangText(language, { vi: 'Mô tả dự án', en: 'Project Description', ko: '프로젝트 설명', ja: 'プロジェクト概要', zh: '项目描述', de: 'Projektbeschreibung' })}
               </h2>
               <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300">
                 <p className="leading-relaxed whitespace-pre-line">{project.description}</p>

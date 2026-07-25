@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Filter, RotateCcw, Folder, Check } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 import { useProjectCategories } from '../../hooks/useCategories';
 
 interface ProjectFilterSidebarProps {
@@ -22,7 +23,7 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
   filteredCount,
   onReset,
 }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const { categories, loading } = useProjectCategories();
 
   return (
@@ -30,14 +31,14 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
         <h3 className="font-bold text-lg text-corporate dark:text-white flex items-center gap-2">
-          <Filter size={20} className="text-primary" /> Bộ lọc dự án
+          <Filter size={20} className="text-primary" /> {getLangText(language, { vi: 'Bộ lọc dự án', en: 'Project Filters', ko: '프로젝트 필터', ja: 'プロジェクトフィルター', zh: '项目筛选', de: 'Projektfilter' })}
         </h3>
         {(selectedCategoryId || searchQuery) && (
           <button
             onClick={onReset}
             className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium hover:underline transition-all"
           >
-            <RotateCcw size={14} /> Xóa bộ lọc
+            <RotateCcw size={14} /> {getLangText(language, { vi: 'Xóa bộ lọc', en: 'Clear filters', ko: '필터 초기화', ja: 'フィルターをクリア', zh: '清除筛选', de: 'Filter zurücksetzen' })}
           </button>
         )}
       </div>
@@ -45,14 +46,14 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
       {/* Search Input */}
       <div>
         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-          Tìm kiếm dự án
+          {getLangText(language, { vi: 'Tìm kiếm dự án', en: 'Search Projects', ko: '프로젝트 검색', ja: 'プロジェクト検索', zh: '搜索项目', de: 'Projekte suchen' })}
         </label>
         <div className="relative">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Tên dự án, địa điểm..."
+            placeholder={getLangText(language, { vi: 'Tên dự án, địa điểm...', en: 'Project name, location...', ko: '프로젝트 이름, 위치...', ja: 'プロジェクト名、所在地...', zh: '项目名称、地点...', de: 'Projektname, Standort...' })}
             className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
           />
           <Search size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -62,7 +63,7 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
       {/* Categories */}
       <div>
         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-          Danh mục
+          {getLangText(language, { vi: 'Danh mục', en: 'Categories', ko: '카테고리', ja: 'カテゴリー', zh: '项目分类', de: 'Kategorien' })}
         </label>
         <div className="space-y-1">
           <button
@@ -74,7 +75,7 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
             }`}
           >
             <span className="flex items-center gap-2">
-              <Folder size={16} /> Tất cả dự án
+              <Folder size={16} /> {getLangText(language, { vi: 'Tất cả dự án', en: 'All Projects', ko: '모든 프로젝트', ja: 'すべてのプロジェクト', zh: '全部项目', de: 'Alle Projekte' })}
             </span>
             {selectedCategoryId === null && <Check size={16} />}
           </button>
@@ -100,11 +101,11 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
       {/* Stats Summary */}
       <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-300 space-y-1.5">
         <p className="flex justify-between">
-          <span>Tổng dự án:</span>
+          <span>{getLangText(language, { vi: 'Tổng dự án:', en: 'Total projects:', ko: '총 프로젝트:', ja: '全プロジェクト:', zh: '项目总数:', de: 'Gesamtprojekte:' })}</span>
           <strong className="text-corporate dark:text-primary font-bold">{totalProjects}</strong>
         </p>
         <p className="flex justify-between">
-          <span>Kết quả tìm kiếm:</span>
+          <span>{getLangText(language, { vi: 'Kết quả tìm kiếm:', en: 'Search results:', ko: '검색 결과:', ja: '検索結果:', zh: '搜索结果:', de: 'Suchergebnisse:' })}</span>
           <strong className="text-green-600 dark:text-green-400 font-bold">{filteredCount}</strong>
         </p>
       </div>

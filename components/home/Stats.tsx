@@ -2,16 +2,33 @@ import React from 'react';
 import { Wallet, Users, Zap, Handshake } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
+import { getLangText } from '../../utils/translation-helper';
 
 const Stats: React.FC = () => {
   const { t, language } = useLanguage();
   const { ref: statsRef, isInView } = useInView(0.1, false);
 
   const statsList = [
-    { icon: Wallet, value: language === 'vi' ? '181+ Tỷ VNĐ' : '181+ Billion VND', label: language === 'vi' ? 'Tổng tài sản' : 'Total assets' },
-    { icon: Users, value: '500+', label: language === 'vi' ? 'Dự án đã thực hiện' : 'Projects completed' },
-    { icon: Zap, value: '53+', label: language === 'vi' ? 'Cán bộ kỹ thuật chủ chốt' : 'Key technical officers' },
-    { icon: Handshake, value: language === 'vi' ? '288+ Tỷ VNĐ' : '288+ Billion VND', label: language === 'vi' ? 'Doanh thu năm 2025' : '2025 revenue' }
+    {
+      icon: Wallet,
+      value: getLangText(language, { vi: '181+ Tỷ VNĐ', en: '181+ Billion VND', ko: '1,810억 동+', ja: '1810億ドン+', zh: '1810亿+ 越南盾', de: '181+ Mrd. VND' }),
+      label: getLangText(language, { vi: 'Tổng tài sản', en: 'Total assets', ko: '총 자산', ja: '総資産', zh: '总资产', de: 'Gesamtvermögen' })
+    },
+    {
+      icon: Users,
+      value: '500+',
+      label: getLangText(language, { vi: 'Dự án đã thực hiện', en: 'Projects completed', ko: '완료된 프로젝트', ja: '完工プロジェクト', zh: '已完成项目', de: 'Abgeschlossene Projekte' })
+    },
+    {
+      icon: Zap,
+      value: '53+',
+      label: getLangText(language, { vi: 'Cán bộ kỹ thuật chủ chốt', en: 'Key technical officers', ko: '핵심 기술진', ja: 'Key Lineエンジニア', zh: '核心技术人员', de: 'Leitende Ingenieure' })
+    },
+    {
+      icon: Handshake,
+      value: getLangText(language, { vi: '288+ Tỷ VNĐ', en: '288+ Billion VND', ko: '2,880억 동+', ja: '2880億ドン+', zh: '2880亿+ 越南盾', de: '288+ Mrd. VND' }),
+      label: getLangText(language, { vi: 'Doanh thu năm 2025', en: '2025 Revenue', ko: '2025년 매출', ja: '2025年売上高', zh: '2025年营业额', de: 'Jahresumsatz 2025' })
+    }
   ];
 
   return (

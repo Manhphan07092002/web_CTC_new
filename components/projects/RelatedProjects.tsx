@@ -2,18 +2,22 @@ import React from 'react';
 import { Project } from '../../types';
 import { Link } from 'react-router-dom';
 import { MapPin, Calendar } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 interface RelatedProjectsProps {
   projects: Project[];
 }
 
 const RelatedProjects: React.FC<RelatedProjectsProps> = ({ projects }) => {
+  const { language } = useLanguage();
+
   if (projects.length === 0) return null;
 
   return (
     <div className="mt-16">
       <h2 className="text-2xl font-bold text-corporate dark:text-white mb-8 border-l-4 border-primary pl-3">
-        Dự án liên quan
+        {getLangText(language, { vi: 'Dự án liên quan', en: 'Related Projects', ko: '관련 프로젝트', ja: '関連プロジェクト', zh: '相关项目', de: 'Ähnliche Projekte' })}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {projects.map((item, index) => (

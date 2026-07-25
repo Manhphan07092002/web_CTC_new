@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Cpu, ArrowRight, ExternalLink, Boxes } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 import { useInView } from '../../hooks/useInView';
 import { Product } from '../../types';
 
@@ -11,7 +12,7 @@ interface FeaturedProductsProps {
 }
 
 const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, isLoading = false }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ref: productsRef, isInView } = useInView(0.1);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
@@ -31,14 +32,37 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, i
           <div>
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3.5 py-1.5 rounded-full mb-4">
               <Cpu size={13} className="text-primary" />
-              <span className="text-[10px] font-black text-primary uppercase tracking-widest">Sản phẩm</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                {getLangText(language, {
+                  vi: 'Sản phẩm',
+                  en: 'PRODUCTS',
+                  ko: '제품',
+                  ja: '製品',
+                  zh: '产品',
+                  de: 'PRODUKTE'
+                })}
+              </span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">
-              {t('home.latest_products')}
+              {getLangText(language, {
+                vi: 'Sản phẩm mới',
+                en: 'Latest Products',
+                ko: '최신 제품',
+                ja: '最新製品',
+                zh: '最新产品',
+                de: 'Neueste Produkte'
+              })}
             </h2>
             <div className="w-16 h-1.5 bg-gradient-to-r from-primary to-primary/30 rounded-full mb-5" />
             <p className="text-gray-500 dark:text-slate-400 text-base max-w-xl leading-relaxed">
-              {t('home.latest_products_desc')}
+              {getLangText(language, {
+                vi: 'Chúng tôi chỉ phân phối các dòng thiết bị từ Top 5 thế giới (Tier 1) để đảm bảo độ bền và hiệu suất.',
+                en: 'We only distribute Tier 1 equipment from top global brands to ensure durability and high performance.',
+                ko: '내구성과 효율성을 보장하기 위해 세계 Top 5 장비(Tier 1)만 유통합니다.',
+                ja: '耐久性と高効率を保証するため、世界Top 5（Tier 1）機器のみを販売しています。',
+                zh: '我们仅分销全球 Top 5（Tier 1）品牌设备，以确保耐用性与高效率。',
+                de: 'Wir vertreiben ausschließlich Tier-1-Geräte der globalen Top-5-Marken.'
+              })}
             </p>
           </div>
 
@@ -46,7 +70,14 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, i
             to="/products"
             className="group flex-shrink-0 inline-flex items-center gap-3 px-7 py-3.5 rounded-2xl border-2 border-primary/30 text-primary hover:bg-primary hover:text-white hover:border-primary font-black text-xs uppercase tracking-widest transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
           >
-            {t('home.view_all_products')}
+            {getLangText(language, {
+              vi: 'XEM TẤT CẢ',
+              en: 'VIEW ALL PRODUCTS',
+              ko: '전체 보기',
+              ja: 'すべてを見る',
+              zh: '查看全部',
+              de: 'ALLE ANZEIGEN'
+            })}
             <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

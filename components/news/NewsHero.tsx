@@ -1,8 +1,9 @@
 import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 const NewsHero: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <div className="bg-corporate text-white shadow-md relative pt-32 pb-12 md:pt-36 md:pb-16 overflow-hidden">
@@ -12,7 +13,7 @@ const NewsHero: React.FC = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold text-yellow-400 border border-white/20 mb-3">
           <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-          Tin Tức & Sự Kiện CTC
+          {getLangText(language, { vi: 'Tin Tức & Sự Kiện CTC', en: 'CTC News & Events', ko: 'CTC 뉴스 및 이벤트', ja: 'CTCニュース & イベント', zh: 'CTC新闻与动态', de: 'CTC Nachrichten & Events' })}
         </div>
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight drop-shadow-md">
           {t('news.title')}

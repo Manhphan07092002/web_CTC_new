@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare, ShoppingCart, Search, RefreshCw } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
@@ -8,10 +8,12 @@ import { useSettings } from '../contexts/SettingsContext';
 import { useCart } from '../contexts/CartContext';
 import { api } from '../services/api';
 import { Category } from '../types';
+import { getLangText } from '../utils/translation-helper';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
   const [expandedMobileMenu, setExpandedMobileMenu] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -89,16 +91,24 @@ const Header: React.FC = () => {
   const { settings } = useSettings();
   const { totalItems } = useCart();
 
-  // Scroll handler to toggle transparent vs glassmorphic header
+  // Scroll handler with hysteresis deadband (50px / 10px) to eliminate header flickering chatter
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          if (currentScrollY > 20) {
+            setIsScrolled(true);
+          } else if (currentScrollY <= 5) {
+            setIsScrolled(false);
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -176,24 +186,144 @@ const Header: React.FC = () => {
     });
   };
 
+  const getSubmenuDisplayName = (sub: { name: string; path: string }, lang: Language): string => {
+    const p = (sub.path || '').toLowerCase();
+    const n = (sub.name || '').toLowerCase();
+
+    // Solutions submenus
+    if (p === '/solutions') {
+      return getLangText(lang, {
+        vi: 'GIẢI PHÁP TOÀN DIỆN',
+        en: 'ALL SOLUTIONS',
+        ko: '종합 솔루션',
+        ja: '総合ソリューション',
+        zh: '全流程解决方案',
+        de: 'GESAMTLÖSUNGEN'
+      });
+    }
+    if (p.includes('floating') || p.includes('telecom') || n.includes('viễn thông')) {
+      return getLangText(lang, {
+        vi: 'HẠ TẦNG VIỄN THÔNG & CNTT',
+        en: 'TELECOM & IT INFRASTRUCTURE',
+        ko: '통신 및 IT 인프라',
+        ja: '通信 & ITインフラ',
+        zh: '电信与IT基础设施',
+        de: 'TELEKOM & IT-INFRASTRUKTUR'
+      });
+    }
+    if (p.includes('rooftop') || p.includes('solar') || n.includes('mặt trời')) {
+      return getLangText(lang, {
+        vi: 'ĐIỆN MẶT TRỜI (SOLAR EPC)',
+        en: 'SOLAR POWER (SOLAR EPC)',
+        ko: '태양광 발전 (SOLAR EPC)',
+        ja: '太陽光発電 (SOLAR EPC)',
+        zh: '光伏发电 (SOLAR EPC)',
+        de: 'SOLARENERGIE (SOLAR EPC)'
+      });
+    }
+    if (p.includes('farm') || p.includes('wind') || n.includes('điện gió')) {
+      return getLangText(lang, {
+        vi: 'ĐIỆN GIÓ (WIND POWER EPC)',
+        en: 'WIND POWER (WIND EPC)',
+        ko: '풍력 발전 (WIND EPC)',
+        ja: '風力発電 (WIND EPC)',
+        zh: '风力发电 (WIND EPC)',
+        de: 'WINDKRAFT (WIND EPC)'
+      });
+    }
+    if (p.includes('electrical') || n.includes('đường dây') || n.includes('110kv')) {
+      return getLangText(lang, {
+        vi: 'ĐƯỜNG DÂY & TRẠM BIẾN ÁP 110KV',
+        en: 'TRANSMISSION LINE & 110KV SUBSTATION',
+        ko: '송전선 및 110KV 변전소',
+        ja: '送電線 & 110KV変電所',
+        zh: '输电线路与110kV变电站',
+        de: 'STROMLEITUNGEN & 110KV UMSPANNWERKE'
+      });
+    }
+    if (p.includes('datacenter') || n.includes('data center') || n.includes('hạ tầng số')) {
+      return getLangText(lang, {
+        vi: 'DATA CENTER & HẠ TẦNG SỐ',
+        en: 'DATA CENTER & DIGITAL INFRASTRUCTURE',
+        ko: '데이터 센터 및 디지털 인프라',
+        ja: 'データセンター & デジタルインフラ',
+        zh: '数据中心与数字基础设施',
+        de: 'RECHENZENTRUM & DIGITALE INFRASTRUKTUR'
+      });
+    }
+    if (p.includes('construction') || n.includes('xây dựng')) {
+      return getLangText(lang, {
+        vi: 'XÂY DỰNG DÂN DỤNG & CÔNG NGHIỆP',
+        en: 'CIVIL & INDUSTRIAL CONSTRUCTION',
+        ko: '민간 및 산업 건설',
+        ja: '民生 & 産業建設',
+        zh: '民用与工业建筑',
+        de: 'ZIVIL- & INDUSTRIEBAU'
+      });
+    }
+
+    // Products submenus
+    if (p.includes('panels') || n.includes('pin') || n.includes('panels')) {
+      return getLangText(lang, {
+        vi: 'TẤM PIN NĂNG LƯỢNG MẶT TRỜI',
+        en: 'SOLAR PANELS',
+        ko: '태양광 패널',
+        ja: '太陽光パネル',
+        zh: '太阳能组件',
+        de: 'SOLARMODULE'
+      });
+    }
+    if (p.includes('inverter') || n.includes('biến tần') || n.includes('hòa lưới')) {
+      return getLangText(lang, {
+        vi: 'BỘ HÒA LƯỚI (INVERTER)',
+        en: 'SOLAR INVERTERS',
+        ko: '인버터 (INVERTER)',
+        ja: 'パワコン (INVERTER)',
+        zh: '光伏逆变器',
+        de: 'WECHSELRICHTER'
+      });
+    }
+    if (p.includes('storage') || n.includes('lưu trữ')) {
+      return getLangText(lang, {
+        vi: 'HỆ THỐNG LƯU TRỮ ĐIỆN',
+        en: 'ENERGY STORAGE SYSTEMS (ESS)',
+        ko: '에너지 저장 시스템 (ESS)',
+        ja: '蓄電システム (ESS)',
+        zh: '储能系统 (ESS)',
+        de: 'ENERGIESPEICHERSYSTEME (ESS)'
+      });
+    }
+    if (p.includes('accessories') || n.includes('phụ kiện')) {
+      return getLangText(lang, {
+        vi: 'PHỤ KIỆN LẮP ĐẶT',
+        en: 'MOUNTING & ACCESSORIES',
+        ko: '설치 자재 및 악세서리',
+        ja: '架台・架線・アクセサリー',
+        zh: '安装配件与辅材',
+        de: 'MONTAGEMATERIAL & ZUBEHÖR'
+      });
+    }
+
+    return sub.name;
+  };
+
   const navLinks = getDynamicNavLinks();
 
-  // Dynamic style resolution based on scroll and theme mode
   const getHeaderContainerClass = () => {
-    const base = "fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ";
+    const base = "fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ";
     if (isScrolled) {
-      return base + "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-slate-800/80 py-1 sm:py-2";
+      return base + "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-xl border-b border-gray-200/50 dark:border-slate-800/80 py-1.5 sm:py-2";
     }
     // Transparent style at Y=0 (always slightly dark tinted for optimal white text contrast over video)
-    return base + "bg-slate-950/40 backdrop-blur-[2px] border-b border-white/5 py-3 sm:py-4";
+    return base + "bg-slate-950/40 backdrop-blur-md border-b border-white/10 py-3 sm:py-4";
   };
 
   const getTopBarClass = () => {
-    const base = "transition-all duration-300 ease-in-out overflow-hidden ";
+    const base = "transition-all duration-300 ease-in-out ";
     if (isScrolled) {
-      return base + "max-h-0 opacity-0 py-0 border-none";
+      return base + "max-h-0 opacity-0 py-0 border-none pointer-events-none overflow-hidden";
     }
-    return base + "max-h-[40px] opacity-100 py-2 border-b border-white/5 text-white/90 text-xs md:text-sm";
+    return base + "max-h-[40px] opacity-100 py-2 border-b border-white/5 text-white/90 text-xs md:text-sm overflow-visible";
   };
 
   const getNavLinkClass = (path: string) => {
@@ -282,7 +412,14 @@ const Header: React.FC = () => {
         <div className={getTopBarClass()}>
           <div className="container mx-auto px-4 flex justify-between items-center">
             <span className="hidden xl:block font-sans font-medium tracking-wide">
-              {settings.headerSlogan || settings.siteDescription || t('header.slogan')}
+              {getLangText(language, {
+                vi: settings.headerSlogan || settings.siteDescription || t('header.slogan'),
+                en: 'CTC – EPC Contractor, Electrical Construction & Renewable Energy Solutions in Vietnam',
+                ko: 'CTC – 베트남 최고의 EPC 시공 및 재생 에너지 솔루션',
+                ja: 'CTC – ベトナムにおけるEPC施工・電気工事・再生可能エネルギーソリューション',
+                zh: 'CTC – 越南领先的EPC总承包、电力建设与可再生能源解决方案',
+                de: 'CTC – EPC-Generalunternehmer, Elektroinstallation & Erneuerbare Energien in Vietnam'
+              })}
             </span>
             <div className="flex items-center gap-4 justify-between w-full md:w-auto">
               <a href={`tel:${(settings.headerHotlinePhone || settings.phone).replace(/\s/g, '')}`} className="flex items-center hover:text-sky-400 transition-colors font-semibold">
@@ -314,7 +451,7 @@ const Header: React.FC = () => {
             <div className="h-3 w-px bg-white/20"></div>
             
             {/* Language Selector */}
-            <div className="relative">
+            <div className="relative" ref={langMenuRef}>
               <button 
                 onClick={toggleLangMenu}
                 className="flex items-center gap-1 hover:text-sky-400 transition-colors focus:outline-none font-medium"
@@ -385,7 +522,7 @@ const Header: React.FC = () => {
                           className="flex items-center gap-3 px-5 py-2.5 text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-200 border-b border-gray-50 dark:border-slate-800/70 last:border-0 uppercase tracking-wide group/sub"
                         >
                           <span className="w-1 h-4 rounded-full bg-sky-500/30 group-hover/sub:bg-sky-500 flex-shrink-0 transition-colors duration-200" />
-                          {sub.name}
+                          {getSubmenuDisplayName(sub, language)}
                         </Link>
                       ))}
                     </div>
@@ -427,7 +564,16 @@ const Header: React.FC = () => {
             >
               <span className="btn-header-contact-shimmer"></span>
               <Phone size={14} className="phone-vibe-icon" />
-              <span>{settings.headerCtaText || t('header.contact_now')}</span>
+              <span>
+                {getLangText(language, {
+                  vi: settings.headerCtaText || t('header.contact_now'),
+                  en: 'CONTACT US',
+                  ko: '문의하기',
+                  ja: 'お問い合わせ',
+                  zh: '联系我们',
+                  de: 'KONTAKT'
+                })}
+              </span>
             </a>
           </div>
 
@@ -514,7 +660,7 @@ const Header: React.FC = () => {
                           className="flex items-center gap-3 px-5 py-3.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 dark:hover:text-sky-400 border-b border-gray-100/30 dark:border-slate-800 last:border-0 uppercase tracking-wide"
                         >
                           <span className="w-1 h-3.5 rounded-full bg-sky-400/40 flex-shrink-0" />
-                          {sub.name}
+                          {getSubmenuDisplayName(sub, language)}
                         </Link>
                       ))}
                     </div>
@@ -531,8 +677,34 @@ const Header: React.FC = () => {
                 >
                   <span className="btn-header-contact-shimmer"></span>
                   <Phone size={14} className="phone-vibe-icon" />
-                  <span>Liên hệ Zalo</span>
+                  <span>{getLangText(language, { vi: 'Liên hệ Zalo', en: 'Zalo Support', ko: 'Zalo 문의', ja: 'Zaloサポート', zh: 'Zalo客服', de: 'Zalo Support' })}</span>
                 </a>
+                {/* Mobile Language Selector */}
+                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2.5 text-center">
+                    Ngôn ngữ / Language
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          handleLanguageChange(lang.code);
+                          setIsMenuOpen(false);
+                        }}
+                        className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
+                          language === lang.code
+                            ? 'bg-sky-500 text-white border-sky-500 shadow-md'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent hover:border-sky-400'
+                        }`}
+                      >
+                        <span>{lang.flag}</span>
+                        <span>{lang.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex justify-center gap-6 text-xs text-slate-400 mt-2 pb-2">
                   <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-sky-500 font-semibold uppercase tracking-wider p-2">
                     {t('header.admin')}

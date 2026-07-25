@@ -2,6 +2,7 @@ import React from 'react';
 import { Project } from '../../types';
 import { MapPin, Zap } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 
 interface ProjectCardProps {
   project: Project;
@@ -9,7 +10,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <div 
@@ -25,7 +26,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
         {project.isFeatured && (
           <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
-            ⭐ Nổi bật
+            ⭐ {getLangText(language, { vi: 'Nổi bật', en: 'Featured', ko: '주요', ja: '注目', zh: '精选', de: 'Hervorgehoben' })}
           </div>
         )}
       </div>

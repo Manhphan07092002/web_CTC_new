@@ -1,7 +1,13 @@
 import React from 'react';
 import { Radio } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const FloatingHero: React.FC = () => {
+  const { language } = useLanguage();
+  const isEn = language !== 'vi';
+  const isKo = language === 'ko';
+  const isJa = language === 'ja';
+
   return (
     <div className="relative py-32 md:py-40 bg-gray-900 overflow-hidden">
       <img 
@@ -20,18 +26,21 @@ const FloatingHero: React.FC = () => {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 bg-sky-500/20 border border-sky-400/30 text-sky-300 px-5 py-2 rounded-full text-sm font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
             <Radio size={16} />
-            Viễn thông & CNTT – Lĩnh vực cốt lõi CTC
+            {isEn ? 'Telecom & IT – CTC Core Sector' : 'Viễn thông & CNTT – Lĩnh vực cốt lõi CTC'}
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight tracking-tight">
-            Hạ Tầng Viễn Thông &
+            {isEn ? 'Telecom Infrastructure &' : 'Hạ Tầng Viễn Thông &'}
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-300">
-              Data Center – CNTT
+              {isEn ? 'Data Center – IT' : 'Data Center – CNTT'}
             </span>
           </h1>
           <p className="text-lg text-gray-200 leading-relaxed max-w-2xl font-light">
-            Xuất phát từ hạ tầng Bưu điện Miền Trung, CTC sở hữu <strong className="text-white">32+ năm kinh nghiệm</strong> trong lĩnh vực
-            viễn thông. Khách hàng bao gồm Bộ Công an, Mobifone, VNPT Net và các cơ quan nhà nước.
+            {isEn ? (
+              <>Originating from Posts and Telecommunications construction, CTC holds <strong className="text-white">32+ years of experience</strong> in telecommunications. Major clients include Ministry of Public Security, Mobifone, VNPT Net, and government agencies.</>
+            ) : (
+              <>Xuất phát từ hạ tầng Bưu điện Miền Trung, CTC sở hữu <strong className="text-white">32+ năm kinh nghiệm</strong> trong lĩnh vực viễn thông. Khách hàng bao gồm Bộ Công an, Mobifone, VNPT Net và các cơ quan nhà nước.</>
+            )}
           </p>
         </div>
       </div>

@@ -5,6 +5,8 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 import { useMouseParallax } from '../../hooks/useMouseParallax';
 
+import { getLangText } from '../../utils/translation-helper';
+
 // Load company profile data
 import companyProfile from '../../constants/company_profile.json';
 
@@ -17,27 +19,54 @@ const About: React.FC<AboutProps> = ({ onOpenModal }) => {
   const parallax = useMouseParallax();
   const { ref: aboutRef, isInView } = useInView(0.1);
   
-  const currentLang = language as keyof typeof companyProfile.intro;
-  const introText = companyProfile.intro[currentLang] || companyProfile.intro.vi;
-  const visionText = companyProfile.vision[currentLang as keyof typeof companyProfile.vision] || companyProfile.vision.vi;
-  const missionText = companyProfile.mission[currentLang as keyof typeof companyProfile.mission] || companyProfile.mission.vi;
+  const introText = getLangText(language, {
+    vi: companyProfile.intro.vi,
+    en: companyProfile.intro.en,
+    ko: '중부 포스트 및 통신 건설 주식 회사 (CTC)는 기술 인프라 건설, 통신, 산업, 토목 공학 및 재생 에너지 분야에서 활동하는 기업입니다.',
+    ja: '中部ポスト＆電気通信建設株式会社（CTC）は、技術インフラ建設、通信、産業・土木工事、再生可能エネルギー分野で事業を展開する企業です。',
+    zh: '越南中部邮电建设股份有限公司（CTC）是一家从事工程基础设施建设、电信、工业及民用工程、可再生能源领域的专业企业。',
+    de: 'Zentralvietnam Posts und Telekommunikation Bau-AG (CTC) ist ein Unternehmen in den Bereichen technische Infrastruktur, Telekommunikation, Industrie- und Zivilbau sowie erneuerbare Energien.'
+  });
+
+  const visionText = getLangText(language, {
+    vi: companyProfile.vision.vi,
+    en: companyProfile.vision.en,
+    ko: '통신 인프라, 기술 인프라, 재생 에너지(태양광, 풍력), 산업 EPC 및 디지털 인프라 분야에서 베트남을 선도하는 기업이 되는 것입니다.',
+    ja: '通信インフラ、技術インフラ、再生可能エネルギー、デジタルインフラの分野でベトナムをリードする企業を目指します。',
+    zh: '成为越南在电信基础设施、工程基础设施、可再生能源及数字基础设施领域的领先企业。',
+    de: 'Ein führendes Unternehmen in Vietnam in den Bereichen Telekommunikation, Infrastruktur und erneuerbare Energien zu werden.'
+  });
+
+  const missionText = getLangText(language, {
+    vi: 'Mang đến những công trình chất lượng vượt trội, giải pháp tối ưu và dịch vụ chuyên nghiệp, tận tâm cho khách hàng và đối tác.',
+    en: 'Deliver outstanding installations, optimal solutions, and highly professional, devoted services to clients and partners.',
+    ko: '고객과 파트너에게 우수한 품질의 공사, 최적의 솔루션 및 전문적이고 헌신적인 서비스를 제공합니다.',
+    ja: 'お客様とパートナーに優れた品質の工事、最適なソリューション、そして専門的で献身的なサービスを提供します。',
+    zh: '为客户和合作伙伴提供卓越品质的工程、最佳解决方案以及专业敬业的服务。',
+    de: 'Bereitstellung hervorragender Bauqualität, optimaler Lösungen und professioneller Dienstleistungen.'
+  });
   
-  // Custom texts based on language (fallback to vi)
-  const isEn = language === 'en';
-  const sectionBadge = t('home.about_badge') || (isEn ? "ABOUT US" : "VỀ CHÚNG TÔI");
+  const sectionBadge = getLangText(language, { vi: 'VỀ CHÚNG TÔI', en: 'ABOUT US', ko: '회사 소개', ja: '会社概要', zh: '关于我们', de: 'ÜBER UNS' });
   
-  const aboutTitle = t('home.about_title') || (isEn ? "CTC - Your Trusted Partner" : "CTC - Đối tác tin cậy của bạn");
+  const aboutTitle = getLangText(language, { vi: 'CTC - Đối tác tin cậy của bạn', en: 'CTC - Your Trusted Partner', ko: 'CTC - 신뢰할 수 있는 파트너', ja: 'CTC - 信頼できるパートナー', zh: 'CTC - 您值得信赖的合作伙伴', de: 'CTC - Ihr vertrauenswürdiger Partner' });
   const titleParts = aboutTitle.split(' - ');
   const titlePart1 = titleParts[0]; 
   const titlePart2 = titleParts.slice(1).join(' - ') || "";
   
-  const btnMore = isEn ? "Learn More" : "Tìm hiểu thêm";
-  const btnProfile = isEn ? "Company Profile" : "Xem hồ sơ năng lực";
-  const btnContact = isEn ? "Contact Us" : "Liên hệ ngay";
-  const yearsExp = isEn ? "Years\nExperience" : "Năm\nKinh Nghiệm";
+  const btnMore = getLangText(language, { vi: 'Tìm hiểu thêm', en: 'Learn More', ko: '자세히 보기', ja: '詳細を見る', zh: '了解更多', de: 'Mehr erfahren' });
+  const btnProfile = getLangText(language, { vi: 'Xem hồ sơ năng lực', en: 'Company Profile', ko: '회사 프로필', ja: '会社概要', zh: '公司简介', de: 'Unternehmensprofil' });
+  const btnContact = getLangText(language, { vi: 'Liên hệ ngay', en: 'Contact Us', ko: '문의하기', ja: 'お問い合わせ', zh: '联系我们', de: 'Kontakt' });
+  const yearsExp = getLangText(language, { vi: 'Năm\nKinh Nghiệm', en: 'Years\nExperience', ko: '년\n경력', ja: '年\n事業実績', zh: '年\n行业经验', de: 'Jahre\nErfahrung' });
   
-  const coreValues = companyProfile.core_values.join(" - ");
-  const valuesTitle = isEn ? 'Core Values' : 'Giá trị cốt lõi';
+  const coreValues = getLangText(language, {
+    vi: 'Uy tín - Chất lượng - Chuyên nghiệp - Đổi mới - Trách nhiệm - Đồng hành',
+    en: 'Trust - Quality - Professionalism - Innovation - Responsibility - Partnership',
+    ko: '신뢰 - 품질 - 전문성 - 혁신 - 책임 - 파트너십',
+    ja: '信頼 - 品質 - 専門性 - 革新 - 責任 - パートナーシップ',
+    zh: '诚信 - 质量 - 专业 - 创新 - 责任 - 合作',
+    de: 'Vertrauen - Qualität - Professionalität - Innovation - Verantwortung - Partnerschaft'
+  });
+  const valuesTitle = getLangText(language, { vi: 'Giá trị cốt lõi', en: 'Core Values', ko: '핵심 가치', ja: '核心価値', zh: '核心价值', de: 'Kernwerte' });
 
   return (
     <section ref={aboutRef} className="py-16 lg:py-32 relative overflow-hidden bg-slate-50 dark:bg-[#060d1d] transition-colors duration-300">
@@ -326,22 +355,26 @@ const About: React.FC<AboutProps> = ({ onOpenModal }) => {
 
             {/* Core Values Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-              <div className="about-glass-card p-5 group cursor-pointer" onClick={() => onOpenModal(isEn ? 'Vision' : 'Tầm nhìn', visionText, '')}>
+              <div className="about-glass-card p-5 group cursor-pointer" onClick={() => onOpenModal(getLangText(language, { vi: 'Tầm nhìn', en: 'Vision', ko: '비전', ja: 'ビジョン', zh: '愿景', de: 'Vision' }), visionText, '')}>
                 <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-sky-500/20">
                   <Eye className="text-sky-500 dark:text-sky-400" size={20} />
                 </div>
-                <h4 className="text-base font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">{isEn ? 'Vision' : 'Tầm nhìn'}</h4>
+                <h4 className="text-base font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">
+                  {getLangText(language, { vi: 'Tầm nhìn', en: 'Vision', ko: '비전', ja: 'ビジョン', zh: '愿景', de: 'Vision' })}
+                </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3">{visionText}</p>
                 <div className="mt-4 flex items-center text-sky-600 dark:text-sky-400 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                   {btnMore} <ArrowRight size={14} className="ml-1" />
                 </div>
               </div>
 
-              <div className="about-glass-card p-5 group cursor-pointer" onClick={() => onOpenModal(isEn ? 'Mission' : 'Sứ mệnh', isEn ? 'Our Mission:' : 'Sứ mệnh của chúng tôi:', missionText)}>
+              <div className="about-glass-card p-5 group cursor-pointer" onClick={() => onOpenModal(getLangText(language, { vi: 'Sứ mệnh', en: 'Mission', ko: '사명', ja: '使命', zh: '使命', de: 'Mission' }), getLangText(language, { vi: 'Sứ mệnh của chúng tôi:', en: 'Our Mission:', ko: '우리의 사명:', ja: '私たちの使命:', zh: '我们的使命:', de: 'Unsere Mission:' }), missionText)}>
                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-blue-500/20">
                   <Target className="text-blue-600 dark:text-blue-400" size={20} />
                 </div>
-                <h4 className="text-base font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">{isEn ? 'Mission' : 'Sứ mệnh'}</h4>
+                <h4 className="text-base font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">
+                  {getLangText(language, { vi: 'Sứ mệnh', en: 'Mission', ko: '사명', ja: '使命', zh: '使命', de: 'Mission' })}
+                </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3">{missionText}</p>
                 <div className="mt-4 flex items-center text-blue-600 dark:text-blue-400 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                   {btnMore} <ArrowRight size={14} className="ml-1" />

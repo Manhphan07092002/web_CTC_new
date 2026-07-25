@@ -1,7 +1,13 @@
 import React from 'react';
 import { Wind } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const FarmHero: React.FC = () => {
+  const { language } = useLanguage();
+  const isEn = language !== 'vi';
+  const isKo = language === 'ko';
+  const isJa = language === 'ja';
+
   return (
     <div className="relative pt-36 md:pt-44 pb-20 bg-gray-900 overflow-hidden">
       <img 
@@ -20,18 +26,21 @@ const FarmHero: React.FC = () => {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 bg-teal-500/20 border border-teal-400/30 text-teal-300 px-5 py-2 rounded-full text-sm font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
             <Wind size={16} />
-            Điện Gió – Wind Power EPC
+            {isEn ? 'Wind Power – Wind Power EPC' : 'Điện Gió – Wind Power EPC'}
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight tracking-tight">
-            Tổng Thầu EPC
+            {isEn ? 'Turnkey EPC' : 'Tổng Thầu EPC'}
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-300">
-              Trang Trại Điện Gió
+              {isEn ? 'Wind Power Farms' : 'Trang Trại Điện Gió'}
             </span>
           </h1>
           <p className="text-lg text-gray-200 leading-relaxed max-w-2xl font-light">
-            CTC đã thi công thành công các dự án điện gió tại Quảng Trị – khu vực có tiềm năng gió
-            mạnh nhất Việt Nam. Năng lực EPC từ <em>nền móng, cáp nội bộ đến đấu nối lưới 110kV/220kV.</em>
+            {isEn ? (
+              <>CTC has successfully constructed wind power projects in Quang Tri – Vietnam's highest wind potential region. EPC capabilities from <em>foundations, internal cabling to 110kV/220kV grid connection.</em></>
+            ) : (
+              <>CTC đã thi công thành công các dự án điện gió tại Quảng Trị – khu vực có tiềm năng gió mạnh nhất Việt Nam. Năng lực EPC từ <em>nền móng, cáp nội bộ đến đấu nối lưới 110kV/220kV.</em></>
+            )}
           </p>
         </div>
       </div>

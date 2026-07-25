@@ -246,14 +246,11 @@ const Products: React.FC = () => {
   };
 
   return (
-    <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300">
+    <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300 pt-24 md:pt-28">
       <SEO
         title={getCurrentCategoryName()}
         description="Danh mục sản phẩm điện năng lượng mặt trời chính hãng."
       />
-
-      {/* Hero Banner Section */}
-      <ProductsHero />
 
       {/* Breadcrumb / Toolbar Header */}
       <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[60px] z-30 shadow-sm transition-colors duration-300">

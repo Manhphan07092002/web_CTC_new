@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, Award, Quote, CheckCircle2, Zap, ShieldCheck, Users } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 import { useInView } from '../../hooks/useInView';
 import { useMouseParallax } from '../../hooks/useMouseParallax';
 
@@ -102,7 +103,7 @@ const CeoMessage: React.FC = () => {
                     <div className="p-1.5 rounded-xl bg-sky-500/10 text-sky-500 border border-sky-500/20">
                       <Award size={18} />
                     </div>
-                    <span>Năng lực Nổi bật CTC</span>
+                    <span>{getLangText(language, { vi: "Năng lực Nổi bật CTC", en: "CTC Highlights", ko: "CTC 주요 역량", ja: "CTCハイライト", zh: "CTC核心优势", de: "CTC-Highlights" })}</span>
                   </h4>
                   <span className="text-[10px] font-extrabold uppercase tracking-widest text-sky-600 dark:text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded-full border border-sky-500/20">
                     PROFILE
@@ -115,10 +116,10 @@ const CeoMessage: React.FC = () => {
                   <div className="relative group/card overflow-hidden rounded-2xl p-3.5 text-center transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-b from-white/90 via-white/70 to-sky-50/40 dark:from-white/10 dark:via-white/5 dark:to-transparent backdrop-blur-xl border border-white/80 dark:border-white/15 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)]">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-transparent opacity-80 pointer-events-none"></div>
                     <span className="block text-xl font-black text-sky-500 dark:text-sky-400 tracking-tight">
-                      32+ NĂM
+                      {getLangText(language, { vi: "32+ NĂM", en: "32+ YEARS", ko: "32+년", ja: "32年以上", zh: "32+年", de: "32+ JAHRE" })}
                     </span>
                     <span className="text-[10px] uppercase tracking-wider text-slate-600 dark:text-slate-300 font-bold mt-0.5 block">
-                      Kinh nghiệm phát triển
+                      {getLangText(language, { vi: "Kinh nghiệm phát triển", en: "Development Experience", ko: "개발 및 운영 경력", ja: "開発経験", zh: "发展经验", de: "Entwicklungserfahrung" })}
                     </span>
                   </div>
 
@@ -129,7 +130,7 @@ const CeoMessage: React.FC = () => {
                       500+
                     </span>
                     <span className="text-[10px] uppercase tracking-wider text-slate-600 dark:text-slate-300 font-bold mt-0.5 block">
-                      Dự án hoàn thành
+                      {getLangText(language, { vi: "Dự án hoàn thành", en: "Projects Completed", ko: "완료된 프로젝트", ja: "完了プロジェクト", zh: "完成项目", de: "Abgeschlossene Projekte" })}
                     </span>
                   </div>
 
@@ -137,10 +138,10 @@ const CeoMessage: React.FC = () => {
                   <div className="relative group/card overflow-hidden rounded-2xl p-3.5 text-center transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-b from-white/90 via-white/70 to-emerald-50/40 dark:from-white/10 dark:via-white/5 dark:to-transparent backdrop-blur-xl border border-white/80 dark:border-white/15 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)]">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-transparent opacity-80 pointer-events-none"></div>
                     <span className="block text-xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
-                      288+ TỶ
+                      {getLangText(language, { vi: "288+ TỶ", en: "$12M+", ko: "1200만 달러+", ja: "1200万ドル+", zh: "1200万美元+", de: "12 Mio. $" })}
                     </span>
                     <span className="text-[10px] uppercase tracking-wider text-slate-600 dark:text-slate-300 font-bold mt-0.5 block">
-                      Doanh thu ấn tượng
+                      {getLangText(language, { vi: "Doanh thu ấn tượng", en: "Impressive Revenue", ko: "인상적인 매출", ja: "印象的な収益", zh: "令人印象深刻的营收", de: "Beeindruckender Umsatz" })}
                     </span>
                   </div>
 
@@ -151,7 +152,7 @@ const CeoMessage: React.FC = () => {
                       100%
                     </span>
                     <span className="text-[10px] uppercase tracking-wider text-slate-600 dark:text-slate-300 font-bold mt-0.5 block">
-                      Đạt chuẩn ISO & BXD
+                      {getLangText(language, { vi: "Đạt chuẩn ISO & BXD", en: "ISO & Ministry Standard", ko: "ISO 및 국토부 표준 달성", ja: "ISOおよびBXD規格準拠", zh: "符合ISO及建设部标准", de: "ISO- & BXD-Standard" })}
                     </span>
                   </div>
                 </div>
@@ -163,9 +164,9 @@ const CeoMessage: React.FC = () => {
                       <Zap size={14} />
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 dark:text-slate-200 text-xs">Tổng thầu EPC Năng lượng xanh</h5>
+                      <h5 className="font-bold text-slate-900 dark:text-slate-200 text-xs">{getLangText(language, { vi: "Tổng thầu EPC Năng lượng xanh", en: "Green Energy EPC Contractor", ko: "친환경 에너지 EPC 총괄", ja: "グリーンエネルギーEPC", zh: "绿色能源EPC总承包", de: "Grüne Energie EPC Generalunternehmer" })}</h5>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light leading-snug">
-                        Chuyên nghiệp trong thiết kế, vật tư chính hãng & thi công Điện mặt trời C&I, Điện gió.
+                        {getLangText(language, { vi: "Chuyên nghiệp trong thiết kế, vật tư chính hãng & thi công Điện mặt trời C&I, Điện gió.", en: "Professional in design, genuine equipment supply & construction of C&I Solar, Wind Power.", ko: "C&I 태양광 및 풍력 발전의 설계, 정품 자재 공급 및 시공 전문.", ja: "C&I太陽光・風力発電の設計・資材調達・施工をプロフェッショナルに実施。", zh: "专业从事C&I工商业光伏、风电的设计、正品设备供应及施工。", de: "Professionell in Planung, Ausrüstung und Bau von C&I-Solar und Windenergie." })}
                       </p>
                     </div>
                   </div>
@@ -175,9 +176,9 @@ const CeoMessage: React.FC = () => {
                       <ShieldCheck size={14} />
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 dark:text-slate-200 text-xs">Hạ tầng Viễn thông & Công nghiệp</h5>
+                      <h5 className="font-bold text-slate-900 dark:text-slate-200 text-xs">{getLangText(language, { vi: "Hạ tầng Viễn thông & Công nghiệp", en: "Telecom & Industrial Infrastructure", ko: "통신 및 산업 인프라", ja: "通信・産業インフラ", zh: "通信与工业基础设施", de: "Telekommunikations- & Industrieinfrastruktur" })}</h5>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light leading-snug">
-                        Tuyến cáp quang Bộ Công an, Metro Mobifone, trạm BTS & Data Center tiêu chuẩn.
+                        {getLangText(language, { vi: "Tuyến cáp quang Bộ Công an, Metro Mobifone, trạm BTS & Data Center tiêu chuẩn.", en: "Fiber optic lines for Ministry of Public Security, Metro Mobifone, BTS stations & Data Center standards.", ko: "공안부 광케이블 노선, 전국의 메트로 모비폰, BTS 기지국 및 데이터 센터 표준.", ja: "公安部光ファイバー、全国メトロMobifone、BTS局およびデータセンター規格。", zh: "公安部光缆专线、全国Mobifone Metro、BTS基站及标准数据中心。", de: "Glasfaserleitungen für das Ministerium für öffentliche Sicherheit, Metro Mobifone, BTS-Stationen & Rechenzentren." })}
                       </p>
                     </div>
                   </div>
@@ -187,9 +188,9 @@ const CeoMessage: React.FC = () => {
                       <Users size={14} />
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 dark:text-slate-200 text-xs">Đội ngũ Kỹ sư Chuyên môn cao</h5>
+                      <h5 className="font-bold text-slate-900 dark:text-slate-200 text-xs">{getLangText(language, { vi: "Đội ngũ Kỹ sư Chuyên môn cao", en: "Highly Qualified Engineering Team", ko: "고도로 전문화된 엔지니어 팀", ja: "高度な専門エンジニアチーム", zh: "高素质专业工程师团队", de: "Hochqualifiziertes Ingenieurteam" })}</h5>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light leading-snug">
-                        100% nhân sự có chứng chỉ hành nghề, giàu kinh nghiệm thực chiến quy mô lớn.
+                        {getLangText(language, { vi: "100% nhân sự có chứng chỉ hành nghề, giàu kinh nghiệm thực chiến quy mô lớn.", en: "100% staff certified with extensive experience in large-scale projects.", ko: "100% 자격증 보유 인력, 대규모 실전 프로젝트 경험 풍부.", ja: "100%のスタッフが資格を保有し、大規模な実戦経験が豊富。", zh: "100%员工持有执业证书，具备丰富的大型项目实战经验。", de: "100% zertifiziertes Personal mit umfassender Praxiserfahrung." })}
                       </p>
                     </div>
                   </div>
@@ -200,7 +201,7 @@ const CeoMessage: React.FC = () => {
               <div className="relative z-10 mt-5 pt-3 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Cam kết Chất lượng & Tiến độ
+                  {getLangText(language, { vi: "Cam kết Chất lượng & Tiến độ", en: "Quality & Schedule Commitment", ko: "품질 및 일정 준수 약속", ja: "品質および納期保証", zh: "质量与进度承诺", de: "Qualitäts- & Termingarantie" })}
                 </span>
                 <span className="text-sky-600 dark:text-sky-400 font-bold">CTC EPC</span>
               </div>

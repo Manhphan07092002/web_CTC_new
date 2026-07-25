@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { HelpCircle, ChevronDown, ArrowRight, Phone, MessageCircle, Sparkles, Shield } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
+import { getLangText } from '../../utils/translation-helper';
 
 const FAQ: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ref: faqRef, isInView } = useInView(0.1);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
@@ -174,7 +175,16 @@ const FAQ: React.FC = () => {
               {/* Floating glass overlay tag */}
               <div className="absolute top-4 left-4 bg-black/45 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg">
                 <Shield size={12} className="text-blue-400" />
-                <span>Năng lực Bộ Xây dựng cấp</span>
+                <span>
+                  {getLangText(language, {
+                    vi: 'Năng lực Bộ Xây dựng cấp',
+                    en: 'MoC Certified Capacity',
+                    ko: '건설부 인증 역량',
+                    ja: '建設省認定能力',
+                    zh: '建设部认证资质',
+                    de: 'Vom Bauministerium zertifiziert'
+                  })}
+                </span>
               </div>
             </div>
 
@@ -184,13 +194,29 @@ const FAQ: React.FC = () => {
               <div className="mb-8">
                 <div className="inline-flex items-center gap-2 mb-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:text-blue-400 animate-ping" />
-                  <span className="text-xs font-black text-blue-600 dark:text-blue-400 tracking-widest uppercase">TRUNG TÂM HỖ TRỢ CTC</span>
+                  <span className="text-xs font-black text-blue-600 dark:text-blue-400 tracking-widest uppercase">
+                    {getLangText(language, {
+                      vi: 'TRUNG TÂM HỖ TRỢ CTC',
+                      en: 'CTC SUPPORT CENTER',
+                      ko: 'CTC 지원 센터',
+                      ja: 'CTCサポートセンター',
+                      zh: 'CTC 支持中心',
+                      de: 'CTC SUPPORT CENTER'
+                    })}
+                  </span>
                 </div>
                 <h3 className="text-2xl font-black text-gray-900 dark:text-white leading-tight mb-3">
                   {t('home.need_help')}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed">
-                  Hãy trao đổi trực tiếp với đội ngũ kỹ sư của CTC để có giải pháp tối ưu cho hạ tầng của bạn.
+                  {getLangText(language, {
+                    vi: 'Hãy trao đổi trực tiếp với đội ngũ kỹ sư của CTC để có giải pháp tối ưu cho hạ tầng của bạn.',
+                    en: 'Speak directly with CTC engineers to find the optimal solution for your infrastructure.',
+                    ko: '귀하의 인프라에 가장 적합한 솔루션을 위해 CTC 엔지니어링 팀과 직접 상담하세요.',
+                    ja: 'インフラの最適なソリューションについて、CTCのエンジニアチームと直接ご相談ください。',
+                    zh: '与 CTC 工程师团队直接沟通，为您的基础设施提供最佳解决方案。',
+                    de: 'Sprechen Sie direkt mit den Ingenieuren von CTC für die beste Infrastrukturlösung.'
+                  })}
                 </p>
               </div>
 
@@ -219,7 +245,16 @@ const FAQ: React.FC = () => {
                     <MessageCircle size={16} />
                   </div>
                   <div className="text-left min-w-0">
-                    <p className="text-[9px] text-gray-400 dark:text-slate-500 uppercase tracking-wider font-semibold truncate">Tư vấn trực tiếp</p>
+                    <p className="text-[9px] text-gray-400 dark:text-slate-500 uppercase tracking-wider font-semibold truncate">
+                      {getLangText(language, {
+                        vi: 'Tư vấn trực tiếp',
+                        en: 'Direct Consultation',
+                        ko: '직접 상담',
+                        ja: '直接相談',
+                        zh: '直接咨询',
+                        de: 'Direktberatung'
+                      })}
+                    </p>
                     <p className="font-bold text-xs sm:text-sm truncate">{t('home.contact_advisor')}</p>
                   </div>
                 </Link>

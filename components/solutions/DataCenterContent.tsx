@@ -1,8 +1,12 @@
 import React from 'react';
 import { Server, Shield, Wifi, CheckCircle, MapPin, TrendingUp, Award, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const DataCenterContent: React.FC = () => {
+  const { language } = useLanguage();
+  const isEn = language !== 'vi';
+
   return (
     <div className="bg-white dark:bg-[#060d1d] transition-colors">
       <div className="container mx-auto px-6 py-16">
@@ -11,24 +15,25 @@ const DataCenterContent: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           <div>
             <div className="inline-flex items-center gap-2 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
-              <Server size={14} /> Hạ tầng số & CNTT
+              <Server size={14} /> {isEn ? 'Digital Infra & IT' : 'Hạ tầng số & CNTT'}
             </div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-5 leading-tight">
-              Data Center & CNTT <br />
-              <span className="text-violet-500">Chuẩn Tier III – Chuyển đổi số</span>
+              {isEn ? 'Data Center & IT' : 'Data Center & CNTT'} <br />
+              <span className="text-violet-500">{isEn ? 'Tier III Standard – Digital Transformation' : 'Chuẩn Tier III – Chuyển đổi số'}</span>
             </h2>
             <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed mb-6 text-justify">
-              Từ nền tảng hạ tầng viễn thông, CTC mở rộng sang lĩnh vực hạ tầng số và CNTT. Đơn vị có kinh nghiệm
-              thiết kế và xây dựng <strong className="text-slate-900 dark:text-white">Data Center chuẩn Tier III</strong>,
-              hệ thống mạng nội bộ, bảo mật dữ liệu và camera an ninh cho cơ quan nhà nước, đơn vị quốc phòng
-              và doanh nghiệp trên toàn quốc.
+              {isEn ? (
+                'Building upon telecom infrastructure roots, CTC expands into digital infrastructure and IT systems. CTC has proven expertise in designing and constructing Tier III Data Centers, enterprise networks, data security, and CCTV systems for public agencies and corporations nationwide.'
+              ) : (
+                'Từ nền tảng hạ tầng viễn thông, CTC mở rộng sang lĩnh vực hạ tầng số và CNTT. Đơn vị có kinh nghiệm thiết kế và xây dựng Data Center chuẩn Tier III, hệ thống mạng nội bộ, bảo mật dữ liệu và camera an ninh cho cơ quan nhà nước, đơn vị quốc phòng và doanh nghiệp trên toàn quốc.'
+              )}
             </p>
             <div className="grid grid-cols-2 gap-4">
               {[
-                { val: 'Tier III', label: 'Chuẩn Data Center' },
-                { val: '99.98%', label: 'Uptime đảm bảo' },
-                { val: '24/7', label: 'Giám sát O&M' },
-                { val: '100+', label: 'Hệ thống CNTT' },
+                { val: 'Tier III', label: isEn ? 'Data Center Standard' : 'Chuẩn Data Center' },
+                { val: '99.98%', label: isEn ? 'Guaranteed Uptime' : 'Uptime đảm bảo' },
+                { val: '24/7', label: isEn ? 'O&M Monitoring' : 'Giám sát O&M' },
+                { val: '100+', label: isEn ? 'IT Systems Implemented' : 'Hệ thống CNTT' },
               ].map((s, i) => (
                 <div key={i} className="bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800/50 rounded-2xl p-4 text-center">
                   <div className="text-2xl font-black text-violet-600 dark:text-violet-400">{s.val}</div>
@@ -49,7 +54,7 @@ const DataCenterContent: React.FC = () => {
                   <Award size={20} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-900 dark:text-white">Đối tác chiến lược</div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">{isEn ? 'Strategic Partner' : 'Đối tác chiến lược'}</div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">Bộ Công an, Cục KTNVI</div>
                 </div>
               </div>
@@ -60,44 +65,44 @@ const DataCenterContent: React.FC = () => {
         {/* ── Dịch vụ ── */}
         <div className="mb-20">
           <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-8 text-center">
-            Lĩnh Vực Data Center & Hạ Tầng Số
+            {isEn ? 'Data Center & Digital Infra Services' : 'Lĩnh Vực Data Center & Hạ Tầng Số'}
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: <Server size={22} />,
-                title: 'Data Center Tier III',
-                desc: 'Thiết kế và thi công Trung tâm Dữ liệu chuẩn Tier III: hạ tầng điện N+1, làm mát precision cooling, UPS dự phòng và hệ thống phòng cháy chữa cháy.',
+                title: isEn ? 'Tier III Data Center' : 'Data Center Tier III',
+                desc: isEn ? 'Design and construction of Tier III Data Centers: N+1 power infrastructure, precision cooling, backup UPS, and fire suppression systems.' : 'Thiết kế và thi công Trung tâm Dữ liệu chuẩn Tier III: hạ tầng điện N+1, làm mát precision cooling, UPS dự phòng và hệ thống phòng cháy chữa cháy.',
                 color: 'violet',
               },
               {
                 icon: <Wifi size={22} />,
-                title: 'Hạ tầng mạng doanh nghiệp',
-                desc: 'Thiết kế và triển khai hệ thống mạng LAN/WAN, core switching, WiFi enterprise, MPLS và SD-WAN cho văn phòng, nhà máy và khu công nghiệp.',
+                title: isEn ? 'Enterprise Network Infrastructure' : 'Hạ tầng mạng doanh nghiệp',
+                desc: isEn ? 'Design and deployment of LAN/WAN, core switching, enterprise Wi-Fi, MPLS, and SD-WAN for corporate offices and factories.' : 'Thiết kế và triển khai hệ thống mạng LAN/WAN, core switching, WiFi enterprise, MPLS và SD-WAN cho văn phòng, nhà máy và khu công nghiệp.',
                 color: 'purple',
               },
               {
                 icon: <Shield size={22} />,
-                title: 'Bảo mật & An ninh mạng',
-                desc: 'Triển khai tường lửa (Firewall), hệ thống phát hiện xâm nhập IDS/IPS, VPN, bảo mật endpoint và chính sách an toàn thông tin theo chuẩn ISO 27001.',
+                title: isEn ? 'Cybersecurity & Protection' : 'Bảo mật & An ninh mạng',
+                desc: isEn ? 'Deployment of Firewalls, IDS/IPS detection, VPN, endpoint protection, and information security policies complying with ISO 27001.' : 'Triển khai tường lửa (Firewall), hệ thống phát hiện xâm nhập IDS/IPS, VPN, bảo mật endpoint và chính sách an toàn thông tin theo chuẩn ISO 27001.',
                 color: 'indigo',
               },
               {
                 icon: <Server size={22} />,
-                title: 'Camera & Giám sát an ninh',
-                desc: 'Hệ thống camera IP, AI Camera phân tích hành vi, tổng đài IP và hệ thống kiểm soát ra vào (Access Control) cho tòa nhà, nhà máy và cơ quan.',
+                title: isEn ? 'CCTV & Security Surveillance' : 'Camera & Giám sát an ninh',
+                desc: isEn ? 'IP camera systems, AI behavioral analytics, IP PBX, and Access Control for commercial buildings, factories, and institutions.' : 'Hệ thống camera IP, AI Camera phân tích hành vi, tổng đài IP và hệ thống kiểm soát ra vào (Access Control) cho tòa nhà, nhà máy và cơ quan.',
                 color: 'violet',
               },
               {
                 icon: <Wifi size={22} />,
-                title: 'Hạ tầng CNTT cơ quan nhà nước',
-                desc: 'Hệ thống mạng nội bộ, phòng máy chủ, hội nghị truyền hình và hạ tầng CNTT tích hợp cho các Bộ, ngành, đơn vị hành chính và cơ quan quốc phòng.',
+                title: isEn ? 'Government IT Infrastructure' : 'Hạ tầng CNTT cơ quan nhà nước',
+                desc: isEn ? 'Internal network systems, server rooms, video conferencing, and integrated IT infrastructure for government administrative bodies.' : 'Hệ thống mạng nội bộ, phòng máy chủ, hội nghị truyền hình và hạ tầng CNTT tích hợp cho các Bộ, ngành, đơn vị hành chính và cơ quan quốc phòng.',
                 color: 'purple',
               },
               {
                 icon: <Shield size={22} />,
-                title: 'Chuyển đổi số & Cloud',
-                desc: 'Tư vấn và triển khai giải pháp chuyển đổi số: quản lý tài sản IoT, hệ thống ERP, Cloud Hybrid và số hóa quy trình vận hành doanh nghiệp.',
+                title: isEn ? 'Digital Transformation & Cloud' : 'Chuyển đổi số & Cloud',
+                desc: isEn ? 'Consultation and deployment of digital transformation solutions: IoT asset management, ERP systems, Hybrid Cloud, and business workflow digitization.' : 'Tư vấn và triển khai giải pháp chuyển đổi số: quản lý tài sản IoT, hệ thống ERP, Cloud Hybrid và số hóa quy trình vận hành doanh nghiệp.',
                 color: 'indigo',
               },
             ].map((m, i) => (
@@ -116,14 +121,14 @@ const DataCenterContent: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
           <div className="bg-gradient-to-br from-violet-700 to-purple-700 text-white rounded-3xl p-8">
             <h3 className="text-xl font-extrabold mb-6 flex items-center gap-3">
-              <Award size={24} className="text-violet-200" /> Khách Hàng Chiến Lược
+              <Award size={24} className="text-violet-200" /> {isEn ? 'Strategic Clients' : 'Khách Hàng Chiến Lược'}
             </h3>
             <div className="space-y-4">
               {[
-                { name: 'Bộ Công an – Cục KTNVI', desc: 'Hệ thống CNTT an ninh, camera giám sát và hạ tầng mạng chuyên dụng cho cơ quan Bộ Công an' },
-                { name: 'Cơ quan hành chính nhà nước', desc: 'Triển khai phòng máy chủ, mạng nội bộ và hệ thống hội nghị truyền hình cho các Bộ, Tỉnh' },
-                { name: 'Doanh nghiệp FDI & Sản xuất', desc: 'Hạ tầng mạng, camera AI và hệ thống bảo mật cho nhà máy KCN và tổ hợp sản xuất' },
-                { name: 'Tập đoàn viễn thông', desc: 'Phòng máy chủ, thiết bị active và giải pháp bảo mật cho hạ tầng mạng nhà mạng' },
+                { name: isEn ? 'Ministry of Public Security' : 'Bộ Công an – Cục KTNVI', desc: isEn ? 'Security IT systems, surveillance cameras, and specialized network infrastructure' : 'Hệ thống CNTT an ninh, camera giám sát và hạ tầng mạng chuyên dụng cho cơ quan Bộ Công an' },
+                { name: isEn ? 'Government Agencies' : 'Cơ quan hành chính nhà nước', desc: isEn ? 'Server room deployment, internal networks, and video conferencing for Ministries/Provinces' : 'Triển khai phòng máy chủ, mạng nội bộ và hệ thống hội nghị truyền hình cho các Bộ, Tỉnh' },
+                { name: isEn ? 'FDI & Manufacturing Enterprises' : 'Doanh nghiệp FDI & Sản xuất', desc: isEn ? 'Network infra, AI cameras, and security systems for industrial parks and factories' : 'Hạ tầng mạng, camera AI và hệ thống bảo mật cho nhà máy KCN và tổ hợp sản xuất' },
+                { name: isEn ? 'Telecom Corporations' : 'Tập đoàn viễn thông', desc: isEn ? 'Server rooms, active equipment, and security solutions for telecom operators' : 'Phòng máy chủ, thiết bị active và giải pháp bảo mật cho hạ tầng mạng nhà mạng' },
               ].map((c, i) => (
                 <div key={i} className="border-l-2 border-violet-300 pl-4">
                   <div className="font-bold text-sm text-violet-200 mb-1">{c.name}</div>
@@ -135,24 +140,24 @@ const DataCenterContent: React.FC = () => {
 
           <div>
             <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
-              <TrendingUp className="text-violet-500" size={24} /> Dự Án Tiêu Biểu
+              <TrendingUp className="text-violet-500" size={24} /> {isEn ? 'Featured Projects' : 'Dự Án Tiêu Biểu'}
             </h3>
             <div className="space-y-4">
               {[
                 {
-                  name: 'Data Center – Cục KTNVI Bộ Công an',
-                  location: 'Toàn quốc',
-                  scope: 'Thiết kế và xây dựng phòng máy chủ, hệ thống làm mát, UPS và bảo mật vật lý chuẩn Tier III cho cơ quan an ninh.',
+                  name: isEn ? 'Ministry Data Center Project' : 'Data Center – Cục KTNVI Bộ Công an',
+                  location: isEn ? 'Nationwide' : 'Toàn quốc',
+                  scope: isEn ? 'Tier III standard server room design, precision cooling, UPS, and physical security for law enforcement.' : 'Thiết kế và xây dựng phòng máy chủ, hệ thống làm mát, UPS và bảo mật vật lý chuẩn Tier III cho cơ quan an ninh.',
                 },
                 {
-                  name: 'Hệ thống camera AI – Khu công nghiệp',
-                  location: 'Miền Trung',
-                  scope: 'Triển khai hệ thống camera AI phân tích hành vi, kiểm soát ra vào và giám sát an ninh 24/7 cho khu công nghiệp.',
+                  name: isEn ? 'Industrial AI Camera Surveillance' : 'Hệ thống camera AI – Khu công nghiệp',
+                  location: isEn ? 'Central Vietnam' : 'Miền Trung',
+                  scope: isEn ? 'AI cameras analyzing behavior, access control, and 24/7 surveillance for industrial complexes.' : 'Triển khai hệ thống camera AI phân tích hành vi, kiểm soát ra vào và giám sát an ninh 24/7 cho khu công nghiệp.',
                 },
                 {
-                  name: 'Hạ tầng mạng – Tòa nhà hành chính',
+                  name: isEn ? 'Administrative Building IT Network' : 'Hạ tầng mạng – Tòa nhà hành chính',
                   location: 'Đà Nẵng',
-                  scope: 'Thiết kế và thi công toàn bộ hệ thống mạng LAN, WiFi, tổng đài IP và phòng máy chủ cho tòa nhà hành chính cấp tỉnh.',
+                  scope: isEn ? 'Complete design and installation of LAN, Wi-Fi, IP PBX, and server rooms for provincial admin buildings.' : 'Thiết kế và thi công toàn bộ hệ thống mạng LAN, WiFi, tổng đài IP và phòng máy chủ cho tòa nhà hành chính cấp tỉnh.',
                 },
               ].map((p, i) => (
                 <div key={i} className="bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800/50 rounded-2xl p-5">
@@ -175,14 +180,14 @@ const DataCenterContent: React.FC = () => {
         {/* ── CTA ── */}
         <div className="text-center bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/50 rounded-3xl p-10">
           <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">
-            Tư Vấn Data Center & Hạ Tầng CNTT
+            {isEn ? 'Data Center & IT Infrastructure Consultation' : 'Tư Vấn Data Center & Hạ Tầng CNTT'}
           </h3>
           <p className="text-slate-500 dark:text-slate-400 mb-6">
-            Đội ngũ chuyên gia CNTT của CTC sẵn sàng tư vấn thiết kế Data Center, hạ tầng mạng và giải pháp bảo mật phù hợp với quy mô và ngân sách của bạn.
+            {isEn ? 'CTC IT experts are ready to consult on Data Center design, network infra, and security solutions matching your budget.' : 'Đội ngũ chuyên gia CNTT của CTC sẵn sàng tư vấn thiết kế Data Center, hạ tầng mạng và giải pháp bảo mật phù hợp với quy mô và ngân sách của bạn.'}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/contact" className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-lg">
-              <Zap size={18} /> Liên hệ tư vấn
+              <Zap size={18} /> {isEn ? 'Contact IT Experts' : 'Liên hệ tư vấn'}
             </Link>
             <a href="tel:02363745555" className="inline-flex items-center gap-2 border-2 border-violet-400 text-violet-600 dark:text-violet-400 px-8 py-3.5 rounded-2xl font-bold hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all">
               0236 374 5555

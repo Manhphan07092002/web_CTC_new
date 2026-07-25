@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, Quote } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 import { useInView } from '../../hooks/useInView';
 import { Testimonial } from '../../types';
 
@@ -172,13 +173,13 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials, isLoading = f
                   <div className="h-10 w-40 rounded bg-slate-200 dark:bg-slate-700" />
                 </div>
               ))}
-              <span className="sr-only">{language === 'vi' ? 'Đang tải đánh giá khách hàng' : 'Loading customer testimonials'}</span>
+              <span className="sr-only">{getLangText(language, { vi: 'Đang tải đánh giá khách hàng', en: 'Loading customer testimonials', ko: '고객 후기 로드 중', ja: 'お客様の声を読み込み中', zh: '正在加载客户评价', de: 'Kundenbewertungen werden geladen' })}</span>
             </div>
           ) : loopItems.length === 0 ? (
             <div className="mx-4 py-12 px-6 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-white/60 dark:bg-slate-900/40">
               <Quote size={28} className="mx-auto mb-4 text-indigo-400" />
               <p className="text-slate-600 dark:text-slate-300 font-medium">
-                {language === 'vi' ? 'Đánh giá khách hàng đang được cập nhật.' : 'Customer testimonials are being updated.'}
+                {getLangText(language, { vi: 'Đánh giá khách hàng đang được cập nhật.', en: 'Customer testimonials are being updated.', ko: '고객 후기를 업데이트 중입니다.', ja: 'お客様の声を更新中です。', zh: '客户评价正在更新中。', de: 'Kundenbewertungen werden aktualisiert.' })}
               </p>
             </div>
           ) : (

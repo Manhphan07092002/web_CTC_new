@@ -14,6 +14,7 @@ import {
 import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
 import { useSettings } from '../contexts/SettingsContext';
+import { getLangText } from '../utils/translation-helper';
 
 const getApiBase = () => {
   const hostname = window.location.hostname;
@@ -28,7 +29,7 @@ const getApiBase = () => {
 const API_BASE = getApiBase();
 
 const Footer: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { showToast } = useToast();
   const { settings } = useSettings();
   const [email, setEmail] = useState('');
@@ -55,11 +56,11 @@ const Footer: React.FC = () => {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Failed to subscribe');
 
-      showToast('Đăng ký nhận tin thành công! Cảm ơn bạn.', 'success');
+      showToast(getLangText(language, { vi: 'Đăng ký nhận tin thành công! Cảm ơn bạn.', en: 'Subscribed successfully! Thank you.', ko: '구독 성공! 감사합니다.', ja: '購読ありがとうございます！', zh: '订阅成功！感谢您。', de: 'Erfolgreich abonniert! Danke.' }), 'success');
       setEmail('');
     } catch (error) {
       console.error('Error subscribing:', error);
-      showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+      showToast(getLangText(language, { vi: 'Có lỗi xảy ra. Vui lòng thử lại!', en: 'An error occurred. Please try again!', ko: '오류가 발생했습니다. 다시 시도해주세요!', ja: 'エラーが発生しました。もう一度お試しください！', zh: '发生错误，请重试！', de: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut!' }), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -74,17 +75,17 @@ const Footer: React.FC = () => {
     ['/projects', t('nav.projects')],
     ['/news', t('nav.news')],
     ['/contact', t('nav.contact')],
-    ['/track-order', 'Tra cứu đơn hàng'],
+    ['/track-order', getLangText(language, { vi: 'Tra cứu đơn hàng', en: 'Order Lookup', ko: '주문 조회', ja: '注文検索', zh: '订单查询', de: 'Bestellabfrage' })],
   ];
 
   const solutionLinks: [string, string][] = [
-    ['/solutions', 'Giải pháp toàn diện'],
-    ['/solutions/floating', 'Hạ tầng Viễn thông & CNTT'],
-    ['/solutions/rooftop', 'Điện mặt trời (Solar EPC)'],
-    ['/solutions/farm', 'Điện gió (Wind Power EPC)'],
-    ['/solutions/electrical', 'Đường dây & Trạm biến áp 110kV'],
-    ['/solutions/datacenter', 'Data Center & Hạ tầng số'],
-    ['/solutions/construction', 'Xây dựng Dân dụng & Công nghiệp'],
+    ['/solutions', getLangText(language, { vi: 'Giải pháp toàn diện', en: 'Comprehensive Solutions', ko: '종합 솔루션', ja: '総合ソリューション', zh: '综合解决方案', de: 'Umfassende Lösungen' })],
+    ['/solutions/floating', getLangText(language, { vi: 'Hạ tầng Viễn thông & CNTT', en: 'Telecom & IT Infrastructure', ko: '통신 및 IT 인프라', ja: '通信・ITインフラ', zh: '电信与 IT 基础设施', de: 'Telekom & IT-Infrastruktur' })],
+    ['/solutions/rooftop', getLangText(language, { vi: 'Điện mặt trời (Solar EPC)', en: 'Solar Power (Solar EPC)', ko: '태양광 발전 (Solar EPC)', ja: '太陽光発電 (Solar EPC)', zh: '太阳能发电 (Solar EPC)', de: 'Solarstrom (Solar EPC)' })],
+    ['/solutions/farm', getLangText(language, { vi: 'Điện gió (Wind Power EPC)', en: 'Wind Power (Wind Power EPC)', ko: '풍력 발전 (Wind EPC)', ja: '風力発電 (Wind EPC)', zh: '风力发电 (Wind EPC)', de: 'Windenergie (Wind EPC)' })],
+    ['/solutions/electrical', getLangText(language, { vi: 'Đường dây & Trạm biến áp 110kV', en: 'Power Lines & 110kV Substation', ko: '110kV 송전선 및 변전소', ja: '110kV送電線・変電所', zh: '110kV输电线路与变电站', de: '110kV Stromleitungen & Umspannwerke' })],
+    ['/solutions/datacenter', getLangText(language, { vi: 'Data Center & Hạ tầng số', en: 'Data Center & Digital Infrastructure', ko: '데이터 센터 및 디지털 인프라', ja: 'データセンター・デジタルインフラ', zh: '数据中心与数字基础设施', de: 'Rechenzentrum & Digitale Infrastruktur' })],
+    ['/solutions/construction', getLangText(language, { vi: 'Xây dựng Dân dụng & Công nghiệp', en: 'Civil & Industrial Construction', ko: '민간 및 산업 건설', ja: '土木・産業建設', zh: '民用与工业建筑', de: 'Zivil- & Industriebau' })],
   ];
 
   return (
@@ -131,11 +132,13 @@ const Footer: React.FC = () => {
               />
               <span className="min-w-0">
                 <span className="block text-sm font-black uppercase tracking-wider text-white">CTC</span>
-                <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-300">Niềm tin · Chất lượng</span>
+                <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-300">
+                  {getLangText(language, { vi: 'Niềm tin · Chất lượng', en: 'Trust · Quality', ko: '신뢰 · 품질', ja: '信頼 · 品質', zh: '信任 · 品质', de: 'Vertrauen · Qualität' })}
+                </span>
               </span>
             </Link>
 
-            <p className="max-w-md text-sm leading-7 text-slate-300/90">{t('footer.desc')}</p>
+            <p className="max-w-md text-sm leading-7 text-slate-300/90">{getLangText(language, { vi: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). Doanh nghiệp hàng đầu trong lĩnh vực xây lắp và năng lượng tái tạo.', en: 'Central Vietnam Posts and Telecommunications Construction JSC (CTC). Pioneering in renewable energy.', ko: 'CTC 전기 건설 및 컨설팅 주식회사(CTC). 재생 에너지 분야의 선구자.', ja: 'CTC電気建設コンサルティング株式会社。再生可能エネルギー分野のパイオニア。', zh: 'CTC中部越南邮电建筑股份公司。可再生能源领域的先驱。', de: 'CTC Mittel-Vietnam Post- und Telekommunikationsbau AG. Pionier im Bereich erneuerbare Energien.' })}</p>
 
             <div className="mt-6 flex flex-wrap gap-2.5">
               {settings.facebook && <a href={settings.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={socialClass}><Facebook size={17} /></a>}
@@ -145,11 +148,11 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          <FooterLinkColumn title={t('footer.quick_links')} links={quickLinks} className="lg:col-span-2" linkClass={footerLinkClass} />
-          <FooterLinkColumn title={t('footer.solutions_title')} links={solutionLinks} className="lg:col-span-3" linkClass={footerLinkClass} />
+          <FooterLinkColumn title={getLangText(language, { vi: 'Liên kết nhanh', en: 'Quick Links', ko: '빠른 링크', ja: 'クイックリンク', zh: '快速链接', de: 'Schnelllinks' })} links={quickLinks} className="lg:col-span-2" linkClass={footerLinkClass} />
+          <FooterLinkColumn title={getLangText(language, { vi: 'Giải pháp', en: 'Solutions', ko: '솔루션', ja: 'ソリューション', zh: '解决方案', de: 'Lösungen' })} links={solutionLinks} className="lg:col-span-3" linkClass={footerLinkClass} />
 
           <div className="lg:col-span-3">
-            <h3 className="footer-heading mb-5 text-xs font-black uppercase tracking-[0.16em] text-white">{t('footer.contact_title')}</h3>
+            <h3 className="footer-heading mb-5 text-xs font-black uppercase tracking-[0.16em] text-white">{getLangText(language, { vi: 'Liên hệ', en: 'Contact Info', ko: '연락처', ja: '連絡先', zh: '联系方式', de: 'Kontaktinfo' })}</h3>
             <ul className="mb-5 space-y-3 text-sm text-slate-300">
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-sky-400/15 bg-sky-500/10 text-sky-400"><MapPin size={15} /></span>
@@ -166,13 +169,15 @@ const Footer: React.FC = () => {
             </ul>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-md">
-              <h5 className="mb-2.5 text-[11px] font-black uppercase tracking-[0.14em] text-slate-200">Đăng ký nhận tin</h5>
+              <h5 className="mb-2.5 text-[11px] font-black uppercase tracking-[0.14em] text-slate-200">
+                {getLangText(language, { vi: 'Đăng ký nhận tin', en: 'Subscribe to Newsletter', ko: '뉴스레터 구독', ja: 'ニュースレター登録', zh: '订阅资讯', de: 'Newsletter abonnieren' })}
+              </h5>
               <form onSubmit={handleSubscribe} className="flex gap-2">
                 <label htmlFor="footer-email" className="sr-only">Email</label>
                 <input
                   id="footer-email"
                   type="email"
-                  placeholder="Email của bạn..."
+                  placeholder={getLangText(language, { vi: 'Email của bạn...', en: 'Your email...', ko: '이메일을 입력하세요...', ja: 'メールアドレス...', zh: '您的邮箱...', de: 'Ihre E-Mail...' })}
                   autoComplete="email"
                   required
                   value={email}
@@ -182,7 +187,7 @@ const Footer: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  aria-label="Đăng ký nhận tin"
+                  aria-label={getLangText(language, { vi: 'Đăng ký nhận tin', en: 'Subscribe', ko: '구독', ja: '登録', zh: '订阅', de: 'Abonnieren' })}
                   className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-blue-800 text-white shadow-lg shadow-sky-950/40 transition-all hover:-translate-y-0.5 hover:from-sky-500 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-sky-400/50 ${submitting ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   {submitting ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> : <Send size={16} />}
@@ -193,8 +198,10 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-5 text-center text-xs text-slate-500 sm:flex-row sm:text-left">
-          <p>{t('footer.copyright')}</p>
-          <p className="font-semibold uppercase tracking-[0.14em]">CTC · Niềm tin, Chất lượng</p>
+          <p>{getLangText(language, { vi: '© 2026 CTC. Bảo lưu mọi quyền.', en: '© 2026 CTC. All rights reserved.', ko: '© 2026 CTC. 모든 권리 보유.', ja: '© 2026 CTC. 全著作権所有。', zh: '© 2026 CTC. 版权所有。', de: '© 2026 CTC. Alle Rechte vorbehalten.' })}</p>
+          <p className="font-semibold uppercase tracking-[0.14em]">
+            {getLangText(language, { vi: 'CTC · Niềm tin, Chất lượng', en: 'CTC · Trust, Quality', ko: 'CTC · 신뢰, 품질', ja: 'CTC · 信頼, 品質', zh: 'CTC · 信任, 品质', de: 'CTC · Vertrauen, Qualität' })}
+          </p>
         </div>
       </div>
     </footer>
