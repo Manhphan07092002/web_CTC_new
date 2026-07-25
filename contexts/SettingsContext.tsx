@@ -126,11 +126,23 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
 
+  const cleanSettingsUrls = (data: any) => {
+    if (!data) return data;
+    const cleaned = { ...data };
+    const urlFields: Array<keyof SiteSettings> = ['logo', 'logoHeader', 'logoFooter', 'favicon', 'appleTouchIcon'];
+    for (const field of urlFields) {
+      if (typeof cleaned[field] === 'string' && cleaned[field]) {
+        (cleaned[field] as string) = (cleaned[field] as string).replace(/^https?:\/\/[^\/]+/, '');
+      }
+    }
+    return cleaned;
+  };
+
   const loadSettings = async () => {
     try {
       const data = await api.settings.get();
       if (data) {
-        setSettings(data);
+        setSettings(cleanSettingsUrls(data));
       }
     } catch (error) {
       console.error('Error loading settings:', error);

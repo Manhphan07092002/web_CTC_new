@@ -76,12 +76,24 @@ const Settings: React.FC = () => {
     loadSettings();
   }, []);
 
+  const sanitizeUrls = (data: any) => {
+    if (!data) return data;
+    const cleaned = { ...data };
+    const urlFields: Array<keyof SettingsData> = ['logo', 'logoHeader', 'logoFooter', 'favicon', 'appleTouchIcon'];
+    for (const field of urlFields) {
+      if (typeof cleaned[field] === 'string' && cleaned[field]) {
+        (cleaned[field] as string) = (cleaned[field] as string).replace(/^https?:\/\/[^\/]+/, '');
+      }
+    }
+    return cleaned;
+  };
+
   const loadSettings = async () => {
     setLoading(true);
     try {
       const data = await api.settings.get();
       if (data) {
-        setFormData(data);
+        setFormData(sanitizeUrls(data));
       }
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -91,7 +103,8 @@ const Settings: React.FC = () => {
   };
 
   const handleImageSelect = (url: string) => {
-    setFormData({ ...formData, [imagePickerTarget]: url });
+    const cleanUrl = url.replace(/^https?:\/\/[^\/]+/, '');
+    setFormData({ ...formData, [imagePickerTarget]: cleanUrl });
     setShowImagePicker(false);
   };
 

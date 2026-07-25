@@ -54,9 +54,10 @@ router.get('/maintenance', async (req, res) => {
 // PUT /api/settings - Update site settings
 router.put('/', requireAdmin, async (req, res) => {
   try {
-    const updated = await db.settings.update(req.body);
+    const cleanedBody = cleanSettingsUrls(req.body);
+    const updated = await db.settings.update(cleanedBody);
     apiCache.delByPrefix('/api/settings');
-    res.json(updated);
+    res.json(cleanSettingsUrls(updated));
   } catch (error) {
     console.error('Error updating settings', error);
     res.status(500).json({ message: 'Failed to update settings' });
