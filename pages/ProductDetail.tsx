@@ -326,7 +326,7 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
     : 0;
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pb-20 animate-fade-in relative">
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pt-28 sm:pt-36 pb-20 animate-fade-in relative">
       <SEO 
         title={product.name}
         description={product.description.substring(0, 160)}

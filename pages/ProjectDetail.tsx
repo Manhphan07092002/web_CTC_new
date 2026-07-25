@@ -86,7 +86,7 @@ const ProjectDetail: React.FC = () => {
   });
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pb-20 animate-fade-in">
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pt-28 sm:pt-36 pb-20 animate-fade-in">
       <SEO 
         title={project.title}
         description={project.description?.substring(0, 160) || ''}
