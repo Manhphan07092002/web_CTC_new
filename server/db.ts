@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { autoSeedIfEmpty } from './utils/autoSeed';
 
 // Load environment variables from .env.local (fallback to .env)
 dotenv.config({ path: '.env.local' });
@@ -15,6 +16,10 @@ export const connectDB = async () => {
       minPoolSize: 10,
     });
     console.log(`🍃 MongoDB connected: ${conn.connection.host}`);
+    
+    // Automatically seed all initial data from seed-data/ if DB is empty
+    await autoSeedIfEmpty();
+
     return conn;
   } catch (error) {
     console.error('❌ MongoDB connection error:', (error as Error).message || error);

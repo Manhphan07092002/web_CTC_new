@@ -136,27 +136,13 @@ CONTACT_RECIPIENT=contac@ctcdn.vn
     }
   });
 
-  // Step 6: Check for backup data
-  log('\n📋 Bước 6: Kiểm tra dữ liệu backup', 'yellow');
-  const exportsDir = path.join(__dirname, '..', 'exports');
-  
-  if (fs.existsSync(exportsDir)) {
-    const backups = fs.readdirSync(exportsDir)
-      .filter(f => f.startsWith('backup-'))
-      .sort()
-      .reverse();
-    
-    if (backups.length > 0) {
-      log(`   📦 Tìm thấy ${backups.length} backup(s):`, 'green');
-      backups.slice(0, 3).forEach((backup, i) => {
-        log(`      ${i + 1}. ${backup}`, 'blue');
-      });
-      
-      log('\n   💡 Để import dữ liệu, chạy:', 'cyan');
-      log(`      npm run import-data exports/${backups[0]}`, 'bright');
-    } else {
-      log('   ℹ️  Chưa có backup nào', 'blue');
-    }
+  // Step 6: Automatically import seed data
+  log('\n📋 Bước 6: Tự động import dữ liệu mẫu (seed-data)', 'yellow');
+  const seedDataDir = path.join(__dirname, '..', 'seed-data');
+  if (fs.existsSync(seedDataDir)) {
+    execCommand('npm run import-data seed-data', 'Import 16 bộ dữ liệu từ seed-data');
+  } else {
+    log('   ⚠️ Không tìm thấy thư mục seed-data', 'yellow');
   }
 
   // Summary
