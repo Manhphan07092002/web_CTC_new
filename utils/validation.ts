@@ -13,11 +13,12 @@ export interface ValidationResult {
  */
 export function validateEmail(email: string): ValidationResult {
   const errors: string[] = [];
+  const cleanEmail = (email || '').trim();
   
-  if (!email) {
-    errors.push('Email is required');
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.push('Invalid email format');
+  if (!cleanEmail) {
+    errors.push('Vui lòng nhập Email.');
+  } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(cleanEmail)) {
+    errors.push('Email không đúng định dạng (Ví dụ: name@gmail.com).');
   }
   
   return {
@@ -33,19 +34,19 @@ export function validatePassword(password: string): ValidationResult {
   const errors: string[] = [];
   
   if (!password) {
-    errors.push('Password is required');
+    errors.push('Mật khẩu là bắt buộc');
   } else {
     if (password.length < 8) {
-      errors.push('Password must be at least 8 characters');
+      errors.push('Mật khẩu phải có ít nhất 8 ký tự');
     }
     if (!/[A-Z]/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
+      errors.push('Mật khẩu phải chứa ít nhất 1 chữ cái viết hoa');
     }
     if (!/[a-z]/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
+      errors.push('Mật khẩu phải chứa ít nhất 1 chữ cái viết thường');
     }
     if (!/[0-9]/.test(password)) {
-      errors.push('Password must contain at least one number');
+      errors.push('Mật khẩu phải chứa ít nhất 1 chữ số');
     }
   }
   
@@ -60,11 +61,52 @@ export function validatePassword(password: string): ValidationResult {
  */
 export function validatePhone(phone: string): ValidationResult {
   const errors: string[] = [];
+  const cleanPhone = (phone || '').replace(/[\s\-\.]/g, '');
   
-  if (!phone) {
-    errors.push('Phone number is required');
-  } else if (!/^(0|\+84)[0-9]{9,10}$/.test(phone.replace(/\s/g, ''))) {
-    errors.push('Invalid phone number format');
+  if (!cleanPhone) {
+    errors.push('Vui lòng nhập số điện thoại.');
+  } else if (!/^(0[3|5|7|8|9])[0-9]{8}$|^\+84[3|5|7|8|9][0-9]{8}$/.test(cleanPhone)) {
+    errors.push('Số điện thoại không hợp lệ (gồm 10 chữ số, ví dụ: 0912345678).');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
+/**
+ * Validate full name
+ */
+export function validateName(name: string): ValidationResult {
+  const errors: string[] = [];
+  const cleanName = (name || '').trim();
+  
+  if (!cleanName) {
+    errors.push('Vui lòng nhập họ và tên.');
+  } else if (cleanName.length < 2) {
+    errors.push('Họ và tên phải có ít nhất 2 ký tự.');
+  } else if (/^[0-9\s]+$/.test(cleanName)) {
+    errors.push('Họ và tên không hợp lệ.');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
+/**
+ * Validate address
+ */
+export function validateAddress(address: string): ValidationResult {
+  const errors: string[] = [];
+  const cleanAddr = (address || '').trim();
+  
+  if (!cleanAddr) {
+    errors.push('Vui lòng nhập địa chỉ giao hàng / lắp đặt.');
+  } else if (cleanAddr.length < 5) {
+    errors.push('Địa chỉ quá ngắn (vui lòng nhập ít nhất 5 ký tự).');
   }
   
   return {

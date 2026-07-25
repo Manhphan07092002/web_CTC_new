@@ -13,7 +13,7 @@ import { ProductsHero, FilterSidebar, ProductGrid, ProductsCTA } from '../compon
 import { useCart } from '../contexts/CartContext';
 
 const Products: React.FC = () => {
-  const { addToCart } = useCart();
+  const { addToCart, openCartModal } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -369,7 +369,7 @@ const Products: React.FC = () => {
               categoriesLoading={categoriesLoading}
               filteredProducts={currentProducts} // Pass sliced products
               handleProductClick={handleProductClick}
-              onAddToCart={addToCart}
+              onAddToCart={openCartModal}
               handleClearFilters={handleClearFilters}
               t={t}
               placeholderImage={PLACEHOLDER_IMAGE}

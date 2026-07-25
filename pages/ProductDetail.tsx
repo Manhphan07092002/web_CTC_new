@@ -26,7 +26,7 @@ const ProductDetail: React.FC = () => {
   const [allCatalogProducts, setAllCatalogProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
-  const { addToCart } = useCart();
+  const { addToCart, openCartModal } = useCart();
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'reviews'>('desc');
   
   // AI States
@@ -381,7 +381,7 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
                 onLike={handleLike}
                 onShare={handleShare}
                 onCallBuy={() => { window.location.href = "tel:0915059666"; }}
-                onAddToQuote={() => addToCart(product)}
+                onAddToQuote={() => openCartModal(product)}
               />
             </div>
           </div>
@@ -432,7 +432,7 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
           📞 Gọi tư vấn
         </a>
         <button 
-          onClick={() => addToCart(product)}
+          onClick={() => openCartModal(product)}
           className="flex-1 bg-primary hover:bg-primary/90 text-white text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all text-center min-h-[44px]"
         >
           🛒 Thêm báo giá

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '../types';
 import { useToast } from './ToastContext';
 import { useLanguage } from './LanguageContext';
+import AddToCartModal from '../components/products/AddToCartModal';
 
 export interface CartItem {
   product_id: string;
@@ -14,6 +15,8 @@ export interface CartItem {
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (product: Product, quantity?: number) => void;
+  openCartModal: (product: Product) => void;
+  closeCartModal: () => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -32,6 +35,7 @@ const parsePrice = (priceVal: any): number => {
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartModalProduct, setCartModalProduct] = useState<Product | null>(null);
   const { showToast } = useToast();
   const { t, language } = useLanguage();
 
@@ -55,6 +59,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       console.error('Error saving cart to sessionStorage:', e);
     }
+  };
+
+  const openCartModal = (product: Product) => {
+    setCartModalProduct(product);
+  };
+
+  const closeCartModal = () => {
+    setCartModalProduct(null);
   };
 
   const addToCart = (product: Product, quantity: number = 1) => {
@@ -82,14 +94,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Multi-language custom success toast with product name interpolation
     const successMsg = language === 'vi' 
-      ? `Đã thêm "${product.name}" vào giỏ hàng thành công!` 
+      ? `Đã thêm ${quantity} x "${product.name}" vào giỏ hàng thành công!` 
       : language === 'en' 
-        ? `Added "${product.name}" to cart successfully!`
+        ? `Added ${quantity} x "${product.name}" to cart successfully!`
         : language === 'ko'
-          ? `"${product.name}"을(를) 장바구니에 추가했습니다!`
+          ? `"${product.name}" ${quantity}개(를) 장바구니에 추가했습니다!`
           : language === 'ja'
-            ? `「${product.name}」をカートに追加しました！`
-            : `Đã thêm "${product.name}" vào giỏ hàng thành công!`;
+            ? `「${product.name}」x ${quantity} をカートに追加しました！`
+            : `Đã thêm ${quantity} x "${product.name}" vào giỏ hàng thành công!`;
 
     showToast(successMsg, 'success');
   };
@@ -126,6 +138,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <CartContext.Provider value={{
       cartItems,
       addToCart,
+      openCartModal,
+      closeCartModal,
       removeFromCart,
       updateQuantity,
       clearCart,
@@ -133,6 +147,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       totalAmount
     }}>
       {children}
+      <AddToCartModal 
+        product={cartModalProduct}
+        isOpen={!!cartModalProduct}
+        onClose={closeCartModal}
+        onConfirmAddToCart={addToCart}
+      />
     </CartContext.Provider>
   );
 };
