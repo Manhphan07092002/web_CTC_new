@@ -59,6 +59,13 @@ async function importAllData() {
     await mongoose.connect(MONGO_URI);
     console.log('✅ Connected to MongoDB\n');
 
+    console.log('🧹 Clearing all existing database collections...');
+    const collections = await mongoose.connection.db.collections();
+    for (const col of collections) {
+      await col.deleteMany({});
+    }
+    console.log('✨ All old data cleared successfully!\n');
+
     console.log(`📁 Import from: ${backupPath}\n`);
 
     // Read summary if exists
