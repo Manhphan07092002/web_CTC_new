@@ -1,14 +1,14 @@
 /**
  * AI Article Generator Service (supporting Full Reference Article Rewriting)
  * 1. Live Google/DuckDuckGo Web Search OR User Pasted Reference Article.
- * 2. Paraphrases sample article text into 100% unique Vietnamese press phrasing.
- * 3. Strict Yoast SEO Title Length Optimization (50 - 64 chars -> 10/10 score).
- * 4. Strict Yoast SEO Meta Excerpt Optimization (120 - 156 chars -> 8/8 score).
- * 5. Controlled Keyword Density (1.2% - 2.0% -> 10/10 score).
- * 6. Rich Content Expansion (850+ words -> 10/10 score).
- * 7. Short Punchy Sentences (<18 words -> 25/25 Readability score).
- * 8. Abundant Transition Words (6+ instances -> 15/15 Readability score).
- * 9. Subheadings, Lists, Figure Images & Contact Links (All max scores).
+ * 2. Seamlessly integrates reference article content directly into main H2 article body.
+ * 3. Cleans author, date, photo caption metadata.
+ * 4. Strict Yoast SEO Title Length Optimization (50 - 64 chars -> 10/10 score).
+ * 5. Strict Yoast SEO Meta Excerpt Optimization (120 - 156 chars -> 8/8 score).
+ * 6. Controlled Keyword Density (1.2% - 2.0% -> 10/10 score).
+ * 7. Rich Content Expansion (850+ words -> 10/10 score).
+ * 8. Short Punchy Sentences (<18 words -> 25/25 Readability score).
+ * 9. Abundant Transition Words (6+ instances -> 15/15 Readability score).
  */
 
 import fetch from 'node-fetch';
@@ -132,10 +132,10 @@ function formatYoastSeoTitle(cleanTitle: string, kw: string): string {
 /**
  * Format Meta Excerpt strictly within 120 to 156 characters for perfect Yoast SEO score!
  */
-function formatYoastSeoExcerpt(cleanTitle: string, kw: string, searchSnippet?: string): string {
+function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: string): string {
   let excerpt = '';
-  if (searchSnippet) {
-    const paraphrased = paraphraseWebSnippet(searchSnippet);
+  if (firstSnippet && firstSnippet.length > 30) {
+    const paraphrased = paraphraseWebSnippet(firstSnippet);
     excerpt = `Thông tin ${kw}: ${paraphrased}`;
   } else {
     excerpt = `Cập nhật thông tin chi tiết về ${kw}. Phân tích bối cảnh, thực trạng diễn biến và tư vấn giải pháp thực tế từ các chuyên gia CTC.`;
@@ -215,7 +215,7 @@ async function searchWebContext(query: string): Promise<{ rawSnippets: string[];
 }
 
 /**
- * Intelligent Paraphrasing Engine
+ * Intelligent Paraphrasing & Metadata Cleaning Engine
  */
 function paraphraseWebSnippet(snippet: string): string {
   if (!snippet) return '';
@@ -235,6 +235,38 @@ function paraphraseWebSnippet(snippet: string): string {
     .replace(/\b(hiện nay|ngày nay)\b/gi, 'Trong giai đoạn hiện tại,');
 
   return text;
+}
+
+/**
+ * Filter out author, date, photo caption metadata from pasted raw reference content
+ */
+function parseCleanReferenceParagraphs(rawText: string): string[] {
+  const lines = rawText.split(/\n+/);
+  const cleanParagraphs: string[] = [];
+
+  for (const line of lines) {
+    let text = line.trim();
+    if (!text || text.length < 15) continue;
+
+    // Filter out date/author metadata lines (e.g. "Minh Khánh Chủ nhật, 26/7/2026 18:18 (GMT+7)", "Ảnh: Nam Khánh")
+    if (/(?:GMT\+7|chủ nhật|thứ hai|thứ ba|thứ tư|thứ năm|thứ sáu|thứ bảy|\d{1,2}\/\d{1,2}\/\d{4})/i.test(text) && text.length < 90) {
+      continue;
+    }
+    if (/^(?:ảnh|nguồn|theo|tác giả|bài|hình)\s*:\s*/i.test(text) && text.length < 80) {
+      continue;
+    }
+    if (/^\w+\s+\w+\s+\w+\,\s*\d+/i.test(text) && text.length < 60) {
+      continue;
+    }
+
+    // Paraphrase clean text
+    const cleanP = paraphraseWebSnippet(text);
+    if (cleanP.length > 20) {
+      cleanParagraphs.push(cleanP);
+    }
+  }
+
+  return cleanParagraphs;
 }
 
 /**
@@ -293,7 +325,7 @@ function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): {
   if (domain === 'security') {
     return {
       h2_1: `1. Thực trạng diễn biến mới nhất liên quan đến ${cleanKw}`,
-      h2_2: `2. Các phương thức và thủ đoạn giả mạo xoay quanh ${cleanKw}`,
+      h2_2: `2. Phân tích chi tiết phương thức & thủ đoạn xoay quanh ${cleanKw}`,
       h2_3: `3. Biện pháp phòng tránh và hướng dẫn an toàn thông tin`,
       h2_4: `4. Khuyến cáo quan trọng và đường dây nóng hỗ trợ từ CTC`
     };
@@ -327,8 +359,8 @@ function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): {
   }
 
   return {
-    h2_1: `1. Phân tích chi tiết bối cảnh sự việc xoay quanh ${cleanKw}`,
-    h2_2: `2. Các khía cạnh nổi bật và đánh giá chuyên môn liên quan đến ${cleanKw}`,
+    h2_1: `1. Phân tích chi tiết bối cảnh diễn biến liên quan đến ${cleanKw}`,
+    h2_2: `2. Các khía cạnh nổi bật và đánh giá chuyên môn đối với ${cleanKw}`,
     h2_3: `3. Khuyến nghị giải pháp ứng phó và bài học thực tiễn`,
     h2_4: `4. Tổng kết thông tin và liên hệ đơn vị tư vấn kỹ thuật CTC`
   };
@@ -336,7 +368,7 @@ function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): {
 
 /**
  * Dynamic AI Article Generator:
- * Accepts either a User Title OR Full Reference Article Text to rewrite 100% accurately.
+ * Seamlessly integrates reference article content directly into main H2 article body.
  */
 export async function generateAiArticle(
   userTitle: string,
@@ -350,7 +382,9 @@ export async function generateAiArticle(
     throw new Error('Vui lòng nhập tiêu đề hoặc chủ đề bài viết');
   }
 
-  const hasReferenceText = referenceContent && referenceContent.trim().length > 30;
+  const rawReferenceText = (referenceContent || '').trim();
+  const refParagraphs = parseCleanReferenceParagraphs(rawReferenceText);
+  const hasReferenceText = refParagraphs.length > 0;
 
   // 1. Resolve Focus Keyword
   const kw = resolveFocusKeyword(cleanTitle, userFocusKeyword);
@@ -369,43 +403,13 @@ export async function generateAiArticle(
   const title = formatYoastSeoTitle(cleanTitle, kw);
 
   // 5. Format Meta Excerpt STRICTLY within 120 to 156 chars (Yoast 8/8 Score)
-  const firstSnippet = hasReferenceText ? referenceContent.trim().substring(0, 150) : searchResult.rawSnippets[0];
+  const firstSnippet = hasReferenceText ? refParagraphs[0] : searchResult.rawSnippets[0];
   const excerpt = formatYoastSeoExcerpt(cleanTitle, kw, firstSnippet);
 
-  // 6. Build Paraphrased Web Facts / Reference Content Block
-  let paraphrasedFactsBlock = '';
-  if (hasReferenceText) {
-    const rawParagraphs = referenceContent.trim().split(/\n+/).filter(p => p.trim().length > 20);
-    const paraphrasedList = rawParagraphs
-      .slice(0, 5)
-      .map(p => paraphraseWebSnippet(p))
-      .filter(Boolean)
-      .map(text => `<p class="mb-3 text-slate-800 text-sm leading-relaxed">🌐 <em>Nội dung biên tập lại:</em> ${text}</p>`)
-      .join('\n');
-
-    paraphrasedFactsBlock = `
-<div class="my-5 p-5 border-l-4 border-emerald-500 bg-emerald-50/80 rounded-r-2xl space-y-2">
-  <p class="font-black text-emerald-950 text-xs uppercase tracking-wider mb-2">📊 Nội dung bài báo gốc đã được AI phân tích & viết lại 100% độc nhất (Chuẩn SEO & Không vi phạm bản quyền):</p>
-  ${paraphrasedList}
-</div>`;
-  } else if (searchResult.rawSnippets.length > 0) {
-    const paraphrasedList = searchResult.rawSnippets
-      .map(snip => paraphraseWebSnippet(snip))
-      .filter(Boolean)
-      .map(text => `<p class="mb-2 text-gray-700 text-xs">🌐 <em>Ghi nhận thực tế:</em> ${text}</p>`)
-      .join('\n');
-
-    paraphrasedFactsBlock = `
-<div class="my-5 p-4 border-l-4 border-emerald-500 bg-emerald-50/70 rounded-r-2xl space-y-2">
-  <p class="font-black text-emerald-950 text-xs uppercase tracking-wider">📊 Thông tin tổng hợp thực tế & Viết lại chính xác (Không vi phạm bản quyền):</p>
-  ${paraphrasedList}
-</div>`;
-  }
-
-  // 7. Generate Dynamic Headings
+  // 6. Generate Dynamic Headings
   const headings = buildDynamicHeadings(cleanTitle, kw, domain);
 
-  // 8. Tone Customization Adjustments
+  // 7. Tone Customization Adjustments
   let toneBadge = 'THÔNG TIN CẬP NHẬT 2026';
   let toneCallout = 'Chủ động nắm bắt thông tin sẽ giúp bạn đưa ra quyết định phù hợp nhất.';
   if (tone === 'expert') {
@@ -419,14 +423,53 @@ export async function generateAiArticle(
     toneCallout = 'Chia sẻ thực tế từ các dự án triển khai thực địa và bài học kinh nghiệm.';
   }
 
-  // 9. Generate 850+ Word Content
+  // 8. Construct Article Body Sections using REAL Pasted Paragraphs OR Fallback Engine
   const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi từ đông đảo cộng đồng. ${toneCallout} Bài viết này cung cấp cái nhìn toàn diện về bối cảnh, phân tích thực trạng và đưa ra những khuyến nghị thiết thực nhất.</p>`;
 
-  const body_1 = `<p>Trong giai đoạn hiện tại, diễn biến liên quan đến <strong>${kw}</strong> ghi nhận nhiều chuyển biến nhanh chóng. Việc theo dõi thông tin chính thống giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả.</p>
+  let body_1 = '';
+  let body_2 = '';
+  let body_3 = '';
+
+  if (hasReferenceText) {
+    // Distribute real rewritten paragraphs directly into H2 sections
+    const p1 = refParagraphs[0] ? `<p>${refParagraphs[0]}</p>` : '';
+    const p2 = refParagraphs[1] ? `<p>${refParagraphs[1]}</p>` : '';
+    const p3 = refParagraphs[2] ? `<p>${refParagraphs[2]}</p>` : '';
+    const p4 = refParagraphs[3] ? `<p>${refParagraphs[3]}</p>` : '';
+    const p5 = refParagraphs[4] ? `<p>${refParagraphs[4]}</p>` : '';
+    const p6 = refParagraphs[5] ? `<p>${refParagraphs[5]}</p>` : '';
+
+    body_1 = `
+${p1}
+${p2}
+<p>Tuy nhiên, việc nắm bắt dữ liệu xác minh chuẩn xác về <strong>${kw}</strong> giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả. Do đó, trang bị thông tin chính thống là ưu tiên hàng đầu của mọi đối tượng.</p>
+<p>Bên cạnh đó, các cơ quan chuyên môn luôn khuyến cáo theo dõi sát diễn biến để đưa ra ứng phó phù hợp.</p>`.trim();
+
+    body_2 = `
+${p3}
+${p4}
+<p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
+<ul>
+  <li><strong>Thông tin xác minh chính thống:</strong> Tiếp cận dữ liệu thực tế từ các đơn vị quản lý chuyên ngành.</li>
+  <li><strong>Đánh giá tác động đa chiều:</strong> Phân tích kỹ lưỡng các ưu điểm, lợi ích và thách thức tiềm ẩn.</li>
+  <li><strong>Định hướng xử lý linh hoạt:</strong> Đưa ra các khuyến cáo thiết thực áp dụng vào đời sống hàng ngày.</li>
+  <li><strong>Tối ưu hóa quy trình vận hành:</strong> Đảm bảo tính liên tục và giảm thiểu tối đa mọi rủi ro gián đoạn.</li>
+</ul>
+<p>Đặc biệt, việc nâng cao nhận thức đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài.</p>`.trim();
+
+    body_3 = `
+${p5}
+${p6}
+<p>Hơn nữa, các quy chuẩn vận hành áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
+<p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược.</p>`.trim();
+
+  } else {
+    // Fallback if no reference text was pasted
+    body_1 = `<p>Trong giai đoạn hiện tại, diễn biến liên quan đến <strong>${kw}</strong> ghi nhận nhiều chuyển biến nhanh chóng. Việc theo dõi thông tin chính thống giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả.</p>
 <p>Tuy nhiên, sự thiếu hụt dữ liệu xác minh có thể dẫn tới những đánh giá sai lệch. Do đó, trang bị kiến thức chuẩn xác về <strong>${kw}</strong> là ưu tiên hàng đầu của mọi đối tượng.</p>
 <p>Bên cạnh đó, các cơ quan chuyên môn luôn tích cực đưa ra những hướng dẫn chi tiết nhằm đảm bảo an toàn tối đa cho người dùng.</p>`;
 
-  const body_2 = `<p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
+    body_2 = `<p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
 <ul>
   <li><strong>Cung cấp thông tin đã xác minh:</strong> Tiếp cận dữ liệu thực tế từ các đơn vị quản lý chuyên ngành.</li>
   <li><strong>Đánh giá tác động đa chiều:</strong> Phân tích kỹ lưỡng các ưu điểm, lợi ích và thách thức tiềm ẩn.</li>
@@ -435,8 +478,9 @@ export async function generateAiArticle(
 </ul>
 <p>Đặc biệt, việc nâng cao nhận thức cộng đồng đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài cho toàn hệ thống.</p>`;
 
-  const body_3 = `<p>Hơn nữa, các quy chuẩn kỹ thuật mới nhất áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
+    body_3 = `<p>Hơn nữa, các quy chuẩn kỹ thuật mới nhất áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
 <p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược.</p>`;
+  }
 
   const body_4 = `<p>Tóm lại, <strong>Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</strong> luôn sẵn sàng tư vấn và đồng hành cùng quý đối tác đối với mọi giải pháp liên quan tới <strong>${kw}</strong>:</p>
 <ul>
@@ -447,8 +491,6 @@ export async function generateAiArticle(
 
   const content = `
 ${introP}
-
-${paraphrasedFactsBlock}
 
 <div class="my-6 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
   <p class="font-black text-slate-800 text-sm uppercase tracking-wider mb-2">📌 Mục lục bài viết:</p>
@@ -478,7 +520,7 @@ ${body_3}
 ${body_4}
 `.trim();
 
-  // 10. Extract dynamic, content-bound tags
+  // 9. Extract dynamic, content-bound tags
   const tags = extractSmartTags(title, content, kw);
 
   return {
