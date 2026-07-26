@@ -58,8 +58,11 @@ self.addEventListener('fetch', (event) => {
             return cachedResponse;
           }
           if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/index.html');
+            return caches.match('/index.html').then((indexResponse) => {
+              return indexResponse || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+            });
           }
+          return new Response('', { status: 404, statusText: 'Not Found' });
         });
       })
   );

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -52,20 +52,22 @@ const Divider = () => <div className="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, placeholder }) => {
   const [showImagePicker, setShowImagePicker] = useState(false);
 
+  const extensions = useMemo(() => [
+    StarterKit.configure({
+      heading: { levels: [1, 2, 3] },
+      bulletList: { keepMarks: true, keepAttributes: false },
+      orderedList: { keepMarks: true, keepAttributes: false },
+    }),
+    Image.configure({ inline: false, allowBase64: true, HTMLAttributes: { class: 'rounded-2xl shadow-md my-4 max-h-[550px] mx-auto object-cover' } }),
+    Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-primary underline font-medium hover:text-secondary' } }),
+    Underline,
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
+    Highlight.configure({ multicolor: false }),
+    Placeholder.configure({ placeholder: placeholder || 'Nhập nội dung chi tiết... Bạn có thể chèn hình ảnh, đường dẫn liên kết, định dạng văn bản...' }),
+  ], [placeholder]);
+
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [1, 2, 3] },
-        bulletList: { keepMarks: true, keepAttributes: false },
-        orderedList: { keepMarks: true, keepAttributes: false },
-      }),
-      Image.configure({ inline: false, allowBase64: true, HTMLAttributes: { class: 'rounded-2xl shadow-md my-4 max-h-[550px] mx-auto object-cover' } }),
-      Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-primary underline font-medium hover:text-secondary' } }),
-      Underline,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Highlight.configure({ multicolor: false }),
-      Placeholder.configure({ placeholder: placeholder || 'Nhập nội dung chi tiết... Bạn có thể chèn hình ảnh, đường dẫn liên kết, định dạng văn bản...' }),
-    ],
+    extensions,
     content: content || '',
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());

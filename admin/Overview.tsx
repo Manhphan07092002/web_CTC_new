@@ -543,7 +543,7 @@ const Overview: React.FC = () => {
         {/* Products by Category Chart */}
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col">
           <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-6">Sản phẩm theo danh mục</h3>
-          <div className="flex-1 min-h-[200px] relative">
+          <div className="h-[280px] min-h-[280px] relative">
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
                 <Pie
