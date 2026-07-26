@@ -498,7 +498,9 @@ export const HeaderManagement: React.FC = () => {
                               <span className="font-semibold text-gray-800 dark:text-slate-200">{cat.name.toUpperCase()}</span>
                               <code className="text-xs text-gray-500 dark:text-slate-400 font-mono">(/products?cat={cat.name.toLowerCase()})</code>
                             </div>
-                            <Lock size={13} className="text-violet-400 dark:text-violet-500 flex-shrink-0" title="Quản lý tại trang Danh mục Sản phẩm" />
+                            <span title="Quản lý tại trang Danh mục Sản phẩm">
+                              <Lock size={13} className="text-violet-400 dark:text-violet-500 flex-shrink-0" />
+                            </span>
                           </div>
                         ))
                       )}

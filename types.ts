@@ -11,6 +11,7 @@ export interface Review {
 
 export interface Product {
   id: string;
+  _id?: string;
   name: string;
   category: string;
   categoryId?: string; // Reference to ProductCategory
@@ -20,8 +21,10 @@ export interface Product {
   shortDescription?: string; // Mô tả ngắn
   specifications?: string; // Chi tiết kỹ thuật
   price?: string;
+  originalPrice?: string;
   contactPrice?: boolean; // Liên hệ để biết giá
   image: string;
+  imageUrl?: string;
   images?: string[]; // Multiple images
   stock?: number;
   stockStatus?: 'in_stock' | 'out_of_stock' | 'contact'; // Còn hàng / Hết hàng / Liên hệ
@@ -46,6 +49,7 @@ export interface Product {
 
 export interface Category {
   id: string;
+  _id?: string;
   name: string;
   slug: string;
   description?: string;
@@ -60,16 +64,19 @@ export interface Category {
 
 export interface Project {
   id: string;
+  _id?: string;
   title: string;
   location: string;
   capacity: string;
   completionDate: string;
+  date?: string;
   image: string;
   description: string;
   category?: string;
   categoryId?: string; // Reference to ProjectCategory
   client?: string;
   duration?: string;
+  features?: string[];
   status?: 'completed' | 'in_progress' | 'planned';
   isFeatured?: boolean;
   featuredOrder?: number;
@@ -79,6 +86,7 @@ export interface Project {
 
 export interface NewsItem {
   id: string;
+  _id?: string;
   title: string;
   excerpt: string;
   date: string;
@@ -97,6 +105,7 @@ export interface NewsItem {
 
 export interface Testimonial {
   id: string;
+  _id?: string;
   name: string;
   role: string;
   content: string;

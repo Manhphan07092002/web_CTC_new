@@ -53,6 +53,7 @@ interface SEOProps {
   keywords?: string;
   image?: string;
   type?: string;
+  url?: string;
   schema?: object;
   noindex?: boolean;
   // For multilingual SEO

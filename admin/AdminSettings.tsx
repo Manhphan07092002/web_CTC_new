@@ -27,12 +27,13 @@ interface SettingsData {
   twoFactorAuth: boolean;
   currency: string;
   taxRate: number;
-  // Cấu hình AI Chatbot
   aiEnabled?: boolean;
   aiApiKey?: string;
   aiModel?: string;
   aiTemperature?: number;
   aiSystemInstruction?: string;
+  aiProvider?: string;
+  aiBaseUrl?: string;
 }
 
 const Settings: React.FC = () => {

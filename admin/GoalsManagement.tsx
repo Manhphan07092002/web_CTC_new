@@ -15,6 +15,10 @@ interface Goal {
     quoteRequests: number;
     purchases: number;
     conversionRate: number;
+    totalProducts?: number;
+    totalProjects?: number;
+    totalNews?: number;
+    totalReviews?: number;
   };
   isActive: boolean;
   createdAt: string;
@@ -38,10 +42,29 @@ const GoalsManagement: React.FC = () => {
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [currentGoal, setCurrentGoal] = useState<Goal | null>(null);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    period: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+    startDate: string;
+    endDate: string;
+    targets: {
+      pageViews: number;
+      productViews: number;
+      contactRequests: number;
+      quoteRequests: number;
+      purchases: number;
+      conversionRate: number;
+      totalProducts?: number;
+      totalProjects?: number;
+      totalNews?: number;
+      totalReviews?: number;
+    };
+    isActive: boolean;
+  }>({
     name: '',
     description: '',
-    period: 'monthly' as const,
+    period: 'monthly',
     startDate: '',
     endDate: '',
     targets: {

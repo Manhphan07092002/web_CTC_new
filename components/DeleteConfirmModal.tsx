@@ -6,11 +6,15 @@ interface DeleteConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
   title: string;
-  itemName: string;
+  itemName?: string;
+  productName?: string;
   type: 'soft' | 'permanent' | 'restore' | 'hard';
   itemImage?: string;
+  productImage?: string;
   itemPrice?: string;
+  productPrice?: string;
   itemCategory?: string;
+  productCategory?: string;
   itemType?: 'product' | 'news' | 'project' | 'partner' | 'testimonial';
 }
 
@@ -20,12 +24,20 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onConfirm,
   title,
   itemName,
+  productName,
   type,
   itemImage,
+  productImage,
   itemPrice,
+  productPrice,
   itemCategory,
+  productCategory,
   itemType = 'product'
 }) => {
+  const name = itemName || productName || '';
+  const img = itemImage || productImage;
+  const price = itemPrice || productPrice;
+  const cat = itemCategory || productCategory;
   if (!isOpen) return null;
 
   const getConfig = () => {
@@ -115,7 +127,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             {itemImage ? (
               <img 
                 src={itemImage} 
-                alt={itemName}
+                alt={name}
                 className="w-16 h-16 object-cover rounded-lg"
               />
             ) : (
@@ -124,7 +136,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
               </div>
             )}
             <div className="flex-1">
-              <h4 className="font-bold text-gray-800 mb-1 line-clamp-2">{itemName}</h4>
+              <h4 className="font-bold text-gray-800 mb-1 line-clamp-2">{name}</h4>
               {itemCategory && (
                 <p className="text-sm text-gray-500 mb-1">{itemCategory}</p>
               )}

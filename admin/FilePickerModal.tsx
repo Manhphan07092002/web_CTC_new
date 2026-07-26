@@ -27,6 +27,7 @@ interface FilePickerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (url: string) => void;
+  title?: string;
 }
 
 const getApiBase = () => {
