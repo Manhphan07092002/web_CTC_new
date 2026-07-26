@@ -6,6 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import SEO from '../components/SEO';
 import Loading from '../components/Loading';
 import analyticsTracking from '../services/analytics-tracking';
+import { getNewsUrl } from '../utils/news-url-helper';
 
 import {
   NewsHero,
