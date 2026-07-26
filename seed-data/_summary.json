@@ -1,78 +1,47 @@
 {
-  "exportDate": "2026-07-19T09:18:31.295Z",
-  "database": "mongodb://localhost:27017/ctc_web_new",
-  "totalCollections": 14,
-  "totalDocuments": 253,
-  "collections": [
-    {
-      "collection": "products",
-      "count": 12,
-      "file": "products.json"
-    },
+  "migratedAt": "2026-07-26T08:16:51.612Z",
+  "totalCollections": 10,
+  "totalDocuments": 260,
+  "details": [
     {
       "collection": "productcategories",
-      "count": 7,
-      "file": "productcategories.json"
+      "count": 29
     },
     {
-      "collection": "projects",
-      "count": 41,
-      "file": "projects.json"
+      "collection": "products",
+      "count": 49
     },
     {
       "collection": "projectcategories",
-      "count": 8,
-      "file": "projectcategories.json"
+      "count": 7
     },
     {
-      "collection": "news",
-      "count": 1,
-      "file": "news.json"
+      "collection": "projects",
+      "count": 63
     },
     {
       "collection": "newscategories",
-      "count": 1,
-      "file": "newscategories.json"
+      "count": 12
     },
     {
-      "collection": "testimonials",
-      "count": 2,
-      "file": "testimonials.json"
+      "collection": "news",
+      "count": 45
     },
     {
       "collection": "partners",
-      "count": 12,
-      "file": "partners.json"
+      "count": 43
     },
     {
-      "collection": "users",
-      "count": 2,
-      "file": "users.json"
-    },
-    {
-      "collection": "teammembers",
-      "count": 2,
-      "file": "teammembers.json"
+      "collection": "testimonials",
+      "count": 0
     },
     {
       "collection": "contacts",
-      "count": 1,
-      "file": "contacts.json"
+      "count": 5
     },
     {
-      "collection": "notifications",
-      "count": 1,
-      "file": "notifications.json"
-    },
-    {
-      "collection": "settings",
-      "count": 1,
-      "file": "settings.json"
-    },
-    {
-      "collection": "analyticsevents",
-      "count": 162,
-      "file": "analyticsevents.json"
+      "collection": "users",
+      "count": 7
     }
   ]
 }

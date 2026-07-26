@@ -1,122 +1,303 @@
 [
   {
-    "_id": "6a5c812229fede92498fc411",
-    "name": "Huawei",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Huawei-Logo.svg",
-    "website": "https://huawei.com",
-    "tier": "platinum",
+    "_id": "0fa100000000000000000001",
+    "name": "test",
     "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "logo": "/uploads/images/partner-1.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc412",
-    "name": "Jinko Solar",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/b/b8/JinkoSolar_Logo.png",
-    "website": "https://jinkosolar.com",
-    "tier": "gold",
-    "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "_id": "0fa100000000000000000002",
+    "name": "Gumac",
+    "type": "financial",
+    "logo": "/image/customer/gumac190120180827202475.png",
+    "website": "http://gumac.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc413",
-    "name": "Canadian Solar",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Canadian_Solar_logo.svg",
-    "website": "https://canadiansolar.com",
-    "tier": "gold",
+    "_id": "0fa100000000000000000003",
+    "name": "365ok",
     "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "logo": "/image/customer/logo-365ok190120180827270326.png",
+    "website": "365ok.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc414",
-    "name": "ABB",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/00/ABB_logo.svg",
-    "website": "https://global.abb",
-    "tier": "platinum",
-    "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "_id": "0fa100000000000000000004",
+    "name": "Ancarat",
+    "type": "financial",
+    "logo": "/image/customer/ancarat-03190120180846034665.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc415",
-    "name": "SMA Solar",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Sma_solar_technology_logo.png",
-    "website": "https://sma.de",
-    "tier": "gold",
+    "_id": "0fa100000000000000000005",
+    "name": "Phụ kiện giá rẻ",
     "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "logo": "/image/customer/phukiengiare-03190120180846034675.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc416",
-    "name": "Dell Technologies",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg",
-    "website": "https://dell.com",
-    "tier": "gold",
-    "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "_id": "0fa100000000000000000006",
+    "name": "Thời trang Duyên Dáng",
+    "type": "financial",
+    "logo": "/image/customer/footer-logo190120180922149894.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc417",
-    "name": "Mobifone",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Logo_MobiFone.svg",
-    "website": "https://mobifone.vn",
-    "tier": "platinum",
+    "_id": "0fa100000000000000000007",
+    "name": "STONE LEATHER",
     "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "logo": "/image/customer/^8919c8e2512a8d596f0f4534d3ac712be34d139dc08418e735^pimgpsh_fullsize_distr190120181420377564.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc418",
+    "_id": "0fa100000000000000000008",
+    "name": "HGH",
+    "type": "financial",
+    "logo": "/image/customer/^ed1c9253fbda21a5a18a2de04b40c55449b32e6b48a484bac1^pimgpsh_fullsize_distr190120181421486109.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000009",
+    "name": "VMEN",
+    "type": "supplier",
+    "logo": "/image/customer/images190120181422163334.jpg",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000010",
+    "name": "HGH",
+    "type": "financial",
+    "logo": "/image/customer/png190120181424508651.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000011",
+    "name": "STONE LEATHER",
+    "type": "supplier",
+    "logo": "/image/customer/pngstone190120181433126882.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000012",
+    "name": "XSHOP",
+    "type": "financial",
+    "logo": "/image/customer/list-09png190120181433314552.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000013",
+    "name": "VMEN",
+    "type": "supplier",
+    "logo": "/image/customer/vmen png190120181433498203.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000014",
+    "name": "Giày Bom",
+    "type": "financial",
+    "logo": "/image/customer/logo (1)190120181436279611.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000015",
+    "name": "Giày nữ xinh",
+    "type": "supplier",
+    "logo": "/image/customer/logo (2)190120181436518958.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000016",
+    "name": "SKY DIAMOND",
+    "type": "financial",
+    "logo": "/image/customer/logo190120181437121198.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000017",
+    "name": "Iva.vn",
+    "type": "supplier",
+    "logo": "/image/customer/iva png220120180919291174.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000018",
+    "name": "Rosata",
+    "type": "financial",
+    "logo": "/image/customer/filelogogoc190120181619141695.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000019",
+    "name": "Banian",
+    "type": "supplier",
+    "logo": "/image/customer/wifi-logo190120181619311344.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000020",
+    "name": "D-link",
+    "type": "financial",
+    "logo": "/image/hinh logo png/2000px-d-link_wordmark.svg190720181134076998.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000021",
     "name": "VNPT",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/05/VNPT_Logo.svg",
-    "website": "https://vnpt.com.vn",
-    "tier": "platinum",
     "type": "supplier",
-    "status": "active",
-    "__v": 0
+    "logo": "/Image/hinh logo png/goi-cuoc-wifi-cap-quang-vnpt1190720181140067294.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc419",
-    "name": "VietinBank",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/9/91/Logo_VietinBank.svg",
-    "website": "https://vietinbank.vn",
-    "tier": "gold",
+    "_id": "0fa100000000000000000022",
+    "name": "Dray Tek",
     "type": "financial",
-    "status": "active",
-    "__v": 0
+    "logo": "/image/hinh logo png/draytek_logo190720181134137922.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc41a",
-    "name": "BIDV",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_BIDV.svg",
-    "website": "https://bidv.com.vn",
-    "tier": "gold",
-    "type": "financial",
-    "status": "active",
-    "__v": 0
+    "_id": "0fa100000000000000000023",
+    "name": "Huawei",
+    "type": "supplier",
+    "logo": "/image/hinh logo png/-huawei190720181139015567.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc41b",
-    "name": "Vietcombank",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Vietcombank_logo.svg",
-    "website": "https://vietcombank.com.vn",
-    "tier": "platinum",
+    "_id": "0fa100000000000000000024",
+    "name": "Mobifone",
     "type": "financial",
-    "status": "active",
-    "__v": 0
+    "logo": "/image/hinh logo png/logo-mobi-b9665306-ed72-4616-97ca-baa28593dbcd-x800190720181134283510.png",
+    "website": "https://ctcdn.vn"
   },
   {
-    "_id": "6a5c812229fede92498fc41c",
-    "name": "Agribank",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Agribank_Logo.svg",
-    "website": "https://agribank.com.vn",
-    "tier": "gold",
+    "_id": "0fa100000000000000000025",
+    "name": "MikroTik",
+    "type": "supplier",
+    "logo": "/image/hinh logo png/logo_new800-custom-2-980x280-1190720181134193145.png",
+    "website": "http://ctcdn.vn/mikrotik"
+  },
+  {
+    "_id": "0fa100000000000000000026",
+    "name": "VDC",
     "type": "financial",
-    "status": "active",
-    "__v": 0
+    "logo": "/image/hinh logo png/logo_vdc190720181134223217.gif",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000027",
+    "name": "Viettel",
+    "type": "supplier",
+    "logo": "/image/hinh logo png/viettel190720181401560772.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000028",
+    "name": "Vinaphone",
+    "type": "financial",
+    "logo": "/image/hinh logo png/vinaphone_logo.svg190720181134397557.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000029",
+    "name": "TP link",
+    "type": "supplier",
+    "logo": "/image/download (5)010720252344070269.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000030",
+    "name": "VTN",
+    "type": "financial",
+    "logo": "/image/hinh logo png/vtn190720181134418128.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000031",
+    "name": "Mikrotik",
+    "type": "supplier",
+    "logo": "/image/mikrotik-logo010720252340077300.jpg",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000032",
+    "name": "Vinaphone",
+    "type": "financial",
+    "logo": "/image/download (3)010720252342095738.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000033",
+    "name": "Viettel",
+    "type": "supplier",
+    "logo": "/image/download (4)010720252343147613.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000034",
+    "name": "unifi",
+    "type": "financial",
+    "logo": "/image/download (6)010720252345068394.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000035",
+    "name": "commscope",
+    "type": "supplier",
+    "logo": "/image/download (7).png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000036",
+    "name": "tkhanam",
+    "type": "financial",
+    "logo": "/image/download (8)010720252346558082.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000037",
+    "name": "anphat",
+    "type": "supplier",
+    "logo": "/image/download (3)010720252347512613.jpg",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000038",
+    "name": "solar",
+    "type": "financial",
+    "logo": "/image/download (9)010720252348541519.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000039",
+    "name": "ruijie",
+    "type": "supplier",
+    "logo": "/image/download (10)010720252350250737.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000040",
+    "name": "le long",
+    "type": "financial",
+    "logo": "/image/download (11)010720252356130273.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000041",
+    "name": "Mobifone",
+    "type": "supplier",
+    "logo": "/image/logo-mobifone-tong-hop-01-1024x316061120250046530267.jpg",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000000042",
+    "name": "Bộ Công An",
+    "type": "financial",
+    "logo": "/image/logo_cong an061120250051328666.png",
+    "website": "https://ctcdn.vn"
+  },
+  {
+    "_id": "0fa100000000000000001041",
+    "name": "Trần  Lê",
+    "type": "supplier",
+    "logo": "/image/tranle061120250056408081.png",
+    "website": "https://tranlecorp.com.vn/"
   }
 ]
