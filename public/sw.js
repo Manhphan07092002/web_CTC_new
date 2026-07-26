@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ctc-cache-v1';
+const CACHE_NAME = 'ctc-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',

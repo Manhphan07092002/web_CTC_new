@@ -24,6 +24,14 @@ class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    const errStr = error?.toString() || '';
+    if (errStr.includes('Failed to fetch dynamically imported module') || errStr.includes('Importing a module script failed')) {
+      const reloadedKey = 'chunk_reload_' + window.location.pathname;
+      if (!sessionStorage.getItem(reloadedKey)) {
+        sessionStorage.setItem(reloadedKey, 'true');
+        window.location.reload();
+      }
+    }
   }
 
   render(): React.ReactNode {
