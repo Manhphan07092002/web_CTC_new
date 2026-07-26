@@ -63,25 +63,39 @@ const ProductForm: React.FC = () => {
 
     setIsGeneratingAI(true);
     try {
-      const prompt = `Viết bài mô tả chi tiết sản phẩm cho website Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). 
-Tên sản phẩm: "${formData.name}". 
-Mã sản phẩm: "${formData.code || 'N/A'}". 
-Công suất: ${formData.power ? formData.power + ' kW' : 'Tiêu chuẩn'}. 
-Bảo hành: ${formData.warranty || 'Chính hãng CTC'}. 
+      const prompt = `Viết bài mô tả sản phẩm chi tiết, chuyên nghiệp chuẩn SEO bằng tiếng Việt cho website Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC).
 
-Yêu cầu:
-1. Viết 1 đoạn mô tả ngắn (khoảng 2 câu) tóm tắt điểm nổi bật.
-2. Viết 1 bài mô tả chi tiết khoảng 3-4 đoạn trình bày về công nghệ, hiệu suất, tính an toàn và ứng dụng thực tế. 
-3. Trả về kết quả dưới định dạng JSON duy nhất: {"shortDescription": "...", "description": "..."}`;
+Thông tin sản phẩm:
+- Tên sản phẩm: "${formData.name}"
+- Mã sản phẩm: "${formData.code || 'N/A'}"
+- Công suất: ${formData.power ? formData.power + ' kW' : 'Tiêu chuẩn công nghiệp'}
+- Hiệu suất: ${formData.efficiency ? formData.efficiency + ' %' : 'Cao'}
+- Bảo hành: ${formData.warranty || 'Chính hãng CTC'}
+- Giá: ${formData.price ? formData.price + ' VNĐ' : 'Liên hệ báo giá'}
+
+YÊU CẦU BẮT BUỘC:
+Trả về duy nhất định dạng JSON chuẩn (không bọc trong markdown) có 2 trường:
+1. "shortDescription": Đoạn tóm tắt 1-2 câu ngắn gọn, cuốn hút về ứng dụng và thế mạnh của sản phẩm.
+2. "description": Bài viết chi tiết định dạng HTML phong phú (dùng thẻ h3, p, ul, li, strong, table, tr, td).
+   Cấu trúc bài viết:
+   - h3 Đặc Điểm Nổi Bật với danh sách ul li strong
+   - h3 Công Nghệ & Hiệu Suất Kỹ Thuật với các đoạn p phân tích kỹ thuật, độ bền và an toàn.
+   - h3 Ứng Dụng Thực Tế với các giải pháp phù hợp.
+   - h3 Thông Số Tham Khảo với 1 bảng HTML table chứa thông số cơ bản.
+`;
 
       const response = await chatService.sendMessage(prompt);
       let parsed: any = null;
+      
       try {
-        const match = response.match(/\{[\s\S]*\}/);
+        const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const match = cleanResponse.match(/\{[\s\S]*\}/);
         if (match) {
           parsed = JSON.parse(match[0]);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('JSON parse error from AI response, using text fallback:', e);
+      }
 
       if (parsed && (parsed.description || parsed.shortDescription)) {
         setFormData(prev => ({
@@ -89,17 +103,25 @@ Yêu cầu:
           shortDescription: parsed.shortDescription || prev.shortDescription,
           description: parsed.description || prev.description,
         }));
-        showToast('Đã tạo thành công bài mô tả sản phẩm bằng AI Gemini!', 'success');
+        showToast('✨ Đã tự động tạo bài mô tả sản phẩm Rich Text HTML bằng AI Gemini thành công!', 'success');
       } else if (response) {
+        // Fallback: Convert plain text response into HTML paragraphs
+        const formattedHtml = response
+          .split('\n\n')
+          .map(paragraph => paragraph.trim())
+          .filter(Boolean)
+          .map(p => p.startsWith('#') ? `<h3>${p.replace(/^#+\s*/, '')}</h3>` : `<p>${p}</p>`)
+          .join('');
+
         setFormData(prev => ({
           ...prev,
-          description: response,
+          description: formattedHtml,
         }));
-        showToast('Đã tạo mô tả sản phẩm bằng AI thành công!', 'success');
+        showToast('✨ Đã tạo nội dung mô tả bằng AI thành công!', 'success');
       }
     } catch (error) {
       console.error('Error generating AI description:', error);
-      showToast('Lỗi khi tạo mô tả bằng AI', 'error');
+      showToast('Lỗi khi kết nối AI Gemini. Vui lòng thử lại.', 'error');
     } finally {
       setIsGeneratingAI(false);
     }
@@ -450,7 +472,7 @@ Yêu cầu:
                 title="Tự động tạo mô tả sản phẩm bằng AI Gemini"
               >
                 <Sparkles size={14} className={isGeneratingAI ? 'animate-spin' : ''} />
-                {isGeneratingAI ? 'Đang tạo mô tả bằng AI...' : '✨ Tạo mô tả bằng AI Gemini'}
+                {isGeneratingAI ? 'Đang tạo mô tả bằng AI...' : 'Tạo mô tả bằng AI Gemini'}
               </button>
             </div>
             <Suspense fallback={<div className="h-48 flex items-center justify-center bg-gray-50 border rounded-xl"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
