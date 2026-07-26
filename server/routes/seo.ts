@@ -8,10 +8,17 @@ import { Readable } from 'stream';
 import { Product, Project, News, ProductCategory } from '../../models';
 import { INDEXNOW_KEY, INDEXNOW_KEY_FILENAME, triggerInstantIndexing } from '../services/indexing';
 
+import path from 'path';
+
 const router = express.Router();
 
 // Site configuration
 const SITE_URL = process.env.SITE_URL || 'https://ctcdn.vn';
+
+// Favicon fallback route
+router.get('/favicon.ico', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../../public/favicon.svg'));
+});
 
 // IndexNow Key Verification File Route
 router.get(`/${INDEXNOW_KEY_FILENAME}`, (req, res) => {

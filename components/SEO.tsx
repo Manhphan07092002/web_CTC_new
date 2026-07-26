@@ -111,7 +111,7 @@ const SEO: React.FC<SEOProps> = ({
   const fullTitle = `${title} | ${settings.siteName || COMPANY_INFO.shortName}`;
   
   // Favicon URLs & Dynamic Rounded Favicon
-  const faviconUrl = settings.favicon || settings.logo || '/favicon.ico';
+  const faviconUrl = settings.favicon || settings.logo || '/favicon.svg';
   const [processedFavicon, setProcessedFavicon] = useState<string>(faviconUrl);
 
   useEffect(() => {
