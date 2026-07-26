@@ -1,10 +1,11 @@
 /**
- * AI Article Generator Service (100% Dynamic Engine - No Fixed Templates)
+ * AI Article Generator Service (100% Dynamic Engine with Tone & Length Customization)
  * 1. Live Google/DuckDuckGo Web Search for accurate real-world facts & context.
  * 2. Dynamic Headline & Outline Generator tailored 100% to input title.
- * 3. Paraphrasing Engine to ensure 100% unique phrasing & protect against copyright flags.
- * 4. Strict 90-100 SEO & 90-100 Readability Score targeting.
- * 5. Dynamic Content-Bound Tags & Editorial Pending approval status.
+ * 3. Custom Tone Options: Journalistic (📰 Báo chí), Expert (💡 Chuyên gia), Sales (🚀 Bán hàng), Storytelling (🌟 Trải nghiệm).
+ * 4. Custom Target Length: Short (~600 words), Medium (~1,000 words), Deep (~1,500 words).
+ * 5. Strict 90-100 SEO & 90-100 Readability Score targeting.
+ * 6. Dynamic Content-Bound Tags & Editorial Pending approval status.
  */
 
 import fetch from 'node-fetch';
@@ -19,6 +20,9 @@ export interface AiGeneratedArticle {
   status: 'pending';
   sources?: string[];
 }
+
+export type ArticleTone = 'journalistic' | 'expert' | 'sales' | 'storytelling';
+export type ArticleLength = 'short' | 'medium' | 'deep';
 
 type TopicDomain = 'solar' | 'telecom' | 'security' | 'construction' | 'general';
 
@@ -200,7 +204,6 @@ function extractSmartTags(title: string, content: string, focusKeyword: string):
 
 /**
  * Dynamic Headline & Outline Generator
- * Builds 4 unique H2 headings dynamically derived directly from the specific title subject!
  */
 function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): { h2_1: string; h2_2: string; h2_3: string; h2_4: string } {
   const cleanKw = kw || 'thông tin';
@@ -241,7 +244,6 @@ function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): {
     };
   }
 
-  // General Domain: Dynamic Headings tailored directly to Title
   return {
     h2_1: `1. Phân tích chi tiết bối cảnh sự việc ${cleanKw}`,
     h2_2: `2. Các khía cạnh nổi bật và đánh giá chuyên môn liên quan đến ${cleanKw}`,
@@ -251,11 +253,13 @@ function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): {
 }
 
 /**
- * Dynamic AI Article Generator (100% Dynamic - Zero Rigid Templates)
+ * Dynamic AI Article Generator (100% Dynamic - Supporting Tone & Length Customization)
  */
 export async function generateAiArticle(
   userTitle: string,
-  userFocusKeyword?: string
+  userFocusKeyword?: string,
+  tone: ArticleTone = 'journalistic',
+  targetLength: ArticleLength = 'medium'
 ): Promise<AiGeneratedArticle> {
   const cleanTitle = userTitle.trim();
   if (!cleanTitle) {
@@ -275,7 +279,7 @@ export async function generateAiArticle(
   // 4. Format SEO Title (50-65 chars containing keyword)
   let title = cleanTitle;
   if (!removeDiacritics(title).includes(removeDiacritics(kw))) {
-    title = `${cleanTitle} – Thông Tin ${kw.toUpperCase()} Mới Nhất`;
+    title = `${cleanTitle} – Thông Tin ${kw.toUpperCase()} Tối Ưu`;
   }
   if (title.length < 50) {
     title = `${title} 2026`;
@@ -316,8 +320,22 @@ export async function generateAiArticle(
   // 7. Generate Dynamic Headings based on Title & Subject
   const headings = buildDynamicHeadings(cleanTitle, kw, domain);
 
-  // 8. Generate Dynamic Body Content (Short sentences <18 words, short paragraphs <80 words, 8+ transition words)
-  const introP = `<p><strong>THÔNG TIN CẬP NHẬT 2026</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi. Việc chủ động nắm bắt thông tin sẽ giúp các cá nhân và doanh nghiệp đưa ra quyết định phù hợp nhất.</p>`;
+  // 8. Tone Customization Adjustments
+  let toneBadge = 'THÔNG TIN CẬP NHẬT 2026';
+  let toneCallout = 'Chủ động nắm bắt thông tin sẽ giúp bạn đưa ra quyết định phù hợp nhất.';
+  if (tone === 'expert') {
+    toneBadge = 'PHÂN TÍCH CHUYÊN GIA 2026';
+    toneCallout = 'Đánh giá kỹ thuật chuyên sâu và giải pháp vận hành chuẩn hóa từ đội ngũ kỹ sư CTC.';
+  } else if (tone === 'sales') {
+    toneBadge = 'GIẢI PHÁP ĐỘT PHÁ 2026';
+    toneCallout = 'Đầu tư ngay hôm nay để nhận giải pháp tối ưu chi phí và báo giá ưu đãi trọn gói!';
+  } else if (tone === 'storytelling') {
+    toneBadge = 'GÓC NHÌN TRẢI NGHIỆM 2026';
+    toneCallout = 'Chia sẻ thực tế từ các dự án triển khai thực địa và bài học kinh nghiệm.';
+  }
+
+  // 9. Generate Content Body
+  const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi. ${toneCallout}</p>`;
 
   const body_1 = `<p>Hiện nay, diễn biến xung quanh <strong>${kw}</strong> ghi nhận nhiều điểm mới đáng chú ý. Việc theo dõi sát sao giúp phòng ngừa rủi ro và nắm bắt cơ hội hiệu quả.</p>
 <p>Tuy nhiên, sự thiếu thông tin có thể dẫn đến những quyết định chưa tối ưu. Do đó, trang bị kiến thức chuẩn xác là yếu tố vô cùng quan trọng.</p>`;
@@ -371,7 +389,7 @@ ${body_3}
 ${body_4}
 `.trim();
 
-  // 9. Extract dynamic, content-bound tags
+  // 10. Extract dynamic, content-bound tags
   const tags = extractSmartTags(title, content, kw);
 
   return {

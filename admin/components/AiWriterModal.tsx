@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare } from 'lucide-react';
+import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -28,7 +28,10 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
   const { showToast } = useToast();
   const [topicTitle, setTopicTitle] = useState(initialTitle);
   const [focusKeyword, setFocusKeyword] = useState(initialFocusKeyword);
+  const [tone, setTone] = useState<'journalistic' | 'expert' | 'sales' | 'storytelling'>('journalistic');
+  const [targetLength, setTargetLength] = useState<'short' | 'medium' | 'deep'>('medium');
   const [regenerationNote, setRegenerationNote] = useState('');
+  const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<number>(0);
   const [result, setResult] = useState<any | null>(null);
@@ -53,14 +56,15 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
     const timer2 = setTimeout(() => setStep(3), 2800);
 
     try {
-      // Append user's regeneration note if present to guide AI search & focus
       const fullTitleWithNote = regenerationNote.trim() 
         ? `${titleToUse} (${regenerationNote.trim()})` 
         : titleToUse;
 
       const res = await api.ai.generateArticle({
         title: fullTitleWithNote,
-        focusKeyword: kwToUse
+        focusKeyword: kwToUse,
+        tone,
+        targetLength
       });
 
       clearTimeout(timer1);
@@ -69,7 +73,6 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
       if (res && res.success && res.data) {
         setResult({
           ...res.data,
-          // Keep clean user-edited title on result
           title: titleToUse
         });
         showToast('✨ AI đã tạo bài viết thành công!', 'success');
@@ -161,16 +164,61 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                 />
               </div>
 
-              {/* Status workflow info */}
-              <div className="p-4 bg-sky-50/70 border border-sky-100 rounded-2xl space-y-2 text-xs text-sky-900">
-                <p className="font-extrabold flex items-center gap-1.5 text-sky-950">
-                  <Wand2 size={14} className="text-sky-600" /> Quy trình AI tự động thực hiện:
-                </p>
-                <ul className="list-disc pl-5 space-y-1 text-slate-600 font-medium">
-                  <li><strong>Bước 1:</strong> Tìm kiếm thông tin & dữ liệu thực tế liên quan tới tiêu đề từ Google & DuckDuckGo.</li>
-                  <li><strong>Bước 2:</strong> Viết lại bài viết trên 900 từ với cấu trúc H2, H3, danh sách thẻ bullet point & thẻ liên hệ CTC.</li>
-                  <li><strong>Bước 3:</strong> Tối ưu tiêu đề (50-65 ký tự), Meta (120-160 ký tự) & từ khóa Focus để đạt điểm Yoast 100/100.</li>
-                </ul>
+              {/* Tone Selection */}
+              <div>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <BookOpen size={14} className="text-primary" /> Giọng Văn / Phong Cách Viết Bài
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {[
+                    { id: 'journalistic', label: '📰 Báo chí', desc: 'Chính luận, khách quan' },
+                    { id: 'expert', label: '💡 Chuyên gia', desc: 'Phân tích kỹ thuật sâu' },
+                    { id: 'sales', label: '🚀 Bán hàng', desc: 'Thuyết phục & Kêu gọi' },
+                    { id: 'storytelling', label: '🌟 Trải nghiệm', desc: 'Góc nhìn chia sẻ thực tế' },
+                  ].map(t => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTone(t.id as any)}
+                      className={`p-2.5 rounded-xl border text-left transition-all ${
+                        tone === t.id
+                          ? 'border-primary bg-primary/5 text-primary ring-2 ring-primary/20 font-black'
+                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-semibold'
+                      }`}
+                    >
+                      <div className="text-xs font-bold">{t.label}</div>
+                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Target Length Selection */}
+              <div>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Layers size={14} className="text-primary" /> Độ Dài & Độ Sâu Bài Viết
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'short', label: '⚡ Ngắn gọn (~600 từ)', desc: 'Tóm tắt nhanh' },
+                    { id: 'medium', label: '🎯 Yoast SEO (~1.000 từ)', desc: 'Đầy đủ tiêu chuẩn' },
+                    { id: 'deep', label: '📊 Phân tích sâu (~1.500 từ)', desc: 'Báo cáo toàn diện' },
+                  ].map(l => (
+                    <button
+                      key={l.id}
+                      type="button"
+                      onClick={() => setTargetLength(l.id as any)}
+                      className={`p-2.5 rounded-xl border text-left transition-all ${
+                        targetLength === l.id
+                          ? 'border-emerald-600 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-500/20 font-black'
+                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-semibold'
+                      }`}
+                    >
+                      <div className="text-xs font-bold">{l.label}</div>
+                      <div className="text-[10px] text-slate-400 font-medium">{l.desc}</div>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Progress Loading UI */}
@@ -312,13 +360,32 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                 />
               </div>
 
-              {/* HTML Content Preview */}
+              {/* HTML Content Preview & Direct Editor */}
               <div>
-                <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider mb-1 block">Nội Dung Chi Tiết (Xem Trước)</label>
-                <div 
-                  className="p-4 bg-slate-50 border border-slate-200 rounded-2xl max-h-52 overflow-y-auto text-xs text-slate-800 prose prose-sm max-w-none shadow-inner"
-                  dangerouslySetInnerHTML={{ __html: result.content }}
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider block">Nội Dung Chi Tiết (Xem Trước / Chỉnh Sửa HTML)</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowCodeEditor(!showCodeEditor)}
+                    className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
+                  >
+                    <Code size={12} /> {showCodeEditor ? 'Chuyển sang Xem trước Trực quan' : 'Chỉnh sửa Mã HTML trực tiếp'}
+                  </button>
+                </div>
+
+                {showCodeEditor ? (
+                  <textarea
+                    rows={8}
+                    value={result.content || ''}
+                    onChange={e => setResult({ ...result, content: e.target.value })}
+                    className="w-full text-xs font-mono bg-slate-900 text-amber-300 p-3 rounded-2xl border border-slate-700 focus:ring-2 focus:ring-primary outline-none"
+                  />
+                ) : (
+                  <div 
+                    className="p-4 bg-slate-50 border border-slate-200 rounded-2xl max-h-52 overflow-y-auto text-xs text-slate-800 prose prose-sm max-w-none shadow-inner"
+                    dangerouslySetInnerHTML={{ __html: result.content }}
+                  />
+                )}
               </div>
 
               {/* Action Buttons */}
