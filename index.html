@@ -701,40 +701,16 @@
         e.target.src = PLACEHOLDER;
         e.target.alt = '';
       }
-    }, true);
-    
-    // Check all images on load
-    function checkImage(img) {
+    // Event-driven image error fallback without main-thread polling
+    function fixBrokenImage(img) {
       if (!img || !img.dataset || img.dataset.fixed) return;
-      
-      // Check if image is broken or empty
-      const isBroken = !img.src || 
-                       img.src === '' || 
-                       img.src === window.location.href ||
-                       img.src.startsWith('data:text') ||
-                       (img.complete && img.naturalWidth === 0);
-      
-      if (isBroken) {
-        img.dataset.fixed = 'true';
-        img.src = PLACEHOLDER;
-        img.alt = '';
-      }
+      img.dataset.fixed = 'true';
+      img.src = PLACEHOLDER;
     }
-    
-    // Check images periodically
-    setInterval(function() {
-      document.querySelectorAll('img').forEach(checkImage);
-    }, 300);
-    
-    // Also check on load event
-    document.addEventListener('load', function(e) {
+
+    document.addEventListener('error', function(e) {
       if (e.target && e.target.tagName === 'IMG') {
-        var imgRef = e.target;
-        setTimeout(function() { 
-          if (imgRef && document.contains(imgRef)) {
-            checkImage(imgRef); 
-          }
-        }, 100);
+        fixBrokenImage(e.target);
       }
     }, true);
     // Register Service Worker for PWA asset caching & offline support
