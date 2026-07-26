@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
 import RoleManagement from './RoleManagement';
 import UserPermissionManagement from './UserPermissionManagement';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 // Role interface
 interface Role {
@@ -174,16 +175,33 @@ const UserManagement: React.FC = () => {
     setShowImagePicker(false);
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if(confirm(`Bạn có chắc muốn xóa người dùng "${name}"?\n\nHành động này không thể hoàn tác.`)) {
-      try {
-        await api.users.delete(id);
-        showToast(`✓ Đã xóa ${name}`, 'success');
-        loadUsers();
-      } catch (e) {
-        console.error('Error deleting user:', e);
-        showToast('✗ Không thể xóa người dùng', 'error');
-      }
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    user: User | null;
+  }>({
+    isOpen: false,
+    user: null
+  });
+
+  const handleDeleteClick = (user: User) => {
+    setDeleteConfirm({
+      isOpen: true,
+      user
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const user = deleteConfirm.user;
+    if (!user) return;
+    try {
+      await api.users.delete(user.id);
+      showToast(`✓ Đã xóa người dùng ${user.name}`, 'success');
+      loadUsers();
+    } catch (e) {
+      console.error('Error deleting user:', e);
+      showToast('✗ Không thể xóa người dùng', 'error');
+    } finally {
+      setDeleteConfirm({ isOpen: false, user: null });
     }
   };
 
@@ -435,11 +453,11 @@ const UserManagement: React.FC = () => {
                      >
                        <Edit size={18} />
                      </button>
-                     <button 
-                       onClick={() => handleDelete(u.id, u.name)} 
-                       className="p-2 hover:bg-red-50 text-gray-500 hover:text-red-500 rounded-lg transition-colors"
-                       title="Xóa"
-                     >
+                      <button 
+                        onClick={() => handleDeleteClick(u)} 
+                        className="p-2 hover:bg-red-50 text-gray-500 hover:text-red-500 rounded-lg transition-colors"
+                        title="Xóa"
+                      >
                        <Trash2 size={18} />
                      </button>
                   </div>
@@ -832,6 +850,19 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete User Confirm Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, user: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa tài khoản"
+        itemName={deleteConfirm.user?.name}
+        itemType="user"
+        description={`Bạn có chắc chắn muốn xóa tài khoản "${deleteConfirm.user?.name}" (${deleteConfirm.user?.email})?`}
+        warningText="Tài khoản này sẽ bị xóa khỏi hệ thống và không thể khôi phục."
+        confirmText="Đồng ý xóa"
+      />
     </div>
   );
 };

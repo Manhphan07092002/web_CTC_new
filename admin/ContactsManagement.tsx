@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, User, Calendar, CheckCircle, Clock, XCircle, Trash2, Eye, Filter } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface Contact {
   id: string;
@@ -81,21 +82,39 @@ const ContactsManagement: React.FC = () => {
     }
   };
 
-  const deleteContact = async (id: string) => {
-    if (!confirm('Bạn có chắc muốn xóa liên hệ này?')) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    contact: Contact | null;
+  }>({
+    isOpen: false,
+    contact: null
+  });
+
+  const handleDeleteClick = (contact: Contact) => {
+    setDeleteConfirm({
+      isOpen: true,
+      contact
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const contact = deleteConfirm.contact;
+    if (!contact) return;
 
     try {
-      const response = await fetch(`${API_BASE}/contact/${id}`, {
+      const response = await fetch(`${API_BASE}/contact/${contact.id}`, {
         method: 'DELETE'
       });
 
       if (response.ok) {
-        showToast('Đã xóa liên hệ', 'success');
+        showToast('Đã xóa yêu cầu liên hệ thành công!', 'success');
         fetchContacts();
       }
     } catch (error) {
       console.error('Error deleting contact:', error);
       showToast('Không thể xóa liên hệ', 'error');
+    } finally {
+      setDeleteConfirm({ isOpen: false, contact: null });
     }
   };
 
@@ -288,7 +307,7 @@ const ContactsManagement: React.FC = () => {
                           <Eye size={18} />
                         </button>
                         <button
-                          onClick={() => deleteContact(contact.id)}
+                          onClick={() => handleDeleteClick(contact)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Xóa"
                         >
@@ -382,6 +401,18 @@ const ContactsManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Contact Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, contact: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa yêu cầu"
+        itemName={deleteConfirm.contact?.name}
+        description={`Bạn có chắc chắn muốn xóa yêu cầu liên hệ từ "${deleteConfirm.contact?.name}" (${deleteConfirm.contact?.phone})?`}
+        warningText="Thông tin liên hệ này sẽ bị xóa khỏi hệ thống."
+        confirmText="Đồng ý xóa"
+      />
     </div>
   );
 };

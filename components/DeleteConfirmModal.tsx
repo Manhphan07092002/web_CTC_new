@@ -5,17 +5,20 @@ interface DeleteConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  title: string;
+  title?: string;
   itemName?: string;
   productName?: string;
-  type: 'soft' | 'permanent' | 'restore' | 'hard';
+  type?: 'soft' | 'permanent' | 'restore' | 'hard';
   itemImage?: string;
   productImage?: string;
   itemPrice?: string;
   productPrice?: string;
   itemCategory?: string;
   productCategory?: string;
-  itemType?: 'product' | 'news' | 'project' | 'partner' | 'testimonial';
+  itemType?: 'product' | 'news' | 'project' | 'partner' | 'testimonial' | 'category' | 'user' | 'role';
+  description?: string;
+  warningText?: string;
+  confirmText?: string;
 }
 
 const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
@@ -25,73 +28,81 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   title,
   itemName,
   productName,
-  type,
+  type = 'hard',
   itemImage,
   productImage,
   itemPrice,
   productPrice,
   itemCategory,
   productCategory,
-  itemType = 'product'
+  itemType = 'product',
+  description,
+  warningText,
+  confirmText
 }) => {
   const name = itemName || productName || '';
   const img = itemImage || productImage;
   const price = itemPrice || productPrice;
   const cat = itemCategory || productCategory;
+
   if (!isOpen) return null;
 
   const getConfig = () => {
     switch (type) {
       case 'soft':
         return {
-          icon: <Trash2 size={48} className="text-orange-500" />,
-          bgColor: 'bg-orange-50',
-          borderColor: 'border-orange-200',
-          buttonColor: 'bg-orange-600 hover:bg-orange-700',
-          iconBg: 'bg-orange-100',
-          title: 'Chuyển vào thùng rác',
-          description: 'Sản phẩm sẽ được chuyển vào thùng rác và có thể khôi phục sau.',
-          actionText: 'Chuyển vào thùng rác',
+          icon: <Trash2 size={24} className="text-orange-600" />,
+          bgColor: 'bg-gradient-to-r from-orange-500/10 to-amber-500/10',
+          borderColor: 'border-orange-100',
+          buttonColor: 'bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white shadow-lg shadow-orange-500/25',
+          iconBg: 'bg-orange-100 text-orange-600 ring-4 ring-orange-50',
+          title: title || 'Chuyển vào thùng rác',
+          description: description || 'Mục này sẽ được chuyển vào thùng rác và có thể khôi phục sau.',
+          actionText: confirmText || 'Chuyển vào thùng rác',
           warning: false
         };
       case 'permanent':
         return {
-          icon: <AlertTriangle size={48} className="text-red-500" />,
-          bgColor: 'bg-red-50',
-          borderColor: 'border-red-200',
-          buttonColor: 'bg-red-600 hover:bg-red-700',
-          iconBg: 'bg-red-100',
-          title: 'Xóa vĩnh viễn',
-          description: 'Hành động này KHÔNG THỂ HOÀN TÁC! Sản phẩm sẽ bị xóa hoàn toàn khỏi hệ thống.',
-          actionText: 'Xóa vĩnh viễn',
+          icon: <AlertTriangle size={24} className="text-red-600" />,
+          bgColor: 'bg-gradient-to-r from-red-500/10 to-rose-500/10',
+          borderColor: 'border-red-100',
+          buttonColor: 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg shadow-red-500/25',
+          iconBg: 'bg-red-100 text-red-600 ring-4 ring-red-50',
+          title: title || 'Xóa vĩnh viễn',
+          description: description || 'Hành động này KHÔNG THỂ HOÀN TÁC! Dữ liệu sẽ bị xóa hoàn toàn khỏi hệ thống.',
+          actionText: confirmText || 'Xóa vĩnh viễn',
           warning: true
         };
       case 'restore':
         return {
-          icon: <RotateCcw size={48} className="text-green-500" />,
-          bgColor: 'bg-green-50',
-          borderColor: 'border-green-200',
-          buttonColor: 'bg-green-600 hover:bg-green-700',
-          iconBg: 'bg-green-100',
-          title: 'Khôi phục sản phẩm',
-          description: 'Sản phẩm sẽ được khôi phục và hiển thị trở lại trong danh sách.',
-          actionText: 'Khôi phục',
+          icon: <RotateCcw size={24} className="text-emerald-600" />,
+          bgColor: 'bg-gradient-to-r from-emerald-500/10 to-teal-500/10',
+          borderColor: 'border-emerald-100',
+          buttonColor: 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/25',
+          iconBg: 'bg-emerald-100 text-emerald-600 ring-4 ring-emerald-50',
+          title: title || 'Khôi phục mục này',
+          description: description || 'Dữ liệu sẽ được khôi phục và hiển thị trở lại trong danh sách.',
+          actionText: confirmText || 'Khôi phục',
           warning: false
         };
       case 'hard':
-        const itemTypeText = itemType === 'news' ? 'tin tức' : 
+      default:
+        const itemTypeText = itemType === 'category' ? 'danh mục' :
+                           itemType === 'news' ? 'tin tức' : 
                            itemType === 'project' ? 'dự án' :
                            itemType === 'partner' ? 'đối tác' :
-                           itemType === 'testimonial' ? 'đánh giá' : 'nội dung';
+                           itemType === 'testimonial' ? 'đánh giá' :
+                           itemType === 'user' ? 'người dùng' :
+                           itemType === 'role' ? 'vai trò' : 'mục này';
         return {
-          icon: <Trash2 size={48} className="text-red-500" />,
-          bgColor: 'bg-red-50',
-          borderColor: 'border-red-200',
-          buttonColor: 'bg-red-600 hover:bg-red-700',
-          iconBg: 'bg-red-100',
-          title: `Xóa ${itemTypeText}`,
-          description: `${itemTypeText.charAt(0).toUpperCase() + itemTypeText.slice(1)} sẽ bị xóa vĩnh viễn khỏi hệ thống.`,
-          actionText: 'Xóa',
+          icon: <Trash2 size={24} className="text-red-600" />,
+          bgColor: 'bg-gradient-to-r from-red-500/10 to-rose-500/10',
+          borderColor: 'border-red-100',
+          buttonColor: 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg shadow-red-500/25',
+          iconBg: 'bg-red-100 text-red-600 ring-4 ring-red-50',
+          title: title || `Xác nhận xóa ${itemTypeText}`,
+          description: description || `${itemTypeText.charAt(0).toUpperCase() + itemTypeText.slice(1)} sẽ bị xóa vĩnh viễn khỏi hệ thống.`,
+          actionText: confirmText || 'Đồng ý xóa',
           warning: true
         };
     }
@@ -100,89 +111,99 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   const config = getConfig();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-slate-950/60 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
+        onClick={onClose}
+      />
+
+      {/* Modal Dialog */}
+      <div className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-100 transform transition-all duration-300 scale-100 animate-scale-up z-10">
+        
         {/* Header */}
-        <div className={`${config.bgColor} ${config.borderColor} border-b px-6 py-4`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`${config.iconBg} p-2 rounded-full`}>
-                {config.icon}
-              </div>
-              <h3 className="text-lg font-bold text-gray-800">{config.title}</h3>
+        <div className={`${config.bgColor} border-b ${config.borderColor} px-6 py-5 flex items-center justify-between`}>
+          <div className="flex items-center gap-3.5">
+            <div className={`${config.iconBg} p-2.5 rounded-2xl flex items-center justify-center transition-transform hover:scale-105`}>
+              {config.icon}
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <X size={24} />
-            </button>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 tracking-tight">{config.title}</h3>
+              <p className="text-xs text-gray-500 font-medium mt-0.5">Xác nhận hành động</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-white/80 transition-all duration-200"
+          >
+            <X size={18} />
+          </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6">
-          {/* Product Info */}
-          <div className="flex items-start gap-4 mb-4 p-4 bg-gray-50 rounded-xl">
-            {itemImage ? (
-              <img 
-                src={itemImage} 
-                alt={name}
-                className="w-16 h-16 object-cover rounded-lg"
-              />
-            ) : (
-              <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                <span className="text-gray-400 text-xs">No Image</span>
-              </div>
-            )}
-            <div className="flex-1">
-              <h4 className="font-bold text-gray-800 mb-1 line-clamp-2">{name}</h4>
-              {itemCategory && (
-                <p className="text-sm text-gray-500 mb-1">{itemCategory}</p>
-              )}
-              {itemPrice && (
-                <p className="text-sm font-medium text-primary">{itemPrice}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Description */}
-          <p className="text-gray-600 mb-4">{config.description}</p>
-
-          {/* Warning */}
-          {config.warning && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-              <div className="flex items-start gap-2">
-                <AlertTriangle size={16} className="text-red-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-red-800 font-medium text-sm">Cảnh báo!</p>
-                  <p className="text-red-700 text-sm">
-                    Sau khi xóa vĩnh viễn, bạn sẽ không thể khôi phục sản phẩm này.
-                  </p>
+        {/* Body Content */}
+        <div className="p-6 space-y-4">
+          
+          {/* Target Item Highlight */}
+          {name && (
+            <div className="flex items-center gap-4 p-4 bg-slate-50/80 border border-slate-100 rounded-2xl">
+              {img ? (
+                <img 
+                  src={img} 
+                  alt={name}
+                  className="w-14 h-14 object-cover rounded-xl shadow-sm border border-white"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-red-100/70 text-red-600 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0">
+                  {name.charAt(0).toUpperCase()}
                 </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-gray-900 text-base truncate">{name}</h4>
+                {cat && <p className="text-xs text-gray-500 mt-0.5 font-medium">{cat}</p>}
+                {price && <p className="text-xs font-semibold text-primary mt-1">{price}</p>}
               </div>
             </div>
           )}
 
-          {/* Actions */}
-          <div className="flex gap-3">
+          {/* Description */}
+          <p className="text-sm text-gray-600 leading-relaxed font-normal">
+            {config.description}
+          </p>
+
+          {/* Special Warning Box */}
+          {(warningText || config.warning) && (
+            <div className="bg-amber-50/90 border border-amber-200/70 rounded-2xl p-4 flex items-start gap-3">
+              <AlertTriangle size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
+              <div className="text-xs leading-relaxed">
+                <span className="font-bold text-amber-900 block mb-0.5">Lưu ý quan trọng:</span>
+                <span className="text-amber-800 font-medium">
+                  {warningText || 'Hành động này sẽ xóa dữ liệu và không thể hoàn tác sau khi thực hiện.'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3 pt-2">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium transition-colors"
+              className="flex-1 px-5 py-3 rounded-2xl border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 font-semibold text-sm transition-all duration-200 active:scale-95"
             >
-              Hủy
+              Hủy bỏ
             </button>
             <button
               onClick={() => {
                 onConfirm();
                 onClose();
               }}
-              className={`flex-1 px-4 py-3 text-white rounded-xl font-medium transition-colors ${config.buttonColor}`}
+              className={`flex-1 px-5 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 active:scale-95 ${config.buttonColor}`}
             >
               {config.actionText}
             </button>
           </div>
+
         </div>
+
       </div>
     </div>
   );

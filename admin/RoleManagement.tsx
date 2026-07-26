@@ -25,6 +25,7 @@ import {
   Save,
   UserCheck,
 } from 'lucide-react';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 // Types
 interface Permission {
@@ -160,9 +161,24 @@ const RoleManagement: React.FC = () => {
     }
   };
 
-  // Handle delete role
-  const handleDelete = async (role: Role) => {
-    if (!confirm(`Bạn có chắc muốn xóa vai trò "${role.displayName}"?`)) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    role: Role | null;
+  }>({
+    isOpen: false,
+    role: null
+  });
+
+  const handleDeleteClick = (role: Role) => {
+    setDeleteConfirm({
+      isOpen: true,
+      role
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const role = deleteConfirm.role;
+    if (!role) return;
 
     try {
       const response = await fetch(`/api/permissions/roles/${role._id}`, {
@@ -180,6 +196,8 @@ const RoleManagement: React.FC = () => {
     } catch (error) {
       console.error('Error deleting role:', error);
       showNotification('error', 'Lỗi khi xóa vai trò');
+    } finally {
+      setDeleteConfirm({ isOpen: false, role: null });
     }
   };
 
@@ -373,7 +391,7 @@ const RoleManagement: React.FC = () => {
                   </button>
                   {!role.isSystem && (
                     <button
-                      onClick={() => handleDelete(role)}
+                      onClick={() => handleDeleteClick(role)}
                       className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -557,6 +575,19 @@ const RoleManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Role Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, role: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa vai trò"
+        itemName={deleteConfirm.role?.displayName}
+        itemType="role"
+        description={`Bạn có chắc chắn muốn xóa vai trò "${deleteConfirm.role?.displayName}" (${deleteConfirm.role?.name})?`}
+        warningText="Các người dùng đang gắn vai trò này sẽ bị mất vai trò tương ứng."
+        confirmText="Đồng ý xóa"
+      />
     </div>
   );
 };

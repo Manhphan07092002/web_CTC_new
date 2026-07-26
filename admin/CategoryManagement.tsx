@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, X, Tag, Grid, Layers, FolderOpen } from 'lucide-rea
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { PermissionGate } from '../contexts/PermissionContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface Category {
   id: string;
@@ -112,30 +113,48 @@ const CategoryManagement: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Bạn có chắc muốn xóa danh mục "${name}"?\n\nLưu ý: Các mục trong danh mục này sẽ không bị xóa.`)) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    category: Category | null;
+  }>({
+    isOpen: false,
+    category: null
+  });
+
+  const handleDeleteClick = (category: Category) => {
+    setDeleteConfirm({
+      isOpen: true,
+      category
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const category = deleteConfirm.category;
+    if (!category) return;
 
     try {
       switch (activeTab) {
         case 'product':
-          await api.productCategories.delete(id);
+          await api.productCategories.delete(category.id);
           break;
         case 'news':
-          await api.newsCategories.delete(id);
+          await api.newsCategories.delete(category.id);
           break;
         case 'project':
-          await api.projectCategories.delete(id);
+          await api.projectCategories.delete(category.id);
           break;
         case 'document':
-          await api.documentCategories.delete(id);
+          await api.documentCategories.delete(category.id);
           break;
       }
-      showToast(`Đã xóa danh mục ${name}`, 'success');
+      showToast(`Đã xóa danh mục "${category.name}" thành công!`, 'success');
       loadCategories();
     } catch (error: any) {
       console.error('Error deleting category:', error);
       const errorMessage = error.message || 'Lỗi khi xóa danh mục';
       showToast(errorMessage, 'error');
+    } finally {
+      setDeleteConfirm({ isOpen: false, category: null });
     }
   };
 
@@ -303,7 +322,7 @@ const CategoryManagement: React.FC = () => {
                   </PermissionGate>
                   <PermissionGate permission="manage_product_categories">
                     <button
-                      onClick={() => handleDelete(category.id, category.name)}
+                      onClick={() => handleDeleteClick(category)}
                       className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
                       title="Xóa"
                     >
@@ -466,6 +485,19 @@ const CategoryManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Custom Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, category: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa danh mục"
+        itemName={deleteConfirm.category?.name}
+        itemType="category"
+        description={`Bạn có chắc chắn muốn xóa danh mục "${deleteConfirm.category?.name}"?`}
+        warningText="Các sản phẩm / dự án / bài viết nằm trong danh mục này sẽ không bị xóa."
+        confirmText="Đồng ý xóa"
+      />
     </div>
   );
 };
