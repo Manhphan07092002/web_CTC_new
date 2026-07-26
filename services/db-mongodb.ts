@@ -339,18 +339,46 @@ export const db = {
 
   // ==================== COMMENTS ====================
   comments: {
-    getByNewsId: async (newsId: string) => {
-      const items = await NewsComment.find({ newsId, isApproved: true })
+    getByNewsId: async (idParam: string) => {
+      if (!idParam) return [];
+      const cleanParam = idParam.replace(/\.html$/i, '');
+      const parts = cleanParam.split('-');
+      const possibleHash = parts[parts.length - 1];
+      const baseSlug = parts.slice(0, -1).join('-');
+
+      // Tim bai viet de lay id chinh thuc
+      const newsItem = await db.news.getById(idParam);
+      const mainNewsId = newsItem ? (newsItem._id || newsItem.id) : idParam;
+
+      const items = await NewsComment.find({
+        $or: [
+          { newsId: String(mainNewsId) },
+          { newsId: cleanParam },
+          { newsId: baseSlug },
+          { newsId: possibleHash }
+        ],
+        isApproved: { $ne: false }
+      })
         .sort({ createdAt: 1 })
         .lean();
+
       return items.map(doc => {
         const realId = doc._id ? doc._id.toString() : '';
         return { ...doc, _id: realId, id: realId };
       });
     },
 
-    countByNewsId: async (newsId: string) => {
-      return NewsComment.countDocuments({ newsId, isApproved: true });
+    countByNewsId: async (idParam: string) => {
+      const newsItem = await db.news.getById(idParam);
+      const mainNewsId = newsItem ? (newsItem._id || newsItem.id) : idParam;
+
+      return NewsComment.countDocuments({
+        $or: [
+          { newsId: String(mainNewsId) },
+          { newsId: idParam }
+        ],
+        isApproved: { $ne: false }
+      });
     },
 
     add: async (data: { newsId: string; name: string; email?: string; content: string }) => {

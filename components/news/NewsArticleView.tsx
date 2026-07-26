@@ -40,40 +40,28 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
   const [speechRate, setSpeechRate] = useState<number>(1.0);
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
 
-  // Reader Comments State
-  const [comments, setComments] = useState<ReaderComment[]>([
-    {
-      id: 'c1',
-      name: 'Nguyễn Văn Minh',
-      avatarBg: 'bg-blue-600',
-      time: '2 giờ trước',
-      content: 'Bài viết phân tích rất rõ ràng và sát thực tế ngành solar hiện nay. Công ty CTC có triển khai dịch vụ khảo sát tận nơi cho doanh nghiệp tại Đà Nẵng không ạ?',
-      likes: 12,
-      reply: 'Chào anh Minh, CTC hỗ trợ khảo sát và lập dự toán tài chính hoàn toàn miễn phí cho tất cả doanh nghiệp tại Đà Nẵng và khu vực Miền Trung ạ. Hotline hỗ trợ 24/7: 0915 059 666.'
-    },
-    {
-      id: 'c2',
-      name: 'Trần Thị Thanh',
-      avatarBg: 'bg-emerald-600',
-      time: '5 giờ trước',
-      content: 'Thông tin quy chuẩn kỹ thuật rất chi tiết. Cảm ơn Ban Biên Tập CTC đã chia sẻ!',
-      likes: 5
-    }
-  ]);
+  // Reader Comments State (Dynamic 100% from Database)
+  const [comments, setComments] = useState<ReaderComment[]>([]);
   const [newCommentName, setNewCommentName] = useState('');
   const [newCommentText, setNewCommentText] = useState('');
 
-  // Fetch real comments
+  // Fetch real comments from database
   useEffect(() => {
     const articleId = (news as any)._id || news.id;
     if (articleId) {
       api.news.getComments(articleId).then(data => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setComments(data.map((c: any) => ({
             id: c._id || c.id,
             name: c.name,
             avatarBg: 'bg-primary',
-            time: new Date(c.createdAt || Date.now()).toLocaleDateString('vi-VN'),
+            time: c.createdAt ? new Date(c.createdAt).toLocaleDateString('vi-VN', {
+              hour: '2-digit',
+              minute: '2-digit',
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            }) : 'Mới gửi',
             content: c.content,
             likes: c.likes || 0,
             reply: c.reply
@@ -210,6 +198,65 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
 
   const rawContent = news.content || news.excerpt || '';
   const isHtmlContent = rawContent.includes('<') && rawContent.includes('>');
+
+  // Dynamic Table of Contents (Mục lục bài viết 100% động từ nội dung)
+  const { tocItems, processedContentHtml } = React.useMemo(() => {
+    if (!rawContent) return { tocItems: [], processedContentHtml: '' };
+
+    const items: { id: string; text: string; level: number }[] = [];
+
+    if (isHtmlContent) {
+      let counter = 0;
+      const htmlWithIds = rawContent.replace(/<h([2-4])([^>]*)>(.*?)<\/h\1>/gi, (match, levelStr, attrs, innerText) => {
+        const level = parseInt(levelStr, 10);
+        const cleanText = innerText.replace(/<[^>]*>?/gm, '').trim();
+        if (!cleanText) return match;
+
+        counter++;
+        const id = `toc-heading-${counter}`;
+        items.push({ id, text: cleanText, level });
+
+        if (/id=["']/i.test(attrs)) {
+          return match;
+        }
+        return `<h${levelStr}${attrs} id="${id}">${innerText}</h${levelStr}>`;
+      });
+
+      return { tocItems: items, processedContentHtml: htmlWithIds };
+    } else {
+      const lines = rawContent.split('\n').map(l => l.trim()).filter(Boolean);
+      let counter = 0;
+      lines.forEach((line) => {
+        if (
+          line.length >= 4 &&
+          line.length <= 100 &&
+          (/^(?:[0-9IVX]+[\.\):]|bước|phần|chương|bài|mục)\s+/i.test(line) ||
+           /^[0-9]\.\s+/i.test(line) ||
+           /^[A-ZÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬĐÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴ\s\-\:]{6,80}$/.test(line))
+        ) {
+          counter++;
+          items.push({
+            id: `toc-heading-${counter}`,
+            text: line.replace(/^[0-9IVX]+[\.\):]\s*/i, ''),
+            level: 2
+          });
+        }
+      });
+
+      if (items.length === 0 && lines.length >= 2) {
+        lines.slice(0, 3).forEach((line, idx) => {
+          items.push({
+            id: `toc-heading-${idx + 1}`,
+            text: line.substring(0, 65) + (line.length > 65 ? '...' : ''),
+            level: 2
+          });
+        });
+      }
+
+      return { tocItems: items, processedContentHtml: rawContent };
+    }
+  }, [rawContent, isHtmlContent]);
+
   const rawParagraphs = isHtmlContent ? [] : rawContent.split('\n').filter(p => p.trim() !== '');
 
   return (
@@ -379,27 +426,45 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
         {/* Article Main Body Content */}
         <div className="px-6 sm:px-10 md:px-12 pb-10 space-y-8">
           
-          {/* Table of Contents Index */}
-          <div className="p-5 rounded-2xl bg-blue-50/60 dark:bg-slate-900/80 border border-blue-100 dark:border-blue-900/40 space-y-3">
-            <h4 className="font-extrabold text-sm text-blue-900 dark:text-blue-200 flex items-center gap-2">
-              <ListOrdered size={16} className="text-primary" />
-              MỤC LỤC BÀI VIẾT
-            </h4>
-            <ul className="text-xs space-y-2 text-slate-700 dark:text-slate-300 font-medium pl-4 list-disc">
-              <li>Tổng quan diễn biến & Bối cảnh ngành</li>
-              <li>Đánh giá giải pháp & Phân tích chi tiết từ CTC</li>
-              <li>Khuyến nghị triển khai & Định hướng cho Doanh nghiệp</li>
-            </ul>
-          </div>
+          {/* Table of Contents Index (Dynamic 100% from Article Headings) */}
+          {tocItems.length > 0 && (
+            <div className="p-5 rounded-2xl bg-blue-50/60 dark:bg-slate-900/80 border border-blue-100 dark:border-blue-900/40 space-y-3">
+              <h4 className="font-extrabold text-sm text-blue-900 dark:text-blue-200 flex items-center gap-2">
+                <ListOrdered size={16} className="text-primary" />
+                MỤC LỤC BÀI VIẾT ({tocItems.length})
+              </h4>
+              <ul className="text-xs space-y-2 text-slate-700 dark:text-slate-300 font-medium pl-2">
+                {tocItems.map((item, idx) => (
+                  <li key={item.id} className={item.level === 3 ? 'pl-4' : ''}>
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.getElementById(item.id);
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }}
+                      className="hover:text-primary hover:underline transition-colors flex items-start gap-1.5"
+                    >
+                      <span className="font-bold text-primary text-[11px] min-w-[16px]">{idx + 1}.</span>
+                      <span>{item.text}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Formatted Content - HTML or Plain Text */}
           <div className={`prose prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 font-sans space-y-6 ${getFontSizeClass()} prose-h2:text-2xl prose-h2:font-bold prose-h2:text-gray-900 prose-h2:dark:text-white prose-h3:text-xl prose-h3:font-semibold prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-ul:list-disc prose-ul:pl-6 prose-img:rounded-xl prose-img:shadow-lg`}>
             {isHtmlContent ? (
-              <div dangerouslySetInnerHTML={{ __html: rawContent }} />
+              <div dangerouslySetInnerHTML={{ __html: processedContentHtml }} />
             ) : (
               rawParagraphs.map((para, idx) => (
                 <p 
                   key={idx} 
+                  id={`toc-heading-${idx + 1}`}
                   className={`leading-relaxed ${idx === 0 ? 'first-letter:text-5xl first-letter:font-black first-letter:float-left first-letter:mr-3 first-letter:text-primary first-letter:leading-none' : ''}`}
                 >
                   {para}
@@ -482,38 +547,44 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
             </form>
 
             {/* Comments List */}
-            <div className="space-y-4">
-              {comments.map(c => (
-                <div key={c.id} className="p-4 rounded-2xl bg-white dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-8 h-8 rounded-full ${c.avatarBg} text-white font-extrabold text-xs flex items-center justify-center shadow-sm`}>
-                        {c.name.charAt(0)}
-                      </div>
-                      <div>
-                        <span className="font-extrabold text-xs text-gray-900 dark:text-white">{c.name}</span>
-                        <span className="text-[11px] text-gray-400 block">{c.time}</span>
+            {comments.length === 0 ? (
+              <div className="p-8 text-center bg-gray-50 dark:bg-gray-700/20 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-xs">
+                💬 Chưa có bình luận nào. Hãy là người đầu tiên gửi ý kiến về bài viết này!
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {comments.map(c => (
+                  <div key={c.id} className="p-4 rounded-2xl bg-white dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-full ${c.avatarBg || 'bg-primary'} text-white font-extrabold text-xs flex items-center justify-center shadow-sm uppercase`}>
+                          {(c.name || 'U').charAt(0)}
+                        </div>
+                        <div>
+                          <span className="font-extrabold text-xs text-gray-900 dark:text-white">{c.name}</span>
+                          <span className="text-[11px] text-gray-400 block">{c.time}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed font-medium pl-10">
-                    {c.content}
-                  </p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed font-medium pl-10">
+                      {c.content}
+                    </p>
 
-                  {/* CTC Reply */}
-                  {c.reply && (
-                    <div className="ml-8 mt-3 p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-xs space-y-1">
-                      <div className="flex items-center gap-1.5 text-primary font-bold">
-                        <ShieldCheck size={14} /> Phản hồi từ Ban Biên Tập CTC
+                    {/* CTC Reply */}
+                    {c.reply && (
+                      <div className="ml-8 mt-3 p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-xs space-y-1">
+                        <div className="flex items-center gap-1.5 text-primary font-bold">
+                          <ShieldCheck size={14} /> Phản hồi từ Ban Biên Tập CTC
+                        </div>
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                          {c.reply}
+                        </p>
                       </div>
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {c.reply}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* CTC Expert Author & Consultation Card (Corporate Ocean Blue) */}
