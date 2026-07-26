@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code, Copy } from 'lucide-react';
+import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code, Copy, Link2, LayoutGrid } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -29,6 +29,8 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
   const [topicTitle, setTopicTitle] = useState(initialTitle);
   const [focusKeyword, setFocusKeyword] = useState(initialFocusKeyword);
   const [referenceContent, setReferenceContent] = useState('');
+  const [articleUrl, setArticleUrl] = useState('');
+  const [structure, setStructure] = useState<'inverted_pyramid' | 'pas' | '5w1h' | 'storytelling' | 'comparison'>('inverted_pyramid');
   const [tone, setTone] = useState<'journalistic' | 'expert' | 'sales' | 'storytelling'>('journalistic');
   const [targetLength, setTargetLength] = useState<'short' | 'medium' | 'deep'>('medium');
   const [regenerationNote, setRegenerationNote] = useState('');
@@ -44,9 +46,10 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
 
     const titleToUse = (customTitle !== undefined ? customTitle : topicTitle).trim();
     const kwToUse = (customKw !== undefined ? customKw : focusKeyword).trim();
+    const urlToUse = articleUrl.trim();
 
-    if (!titleToUse) {
-      showToast('Vui lòng nhập tiêu đề hoặc chủ đề bài viết', 'error');
+    if (!titleToUse && !urlToUse) {
+      showToast('Vui lòng nhập tiêu đề hoặc dán đường dẫn link bài báo mẫu', 'error');
       return;
     }
 
@@ -62,11 +65,13 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
         : titleToUse;
 
       const res = await api.ai.generateArticle({
-        title: fullTitleWithNote,
+        title: fullTitleWithNote || 'Bài báo mẫu',
         focusKeyword: kwToUse,
         tone,
         targetLength,
-        referenceContent: referenceContent.trim()
+        referenceContent: referenceContent.trim(),
+        articleUrl: urlToUse,
+        structure
       });
 
       clearTimeout(timer1);
@@ -75,9 +80,9 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
       if (res && res.success && res.data) {
         setResult({
           ...res.data,
-          title: titleToUse
+          title: res.data.title || titleToUse
         });
-        showToast('✨ AI đã tạo và viết lại bài viết thành công!', 'success');
+        showToast('✨ AI đã tạo bài viết đa cấu trúc chuẩn SEO thành công!', 'success');
       } else {
         throw new Error((res as any)?.message || 'Không thể tạo bài viết');
       }
@@ -119,10 +124,10 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
             </div>
             <div>
               <h2 className="text-lg font-black tracking-tight flex items-center gap-2">
-                Trợ Lý Viết Bài AI Tự Động
-                <span className="text-[10px] font-extrabold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full uppercase tracking-wider">Yoast 100/100</span>
+                Trợ Lý Viết Bài AI Siêu Đa Dạng
+                <span className="text-[10px] font-extrabold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full uppercase tracking-wider">5 Cấu Trúc + Gemini AI</span>
               </h2>
-              <p className="text-xs text-slate-300">Viết lại bài báo mẫu chính xác 100% hoặc tìm kiếm dữ liệu thực tế từ Google</p>
+              <p className="text-xs text-slate-300">Tự động cào link báo, dán bài mẫu hoặc sử dụng Gemini API từ Admin Settings</p>
             </div>
           </div>
           <button
@@ -149,100 +154,102 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                   placeholder="VD: FBI Cảnh Báo Về Bộ Phát Wi-Fi Router Cũ Dễ Bị Tin Tặc Tấn Công"
                   disabled={loading}
                   className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-slate-50 shadow-xs transition-all disabled:opacity-60"
-                  required
+                />
+              </div>
+
+              {/* URL Scraper Input */}
+              <div className="p-3.5 bg-sky-50/80 border border-sky-200 rounded-2xl space-y-1.5">
+                <label className="block text-xs font-black text-sky-950 uppercase tracking-wider flex items-center gap-1.5">
+                  <Link2 size={14} className="text-sky-600" /> Dán Đường Link Bài Báo Mẫu (Tự Động Cào Nội Dung Web)
+                </label>
+                <input
+                  type="url"
+                  value={articleUrl}
+                  onChange={e => setArticleUrl(e.target.value)}
+                  placeholder="https://vnexpress.net/... hoặc https://tuoitre.vn/... (AI sẽ tự lấy nội dung cào về)"
+                  disabled={loading}
+                  className="w-full border border-sky-300 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-sky-400 outline-none bg-white shadow-xs"
                 />
               </div>
 
               {/* Paste Reference Article Text Area */}
-              <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2">
+              <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-black text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
-                    <Copy size={14} className="text-amber-600" /> Dán Nội Dung Bài Báo Mẫu Để AI Viết Lại (Khuyên Dùng - Chính Xác 100%)
+                    <Copy size={14} className="text-amber-600" /> Hoặc Dán Trực Tiếp Nội Dung Bài Báo Mẫu
                   </label>
                   <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md font-extrabold uppercase">Tùy Chọn</span>
                 </div>
                 <textarea
-                  rows={5}
+                  rows={4}
                   value={referenceContent}
                   onChange={e => setReferenceContent(e.target.value)}
-                  placeholder="Dán toàn bộ nội dung bài báo mẫu (VnExpress, Tuổi Trẻ, Dân Trí...) vào đây. AI sẽ tự động phân tích thực tế, trích xuất dữ liệu và viết lại 100% độc nhất chuẩn SEO Yoast mà KHÔNG bị vi phạm bản quyền..."
+                  placeholder="Dán toàn bộ chữ của bài báo mẫu vào đây. AI sẽ phân tích và đưa vào 4 phần H2 chính..."
                   disabled={loading}
                   className="w-full border border-amber-300 rounded-xl p-3 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-amber-400 outline-none bg-white shadow-xs resize-none"
                 />
-                <p className="text-[11px] text-amber-800 font-semibold italic">
-                  💡 <strong>Mẹo nhỏ:</strong> Dán bài báo mẫu vào đây giúp AI nắm trọn vẹn thông tin thực tế, viết lại cực kỳ chuẩn và chính xác theo từng đoạn!
-                </p>
               </div>
 
-              {/* Focus Keyword Field */}
+              {/* 5 Dynamic Article Structure Selection */}
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Target size={14} className="text-primary" /> Từ Khóa Focus (Tùy Chọn)
+                  <LayoutGrid size={14} className="text-primary" /> Chọn Cấu Trúc Báo Chí & Marketing (5 Cấu Trúc Đa Dạng)
                 </label>
-                <input
-                  type="text"
-                  value={focusKeyword}
-                  onChange={e => setFocusKeyword(e.target.value)}
-                  placeholder="VD: cảnh báo bộ phát wi (Để trống AI sẽ tự trích xuất chuẩn nhất)"
-                  disabled={loading}
-                  className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-slate-50 shadow-xs transition-all disabled:opacity-60"
-                />
-              </div>
-
-              {/* Tone Selection */}
-              <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <BookOpen size={14} className="text-primary" /> Giọng Văn / Phong Cách Viết Bài
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                   {[
-                    { id: 'journalistic', label: '📰 Báo chí', desc: 'Chính luận, khách quan' },
-                    { id: 'expert', label: '💡 Chuyên gia', desc: 'Phân tích kỹ thuật sâu' },
-                    { id: 'sales', label: '🚀 Bán hàng', desc: 'Thuyết phục & Kêu gọi' },
-                    { id: 'storytelling', label: '🌟 Trải nghiệm', desc: 'Góc nhìn chia sẻ thực tế' },
-                  ].map(t => (
+                    { id: 'inverted_pyramid', label: '🏛️ Kim Tự Tháp Ngược', desc: 'Tin nóng ➔ Chi tiết ➔ Kết luận' },
+                    { id: 'pas', label: '⚠️ Cấu Trúc PAS', desc: 'Vấn đề ➔ Xoáy sâu ➔ Giải pháp' },
+                    { id: '5w1h', label: '🌐 Cấu Trúc 5W1H', desc: 'Who - What - Where - Why - How' },
+                    { id: 'storytelling', label: '📖 Case Study', desc: 'Câu chuyện ➔ Số liệu ➔ Bài học' },
+                    { id: 'comparison', label: '📊 So Sánh Pros/Cons', desc: 'Phân tích ➔ Bảng ➔ Khuyến nghị' },
+                  ].map(s => (
                     <button
-                      key={t.id}
+                      key={s.id}
                       type="button"
-                      onClick={() => setTone(t.id as any)}
+                      onClick={() => setStructure(s.id as any)}
                       className={`p-2.5 rounded-xl border text-left transition-all ${
-                        tone === t.id
-                          ? 'border-primary bg-primary/5 text-primary ring-2 ring-primary/20 font-black'
+                        structure === s.id
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-950 ring-2 ring-indigo-500/20 font-black scale-102'
                           : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-semibold'
                       }`}
                     >
-                      <div className="text-xs font-bold">{t.label}</div>
-                      <div className="text-[10px] text-slate-400 font-medium truncate">{t.desc}</div>
+                      <div className="text-[11px] font-bold truncate">{s.label}</div>
+                      <div className="text-[9px] text-slate-400 font-medium leading-tight mt-0.5">{s.desc}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Target Length Selection */}
-              <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Layers size={14} className="text-primary" /> Độ Dài & Độ Sâu Bài Viết
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { id: 'short', label: '⚡ Ngắn gọn (~600 từ)', desc: 'Tóm tắt nhanh' },
-                    { id: 'medium', label: '🎯 Yoast SEO (~1.000 từ)', desc: 'Đầy đủ tiêu chuẩn' },
-                    { id: 'deep', label: '📊 Phân tích sâu (~1.500 từ)', desc: 'Báo cáo toàn diện' },
-                  ].map(l => (
-                    <button
-                      key={l.id}
-                      type="button"
-                      onClick={() => setTargetLength(l.id as any)}
-                      className={`p-2.5 rounded-xl border text-left transition-all ${
-                        targetLength === l.id
-                          ? 'border-emerald-600 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-500/20 font-black'
-                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-semibold'
-                      }`}
-                    >
-                      <div className="text-xs font-bold">{l.label}</div>
-                      <div className="text-[10px] text-slate-400 font-medium">{l.desc}</div>
-                    </button>
-                  ))}
+              {/* Focus Keyword & Tone & Length */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Target size={14} className="text-primary" /> Từ Khóa Focus (Tùy Chọn)
+                  </label>
+                  <input
+                    type="text"
+                    value={focusKeyword}
+                    onChange={e => setFocusKeyword(e.target.value)}
+                    placeholder="VD: cảnh báo bộ phát wi (Để trống AI sẽ tự trích xuất)"
+                    disabled={loading}
+                    className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 outline-none bg-slate-50 shadow-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <BookOpen size={14} className="text-primary" /> Giọng Văn / Phong Cách
+                  </label>
+                  <select
+                    value={tone}
+                    onChange={e => setTone(e.target.value as any)}
+                    className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 outline-none bg-slate-50"
+                  >
+                    <option value="journalistic">📰 Báo chí chính luận (Khách quan)</option>
+                    <option value="expert">💡 Phân tích Chuyên gia (Kỹ thuật sâu)</option>
+                    <option value="sales">🚀 Tiếp thị Bán hàng (Thuyết phục)</option>
+                    <option value="storytelling">🌟 Góc nhìn trải nghiệm thực tế</option>
+                  </select>
                 </div>
               </div>
 
@@ -252,19 +259,19 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                     <span className="font-black text-sm text-amber-300">
-                      {referenceContent.trim() ? 'AI Đang Phân Tích & Viết Lại Bài Báo Mẫu...' : 'AI Đang Tìm Kiếm Google & Tạo Bài Viết Tự Động...'}
+                      {articleUrl.trim() ? 'AI Đang Cào Bài Báo Từ URL Link & Biên Tập...' : 'AI Đang Xử Lý Dữ Liệu Theo Cấu Trúc Chọn Lựa...'}
                     </span>
                   </div>
 
                   <div className="space-y-2 text-xs font-semibold">
                     <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                      <Search size={14} /> 1. Phân tích nội dung bài mẫu & bóc tách dữ liệu thực tế...
+                      <Search size={14} /> 1. Bóc tách dữ liệu & áp dụng cấu trúc bài viết...
                     </div>
                     <div className={`flex items-center gap-2 ${step >= 2 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                      <Wand2 size={14} /> 2. Biên tập & viết lại 100% độc nhất chuẩn SEO Yoast 100/100...
+                      <Wand2 size={14} /> 2. Biên tập bài chuẩn SEO Yoast (Kiểm tra Gemini API)...
                     </div>
                     <div className={`flex items-center gap-2 ${step >= 3 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                      <CheckCircle2 size={14} /> 3. Tối ưu hóa từ khóa Focus, thẻ H2/H3 & thông tin liên hệ CTC...
+                      <CheckCircle2 size={14} /> 3. Tối ưu hóa từ khóa Focus & chèn thông tin CTC...
                     </div>
                   </div>
                 </div>
@@ -289,7 +296,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                     <span>Đang xử lý AI...</span>
                   ) : (
                     <>
-                      <Sparkles size={16} /> 🚀 Tạo & Viết lại bài viết với AI
+                      <Sparkles size={16} /> 🚀 Tạo Bài Viết AI Đa Cấu Trúc
                     </>
                   )}
                 </button>

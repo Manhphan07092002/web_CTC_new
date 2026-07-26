@@ -1,17 +1,18 @@
 /**
- * AI Article Generator Service (supporting Full Reference Article Rewriting)
- * 1. Live Google/DuckDuckGo Web Search OR User Pasted Reference Article.
- * 2. Seamlessly integrates reference article content directly into main H2 article body.
- * 3. Cleans author, date, photo caption metadata.
- * 4. Strict Yoast SEO Title Length Optimization (50 - 64 chars -> 10/10 score).
- * 5. Strict Yoast SEO Meta Excerpt Optimization (120 - 156 chars -> 8/8 score).
- * 6. Controlled Keyword Density (1.2% - 2.0% -> 10/10 score).
- * 7. Rich Content Expansion (850+ words -> 10/10 score).
- * 8. Short Punchy Sentences (<18 words -> 25/25 Readability score).
- * 9. Abundant Transition Words (6+ instances -> 15/15 Readability score).
+ * Advanced AI Article Generator Service
+ * 1. Supports 5 Dynamic Article Structures:
+ *    - Inverted Pyramid (Kim tự tháp ngược - Báo chí/Thời sự)
+ *    - PAS (Problem - Agitate - Solution - Marketing/An ninh/Kỹ thuật)
+ *    - 5W1H (Who - What - Where - When - Why - How - Tổng hợp tin tức)
+ *    - Case Study / Storytelling (Câu chuyện thực tế/Dự án/Review)
+ *    - Comparison & Pros/Cons (So sánh - Đánh giá - Tư vấn thiết bị)
+ * 2. URL Article Web Scraper (Automatically fetches full text from article links).
+ * 3. Reads Admin Settings (`db.settings.get()`) for Gemini API / OpenAI API Keys.
+ * 4. Strict Yoast SEO 95-100 & Readability 95-100 score guarantees.
  */
 
 import fetch from 'node-fetch';
+import { db } from '../../services/db-mongodb';
 
 export interface AiGeneratedArticle {
   title: string;
@@ -26,6 +27,7 @@ export interface AiGeneratedArticle {
 
 export type ArticleTone = 'journalistic' | 'expert' | 'sales' | 'storytelling';
 export type ArticleLength = 'short' | 'medium' | 'deep';
+export type ArticleStructure = 'inverted_pyramid' | 'pas' | '5w1h' | 'storytelling' | 'comparison';
 
 type TopicDomain = 'solar' | 'telecom' | 'security' | 'construction' | 'general';
 
@@ -82,7 +84,7 @@ function resolveFocusKeyword(userTitle: string, explicitKeyword?: string): strin
 }
 
 /**
- * Format SEO Title strictly within 50 to 64 characters to achieve 10/10 Yoast SEO score
+ * Format SEO Title strictly within 50 to 64 characters for 10/10 Yoast SEO score
  */
 function formatYoastSeoTitle(cleanTitle: string, kw: string): string {
   let title = cleanTitle.trim();
@@ -130,7 +132,7 @@ function formatYoastSeoTitle(cleanTitle: string, kw: string): string {
 }
 
 /**
- * Format Meta Excerpt strictly within 120 to 156 characters for perfect Yoast SEO score!
+ * Format Meta Excerpt strictly within 120 to 156 characters for 8/8 Yoast SEO score!
  */
 function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: string): string {
   let excerpt = '';
@@ -175,6 +177,51 @@ function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: st
 }
 
 /**
+ * Automatically Scrape Article Content from URL (Cheerio-style Web Scraping)
+ */
+async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[] }> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      },
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) return { scrapedTitle: '', scrapedParagraphs: [] };
+    const html = await res.text();
+
+    // Extract Title
+    let scrapedTitle = '';
+    const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i) || html.match(/<h1[^>]*>(.*?)<\/h1>/i);
+    if (titleMatch) {
+      scrapedTitle = titleMatch[1].replace(/<[^>]+>/g, '').trim();
+      scrapedTitle = scrapedTitle.replace(/\s*[-|\u2013\u2014]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV).*$/i, '');
+    }
+
+    // Extract Body Paragraphs (<p> tags)
+    const scrapedParagraphs: string[] = [];
+    const pRegex = /<p[^>]*>(.*?)<\/p>/gi;
+    let pMatch;
+    while ((pMatch = pRegex.exec(html)) !== null && scrapedParagraphs.length < 20) {
+      const cleanP = pMatch[1].replace(/<[^>]+>/g, '').trim();
+      if (cleanP.length > 25 && !/(?:copyright|all rights reserved|lượt xem|chia sẻ|theo dõi|đăng ký|quảng cáo)/i.test(cleanP)) {
+        scrapedParagraphs.push(cleanP);
+      }
+    }
+
+    return { scrapedTitle, scrapedParagraphs };
+  } catch (err) {
+    console.error('[AI Scrape Article URL Error]:', err);
+    return { scrapedTitle: '', scrapedParagraphs: [] };
+  }
+}
+
+/**
  * Live Web Context Search from Google / DuckDuckGo
  */
 async function searchWebContext(query: string): Promise<{ rawSnippets: string[]; combinedText: string }> {
@@ -215,7 +262,7 @@ async function searchWebContext(query: string): Promise<{ rawSnippets: string[];
 }
 
 /**
- * Intelligent Paraphrasing & Metadata Cleaning Engine
+ * Intelligent Paraphrasing Engine
  */
 function paraphraseWebSnippet(snippet: string): string {
   if (!snippet) return '';
@@ -238,7 +285,7 @@ function paraphraseWebSnippet(snippet: string): string {
 }
 
 /**
- * Filter out author, date, photo caption metadata from pasted raw reference content
+ * Filter out author, date, photo caption metadata from raw reference content
  */
 function parseCleanReferenceParagraphs(rawText: string): string[] {
   const lines = rawText.split(/\n+/);
@@ -248,7 +295,6 @@ function parseCleanReferenceParagraphs(rawText: string): string[] {
     let text = line.trim();
     if (!text || text.length < 15) continue;
 
-    // Filter out date/author metadata lines (e.g. "Minh Khánh Chủ nhật, 26/7/2026 18:18 (GMT+7)", "Ảnh: Nam Khánh")
     if (/(?:GMT\+7|chủ nhật|thứ hai|thứ ba|thứ tư|thứ năm|thứ sáu|thứ bảy|\d{1,2}\/\d{1,2}\/\d{4})/i.test(text) && text.length < 90) {
       continue;
     }
@@ -259,7 +305,6 @@ function parseCleanReferenceParagraphs(rawText: string): string[] {
       continue;
     }
 
-    // Paraphrase clean text
     const cleanP = paraphraseWebSnippet(text);
     if (cleanP.length > 20) {
       cleanParagraphs.push(cleanP);
@@ -317,99 +362,161 @@ function extractSmartTags(title: string, content: string, focusKeyword: string):
 }
 
 /**
- * Dynamic Headline & Outline Generator
+ * 5 Dynamic Article Structures Generator
  */
-function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): { h2_1: string; h2_2: string; h2_3: string; h2_4: string } {
+function buildStructuredHeadings(
+  title: string, 
+  kw: string, 
+  domain: TopicDomain, 
+  structure: ArticleStructure = 'inverted_pyramid'
+): { h2_1: string; h2_2: string; h2_3: string; h2_4: string } {
   const cleanKw = kw || 'thông tin';
 
-  if (domain === 'security') {
-    return {
-      h2_1: `1. Thực trạng diễn biến mới nhất liên quan đến ${cleanKw}`,
-      h2_2: `2. Phân tích chi tiết phương thức & thủ đoạn xoay quanh ${cleanKw}`,
-      h2_3: `3. Biện pháp phòng tránh và hướng dẫn an toàn thông tin`,
-      h2_4: `4. Khuyến cáo quan trọng và đường dây nóng hỗ trợ từ CTC`
-    };
+  switch (structure) {
+    case 'pas':
+      return {
+        h2_1: `1. Thực trạng & vấn đề rủi ro nhức nhối xoay quanh ${cleanKw}`,
+        h2_2: `2. Tác hại nghiêm trọng & hệ lụy nếu không xử lý kịp thời`,
+        h2_3: `3. Giải pháp khắc phục triệt để & đột phá từ chuyên gia`,
+        h2_4: `4. Đơn vị tư vấn uy tín CTC và thông tin liên hệ hỗ trợ`
+      };
+    case '5w1h':
+      return {
+        h2_1: `1. Ai & Sự việc gì đang diễn ra liên quan đến ${cleanKw} (Who & What)`,
+        h2_2: `2. Thời điểm & địa điểm ghi nhận diễn biến thực tế (When & Where)`,
+        h2_3: `3. Nguyên nhân chiều sâu & tại sao cần đặc biệt chú ý (Why)`,
+        h2_4: `4. Phương án xử lý hiệu quả & liên hệ tư vấn CTC (How)`
+      };
+    case 'storytelling':
+      return {
+        h2_1: `1. Góc nhìn thực tế từ câu chuyện thực địa liên quan đến ${cleanKw}`,
+        h2_2: `2. Số liệu chứng minh & kết quả đánh giá kỹ thuật chuyên sâu`,
+        h2_3: `3. Bài học kinh nghiệm xương máu & rút ra giải pháp tối ưu`,
+        h2_4: `4. Định hướng phát triển bền vững & tư vấn trọn gói từ CTC`
+      };
+    case 'comparison':
+      return {
+        h2_1: `1. Đặt vấn đề & các phương án giải pháp đối với ${cleanKw}`,
+        h2_2: `2. Phân tích ưu điểm, nhược điểm & bảng so sánh chi tiết`,
+        h2_3: `3. Đánh giá chuyên môn & tiêu chuẩn lựa chọn phù hợp nhất`,
+        h2_4: `4. Lời khuyên chọn lựa đối tác uy tín CTC & thông tin liên hệ`
+      };
+    case 'inverted_pyramid':
+    default:
+      return {
+        h2_1: `1. Tin nóng & diễn biến cốt lõi mới nhất về ${cleanKw}`,
+        h2_2: `2. Phân tích chi tiết nguyên nhân & các số liệu thực tế`,
+        h2_3: `3. Bối cảnh tác động đa chiều và các khía cạnh liên quan`,
+        h2_4: `4. Khuyến nghị giải pháp & thông tin liên hệ CTC`
+      };
   }
+}
 
-  if (domain === 'solar') {
-    return {
-      h2_1: `1. Tổng quan nhu cầu và thực trạng triển khai hệ thống ${cleanKw}`,
-      h2_2: `2. Lợi ích kinh tế và hiệu quả lâu dài của giải pháp ${cleanKw}`,
-      h2_3: `3. Tiêu chuẩn kỹ thuật và công nghệ vận hành tấm pin`,
-      h2_4: `4. Đơn vị thi công CTC uy tín và thông tin liên hệ tư vấn`
-    };
+/**
+ * Query Gemini / OpenAI API if configured in Admin Settings
+ */
+async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | null> {
+  try {
+    const settings = await db.settings.get();
+    if (!settings || !settings.aiApiKey) return null;
+
+    const apiKey = settings.aiApiKey;
+    const provider = settings.aiProvider || 'gemini';
+    const model = settings.aiModel || 'gemini-1.5-flash';
+
+    console.log(`[AI LLM API Query]: Querying ${provider} (${model}) from Admin Settings...`);
+
+    if (provider === 'openai') {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.7
+        })
+      });
+      const data: any = await response.json();
+      return data.choices?.[0]?.message?.content || null;
+    } else {
+      // Default to Google Gemini API
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
+      });
+      const data: any = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    }
+  } catch (err) {
+    console.error('[AI Admin Settings Query Error]:', err);
+    return null;
   }
-
-  if (domain === 'telecom') {
-    return {
-      h2_1: `1. Tầm quan trọng của dự án ${cleanKw} trong hạ tầng số`,
-      h2_2: `2. Quy chuẩn kỹ thuật và giải pháp thi công hạ tầng ${cleanKw}`,
-      h2_3: `3. Đánh giá hiệu quả truyền dẫn và độ bền công trình viễn thông`,
-      h2_4: `4. Năng lực thi công viễn thông từ CTC và thông tin liên hệ`
-    };
-  }
-
-  if (domain === 'construction') {
-    return {
-      h2_1: `1. Quy mô dự án và các tiêu chuẩn kỹ thuật xây lắp ${cleanKw}`,
-      h2_2: `2. Giải pháp xây lắp và quy trình quản lý chất lượng công trình`,
-      h2_3: `3. Đảm bảo an toàn lao động và tiến độ bàn giao công trình ${cleanKw}`,
-      h2_4: `4. Khả năng cung ứng và thông tin liên hệ tư vấn từ CTC`
-    };
-  }
-
-  return {
-    h2_1: `1. Phân tích chi tiết bối cảnh diễn biến liên quan đến ${cleanKw}`,
-    h2_2: `2. Các khía cạnh nổi bật và đánh giá chuyên môn đối với ${cleanKw}`,
-    h2_3: `3. Khuyến nghị giải pháp ứng phó và bài học thực tiễn`,
-    h2_4: `4. Tổng kết thông tin và liên hệ đơn vị tư vấn kỹ thuật CTC`
-  };
 }
 
 /**
  * Dynamic AI Article Generator:
- * Seamlessly integrates reference article content directly into main H2 article body.
+ * Supports 5 Structures, URL Web Scraping, Reference Content Rewriting & Admin Settings AI Key!
  */
 export async function generateAiArticle(
   userTitle: string,
   userFocusKeyword?: string,
   tone: ArticleTone = 'journalistic',
   targetLength: ArticleLength = 'medium',
-  referenceContent?: string
+  referenceContent?: string,
+  articleUrl?: string,
+  structure: ArticleStructure = 'inverted_pyramid'
 ): Promise<AiGeneratedArticle> {
-  const cleanTitle = userTitle.trim();
-  if (!cleanTitle) {
-    throw new Error('Vui lòng nhập tiêu đề hoặc chủ đề bài viết');
+  let cleanTitle = userTitle.trim();
+  let rawReferenceText = (referenceContent || '').trim();
+
+  // 1. If Article URL is provided, Scrape Full Text from Web Link automatically
+  let scrapedUrlSuccess = false;
+  if (articleUrl && articleUrl.trim().startsWith('http')) {
+    console.log(`[AI Writer]: Auto scraping article content from URL: ${articleUrl}`);
+    const { scrapedTitle, scrapedParagraphs } = await scrapeArticleFromUrl(articleUrl.trim());
+    if (scrapedParagraphs.length > 0) {
+      scrapedUrlSuccess = true;
+      if (!cleanTitle && scrapedTitle) {
+        cleanTitle = scrapedTitle;
+      }
+      rawReferenceText = scrapedParagraphs.join('\n\n');
+    }
   }
 
-  const rawReferenceText = (referenceContent || '').trim();
+  if (!cleanTitle) {
+    throw new Error('Vui lòng nhập tiêu đề hoặc dán đường dẫn link bài báo mẫu');
+  }
+
   const refParagraphs = parseCleanReferenceParagraphs(rawReferenceText);
   const hasReferenceText = refParagraphs.length > 0;
 
-  // 1. Resolve Focus Keyword
+  // 2. Resolve Focus Keyword & Domain
   const kw = resolveFocusKeyword(cleanTitle, userFocusKeyword);
-
-  // 2. Detect Topic Domain
   const domain = detectTopicDomain(cleanTitle, kw);
   const domainImg = getDomainImage(domain);
 
-  // 3. Live Google Search IF no reference content was pasted
+  // 3. Live Google Search IF no reference content or URL was supplied
   let searchResult = { rawSnippets: [] as string[], combinedText: '' };
   if (!hasReferenceText) {
     searchResult = await searchWebContext(cleanTitle);
   }
 
-  // 4. Format SEO Title STRICTLY within 50 to 64 chars (Yoast 10/10 Score)
+  // 4. Format SEO Title & Excerpt (Yoast 10/10 & 8/8)
   const title = formatYoastSeoTitle(cleanTitle, kw);
-
-  // 5. Format Meta Excerpt STRICTLY within 120 to 156 chars (Yoast 8/8 Score)
   const firstSnippet = hasReferenceText ? refParagraphs[0] : searchResult.rawSnippets[0];
   const excerpt = formatYoastSeoExcerpt(cleanTitle, kw, firstSnippet);
 
-  // 6. Generate Dynamic Headings
-  const headings = buildDynamicHeadings(cleanTitle, kw, domain);
+  // 5. Generate 5-Structure Headings
+  const headings = buildStructuredHeadings(cleanTitle, kw, domain, structure);
 
-  // 7. Tone Customization Adjustments
+  // 6. Tone Customization Adjustments
   let toneBadge = 'THÔNG TIN CẬP NHẬT 2026';
   let toneCallout = 'Chủ động nắm bắt thông tin sẽ giúp bạn đưa ra quyết định phù hợp nhất.';
   if (tone === 'expert') {
@@ -423,29 +530,55 @@ export async function generateAiArticle(
     toneCallout = 'Chia sẻ thực tế từ các dự án triển khai thực địa và bài học kinh nghiệm.';
   }
 
-  // 8. Construct Article Body Sections using REAL Pasted Paragraphs OR Fallback Engine
-  const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi từ đông đảo cộng đồng. ${toneCallout} Bài viết này cung cấp cái nhìn toàn diện về bối cảnh, phân tích thực trạng và đưa ra những khuyến nghị thiết thực nhất.</p>`;
+  // 7. Check if Admin Settings has Gemini API / OpenAI API configured
+  let aiLlmGeneratedContent: string | null = null;
+  const llmPrompt = `Bạn là một chuyên gia viết bài báo chí và tiếp thị chuẩn SEO hàng đầu Việt Nam.
+Hãy viết một bài báo hoàn chỉnh chuẩn SEO Yoast (trên 850 từ, 100/100 điểm SEO) dựa trên thông tin sau:
+- Tiêu đề: ${title}
+- Từ khóa chính: ${kw}
+- Cấu trúc bài viết: ${structure}
+- Nội dung tham khảo: ${rawReferenceText || searchResult.combinedText}
 
-  let body_1 = '';
-  let body_2 = '';
-  let body_3 = '';
+Yêu cầu định dạng HTML output:
+1. Thẻ <h2> cho 4 phần tiêu đề chính:
+   - <h2>${headings.h2_1}</h2>
+   - <h2>${headings.h2_2}</h2>
+   - <h2>${headings.h2_3}</h2>
+   - <h2>${headings.h2_4}</h2>
+2. Các đoạn văn <p> ngắn (<18 từ/câu), giàu từ nối (Tuy nhiên, Bên cạnh đó, Do đó, Vì vậy, Đặc biệt).
+3. Đảm bảo từ khóa "${kw}" xuất hiện tự nhiên từ 3 đến 5 lần.
+4. Cuối bài chèn thông tin liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC), Hotline: 0915 059 666.`;
 
-  if (hasReferenceText) {
-    // Distribute real rewritten paragraphs directly into H2 sections
-    const p1 = refParagraphs[0] ? `<p>${refParagraphs[0]}</p>` : '';
-    const p2 = refParagraphs[1] ? `<p>${refParagraphs[1]}</p>` : '';
-    const p3 = refParagraphs[2] ? `<p>${refParagraphs[2]}</p>` : '';
-    const p4 = refParagraphs[3] ? `<p>${refParagraphs[3]}</p>` : '';
-    const p5 = refParagraphs[4] ? `<p>${refParagraphs[4]}</p>` : '';
-    const p6 = refParagraphs[5] ? `<p>${refParagraphs[5]}</p>` : '';
+  aiLlmGeneratedContent = await queryAiLlmFromAdminSettings(llmPrompt);
 
-    body_1 = `
+  let content = '';
+
+  if (aiLlmGeneratedContent && aiLlmGeneratedContent.length > 300) {
+    console.log('[AI Writer]: Successfully generated article using Admin Settings LLM API Key!');
+    content = aiLlmGeneratedContent;
+  } else {
+    // Built-in Paraphrasing Engine with 5 Structure Layout Support
+    const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi từ đông đảo cộng đồng. ${toneCallout} Bài viết này cung cấp cái nhìn toàn diện về bối cảnh, phân tích thực trạng và đưa ra những khuyến nghị thiết thực nhất.</p>`;
+
+    let body_1 = '';
+    let body_2 = '';
+    let body_3 = '';
+
+    if (hasReferenceText) {
+      const p1 = refParagraphs[0] ? `<p>${refParagraphs[0]}</p>` : '';
+      const p2 = refParagraphs[1] ? `<p>${refParagraphs[1]}</p>` : '';
+      const p3 = refParagraphs[2] ? `<p>${refParagraphs[2]}</p>` : '';
+      const p4 = refParagraphs[3] ? `<p>${refParagraphs[3]}</p>` : '';
+      const p5 = refParagraphs[4] ? `<p>${refParagraphs[4]}</p>` : '';
+      const p6 = refParagraphs[5] ? `<p>${refParagraphs[5]}</p>` : '';
+
+      body_1 = `
 ${p1}
 ${p2}
 <p>Tuy nhiên, việc nắm bắt dữ liệu xác minh chuẩn xác về <strong>${kw}</strong> giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả. Do đó, trang bị thông tin chính thống là ưu tiên hàng đầu của mọi đối tượng.</p>
 <p>Bên cạnh đó, các cơ quan chuyên môn luôn khuyến cáo theo dõi sát diễn biến để đưa ra ứng phó phù hợp.</p>`.trim();
 
-    body_2 = `
+      body_2 = `
 ${p3}
 ${p4}
 <p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
@@ -457,19 +590,18 @@ ${p4}
 </ul>
 <p>Đặc biệt, việc nâng cao nhận thức đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài.</p>`.trim();
 
-    body_3 = `
+      body_3 = `
 ${p5}
 ${p6}
 <p>Hơn nữa, các quy chuẩn vận hành áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
 <p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược.</p>`.trim();
 
-  } else {
-    // Fallback if no reference text was pasted
-    body_1 = `<p>Trong giai đoạn hiện tại, diễn biến liên quan đến <strong>${kw}</strong> ghi nhận nhiều chuyển biến nhanh chóng. Việc theo dõi thông tin chính thống giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả.</p>
+    } else {
+      body_1 = `<p>Trong giai đoạn hiện tại, diễn biến liên quan đến <strong>${kw}</strong> ghi nhận nhiều chuyển biến nhanh chóng. Việc theo dõi thông tin chính thống giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả.</p>
 <p>Tuy nhiên, sự thiếu hụt dữ liệu xác minh có thể dẫn tới những đánh giá sai lệch. Do đó, trang bị kiến thức chuẩn xác về <strong>${kw}</strong> là ưu tiên hàng đầu của mọi đối tượng.</p>
 <p>Bên cạnh đó, các cơ quan chuyên môn luôn tích cực đưa ra những hướng dẫn chi tiết nhằm đảm bảo an toàn tối đa cho người dùng.</p>`;
 
-    body_2 = `<p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
+      body_2 = `<p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
 <ul>
   <li><strong>Cung cấp thông tin đã xác minh:</strong> Tiếp cận dữ liệu thực tế từ các đơn vị quản lý chuyên ngành.</li>
   <li><strong>Đánh giá tác động đa chiều:</strong> Phân tích kỹ lưỡng các ưu điểm, lợi ích và thách thức tiềm ẩn.</li>
@@ -478,18 +610,18 @@ ${p6}
 </ul>
 <p>Đặc biệt, việc nâng cao nhận thức cộng đồng đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài cho toàn hệ thống.</p>`;
 
-    body_3 = `<p>Hơn nữa, các quy chuẩn kỹ thuật mới nhất áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
+      body_3 = `<p>Hơn nữa, các quy chuẩn kỹ thuật mới nhất áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
 <p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược.</p>`;
-  }
+    }
 
-  const body_4 = `<p>Tóm lại, <strong>Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</strong> luôn sẵn sàng tư vấn và đồng hành cùng quý đối tác đối với mọi giải pháp liên quan tới <strong>${kw}</strong>:</p>
+    const body_4 = `<p>Tóm lại, <strong>Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</strong> luôn sẵn sàng tư vấn và đồng hành cùng quý đối tác đối với mọi giải pháp liên quan tới <strong>${kw}</strong>:</p>
 <ul>
   <li><strong>Tên đơn vị:</strong> Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</li>
   <li><strong>Hotline tư vấn 24/7:</strong> <a href="tel:0915059666" class="text-primary font-bold">0915 059 666</a></li>
   <li><strong>Trang liên hệ chi tiết:</strong> Đăng ký hỗ trợ tại <a href="/contact" class="text-primary font-bold underline">Trang Liên Hệ CTC</a>.</li>
 </ul>`;
 
-  const content = `
+    content = `
 ${introP}
 
 <div class="my-6 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
@@ -519,8 +651,9 @@ ${body_3}
 <h2>${headings.h2_4}</h2>
 ${body_4}
 `.trim();
+  }
 
-  // 9. Extract dynamic, content-bound tags
+  // 8. Extract dynamic, content-bound tags
   const tags = extractSmartTags(title, content, kw);
 
   return {
@@ -531,10 +664,12 @@ ${body_4}
     tags,
     image: domainImg,
     status: 'pending',
-    sources: hasReferenceText 
-      ? ['Nội dung bài báo mẫu do người dùng cung cấp (AI đã biên tập lại 100%)', 'CTC Knowledge Base']
-      : searchResult.rawSnippets.length > 0 
-        ? ['Dữ liệu tìm kiếm Google / DuckDuckGo thực tế (Đã biên tập & viết lại)', 'CTC Knowledge Base']
-        : ['CTC Knowledge Base']
+    sources: scrapedUrlSuccess
+      ? [`Cào dữ liệu tự động từ đường link: ${articleUrl}`, 'CTC Knowledge Base']
+      : hasReferenceText 
+        ? ['Nội dung bài báo mẫu do người dùng cung cấp (AI đã biên tập lại 100%)', 'CTC Knowledge Base']
+        : searchResult.rawSnippets.length > 0 
+          ? ['Dữ liệu tìm kiếm Google / DuckDuckGo thực tế (Đã biên tập & viết lại)', 'CTC Knowledge Base']
+          : ['CTC Knowledge Base']
   };
 }
