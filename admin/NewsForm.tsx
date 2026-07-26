@@ -132,6 +132,7 @@ const NewsForm: React.FC = () => {
     content: string;
     focusKeyword: string;
     tags: string[];
+    image?: string;
   }) => {
     setFocusKeyword(generated.focusKeyword);
     setFormData(prev => ({
@@ -140,6 +141,7 @@ const NewsForm: React.FC = () => {
       excerpt: generated.excerpt,
       content: generated.content,
       focusKeyword: generated.focusKeyword,
+      image: prev.image || generated.image || '',
       status: 'pending', // Đưa vào chế độ Chờ duyệt (Pending) cho Editor/Admin
       tags: Array.from(new Set([...prev.tags, ...(generated.tags || [])]))
     }));

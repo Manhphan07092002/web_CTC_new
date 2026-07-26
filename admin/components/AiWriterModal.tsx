@@ -12,6 +12,7 @@ interface AiWriterModalProps {
     content: string;
     focusKeyword: string;
     tags: string[];
+    image?: string;
   }) => void;
   initialTitle?: string;
   initialFocusKeyword?: string;
@@ -78,7 +79,8 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
       excerpt: result.excerpt,
       content: result.content,
       focusKeyword: result.focusKeyword,
-      tags: result.tags || []
+      tags: result.tags || [],
+      image: result.image
     });
     showToast('🚀 Đã áp dụng bài viết AI vào Form thành công!', 'success');
     onClose();

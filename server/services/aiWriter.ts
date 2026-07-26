@@ -12,6 +12,7 @@ export interface AiGeneratedArticle {
   content: string;
   focusKeyword: string;
   tags: string[];
+  image: string;
   status: 'pending';
   sources?: string[];
 }
@@ -172,6 +173,8 @@ export async function generateAiArticle(
        </blockquote>`
     : '';
 
+  const defaultImage = 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1000&auto=format&fit=crop';
+
   const content = `
 <p><strong>NĂNG LƯỢNG SẠCH 2026</strong> — Trong bối cảnh giá điện sinh hoạt biến động, việc đầu tư lắp đặt <strong>${kw}</strong> đang trở thành giải pháp tối ưu. Mô hình này giúp hàng ngàn gia đình và doanh nghiệp cắt giảm tới 80% chi phí hóa đơn điện hàng tháng.</p>
 
@@ -188,6 +191,11 @@ ${contextBlock}
 </div>
 
 <p>Bên cạnh đó, việc sử dụng hệ thống <strong>${kw}</strong> không chỉ giúp tiết kiệm chi phí mà còn bảo vệ môi trường bền vững. Do đó, xu hướng chuyển đổi sang năng lượng tái tạo đang phát triển rất mạnh mẽ tại Việt Nam.</p>
+
+<figure class="my-6">
+  <img src="${defaultImage}" alt="Giải pháp ${kw} CTC" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-96" />
+  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hệ thống ${kw} hiện đại giúp tối ưu hóa chi phí điện năng.</figcaption>
+</figure>
 
 <h2>1. Thực trạng thị trường và nhu cầu lắp đặt ${kw}</h2>
 
@@ -238,6 +246,7 @@ ${contextBlock}
     content,
     focusKeyword: kw,
     tags,
+    image: defaultImage,
     status: 'pending', // Mặc định ở chế độ Chờ duyệt (Pending) cho Admin/Editor
     sources: searchResults ? ['Google Search Data', 'DuckDuckGo Fact Search'] : ['CTC Knowledge Base']
   };
