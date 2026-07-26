@@ -1,14 +1,16 @@
 /**
- * Advanced AI Article Generator Service
- * 1. Supports 5 Dynamic Article Structures:
+ * Advanced AI Article Generator Service (Deep Persuasive & Rich Journalism Engine)
+ * 1. Rich Formatting: Executive Summary Box, Quote Callouts, Data Tables, Expert Warning Boxes.
+ * 2. Thick Content Expansion: 1,200+ to 1,800+ words of dense analytical depth & persuasive journalistic flow.
+ * 3. Supports 5 Dynamic Article Structures:
  *    - Inverted Pyramid (Kim tự tháp ngược - Báo chí/Thời sự)
  *    - PAS (Problem - Agitate - Solution - Marketing/An ninh/Kỹ thuật)
  *    - 5W1H (Who - What - Where - When - Why - How - Tổng hợp tin tức)
  *    - Case Study / Storytelling (Câu chuyện thực tế/Dự án/Review)
  *    - Comparison & Pros/Cons (So sánh - Đánh giá - Tư vấn thiết bị)
- * 2. URL Article Web Scraper & Image Extractor (Extracts full text & real images from article links).
- * 3. Reads Admin Settings (`db.settings.get()`) for Gemini API / OpenAI API Keys.
- * 4. Strict Yoast SEO 95-100 & Readability 95-100 score guarantees.
+ * 4. URL Article Web Scraper & Image Extractor.
+ * 5. Reads Admin Settings (`db.settings.get()`) for Gemini API / OpenAI API Keys.
+ * 6. Strict Yoast SEO 95-100 & Readability 95-100 score guarantees.
  */
 
 import fetch from 'node-fetch';
@@ -207,7 +209,7 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
     const scrapedParagraphs: string[] = [];
     const pRegex = /<p[^>]*>(.*?)<\/p>/gi;
     let pMatch;
-    while ((pMatch = pRegex.exec(html)) !== null && scrapedParagraphs.length < 20) {
+    while ((pMatch = pRegex.exec(html)) !== null && scrapedParagraphs.length < 25) {
       const cleanP = pMatch[1].replace(/<[^>]+>/g, '').trim();
       if (cleanP.length > 25 && !/(?:copyright|all rights reserved|lượt xem|chia sẻ|theo dõi|đăng ký|quảng cáo)/i.test(cleanP)) {
         scrapedParagraphs.push(cleanP);
@@ -226,7 +228,7 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
 
     const imgRegex = /<img[^>]+(?:src|data-src|data-original|data-lazy-src)=["']([^"'\s]+)["'][^>]*>/gi;
     let imgMatch;
-    while ((imgMatch = imgRegex.exec(html)) !== null && scrapedImages.length < 5) {
+    while ((imgMatch = imgRegex.exec(html)) !== null && scrapedImages.length < 6) {
       let imgUrl = imgMatch[1].trim();
       if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
       if (!imgUrl.startsWith('http')) continue;
@@ -284,7 +286,7 @@ async function searchWebContext(query: string): Promise<{ rawSnippets: string[];
     const snippets: string[] = [];
     const snippetRegex = /<a class="result__snippet[^>]*>(.*?)<\/a>/gi;
     let match;
-    while ((match = snippetRegex.exec(html)) !== null && snippets.length < 6) {
+    while ((match = snippetRegex.exec(html)) !== null && snippets.length < 8) {
       const cleanText = match[1].replace(/<[^>]+>/g, '').trim();
       if (cleanText.length > 25) {
         snippets.push(cleanText);
@@ -415,8 +417,8 @@ function buildStructuredHeadings(
   switch (structure) {
     case 'pas':
       return {
-        h2_1: `1. Thực trạng & vấn đề rủi ro nhức nhối xoay quanh ${cleanKw}`,
-        h2_2: `2. Tác hại nghiêm trọng & hệ lụy nếu không xử lý kịp thời`,
+        h2_1: `1. Thực trạng & rủi ro nhức nhối xoay quanh ${cleanKw}`,
+        h2_2: `2. Phân tích tác hại nghiêm trọng & hệ lụy nếu kéo dài`,
         h2_3: `3. Giải pháp khắc phục triệt để & đột phá từ chuyên gia`,
         h2_4: `4. Đơn vị tư vấn uy tín CTC và thông tin liên hệ hỗ trợ`
       };
@@ -502,7 +504,7 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
 
 /**
  * Dynamic AI Article Generator:
- * Supports 5 Structures, URL Web Scraping, Reference Content Rewriting & Image Extraction!
+ * Deep Persuasive Journalism Engine with Callouts, Quotes, Tables & Rich Paragraph Expansion!
  */
 export async function generateAiArticle(
   userTitle: string,
@@ -517,7 +519,7 @@ export async function generateAiArticle(
   let rawReferenceText = (referenceContent || '').trim();
   let extractedImages: string[] = [];
 
-  // 1. If Article URL is provided, Scrape Full Text & Images from Web Link automatically
+  // 1. Auto Scrape Article Text & Images if URL is supplied
   let scrapedUrlSuccess = false;
   if (articleUrl && articleUrl.trim().startsWith('http')) {
     console.log(`[AI Writer]: Auto scraping article content & images from URL: ${articleUrl}`);
@@ -534,7 +536,7 @@ export async function generateAiArticle(
     }
   }
 
-  // Extract any images directly inside pasted reference text as well
+  // Extract images directly embedded in raw pasted text
   if (rawReferenceText) {
     const textImgs = extractImageUrlsFromText(rawReferenceText);
     for (const img of textImgs) {
@@ -555,12 +557,12 @@ export async function generateAiArticle(
   const kw = resolveFocusKeyword(cleanTitle, userFocusKeyword);
   const domain = detectTopicDomain(cleanTitle, kw);
 
-  // Determine Primary & Secondary Feature Images
+  // Primary & Secondary Feature Images
   const mainImage = extractedImages[0] || getDomainImage(domain);
   const secondImage = extractedImages[1] || null;
   const thirdImage = extractedImages[2] || null;
 
-  // 3. Live Google Search IF no reference content or URL was supplied
+  // 3. Live Google Search IF no reference text was supplied
   let searchResult = { rawSnippets: [] as string[], combinedText: '' };
   if (!hasReferenceText) {
     searchResult = await searchWebContext(cleanTitle);
@@ -590,22 +592,25 @@ export async function generateAiArticle(
 
   // 7. Check if Admin Settings has Gemini API / OpenAI API configured
   let aiLlmGeneratedContent: string | null = null;
-  const llmPrompt = `Bạn là một chuyên gia viết bài báo chí và tiếp thị chuẩn SEO hàng đầu Việt Nam.
-Hãy viết một bài báo hoàn chỉnh chuẩn SEO Yoast (trên 850 từ, 100/100 điểm SEO) dựa trên thông tin sau:
+  const llmPrompt = `Bạn là một nhà báo và chuyên gia biên tập nội dung hàng đầu Việt Nam.
+Hãy viết một bài báo phân tích chuyên sâu, giàu sức thuyết phục, hấp dẫn và dồi dào dữ liệu (độ dài trên 1.200 từ, chuẩn SEO Yoast 100/100) theo thông tin sau:
 - Tiêu đề: ${title}
 - Từ khóa chính: ${kw}
 - Cấu trúc bài viết: ${structure}
-- Nội dung tham khảo: ${rawReferenceText || searchResult.combinedText}
+- Nội dung gốc/tham khảo: ${rawReferenceText || searchResult.combinedText}
 
-Yêu cầu định dạng HTML output:
-1. Thẻ <h2> cho 4 phần tiêu đề chính:
+Yêu cầu định dạng HTML phong phú:
+1. Sử dụng thẻ <h2> cho 4 phần tiêu đề chính:
    - <h2>${headings.h2_1}</h2>
    - <h2>${headings.h2_2}</h2>
    - <h2>${headings.h2_3}</h2>
    - <h2>${headings.h2_4}</h2>
-2. Các đoạn văn <p> ngắn (<18 từ/câu), giàu từ nối (Tuy nhiên, Bên cạnh đó, Do đó, Vì vậy, Đặc biệt).
-3. Đảm bảo từ khóa "${kw}" xuất hiện tự nhiên từ 3 đến 5 lần.
-4. Cuối bài chèn thông tin liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC), Hotline: 0915 059 666.`;
+2. Chèn 1 khối Tóm Tắt Nhanh (<div class="p-4 bg-emerald-50... ">) ở đầu bài.
+3. Chèn 1 khối Trích Dẫn Chuyên Gia (<blockquote class="border-l-4 border-amber-500 bg-amber-50... ">) ở giữa bài.
+4. Chèn 1 Bảng Thống Kê / Bảng So Sánh (<table class="w-full border-collapse... ">).
+5. Văn phong sắc sảo, tự nhiên, ngắn gọn (<18 từ/câu), giàu từ nối (Tuy nhiên, Bên cạnh đó, Do đó, Vì vậy, Đặc biệt).
+6. Đảm bảo từ khóa "${kw}" xuất hiện tự nhiên từ 3 đến 5 lần.
+7. Cuối bài chèn thông tin liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC), Hotline: 0915 059 666.`;
 
   aiLlmGeneratedContent = await queryAiLlmFromAdminSettings(llmPrompt);
 
@@ -615,8 +620,21 @@ Yêu cầu định dạng HTML output:
     console.log('[AI Writer]: Successfully generated article using Admin Settings LLM API Key!');
     content = aiLlmGeneratedContent;
   } else {
-    // Built-in Paraphrasing Engine with 5 Structure Layout & Multi-Image Support
-    const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi từ đông đảo cộng đồng. ${toneCallout} Bài viết này cung cấp cái nhìn toàn diện về bối cảnh, phân tích thực trạng và đưa ra những khuyến nghị thiết thực nhất.</p>`;
+    // Highly Rich & Persuasive Journalistic Synthesis Engine
+    const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang trở thành tâm điểm chú ý của đông đảo giới quan sát và cộng đồng. ${toneCallout} Việc đánh giá thấu đáo các khía cạnh chiều sâu là yếu tố quyết định giúp bảo vệ an toàn và tối ưu hóa lợi ích thiết thực.</p>`;
+
+    // Executive Summary Highlight Box
+    const execSummaryBox = `
+<div class="my-6 p-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl shadow-lg border border-slate-700 space-y-2">
+  <div class="flex items-center gap-2 text-amber-400 font-black text-xs uppercase tracking-wider">
+    <span>💡 TÓM TẮT DIỄN BIẾN & CÁC ĐIỂM NÓNG CẦN NẮM NHANH:</span>
+  </div>
+  <ul class="list-disc pl-5 text-xs text-slate-200 space-y-1.5 font-medium leading-relaxed">
+    <li><strong>Ghi nhận bối cảnh thực tế:</strong> Các dữ liệu liên quan đến <strong>${kw}</strong> phản ánh xu hướng chuyển dịch mạnh mẽ và đòi hỏi sự chủ động ứng phó.</li>
+    <li><strong>Đánh giá rủi ro & cơ hội:</strong> Sự thiếu hụt thông tin chuẩn xác có thể dẫn tới những tổn thất không đáng có trong vận hành.</li>
+    <li><strong>Khuyến cáo chiến lược từ CTC:</strong> Áp dụng các giải pháp hạ tầng kỹ thuật chuẩn hóa giúp giảm thiểu tối đa rủi ro và tiết kiệm chi phí lâu dài.</li>
+  </ul>
+</div>`;
 
     let body_1 = '';
     let body_2 = '';
@@ -629,32 +647,65 @@ Yêu cầu định dạng HTML output:
       const p4 = refParagraphs[3] ? `<p>${refParagraphs[3]}</p>` : '';
       const p5 = refParagraphs[4] ? `<p>${refParagraphs[4]}</p>` : '';
       const p6 = refParagraphs[5] ? `<p>${refParagraphs[5]}</p>` : '';
+      const p7 = refParagraphs[6] ? `<p>${refParagraphs[6]}</p>` : '';
 
       body_1 = `
 ${p1}
 ${p2}
-<p>Tuy nhiên, việc nắm bắt dữ liệu xác minh chuẩn xác về <strong>${kw}</strong> giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả. Do đó, trang bị thông tin chính thống là ưu tiên hàng đầu của mọi đối tượng.</p>
-<p>Bên cạnh đó, các cơ quan chuyên môn luôn khuyến cáo theo dõi sát diễn biến để đưa ra ứng phó phù hợp.</p>`.trim();
+<p>Dưới góc nhìn phân tích từ các chuyên gia chuyên ngành, thực trạng liên quan đến <strong>${kw}</strong> phản ánh bản chất của một làn sóng chuyển dịch rộng lớn. Việc tiếp cận nguồn thông tin đã xác minh giúp các cá nhân và doanh nghiệp nâng cao năng lực phòng vệ chủ động.</p>
+<p>Tuy nhiên, sự thiếu hụt quy trình kiểm soát rủi ro bài bản có thể dẫn tới những đánh giá sai lệch. Do đó, trang bị kiến thức chuẩn xác về <strong>${kw}</strong> chính là ưu tiên hàng đầu của mọi đối tượng trong giai đoạn hiện tại.</p>
+${p7}
+<p>Bên cạnh đó, các cơ quan chuyên môn luôn khuyến cáo việc tuân thủ nghiêm ngặt các hướng dẫn vận hành kỹ thuật nhằm duy trì sự ổn định tối đa.</p>`.trim();
 
       body_2 = `
 ${p3}
 ${p4}
-<p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
-<ul>
-  <li><strong>Thông tin xác minh chính thống:</strong> Tiếp cận dữ liệu thực tế từ các đơn vị quản lý chuyên ngành.</li>
-  <li><strong>Đánh giá tác động đa chiều:</strong> Phân tích kỹ lưỡng các ưu điểm, lợi ích và thách thức tiềm ẩn.</li>
-  <li><strong>Định hướng xử lý linh hoạt:</strong> Đưa ra các khuyến cáo thiết thực áp dụng vào đời sống hàng ngày.</li>
-  <li><strong>Tối ưu hóa quy trình vận hành:</strong> Đảm bảo tính liên tục và giảm thiểu tối đa mọi rủi ro gián đoạn.</li>
-</ul>
-<p>Đặc biệt, việc nâng cao nhận thức đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài.</p>`.trim();
+<blockquote class="my-6 p-4 border-l-4 border-amber-500 bg-amber-50/90 rounded-r-2xl italic text-slate-800 text-xs font-serif leading-relaxed">
+  "Nhìn từ bức tranh tổng thể, việc nắm bắt chiều sâu dữ liệu xoay quanh <strong>${kw}</strong> không chỉ giúp nhận diện nguy cơ từ sớm mà còn mở ra cơ hội tối ưu hóa toàn diện nguồn lực."
+</blockquote>
+<p>Ngoài ra, kết quả phân tích đa chiều chỉ ra những mắt xích cốt lõi sau đây:</p>
+<div class="overflow-x-auto my-4">
+  <table class="w-full border-collapse border border-slate-300 text-xs shadow-xs rounded-xl overflow-hidden">
+    <thead>
+      <tr class="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold">
+        <th class="border border-slate-300 p-2.5 text-left">Tiêu chí đánh giá</th>
+        <th class="border border-slate-300 p-2.5 text-left">Thực trạng ghi nhận</th>
+        <th class="border border-slate-300 p-2.5 text-left">Khuyến nghị chuẩn hóa từ CTC</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-200">
+      <tr>
+        <td class="border border-slate-300 p-2.5 font-semibold text-slate-800">1. Tính xác thực dữ liệu</td>
+        <td class="border border-slate-300 p-2.5 text-slate-600">Cần thẩm định kỹ lưỡng từ nguồn chính thống</td>
+        <td class="border border-slate-300 p-2.5 text-emerald-700 font-bold">Truy xuất dữ liệu chuẩn quy chuẩn CTC</td>
+      </tr>
+      <tr>
+        <td class="border border-slate-300 p-2.5 font-semibold text-slate-800">2. Độ an toàn kỹ thuật</td>
+        <td class="border border-slate-300 p-2.5 text-slate-600">Tiềm ẩn rủi ro nếu thiết bị đã cũ hỏng</td>
+        <td class="border border-slate-300 p-2.5 text-emerald-700 font-bold">Nâng cấp hạ tầng thế hệ mới 2026</td>
+      </tr>
+      <tr>
+        <td class="border border-slate-300 p-2.5 font-semibold text-slate-800">3. Chi phí vận hành</td>
+        <td class="border border-slate-300 p-2.5 text-slate-600">Dễ phát sinh tổn thất ngoài dự kiến</td>
+        <td class="border border-slate-300 p-2.5 text-emerald-700 font-bold">Tối ưu hóa đến 80% chi phí trọn gói</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p>Đặc biệt, việc nâng cao nhận thức đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài cho toàn bộ hệ thống vận hành.</p>`.trim();
 
       body_3 = `
 ${p5}
 ${p6}
-<p>Hơn nữa, các quy chuẩn vận hành áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
-<p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược.</p>`.trim();
+<p>Hơn nữa, các quy chuẩn vận hành áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt từ khâu khảo sát đến khởi tạo. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
+<div class="my-5 p-4 border border-rose-200 bg-rose-50/80 rounded-2xl text-xs text-rose-950 font-medium space-y-1">
+  <p class="font-black text-rose-900 uppercase tracking-wider">⚠️ LƯU Ý QUAN TRỌNG TỪ ĐỘI NGŨ KỸ SƯ CTC:</p>
+  <p>Tuyệt đối không sử dụng các giải pháp trôi nổi không rõ nguồn gốc. Việc đầu tư hệ thống chuẩn hóa ngay từ đầu giúp đảm bảo tuổi thọ thiết bị và vận hành liên tục 24/7.</p>
+</div>
+<p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược quyết định sự thành công lâu dài.</p>`.trim();
 
     } else {
+      // Fallback search synthesis with rich formatting
       body_1 = `<p>Trong giai đoạn hiện tại, diễn biến liên quan đến <strong>${kw}</strong> ghi nhận nhiều chuyển biến nhanh chóng. Việc theo dõi thông tin chính thống giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả.</p>
 <p>Tuy nhiên, sự thiếu hụt dữ liệu xác minh có thể dẫn tới những đánh giá sai lệch. Do đó, trang bị kiến thức chuẩn xác về <strong>${kw}</strong> là ưu tiên hàng đầu của mọi đối tượng.</p>
 <p>Bên cạnh đó, các cơ quan chuyên môn luôn tích cực đưa ra những hướng dẫn chi tiết nhằm đảm bảo an toàn tối đa cho người dùng.</p>`;
@@ -695,6 +746,8 @@ ${p6}
 
     content = `
 ${introP}
+
+${execSummaryBox}
 
 <div class="my-6 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
   <p class="font-black text-slate-800 text-sm uppercase tracking-wider mb-2">📌 Mục lục bài viết:</p>
