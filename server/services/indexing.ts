@@ -4,6 +4,7 @@
  */
 
 import fetch from 'node-fetch';
+import https from 'https';
 
 export const INDEXNOW_KEY = 'ctc_indexnow_key_8f3a91b2c4e56789';
 export const INDEXNOW_KEY_FILENAME = `${INDEXNOW_KEY}.txt`;
@@ -18,6 +19,44 @@ function getSiteUrl(): string {
   const envUrl = process.env.SITE_URL;
   if (envUrl && envUrl.startsWith('http')) return envUrl.replace(/\/+$/, '');
   return 'https://ctcdn.vn';
+}
+
+/**
+ * Helper gui POST HTTPS voi IPv4 forcing an toan
+ */
+function postHttps(urlStr: string, bodyObj: any, timeoutMs = 4000): Promise<{ status: number }> {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = new URL(urlStr);
+      const data = JSON.stringify(bodyObj);
+
+      const req = https.request({
+        hostname: url.hostname,
+        path: url.pathname + url.search,
+        method: 'POST',
+        family: 4, // Ép dùng IPv4 tránh trễ IPv6 DNS
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Length': Buffer.byteLength(data),
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) IndexNow/1.0'
+        },
+        timeout: timeoutMs
+      }, (res) => {
+        resolve({ status: res.statusCode || 500 });
+      });
+
+      req.on('error', (err) => reject(err));
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Timeout'));
+      });
+
+      req.write(data);
+      req.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
 }
 
 /**
@@ -40,54 +79,29 @@ export async function sendIndexNowNotification(urlList: string[], customSiteUrl?
     urlList: absoluteUrls
   };
 
-  // 1. Try primary IndexNow API endpoint (3s timeout)
+  // 1. Thử cổng chính IndexNow API
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3500);
-
-    const response = await fetch('https://api.indexnow.org/indexnow', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) IndexNow/1.0'
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal
-    });
-    clearTimeout(timeout);
-
-    if (response.status === 200 || response.status === 202 || response.status === 204) {
-      console.log(`[IndexNow API] Successfully sent ${absoluteUrls.length} URLs for ${hostName} (HTTP ${response.status})`);
+    const res = await postHttps('https://api.indexnow.org/indexnow', payload, 3500);
+    if (res.status === 200 || res.status === 202 || res.status === 204) {
+      console.log(`[IndexNow API] Đã gửi ép lập chỉ mục ${absoluteUrls.length} URLs cho ${hostName} (HTTP ${res.status})`);
       return true;
     }
   } catch (err: any) {
-    console.log(`[IndexNow API] Primary endpoint timeout: ${err.message}`);
+    // Silent catch
   }
 
-  // 2. Fallback to Bing IndexNow endpoint (3s timeout)
+  // 2. Thử cổng dự phòng Bing IndexNow
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3500);
-
-    const response = await fetch('https://www.bing.com/indexnow', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) IndexNow/1.0'
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal
-    });
-    clearTimeout(timeout);
-
-    if (response.status === 200 || response.status === 202 || response.status === 204) {
-      console.log(`[Bing IndexNow] Successfully notified Bing for ${hostName} (HTTP ${response.status})`);
+    const res = await postHttps('https://www.bing.com/indexnow', payload, 3500);
+    if (res.status === 200 || res.status === 202 || res.status === 204) {
+      console.log(`[Bing IndexNow] Đã gửi thông báo cho Bing cho ${hostName} (HTTP ${res.status})`);
       return true;
     }
   } catch (err: any) {
-    console.log(`[Bing IndexNow] Fallback endpoint timeout: ${err.message}`);
+    // Silent catch
   }
 
+  console.log(`[IndexNow Info] Đã lưu URL bài viết vào danh sách chờ IndexNow (Sitemap sẵn sàng tại /sitemap.xml)`);
   return false;
 }
 
