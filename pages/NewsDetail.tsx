@@ -93,7 +93,7 @@ const NewsDetail: React.FC = () => {
   });
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pt-28 sm:pt-36 pb-20 animate-fade-in">
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pt-36 sm:pt-44 md:pt-48 pb-20 animate-fade-in">
       <SEO 
         title={news.title}
         description={news.excerpt?.substring(0, 160) || ''}

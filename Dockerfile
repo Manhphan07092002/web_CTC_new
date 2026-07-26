@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Copy package files and install ALL deps (dev included for build)
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
 
 # Copy source
 COPY . .
@@ -26,7 +26,7 @@ ENV NODE_ENV=production
 
 # Install only production deps
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Copy built frontend
 COPY --from=builder /app/dist ./dist
