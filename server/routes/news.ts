@@ -93,9 +93,9 @@ router.post('/', async (req, res) => {
     }
 
     res.status(201).json(created);
-  } catch (error) {
-    console.error('Error creating news', error);
-    res.status(500).json({ message: 'Failed to create news' });
+  } catch (error: any) {
+    console.error('Error creating news:', error?.message || error);
+    res.status(500).json({ message: error?.message || 'Failed to create news' });
   }
 });
 
@@ -121,9 +121,9 @@ router.put('/:id', async (req, res) => {
     }
 
     res.json(updated);
-  } catch (error) {
-    console.error('Error updating news', error);
-    res.status(500).json({ message: 'Failed to update news' });
+  } catch (error: any) {
+    console.error('Error updating news:', error?.message || error);
+    res.status(500).json({ message: error?.message || 'Failed to update news' });
   }
 });
 

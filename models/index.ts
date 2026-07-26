@@ -307,7 +307,7 @@ const NewsSchema = new Schema<INewsItem>({
   excerpt: { type: String, required: true },
   date: { type: String, required: true },
   image: { type: String, required: true },
-  categoryId: { type: Schema.Types.ObjectId, ref: 'NewsCategory' },
+  categoryId: { type: Schema.Types.Mixed, ref: 'NewsCategory' },
   category: { type: String },
   content: { type: String },
   author: { type: String },

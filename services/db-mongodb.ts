@@ -312,13 +312,21 @@ export const db = {
     },
     
     add: async (data: Partial<INewsItem>) => {
-      const newsItem = new News(data);
+      const cleanData: any = { ...data };
+      if (!cleanData.categoryId || cleanData.categoryId === '' || !mongoose.Types.ObjectId.isValid(String(cleanData.categoryId))) {
+        delete cleanData.categoryId;
+      }
+      const newsItem = new News(cleanData);
       await newsItem.save();
       return toPlainObject<INewsItem>(newsItem);
     },
     
     update: async (id: string, data: Partial<INewsItem>) => {
-      const newsItem = await News.findByIdAndUpdate(id, data, { new: true });
+      const cleanData: any = { ...data };
+      if (!cleanData.categoryId || cleanData.categoryId === '' || !mongoose.Types.ObjectId.isValid(String(cleanData.categoryId))) {
+        delete cleanData.categoryId;
+      }
+      const newsItem = await News.findByIdAndUpdate(id, cleanData, { new: true });
       return newsItem ? toPlainObject<INewsItem>(newsItem) : null;
     },
     
