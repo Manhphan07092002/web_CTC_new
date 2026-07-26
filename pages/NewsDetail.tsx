@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { getLangText } from '../utils/translation-helper';
 import SEO from '../components/SEO';
 import Loading from '../components/Loading';
+import { getNewsUrl } from '../utils/news-url-helper';
 
 import {
   NewsArticleView,
@@ -67,7 +68,7 @@ const NewsDetail: React.FC = () => {
   const getNewsSchema = (n: NewsItem) => ({
     "@context": "https://schema.org/",
     "@type": "NewsArticle",
-    "@id": `${window.location.origin}/news/${id}`,
+    "@id": `${window.location.origin}${getNewsUrl(n)}`,
     "headline": n.title,
     "image": n.image?.startsWith('http') ? n.image : `${window.location.origin}${n.image}`,
     "description": n.excerpt,
@@ -88,7 +89,7 @@ const NewsDetail: React.FC = () => {
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `${window.location.origin}/news/${id}`
+      "@id": `${window.location.origin}${getNewsUrl(n)}`
     }
   });
 

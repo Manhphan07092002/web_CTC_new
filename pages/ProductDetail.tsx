@@ -18,6 +18,7 @@ import {
 } from '../components/products-details';
 import Loading from '../components/Loading';
 import { useCart } from '../contexts/CartContext';
+import { getProductUrl } from '../utils/news-url-helper';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -286,7 +287,7 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
   const getProductSchema = (p: Product) => ({
     "@context": "https://schema.org/",
     "@type": "Product",
-    "@id": `${window.location.origin}/products/${id}`,
+    "@id": `${window.location.origin}${getProductUrl(p)}`,
     "name": p.name,
     "image": imageList,
     "description": p.description,
@@ -302,7 +303,7 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
     },
     "offers": {
       "@type": "Offer",
-      "url": `${window.location.origin}/products/${id}`,
+      "url": `${window.location.origin}${getProductUrl(p)}`,
       "priceCurrency": "VND",
       "price": p.price || "0",
       "availability": (p.stock && p.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
