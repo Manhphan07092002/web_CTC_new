@@ -6,7 +6,8 @@ import { autoSeedIfEmpty } from './utils/autoSeed';
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
+const rawUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
+const MONGO_URI = rawUri.includes('localhost') ? rawUri.replace('localhost', '127.0.0.1') : rawUri;
 
 export const connectDB = async () => {
   try {
