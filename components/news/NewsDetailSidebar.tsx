@@ -116,14 +116,23 @@ export const NewsDetailSidebar: React.FC<NewsDetailSidebarProps> = ({ relatedNew
 
         {/* Tab Content List */}
         <div className="p-5 space-y-4">
-          {relatedNews.map((item, index) => {
-            const targetId = (item as any)._id || item.id;
-            return (
-              <Link 
-                key={`sidebar-news-${targetId}-${index}`} 
-                to={getNewsUrl(item)} 
-                className="block group"
-              >
+          {(() => {
+            const sortedList = [...relatedNews].sort((a, b) => {
+              if (activeTab === 'trending') {
+                return (b.viewCount || 0) - (a.viewCount || 0);
+              } else {
+                return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
+              }
+            }).slice(0, 5);
+
+            return sortedList.map((item, index) => {
+              const targetId = (item as any)._id || item.id;
+              return (
+                <Link 
+                  key={`sidebar-news-${targetId}-${index}`} 
+                  to={getNewsUrl(item)} 
+                  className="block group"
+                >
                 <div className="flex gap-3.5 items-start">
                   {/* Ranking Badge */}
                   <span className={`w-6 h-6 rounded-lg text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm ${
@@ -146,7 +155,8 @@ export const NewsDetailSidebar: React.FC<NewsDetailSidebarProps> = ({ relatedNew
                 </div>
               </Link>
             );
-          })}
+          });
+        })()}
         </div>
 
       </div>
