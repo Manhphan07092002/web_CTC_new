@@ -96,6 +96,7 @@ export interface NewsItem {
   categoryId?: string; // Reference to NewsCategory
   author?: string;
   tags?: string[];
+  focusKeyword?: string;
   isFeatured?: boolean;
   featuredOrder?: number;
   viewCount?: number;

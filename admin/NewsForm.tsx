@@ -48,6 +48,7 @@ const NewsForm: React.FC = () => {
     author: 'Nguyễn Văn Duy',
     isFeatured: false,
     tags: [] as string[],
+    focusKeyword: '',
   });
 
   const [tagInput, setTagInput] = useState('');
@@ -84,6 +85,8 @@ const NewsForm: React.FC = () => {
     setLoading(true);
     try {
       const news = await api.news.getById(newsId);
+      const loadedKw = news.focusKeyword || news.focus_keyword || (news.tags && news.tags.length > 0 ? news.tags[0] : '');
+      setFocusKeyword(loadedKw);
       setFormData({
         title: news.title || '',
         excerpt: news.excerpt || '',
@@ -95,6 +98,7 @@ const NewsForm: React.FC = () => {
         author: news.author || 'Nguyễn Văn Duy',
         isFeatured: news.isFeatured || false,
         tags: news.tags || [],
+        focusKeyword: loadedKw,
       });
     } catch (error) {
       console.error('Error loading news:', error);
@@ -113,10 +117,22 @@ const NewsForm: React.FC = () => {
     setFormData({ ...formData, categoryId, category: selected?.name || '' });
   };
 
+  const handleFocusKeywordChange = (kw: string) => {
+    setFocusKeyword(kw);
+    setFormData(prev => ({ ...prev, focusKeyword: kw }));
+  };
+
   const addTag = () => {
     const tag = tagInput.trim();
     if (tag && !formData.tags.includes(tag)) {
-      setFormData({ ...formData, tags: [...formData.tags, tag] });
+      const updatedTags = [...formData.tags, tag];
+      const kwToSet = focusKeyword.trim() ? focusKeyword : tag;
+      setFocusKeyword(kwToSet);
+      setFormData(prev => ({
+        ...prev,
+        tags: updatedTags,
+        focusKeyword: kwToSet
+      }));
     }
     setTagInput('');
   };
@@ -133,11 +149,12 @@ const NewsForm: React.FC = () => {
 
     setSaving(true);
     try {
+      const payload = { ...formData, focusKeyword };
       if (isEdit && id) {
-        await api.news.update(id, formData);
+        await api.news.update(id, payload);
         showToast('✅ Cập nhật tin tức thành công!', 'success');
       } else {
-        await api.news.create(formData);
+        await api.news.create(payload);
         showToast('✅ Đăng bài viết thành công!', 'success');
       }
       navigate('/admin/content?tab=news');
@@ -496,7 +513,7 @@ const NewsForm: React.FC = () => {
                 content={formData.content}
                 image={formData.image}
                 focusKeyword={focusKeyword}
-                onFocusKeywordChange={setFocusKeyword}
+                onFocusKeywordChange={handleFocusKeywordChange}
               />
             </div>
           </div>

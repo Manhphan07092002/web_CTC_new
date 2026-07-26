@@ -300,6 +300,7 @@ export interface INewsItem extends BaseDocument {
   isFeatured?: boolean;      // Bài nổi bật
   featuredOrder?: number;    // Thứ tự nổi bật
   tags?: string[];           // Tags
+  focusKeyword?: string;     // Từ khóa SEO chính
   translations?: TranslationsMap<NewsTranslation>;
 }
 
@@ -316,6 +317,7 @@ const NewsSchema = new Schema<INewsItem>({
   isFeatured: { type: Boolean, default: false },
   featuredOrder: { type: Number, default: 0 },
   tags: [{ type: String }],
+  focusKeyword: { type: String, default: '' },
   translations: createTranslationSchema()
 }, { timestamps: true });
 
