@@ -63,25 +63,38 @@ const ProductForm: React.FC = () => {
 
     setIsGeneratingAI(true);
     try {
-      const prompt = `Viết bài mô tả sản phẩm chi tiết, chuyên nghiệp chuẩn SEO bằng tiếng Việt cho website Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC).
+      const prompt = `Bạn là chuyên gia kỹ thuật điện mặt trời & xây lắp CTC. Hãy tự động viết TOÀN BỘ thông tin sản phẩm chuyên nghiệp, chuẩn kỹ thuật & SEO bằng tiếng Việt cho website Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC).
 
-Thông tin sản phẩm:
+Thông tin sản phẩm đầu vào:
 - Tên sản phẩm: "${formData.name}"
 - Mã sản phẩm: "${formData.code || 'N/A'}"
-- Công suất: ${formData.power ? formData.power + ' kW' : 'Tiêu chuẩn công nghiệp'}
-- Hiệu suất: ${formData.efficiency ? formData.efficiency + ' %' : 'Cao'}
-- Bảo hành: ${formData.warranty || 'Chính hãng CTC'}
-- Giá: ${formData.price ? formData.price + ' VNĐ' : 'Liên hệ báo giá'}
+- Danh mục: "${formData.categoryLabel || formData.category || 'Thiết bị Năng Lượng Mặt Trời'}"
 
 YÊU CẦU BẮT BUỘC:
-Trả về duy nhất định dạng JSON chuẩn (không bọc trong markdown) có 2 trường:
-1. "shortDescription": Đoạn tóm tắt 1-2 câu ngắn gọn, cuốn hút về ứng dụng và thế mạnh của sản phẩm.
-2. "description": Bài viết chi tiết định dạng HTML phong phú (dùng thẻ h3, p, ul, li, strong, table, tr, td).
-   Cấu trúc bài viết:
-   - h3 Đặc Điểm Nổi Bật với danh sách ul li strong
-   - h3 Công Nghệ & Hiệu Suất Kỹ Thuật với các đoạn p phân tích kỹ thuật, độ bền và an toàn.
-   - h3 Ứng Dụng Thực Tế với các giải pháp phù hợp.
-   - h3 Thông Số Tham Khảo với 1 bảng HTML table chứa thông số cơ bản.
+Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (không bọc trong markdown) chứa đầy đủ các trường sau:
+
+{
+  "shortDescription": "Đoạn 1-2 câu tóm tắt nổi bật cuốn hút về ứng dụng và thế mạnh cốt lõi của sản phẩm.",
+  "description": "<p>Đoạn mở đầu giới thiệu về công nghệ và thương hiệu...</p><h3>Đặc Điểm Nổi Bật</h3><ul><li><strong>Tính năng 1:</strong> Mô tả chi tiết...</li><li><strong>Tính năng 2:</strong> Mô tả chi tiết...</li></ul><h3>Công Nghệ & Hiệu Suất Kỹ Thuật</h3><p>Đoạn phân tích độ bền, tiêu chuẩn an toàn và hiệu suất...</p><h3>Ứng Dụng Thực Tế</h3><p>Các giải pháp ứng dụng cho gia đình, nhà xưởng, điện mặt trời mái nhà...</p>",
+  "specifications": "Tóm tắt tổng quan các thông số kỹ thuật chính (Công nghệ cell, chuẩn chống nước IP, dải nhiệt độ hoạt động, tiêu chuẩn chất lượng IEC)...",
+  "power": 0.55,
+  "efficiency": 21.5,
+  "warranty": "25 năm hiệu suất, 12 năm vật lý",
+  "features": [
+    "Công nghệ Half-cell thế hệ mới giảm tổn hao công suất",
+    "Khả năng chống ăn mòn amoniac và muối biển chuẩn IEC 61701",
+    "Khung nhôm mạ anodized chịu tải tuyết 5400Pa và tải gió 2400Pa",
+    "Hộp đấu nối chuẩn chống nước IP68 bảo vệ toàn diện"
+  ],
+  "technicalSpecs": {
+    "Kích thước": "2278 x 1134 x 35 mm",
+    "Trọng lượng": "27.5 kg",
+    "Loại Cell": "Monocrystalline / N-Type",
+    "Chuẩn chống nước": "IP68",
+    "Nhiệt độ vận hành": "-40°C đến +85°C",
+    "Điện áp hệ thống tối đa": "1500V DC"
+  }
+}
 `;
 
       const response = await chatService.sendMessage(prompt);
@@ -102,13 +115,19 @@ Trả về duy nhất định dạng JSON chuẩn (không bọc trong markdown) 
         console.warn('JSON parse error from AI response, using text fallback:', e);
       }
 
-      if (parsed && (parsed.description || parsed.shortDescription)) {
+      if (parsed && (parsed.description || parsed.shortDescription || parsed.technicalSpecs || parsed.features)) {
         setFormData(prev => ({
           ...prev,
           shortDescription: parsed.shortDescription || prev.shortDescription,
           description: parsed.description || prev.description,
+          specifications: parsed.specifications || prev.specifications,
+          power: typeof parsed.power === 'number' ? parsed.power : (parseFloat(parsed.power) || prev.power),
+          efficiency: typeof parsed.efficiency === 'number' ? parsed.efficiency : (parseFloat(parsed.efficiency) || prev.efficiency),
+          warranty: parsed.warranty || prev.warranty,
+          features: Array.isArray(parsed.features) && parsed.features.length > 0 ? parsed.features : prev.features,
+          technicalSpecs: (parsed.technicalSpecs && typeof parsed.technicalSpecs === 'object') ? parsed.technicalSpecs : prev.technicalSpecs,
         }));
-        showToast('✨ Đã tự động tạo bài mô tả sản phẩm Rich Text HTML bằng AI Gemini thành công!', 'success');
+        showToast('✨ Đã tự động tạo và điền TOÀN BỘ bài mô tả, thông số & tính năng sản phẩm bằng AI Gemini thành công!', 'success');
       } else if (response) {
         // Fallback: Convert plain text response into HTML paragraphs and extract short description
         const cleanText = response.replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
