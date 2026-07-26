@@ -12,6 +12,7 @@ import { useToast } from '../contexts/ToastContext';
 // Lazy load để tránh SSR issues
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 import { getNewsUrl } from '../utils/news-url-helper';
+import SeoAnalyzer from './components/SeoAnalyzer';
 
 interface NewsCategory {
   id: string;
