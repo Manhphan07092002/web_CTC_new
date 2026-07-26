@@ -23,9 +23,8 @@ const News: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   // Default view mode: 'list' (1 hàng 1 tin tức)
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [itemsPerPage, setItemsPerPage] = useState<number>(6);
   const { t, language } = useLanguage();
-
-  const itemsPerPage = viewMode === 'list' ? 6 : 9;
 
   useEffect(() => {
     // Track page view
@@ -55,9 +54,8 @@ const News: React.FC = () => {
   }, [language]);
 
   const handleNewsClick = (item: NewsItem) => {
-    const targetId = (item as any)._id || item.id;
-    if (targetId && targetId !== 'undefined') {
-      navigate(`/news/${targetId}`);
+    if (item) {
+      navigate(getNewsUrl(item));
     }
   };
 

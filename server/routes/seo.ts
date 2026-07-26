@@ -97,12 +97,29 @@ router.get('/sitemap.xml', async (req, res) => {
         });
       }
 
+      // Helper slug generator for server
+      const createSlug = (str: string) => {
+        if (!str) return 'tin-tuc';
+        return str
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[đĐ]/g, 'd')
+          .replace(/[^a-z0-9\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
+      };
+
       // News
-      const news = await News.find({}).select('_id id title excerpt author date updatedAt').sort({ createdAt: -1 }).lean();
+      const news = await News.find({}).select('_id id title slug excerpt author date updatedAt').sort({ createdAt: -1 }).lean();
       for (const item of news) {
-        const newsId = item._id ? item._id.toString() : item.id;
+        const fullId = (item._id || item.id || '').toString();
+        const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+        const slugStr = item.slug || createSlug(item.title);
+        
         links.push({
-          url: `/news/${newsId}`,
+          url: `/news/${slugStr}-${shortHash}.html`,
           changefreq: 'weekly',
           priority: 0.7,
           lastmod: item.updatedAt ? new Date(item.updatedAt).toISOString() : new Date().toISOString()
@@ -147,9 +164,24 @@ const handleRss = async (req: express.Request, res: express.Response) => {
     const news = await News.find({}).sort({ createdAt: -1 }).limit(50).lean();
     const buildDate = new Date().toUTCString();
 
+    const createSlug = (str: string) => {
+      if (!str) return 'tin-tuc';
+      return str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[đĐ]/g, 'd')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    };
+
     const itemsXml = news.map(item => {
-      const newsId = item._id ? item._id.toString() : item.id;
-      const link = `${SITE_URL}/news/${newsId}`;
+      const fullId = (item._id || item.id || '').toString();
+      const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+      const slugStr = item.slug || createSlug(item.title);
+      const link = `${SITE_URL}/news/${slugStr}-${shortHash}.html`;
       const title = (item.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const description = (item.excerpt || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const author = item.author || 'CTC News';

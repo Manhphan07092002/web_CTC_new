@@ -195,15 +195,49 @@ export const db = {
       return news.map(toPlainObject<INewsItem>);
     },
     
-    getById: async (id: string) => {
-      // Try findById first (handles valid ObjectId strings)
+    getById: async (idParam: string) => {
+      if (!idParam) return null;
+      // Loai bo duoi .html neu co
+      const cleanParam = idParam.replace(/\.html$/i, '');
+
+      // 1. Thu tim theo ObjectId nguyen ban
       try {
-        const newsItem = await News.findById(id);
-        if (newsItem) return toPlainObject<INewsItem>(newsItem);
-      } catch (_) { /* invalid ObjectId format, fall through */ }
-      
-      // Fallback: find by id field or slug
-      const newsItem = await News.findOne({ $or: [{ id: id }, { slug: id }] });
+        const itemById = await News.findById(cleanParam);
+        if (itemById) return toPlainObject<INewsItem>(itemById);
+      } catch (_) {}
+
+      // 2. Tách slug va hash ID ngan o cuoi
+      const parts = cleanParam.split('-');
+      const possibleHash = parts[parts.length - 1];
+      const baseSlug = parts.slice(0, -1).join('-');
+
+      // Neu possibleHash la 24 ky tu ObjectId
+      if (possibleHash && possibleHash.length === 24) {
+        try {
+          const itemByHash = await News.findById(possibleHash);
+          if (itemByHash) return toPlainObject<INewsItem>(itemByHash);
+        } catch (_) {}
+      }
+
+      // 3. Tim theo Slug / ID hoac khop voi 8 ky tu cuoi ObjectId
+      let newsItem = await News.findOne({
+        $or: [
+          { id: cleanParam },
+          { slug: cleanParam },
+          { slug: baseSlug },
+          { id: possibleHash }
+        ]
+      });
+
+      if (!newsItem && possibleHash && possibleHash.length >= 4) {
+        // Tim bai viet co _id hoặc id ket thuc bang shortHash
+        const allItems = await News.find();
+        newsItem = allItems.find(item => {
+          const fullId = String(item._id || item.id);
+          return fullId.endsWith(possibleHash) || fullId.includes(possibleHash);
+        }) || null;
+      }
+
       return newsItem ? toPlainObject<INewsItem>(newsItem) : null;
     },
     

@@ -7,6 +7,8 @@ interface RelatedNewsProps {
   news: NewsItem[];
 }
 
+import { getNewsUrl } from '../../utils/news-url-helper';
+
 export const RelatedNews: React.FC<RelatedNewsProps> = ({ news }) => {
   if (news.length === 0) return null;
 
@@ -33,7 +35,7 @@ export const RelatedNews: React.FC<RelatedNewsProps> = ({ news }) => {
           return (
             <Link
               key={`related-news-${targetId}-${index}`}
-              to={`/news/${targetId}`}
+              to={getNewsUrl(item)}
               className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/80 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col"
             >
             <div className="h-48 bg-gray-100 dark:bg-gray-700 relative overflow-hidden flex-shrink-0">

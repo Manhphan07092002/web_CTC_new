@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Calendar, Flame, ArrowRight, TrendingUp, Mail, CheckCircle2, ChevronRight } from 'lucide-react';
 
 import { api } from '../../services/api';
+import { getNewsUrl } from '../../utils/news-url-helper';
 
 interface NewsDetailSidebarProps {
   relatedNews: NewsItem[];
@@ -120,7 +121,7 @@ export const NewsDetailSidebar: React.FC<NewsDetailSidebarProps> = ({ relatedNew
             return (
               <Link 
                 key={`sidebar-news-${targetId}-${index}`} 
-                to={`/news/${targetId}`} 
+                to={getNewsUrl(item)} 
                 className="block group"
               >
                 <div className="flex gap-3.5 items-start">

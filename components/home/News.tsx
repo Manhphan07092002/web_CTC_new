@@ -5,6 +5,8 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 import { NewsItem } from '../../types';
 
+import { getNewsUrl } from '../../utils/news-url-helper';
+
 interface NewsProps {
   latestNews: NewsItem[];
   isLoading?: boolean;
@@ -46,7 +48,7 @@ const News: React.FC<NewsProps> = ({ latestNews, isLoading = false }) => {
             return (
               <Link
                 key={`news-${index}-${newsId}`} 
-                to={`/news/${newsId}`}
+                to={getNewsUrl(news)}
                 className="group bg-white dark:bg-slate-950 rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-200 border border-gray-100 dark:border-slate-800 hover:border-primary/20 hover:-translate-y-2 flex flex-col h-full"
               >
               <div className="overflow-hidden h-64 relative">
