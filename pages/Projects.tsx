@@ -6,6 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import SEO from '../components/SEO';
 import Loading from '../components/Loading';
 import analyticsTracking from '../services/analytics-tracking';
+import { getProjectUrl } from '../utils/news-url-helper';
 
 import {
   ProjectsHero,
@@ -160,7 +161,7 @@ const Projects: React.FC = () => {
           <div className="w-full lg:w-3/4">
             <ProjectGrid 
               projects={paginatedProjects}
-              onProjectClick={(p) => navigate(`/projects/${p._id || p.id}`)}
+              onProjectClick={(p) => navigate(getProjectUrl(p))}
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={(page) => {

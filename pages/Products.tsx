@@ -11,6 +11,7 @@ import { useProductCategories } from '../hooks/useCategories';
 import analyticsTracking from '../services/analytics-tracking';
 import { ProductsHero, FilterSidebar, ProductGrid, ProductsCTA } from '../components/products';
 import { useCart } from '../contexts/CartContext';
+import { getProductUrl } from '../utils/news-url-helper';
 
 const Products: React.FC = () => {
   const { addToCart, openCartModal } = useCart();
@@ -230,8 +231,17 @@ const Products: React.FC = () => {
     }
   };
 
-  const handleProductClick = (id: string) => {
-    navigate(`/products/${id}`);
+  const handleProductClick = (id: string, product?: Product) => {
+    if (product) {
+      navigate(getProductUrl(product));
+    } else {
+      const found = products.find(p => (p._id || p.id) === id);
+      if (found) {
+        navigate(getProductUrl(found));
+      } else {
+        navigate(`/products/${id}`);
+      }
+    }
   };
 
   const PLACEHOLDER_IMAGE = 'data:image/svg+xml,' + encodeURIComponent('<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#F3F4F6"/><g transform="translate(110, 60)"><path d="M160 120L110 60L80 95L30 30L0 120H160Z" fill="#D1D5DB"/><circle cx="130" cy="35" r="20" fill="#D1D5DB"/></g><text x="200" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="500" fill="#9CA3AF">No Image</text></svg>');
