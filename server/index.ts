@@ -379,20 +379,28 @@ const server = app.listen(PORT, async () => {
         key: fs.readFileSync(sslKeyPath),
         cert: fs.readFileSync(sslCertPath)
       };
-      https.createServer(httpsOptions, app).listen(443, () => {
+      const httpsServer = https.createServer(httpsOptions, app);
+      httpsServer.on('error', (err: any) => {
+        console.warn('⚠️ Direct Port 443 bind skipped (IIS/Nginx reverse proxy or Admin mode recommended):', err?.message || err);
+      });
+      httpsServer.listen(443, () => {
         console.log('🔒 HTTPS Server listening on port 443 (https://ctcdn.vn)');
       });
 
       // HTTP Port 80 Redirect to HTTPS Port 443
-      http.createServer((req, res) => {
+      const httpServer = http.createServer((req, res) => {
         const host = req.headers.host || 'ctcdn.vn';
         res.writeHead(301, { Location: `https://${host}${req.url}` });
         res.end();
-      }).listen(80, () => {
+      });
+      httpServer.on('error', (err: any) => {
+        console.warn('⚠️ Direct Port 80 bind skipped (IIS/Nginx reverse proxy or Admin mode recommended):', err?.message || err);
+      });
+      httpServer.listen(80, () => {
         console.log('🌐 HTTP Port 80 listening (Redirects to HTTPS 443)');
       });
     } catch (sslErr: any) {
-      console.error('⚠️ Could not bind Port 80/443 directly (Nginx/IIS Reverse Proxy recommended):', sslErr?.message || sslErr);
+      console.warn('⚠️ Could not bind Port 80/443 directly (IIS/Nginx Reverse Proxy recommended):', sslErr?.message || sslErr);
     }
   }
 });
