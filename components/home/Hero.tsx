@@ -834,34 +834,56 @@ const Hero: React.FC = () => {
         /* Small Phones (320px - 767px) */
         @media (max-width: 767px) {
             .hero-corporate {
-                padding: 145px 0 40px;
+                padding: 125px 0 40px;
+                overflow-x: hidden;
             }
             .corporate-layout {
+                grid-template-columns: 1fr;
+                width: 100%;
                 padding: 0 16px;
-                gap: 40px;
+                gap: 32px;
+                text-align: center;
+                justify-items: center;
+            }
+            .left-corporate-panel {
+                width: 100%;
+                align-items: center;
+                text-align: center;
             }
             .corporate-badge-capsule {
                 padding: 8px 18px;
-                margin-bottom: 24px;
+                margin-bottom: 20px;
+                max-width: 100%;
+                justify-content: center;
             }
             .badge-capsule-text {
-                font-size: 0.75rem;
-                letter-spacing: 2px;
+                font-size: 0.72rem;
+                letter-spacing: 1.5px;
+                white-space: normal;
+                text-align: center;
             }
             .title-upper-outline {
-                letter-spacing: 4px;
-                font-size: 0.85rem;
+                letter-spacing: 2px;
+                font-size: 0.8rem;
+                text-align: center;
+                width: 100%;
             }
             .title-main-bold, .title-main-gradient {
-                font-size: 1.85rem;
+                font-size: 1.65rem;
                 letter-spacing: -0.5px;
+                text-align: center;
+                width: 100%;
+                line-height: 1.25;
             }
             .title-main-gradient {
-                margin-bottom: 24px;
+                margin-bottom: 20px;
                 white-space: normal; /* Wrap text nicely on mobile */
             }
             .corporate-slogan-box {
-                margin-bottom: 30px;
+                margin-bottom: 24px;
+                width: 100%;
+                align-items: center;
+                text-align: center;
             }
             .slogan-strong {
                 font-size: 1.15rem;
