@@ -52,10 +52,20 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
         {/* Description Tab */}
         {activeTab === 'desc' && (
           <div className="space-y-6">
-            <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-400">
-              <p className="text-justify">{product.description}</p>
+            <div className="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+              {product.description && (product.description.includes('<') || product.description.includes('&lt;')) ? (
+                <div 
+                  className="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed [&_img]:rounded-2xl [&_img]:shadow-lg [&_img]:my-6 [&_img]:max-h-[550px] [&_img]:mx-auto [&_img]:object-cover [&_a]:text-primary [&_a]:underline [&_a]:font-semibold [&_table]:w-full [&_table]:border-collapse [&_table]:my-6 [&_th]:border [&_th]:border-gray-200 [&_th]:p-3 [&_th]:bg-gray-100 [&_td]:border [&_td]:border-gray-200 [&_td]:p-3"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              ) : (
+                <p className="text-justify whitespace-pre-line leading-relaxed">{product.description}</p>
+              )}
+
               {product.shortDescription && (
-                <p className="text-gray-500 italic mt-2">{product.shortDescription}</p>
+                <div className="text-gray-600 dark:text-gray-400 italic bg-orange-50/60 dark:bg-orange-950/20 p-4 rounded-xl border-l-4 border-primary mt-6">
+                  {product.shortDescription}
+                </div>
               )}
             </div>
 
