@@ -4,6 +4,8 @@ import { Product } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import PriceDisplay from '../PriceDisplay';
 
+import { getProductUrl } from '../../utils/news-url-helper';
+
 interface RelatedProductsProps {
   relatedProducts: Product[];
 }
@@ -24,7 +26,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ relatedProducts }) =>
           return (
             <Link 
               key={`related-product-${itemId}-${index}`} 
-              to={`/products/${itemId}`} 
+              to={getProductUrl(item)} 
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all group block"
             >
               <div className="h-48 bg-gray-100 dark:bg-gray-900 relative overflow-hidden">
