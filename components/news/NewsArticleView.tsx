@@ -30,8 +30,12 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
   
   const [copied, setCopied] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
-  const [likes, setLikes] = useState(142);
+  const [likes, setLikes] = useState((news as any).likes || 24);
   const [hasLiked, setHasLiked] = useState(false);
+
+  useEffect(() => {
+    setLikes((news as any).likes || 24);
+  }, [news]);
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xlarge'>('normal');
   const [scrollProgress, setScrollProgress] = useState(0);
 
