@@ -126,6 +126,10 @@ class EnhancedI18nBackend implements BackendModule {
   }
 
   private async loadFromDatabase(language: string, namespace: string): Promise<any> {
+    if (mongoose.connection.readyState !== 1) {
+      return null;
+    }
+
     try {
       const translations = await Translation.find({
         language,
