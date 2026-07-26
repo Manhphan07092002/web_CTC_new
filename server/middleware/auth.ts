@@ -103,17 +103,29 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-/**
- * Middleware yêu cầu quyền Admin
- */
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  requireAuth(req, res, (err?: any) => {
+  requireAuth(req, res, async (err?: any) => {
     if (err) return next(err);
 
-    if (req.user?.role !== 'admin') {
+    const userRole = (req.user?.role || '').toLowerCase();
+    const isAdminRole = userRole === 'admin' || userRole === 'super_admin' || userRole === 'administrator' || userRole === 'quan_tri_vien';
+
+    if (!isAdminRole) {
+      try {
+        if (req.user?.id) {
+          const { hasPermission } = await import('./permission');
+          const canManage = await hasPermission(req.user.id, 'settings:manage', req) || await hasPermission(req.user.id, 'admin:access', req);
+          if (canManage) {
+            return next();
+          }
+        }
+      } catch (e) {
+        // fallback ignore
+      }
+
       return res.status(403).json({
         status: 403,
-        message: 'Forbidden: Thao tác này yêu cầu quyền Admin.',
+        message: 'Forbidden: Thao tác này yêu cầu quyền Admin hoặc quyền Quản lý Cài đặt.',
       });
     }
 
