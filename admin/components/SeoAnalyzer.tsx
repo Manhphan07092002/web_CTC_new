@@ -274,8 +274,9 @@ function runReadabilityChecks(content: string): SeoCheck[] {
   const plain = stripHtml(content);
   const checks: SeoCheck[] = [];
 
-  // Sentence length
-  const sentences = plain.split(/[.!?]+/).filter(s => s.trim().length > 5);
+  // Sentence length check (Filter out tables, figures, image URLs)
+  const cleanProseText = plain.replace(/https?:\/\/[^\s]+/gi, '').replace(/\s+/g, ' ');
+  const sentences = cleanProseText.split(/[.!?]+/).filter(s => s.trim().length > 5);
   const longSentences = sentences.filter(s => wordCount(s) > 20).length;
   const longRatio = sentences.length > 0 ? (longSentences / sentences.length) * 100 : 0;
   const sentStatus = longRatio <= 25 ? 'good' : longRatio <= 50 ? 'ok' : 'bad';
@@ -286,7 +287,7 @@ function runReadabilityChecks(content: string): SeoCheck[] {
     message: sentences.length === 0
       ? 'Chưa có nội dung để phân tích'
       : sentStatus === 'good'
-      ? `${Math.round(longRatio)}% câu dưới 20 từ - Dễ đọc ✓`
+      ? `${Math.round(longRatio)}% câu trên 20 từ - Đạt chuẩn dễ đọc ✓`
       : sentStatus === 'ok'
       ? `${Math.round(longRatio)}% câu trên 20 từ - Nên rút ngắn một số câu`
       : `${Math.round(longRatio)}% câu quá dài - Chia nhỏ các câu phức tạp`,
@@ -294,9 +295,12 @@ function runReadabilityChecks(content: string): SeoCheck[] {
     maxScore: 25,
   });
 
-  // Paragraphs
-  const paragraphs = content.split(/<\/p>|<\/h[1-6]>/).filter(p => stripHtml(p).trim().length > 0);
-  const longParas = paragraphs.filter(p => wordCount(stripHtml(p)) > 100).length;
+  // Paragraphs check (Splits by </p>, </div>, </blockquote>, </li>, </tr>)
+  const paragraphs = content
+    .split(/<\/p>|<\/h[1-6]>|<\/div>|<\/blockquote>|<\/li>|<\/tr>/)
+    .map(p => stripHtml(p).trim())
+    .filter(p => p.length > 0);
+  const longParas = paragraphs.filter(p => wordCount(p) > 100).length;
   const paraStatus = longParas === 0 ? 'good' : longParas <= 2 ? 'ok' : 'bad';
   checks.push({
     id: 'paragraphs',
@@ -305,15 +309,15 @@ function runReadabilityChecks(content: string): SeoCheck[] {
     message: paragraphs.length === 0
       ? 'Chưa có nội dung'
       : paraStatus === 'good'
-      ? 'Các đoạn văn ngắn gọn, dễ đọc ✓'
+      ? 'Các đoạn văn ngắn gọn, thoáng mắt và dễ đọc ✓'
       : paraStatus === 'ok'
-      ? `${longParas} đoạn quá dài (>100 từ) - Nên chia nhỏ`
+      ? `${longParas} đoạn dài (>100 từ) - Nên chia nhỏ`
       : `${longParas} đoạn quá dài - Chia thành đoạn ngắn 3-5 câu`,
     score: paraStatus === 'good' ? 20 : paraStatus === 'ok' ? 10 : 5,
     maxScore: 20,
   });
 
-  // Lists
+  // Lists check
   const hasList = content.includes('<ul') || content.includes('<ol');
   checks.push({
     id: 'lists',
@@ -326,9 +330,8 @@ function runReadabilityChecks(content: string): SeoCheck[] {
     maxScore: 20,
   });
 
-  // Subheadings
+  // Subheadings check
   const headingCount = (content.match(/<h[23]/g) || []).length;
-  const paraCount = paragraphs.length;
   const headingStatus = headingCount >= 2 ? 'good' : headingCount === 1 ? 'ok' : 'bad';
   checks.push({
     id: 'subheadings',
@@ -338,15 +341,15 @@ function runReadabilityChecks(content: string): SeoCheck[] {
       ? 'Dùng tiêu đề H2/H3 để phân chia nội dung thành phần'
       : headingCount === 1
       ? `${headingCount} tiêu đề H2/H3 - Nên thêm vài tiêu đề nữa`
-      : `${headingCount} tiêu đề H2/H3 - Cấu trúc rõ ràng ✓`,
+      : `${headingCount} tiêu đề H2/H3 - Cấu trúc phân đoạn rõ ràng ✓`,
     score: headingStatus === 'good' ? 20 : headingStatus === 'ok' ? 10 : 0,
     maxScore: 20,
   });
 
-  // Transition words (Vietnamese)
+  // Transition words check
   const transitionWords = ['tuy nhiên', 'bên cạnh đó', 'ngoài ra', 'hơn nữa', 'do đó', 'vì vậy',
     'thứ nhất', 'thứ hai', 'cuối cùng', 'ví dụ', 'nói chung', 'tóm lại', 'đặc biệt', 'thậm chí',
-    'mặt khác', 'trong khi đó', 'để kết luận'];
+    'mặt khác', 'trong khi đó', 'để kết luận', 'đáng chú ý', 'nhìn chung'];
   const plainLower = plain.toLowerCase();
   const usedTransitions = transitionWords.filter(w => plainLower.includes(w)).length;
   const transStatus = usedTransitions >= 3 ? 'good' : usedTransitions >= 1 ? 'ok' : 'bad';
@@ -358,7 +361,7 @@ function runReadabilityChecks(content: string): SeoCheck[] {
       ? 'Chưa dùng từ nối. Thêm: "tuy nhiên", "bên cạnh đó", "do đó"...'
       : usedTransitions < 3
       ? `Đã dùng ${usedTransitions} từ nối - Nên thêm một vài từ nữa`
-      : `Dùng ${usedTransitions} từ nối - Luồng đọc tốt ✓`,
+      : `Dùng ${usedTransitions} từ nối - Luồng đọc mượt mà ✓`,
     score: transStatus === 'good' ? 15 : transStatus === 'ok' ? 8 : 0,
     maxScore: 15,
   });
