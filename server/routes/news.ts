@@ -73,9 +73,16 @@ router.post('/', async (req, res) => {
     const created = await db.news.add(translatedData);
     console.log('News created with translations:', created.id);
     
+    // Helper tao Clean SEO URL cho Indexing
+    const getCleanUrl = (item: any) => {
+      const fullId = (item._id || item.id || '').toString();
+      const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+      const slugStr = item.slug || (item.title ? item.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-') : 'tin-tuc');
+      return `/news/${slugStr}-${shortHash}`;
+    };
+
     // Auto Instant Indexing (IndexNow + Google/Bing Ping)
-    const newsId = created._id || created.id;
-    triggerInstantIndexing(`/news/${newsId}`).catch(() => {});
+    triggerInstantIndexing(getCleanUrl(created)).catch(() => {});
 
     res.status(201).json(created);
   } catch (error) {
@@ -92,9 +99,16 @@ router.put('/:id', async (req, res) => {
     if (!updated) return res.status(404).json({ message: 'News not found' });
     console.log('News updated with translations:', req.params.id);
 
+    // Helper tao Clean SEO URL cho Indexing
+    const getCleanUrl = (item: any) => {
+      const fullId = (item._id || item.id || '').toString();
+      const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+      const slugStr = item.slug || (item.title ? item.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-') : 'tin-tuc');
+      return `/news/${slugStr}-${shortHash}`;
+    };
+
     // Auto Instant Indexing (IndexNow + Google/Bing Ping)
-    const newsId = updated._id || updated.id;
-    triggerInstantIndexing(`/news/${newsId}`).catch(() => {});
+    triggerInstantIndexing(getCleanUrl(updated)).catch(() => {});
 
     res.json(updated);
   } catch (error) {

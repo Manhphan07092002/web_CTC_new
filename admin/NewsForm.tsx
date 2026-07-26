@@ -11,7 +11,7 @@ import { useToast } from '../contexts/ToastContext';
 
 // Lazy load để tránh SSR issues
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
-import SeoAnalyzer from './components/SeoAnalyzer';
+import { getNewsUrl } from '../utils/news-url-helper';
 
 interface NewsCategory {
   id: string;
@@ -55,7 +55,8 @@ const NewsForm: React.FC = () => {
     if (!id) return;
     setIndexing(true);
     try {
-      await api.indexing.triggerPing([`/news/${id}`]);
+      const cleanUrl = getNewsUrl({ id, title: formData.title, slug: (formData as any).slug });
+      await api.indexing.triggerPing([cleanUrl]);
       showToast('🚀 Đã gửi thông báo Indexing đến Google & Bing thành công!', 'success');
     } catch (err) {
       console.error('Error triggering indexing:', err);
