@@ -23,13 +23,17 @@ const syncBlacklist = async () => {
   const now = Date.now();
   if (now - blacklistLastSync < 5 * 60 * 1000) return;
   
+  if (mongoose.connection.readyState !== 1) {
+    return; // DB not connected yet, skip silently
+  }
+
   try {
     const blacklist = await getIPBlacklist().find().select('ip').lean();
     blacklistCache.clear();
     blacklist.forEach((entry: any) => blacklistCache.add(entry.ip));
     blacklistLastSync = now;
   } catch (error) {
-    console.error('[SECURITY] Failed to sync blacklist:', error);
+    // Skip logging if connection dropped
   }
 };
 
