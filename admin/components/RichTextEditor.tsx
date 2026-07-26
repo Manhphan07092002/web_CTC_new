@@ -345,7 +345,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
           isOpen={showImagePicker}
           onClose={() => setShowImagePicker(false)}
           onSelect={handleImageSelectFromFilePicker}
-          acceptedTypes={['image']}
         />
       )}
     </div>
