@@ -3,6 +3,7 @@ import path from 'path';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
+import { Permission, Role, UserPermission } from '../models/permissions';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -145,6 +146,7 @@ function cleanHtmlText(html: string): string {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
+    .replace(/&generic;/g, '')
     .replace(/&oacute;/g, 'ó')
     .replace(/&aacute;/g, 'á')
     .replace(/&agrave;/g, 'à')
@@ -166,6 +168,105 @@ function cleanHtmlText(html: string): string {
 function stripHtml(html: string): string {
   if (!html) return '';
   return cleanHtmlText(html).replace(/<[^>]*>?/gm, '').trim();
+}
+
+async function seedRBAC() {
+  console.log('\n👑 Đang tạo và gán hệ thống phân quyền (RBAC - Super Admin)...');
+
+  const PermissionModel = Permission as mongoose.Model<any>;
+  const RoleModel = Role as mongoose.Model<any>;
+  const UserPermissionModel = UserPermission as mongoose.Model<any>;
+
+  await PermissionModel.deleteMany({});
+  await RoleModel.deleteMany({});
+  await UserPermissionModel.deleteMany({});
+
+  const permissions = [
+    // Content Management
+    { name: 'view_content', resource: 'content', action: 'view', description: 'Xem nội dung', category: 'content', isActive: true },
+    { name: 'create_content', resource: 'content', action: 'create', description: 'Tạo nội dung', category: 'content', isActive: true },
+    { name: 'edit_content', resource: 'content', action: 'edit', description: 'Chỉnh sửa nội dung', category: 'content', isActive: true },
+    { name: 'delete_content', resource: 'content', action: 'delete', description: 'Xóa nội dung', category: 'content', isActive: true },
+    { name: 'publish_content', resource: 'content', action: 'publish', description: 'Xuất bản nội dung', category: 'content', isActive: true },
+    // Product Management
+    { name: 'view_products', resource: 'products', action: 'view', description: 'Xem sản phẩm', category: 'content', isActive: true },
+    { name: 'create_products', resource: 'products', action: 'create', description: 'Tạo sản phẩm', category: 'content', isActive: true },
+    { name: 'edit_products', resource: 'products', action: 'edit', description: 'Chỉnh sửa sản phẩm', category: 'content', isActive: true },
+    { name: 'delete_products', resource: 'products', action: 'delete', description: 'Xóa sản phẩm', category: 'content', isActive: true },
+    { name: 'manage_product_categories', resource: 'product_categories', action: 'manage', description: 'Quản lý danh mục sản phẩm', category: 'content', isActive: true },
+    // News Management
+    { name: 'view_news', resource: 'news', action: 'view', description: 'Xem tin tức', category: 'content', isActive: true },
+    { name: 'create_news', resource: 'news', action: 'create', description: 'Tạo tin tức', category: 'content', isActive: true },
+    { name: 'edit_news', resource: 'news', action: 'edit', description: 'Chỉnh sửa tin tức', category: 'content', isActive: true },
+    { name: 'delete_news', resource: 'news', action: 'delete', description: 'Xóa tin tức', category: 'content', isActive: true },
+    { name: 'manage_news_categories', resource: 'news_categories', action: 'manage', description: 'Quản lý danh mục tin tức', category: 'content', isActive: true },
+    // Project Management
+    { name: 'view_projects', resource: 'projects', action: 'view', description: 'Xem dự án', category: 'content', isActive: true },
+    { name: 'create_projects', resource: 'projects', action: 'create', description: 'Tạo dự án', category: 'content', isActive: true },
+    { name: 'edit_projects', resource: 'projects', action: 'edit', description: 'Chỉnh sửa dự án', category: 'content', isActive: true },
+    { name: 'delete_projects', resource: 'projects', action: 'delete', description: 'Xóa dự án', category: 'content', isActive: true },
+    { name: 'manage_project_categories', resource: 'project_categories', action: 'manage', description: 'Quản lý danh mục dự án', category: 'content', isActive: true },
+    // User Management
+    { name: 'view_users', resource: 'users', action: 'view', description: 'Xem người dùng', category: 'user', isActive: true },
+    { name: 'create_users', resource: 'users', action: 'create', description: 'Tạo người dùng', category: 'user', isActive: true },
+    { name: 'edit_users', resource: 'users', action: 'edit', description: 'Chỉnh sửa người dùng', category: 'user', isActive: true },
+    { name: 'delete_users', resource: 'users', action: 'delete', description: 'Xóa người dùng', category: 'user', isActive: true },
+    { name: 'manage_user_permissions', resource: 'user_permissions', action: 'manage', description: 'Quản lý phân quyền người dùng', category: 'user', isActive: true },
+    // Role & Permission Management
+    { name: 'view_roles', resource: 'roles', action: 'view', description: 'Xem vai trò', category: 'user', isActive: true },
+    { name: 'manage_roles', resource: 'roles', action: 'manage', description: 'Quản lý vai trò', category: 'user', isActive: true },
+    { name: 'view_permissions', resource: 'permissions', action: 'view', description: 'Xem quyền', category: 'user', isActive: true },
+    { name: 'manage_permissions', resource: 'permissions', action: 'manage', description: 'Quản lý quyền', category: 'user', isActive: true },
+    { name: 'view_user_permissions', resource: 'user_permissions', action: 'view', description: 'Xem phân quyền người dùng', category: 'user', isActive: true },
+    { name: 'view_permission_logs', resource: 'permission_logs', action: 'view', description: 'Xem nhật ký phân quyền', category: 'user', isActive: true },
+    // System Management
+    { name: 'view_system_settings', resource: 'system_settings', action: 'view', description: 'Xem cài đặt hệ thống', category: 'system', isActive: true },
+    { name: 'manage_system_settings', resource: 'system_settings', action: 'manage', description: 'Quản lý cài đặt hệ thống', category: 'system', isActive: true },
+    { name: 'view_system_logs', resource: 'system_logs', action: 'view', description: 'Xem nhật ký hệ thống', category: 'system', isActive: true },
+    { name: 'manage_file_uploads', resource: 'file_uploads', action: 'manage', description: 'Quản lý tải lên tệp', category: 'system', isActive: true },
+    { name: 'view_database_backup', resource: 'database_backup', action: 'view', description: 'Xem sao lưu cơ sở dữ liệu', category: 'system', isActive: true },
+    { name: 'manage_database_backup', resource: 'database_backup', action: 'manage', description: 'Quản lý sao lưu cơ sở dữ liệu', category: 'system', isActive: true },
+    // Security Management
+    { name: 'view_security_logs', resource: 'security_logs', action: 'view', description: 'Xem nhật ký bảo mật', category: 'security', isActive: true },
+    { name: 'manage_security_settings', resource: 'security_settings', action: 'manage', description: 'Quản lý cài đặt bảo mật', category: 'security', isActive: true },
+    { name: 'view_audit_logs', resource: 'audit_logs', action: 'view', description: 'Xem nhật ký kiểm toán', category: 'security', isActive: true },
+    { name: 'manage_ip_blacklist', resource: 'ip_blacklist', action: 'manage', description: 'Quản lý danh sách IP chặn', category: 'security', isActive: true },
+    // Analytics
+    { name: 'view_analytics', resource: 'analytics', action: 'view', description: 'Xem thống kê', category: 'analytics', isActive: true },
+    { name: 'view_reports', resource: 'reports', action: 'view', description: 'Xem báo cáo', category: 'analytics', isActive: true },
+    { name: 'export_data', resource: 'data_export', action: 'export', description: 'Xuất dữ liệu', category: 'analytics', isActive: true },
+  ];
+
+  const createdPermissions = await PermissionModel.insertMany(permissions);
+  const permIds = createdPermissions.map(p => p._id);
+
+  const superAdminRole = new RoleModel({
+    name: 'super_admin',
+    displayName: 'Super Admin',
+    description: 'Quyền cao nhất, có thể làm tất cả',
+    level: 100,
+    isSystem: true,
+    isActive: true,
+    color: '#DC2626',
+    icon: 'Crown',
+    permissions: permIds
+  });
+  await superAdminRole.save();
+
+  const db = mongoose.connection.db;
+  if (db) {
+    const users = await db.collection('users').find({}).toArray();
+    for (const u of users) {
+      const up = new UserPermissionModel({
+        userId: u._id,
+        roleId: superAdminRole._id,
+        assignedBy: u._id,
+        notes: 'Tự động phân quyền Super Admin Level 100'
+      });
+      await up.save();
+      console.log(`   👑 [RBAC] Gán vai trò Super Admin (Level 100 - 48 quyền) cho: ${u.email}`);
+    }
+  }
 }
 
 async function migrateData() {
@@ -212,7 +313,7 @@ async function migrateData() {
 
   // ==================== 1. PRODUCT CATEGORIES ====================
   const prodCatSlugs = new Set<string>();
-  const productCategoryMap = new Map<number, string>(); // SQL ID -> Mongo ObjectId string
+  const productCategoryMap = new Map<number, string>();
   const productCategoriesData = rawCategories.map((c, index) => {
     const mongoId = makeObjectId(1001, c.ID || (index + 1));
     productCategoryMap.set(c.ID, mongoId);
@@ -516,13 +617,15 @@ async function migrateData() {
       const collectionName = item.name.replace('.json', '');
       const collection = db.collection(collectionName);
 
-      // Drop existing indexes if duplicate error might occur, then clear & insert
       await collection.deleteMany({});
       if (item.data.length > 0) {
         await collection.insertMany(item.data as any);
         console.log(`   🎉 [MongoDB] Collection '${collectionName.padEnd(20)}': Đã import ${item.data.length} bản ghi.`);
       }
     }
+
+    // Seed RBAC Permissions & Roles for all Admin users
+    await seedRBAC();
 
     console.log('\n' + '='.repeat(65));
     console.log('✨ HOÀN THÀNH IMPORT DỮ LIỆU TỪ SQL SERVER SANG MONGODB THÀNH CÔNG!');
