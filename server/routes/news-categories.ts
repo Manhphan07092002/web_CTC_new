@@ -19,12 +19,14 @@ const getLanguage = (req: any): SupportedLanguage => {
 router.get('/', async (req, res) => {
   try {
     const lang = getLanguage(req);
-    const categories = await NewsCategory.find({ isActive: true })
-      .sort({ order: 1, name: 1 });
+    const categories = await NewsCategory.find({
+      $or: [{ isActive: true }, { isActive: { $exists: false } }]
+    }).sort({ order: 1, name: 1 });
 
     // Transform _id to id and apply translations
     const transformed = categories.map(cat => {
-      let obj = { ...cat.toObject({ flattenMaps: true }), id: cat._id.toString() };
+      const catObj = typeof cat.toObject === 'function' ? cat.toObject() : cat;
+      let obj = { ...catObj, id: (cat._id || cat.id)?.toString() };
       if (lang !== 'vi') {
         obj = applyTranslations(obj, [...TRANSLATION_FIELDS.category], lang);
       }

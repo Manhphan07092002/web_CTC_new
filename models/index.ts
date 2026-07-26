@@ -292,10 +292,14 @@ export interface INewsItem extends BaseDocument {
   excerpt: string;
   date: string;
   image: string;
-  categoryId?: mongoose.Types.ObjectId; // Reference to NewsCategory
-  category?: string; // Category name for display
-  content?: string; // Full content
-  author?: string; // Author name
+  categoryId?: mongoose.Types.ObjectId;
+  category?: string;
+  content?: string;
+  author?: string;
+  viewCount?: number;        // Lượt xem
+  isFeatured?: boolean;      // Bài nổi bật
+  featuredOrder?: number;    // Thứ tự nổi bật
+  tags?: string[];           // Tags
   translations?: TranslationsMap<NewsTranslation>;
 }
 
@@ -308,12 +312,42 @@ const NewsSchema = new Schema<INewsItem>({
   category: { type: String },
   content: { type: String },
   author: { type: String },
+  viewCount: { type: Number, default: 0 },
+  isFeatured: { type: Boolean, default: false },
+  featuredOrder: { type: Number, default: 0 },
+  tags: [{ type: String }],
   translations: createTranslationSchema()
 }, { timestamps: true });
 
 NewsSchema.index({ categoryId: 1 });
 NewsSchema.index({ category: 1 });
 NewsSchema.index({ createdAt: -1 });
+NewsSchema.index({ viewCount: -1 });
+
+// ==================== NEWS COMMENT MODEL ====================
+export interface INewsComment extends BaseDocument {
+  newsId: mongoose.Types.ObjectId;   // Reference to News
+  name: string;                       // Tên người bình luận
+  email?: string;                     // Email (không hiển thị)
+  content: string;                    // Nội dung bình luận
+  avatar?: string;                    // Avatar URL (tự tạo từ tên)
+  likes?: number;                     // Lượt thích bình luận
+  isApproved?: boolean;               // Admin duyệt bình luận
+  replyTo?: mongoose.Types.ObjectId;  // Reply bình luận khác
+}
+
+const NewsCommentSchema = new Schema<INewsComment>({
+  newsId: { type: Schema.Types.ObjectId, ref: 'News', required: true },
+  name: { type: String, required: true },
+  email: { type: String },
+  content: { type: String, required: true },
+  avatar: { type: String },
+  likes: { type: Number, default: 0 },
+  isApproved: { type: Boolean, default: true }, // auto-approve
+  replyTo: { type: Schema.Types.ObjectId, ref: 'NewsComment' },
+}, { timestamps: true });
+
+NewsCommentSchema.index({ newsId: 1, createdAt: -1 });
 
 // Testimonial Schema
 export interface ITestimonial extends BaseDocument {
@@ -560,6 +594,7 @@ export const NewsCategory = mongoose.model<INewsCategory>('NewsCategory', NewsCa
 export const ProjectCategory = mongoose.model<IProjectCategory>('ProjectCategory', ProjectCategorySchema);
 export const Project = mongoose.model<IProject>('Project', ProjectSchema);
 export const News = mongoose.model<INewsItem>('News', NewsSchema);
+export const NewsComment = mongoose.model<INewsComment>('NewsComment', NewsCommentSchema);
 export const Testimonial = mongoose.model<ITestimonial>('Testimonial', TestimonialSchema);
 export const Partner = mongoose.model<IPartner>('Partner', PartnerSchema);
 export const User = mongoose.model<IUser>('User', UserSchema);

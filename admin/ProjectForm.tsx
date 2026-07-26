@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X, Image as ImageIcon } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
+
+const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 
 interface ProjectCategory {
   id: string;
@@ -234,16 +236,15 @@ const ProjectForm: React.FC = () => {
           {/* Description */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">
-              Mô tả dự án <span className="text-red-500">*</span>
+              Mô tả chi tiết dự án <span className="text-red-500">*</span>
             </label>
-            <textarea
-              required
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={6}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-              placeholder="Mô tả chi tiết về dự án, quy mô, giải pháp áp dụng..."
-            />
+            <Suspense fallback={<div className="h-48 flex items-center justify-center bg-gray-50 border rounded-xl"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+              <RichTextEditor
+                content={formData.description}
+                onChange={(html) => setFormData({ ...formData, description: html })}
+                placeholder="Mô tả chi tiết về dự án, công nghệ, giải pháp thi công áp dụng..."
+              />
+            </Suspense>
           </div>
 
           {/* Actions */}

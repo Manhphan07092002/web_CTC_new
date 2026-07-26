@@ -213,6 +213,29 @@ export const api = {
     delete: (id: string) => fetchAPI<void>(`/news/${id}`, {
       method: 'DELETE',
     }),
+    incrementView: (id: string) => fetchAPI<{ success: boolean }>(`/news/${id}/view`, { method: 'POST' }),
+    getComments: (id: string) => fetchAPI<any[]>(`/news/${id}/comments`),
+    addComment: (id: string, data: { name: string; email?: string; content: string }) => fetchAPI<any>(`/news/${id}/comments`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+    likeComment: (commentId: string) => fetchAPI<{ success: boolean }>(`/news/comments/${commentId}/like`, { method: 'POST' }),
+    getAdminComments: () => fetchAPI<any[]>('/news/comments/admin/all'),
+    replyComment: (commentId: string, reply: string) => fetchAPI<any>(`/news/comments/${commentId}/reply`, {
+      method: 'POST',
+      body: JSON.stringify({ reply })
+    }),
+    deleteComment: (commentId: string) => fetchAPI<void>(`/news/comments/${commentId}`, {
+      method: 'DELETE'
+    }),
+  },
+
+  // Instant Indexing (IndexNow + Google/Bing Ping)
+  indexing: {
+    triggerPing: (urls: string[]) => fetchAPI<any>('/indexing/ping', {
+      method: 'POST',
+      body: JSON.stringify({ urls })
+    }),
   },
 
   // Categories (Legacy)

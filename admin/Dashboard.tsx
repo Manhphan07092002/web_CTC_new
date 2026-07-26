@@ -25,6 +25,7 @@ const CategoryManagement = lazy(() => import('./modules/content').then(m => ({ d
 const ReviewsManagement = lazy(() => import('./modules/content').then(m => ({ default: m.ReviewsManagement })));
 const ResourceManagement = lazy(() => import('./modules/content').then(m => ({ default: m.ResourceManagement })));
 const HeaderManagement = lazy(() => import('./modules/content').then(m => ({ default: m.HeaderManagement })));
+const CommentManagement = lazy(() => import('./CommentManagement'));
 
 const UserManagement = lazy(() => import('./modules/users').then(m => ({ default: m.UserManagement })));
 const RoleManagement = lazy(() => import('./modules/users').then(m => ({ default: m.RoleManagement })));
@@ -129,6 +130,7 @@ const AdminDashboard: React.FC = () => {
               <Route path="/users" element={<UserManagement />} />
               <Route path="/orders" element={<OrdersManagement />} />
               <Route path="/content" element={<ContentManagement />} />
+              <Route path="/comments" element={<CommentManagement />} />
               <Route path="/header" element={<HeaderManagement />} />
               <Route path="/products/new" element={<ProductForm />} />
               <Route path="/products/edit/:id" element={<ProductForm />} />

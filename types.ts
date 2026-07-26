@@ -90,6 +90,7 @@ export interface NewsItem {
   tags?: string[];
   isFeatured?: boolean;
   featuredOrder?: number;
+  viewCount?: number;
   createdAt?: string;
   updatedAt?: string;
 }

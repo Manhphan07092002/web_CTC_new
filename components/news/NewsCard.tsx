@@ -1,6 +1,6 @@
 import React from 'react';
 import { NewsItem } from '../../types';
-import { Calendar, ArrowRight, User } from 'lucide-react';
+import { Calendar, ArrowRight, User, Eye } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLangText } from '../../utils/translation-helper';
 
@@ -43,7 +43,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
         {/* Content Container on Right */}
         <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
+            <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-3 flex-wrap">
               <div className="flex items-center gap-1.5">
                 <Calendar size={14} className="text-primary" />
                 <span>{item.date}</span>
@@ -52,6 +52,12 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
                 <div className="flex items-center gap-1.5">
                   <User size={14} className="text-primary" />
                   <span>{item.author}</span>
+                </div>
+              )}
+              {item.viewCount !== undefined && item.viewCount > 0 && (
+                <div className="flex items-center gap-1.5 text-gray-400">
+                  <Eye size={14} className="text-emerald-500" />
+                  <span>{item.viewCount.toLocaleString('vi-VN')} lượt xem</span>
                 </div>
               )}
             </div>
@@ -103,9 +109,17 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
 
       <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
-          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
-            <Calendar size={14} className="text-primary" />
-            <span>{item.date}</span>
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+            <div className="flex items-center gap-1.5">
+              <Calendar size={14} className="text-primary" />
+              <span>{item.date}</span>
+            </div>
+            {item.viewCount !== undefined && item.viewCount > 0 && (
+              <div className="flex items-center gap-1 text-gray-400">
+                <Eye size={13} className="text-emerald-500" />
+                <span>{item.viewCount}</span>
+              </div>
+            )}
           </div>
           <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-snug">
             {item.title}

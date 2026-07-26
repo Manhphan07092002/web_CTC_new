@@ -118,12 +118,12 @@ const ProjectDetail: React.FC = () => {
           
           {/* Detailed Content & Features */}
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-3">
-                {getLangText(language, { vi: 'Mô tả dự án', en: 'Project Description', ko: '프로젝트 설명', ja: 'プロジェクト概要', zh: '项目描述', de: 'Projektbeschreibung' })}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 sm:p-10 space-y-4">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-700 pb-4">
+                {getLangText(language, { vi: 'Chi tiết & Mô tả dự án', en: 'Project Details & Description', ko: '프로젝트 세부 정보', ja: 'プロジェクトの詳細', zh: '项目详情与描述', de: 'Projektdetails & Beschreibung' })}
               </h2>
-              <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300">
-                <p className="leading-relaxed whitespace-pre-line">{project.description}</p>
+              <div className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-sans">
+                <p className="whitespace-pre-line text-base sm:text-lg leading-relaxed">{project.description}</p>
               </div>
             </div>
 

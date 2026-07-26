@@ -41,12 +41,14 @@ const News: React.FC<NewsProps> = ({ latestNews, isLoading = false }) => {
                 <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-800" />
               </div>
             </div>
-          )) : displayNews.map((news, index) => (
-            <Link
-              key={`news-${index}-${news.id}`} 
-              to={`/news/${news.id}`}
-              className="group bg-white dark:bg-slate-950 rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-200 border border-gray-100 dark:border-slate-800 hover:border-primary/20 hover:-translate-y-2 flex flex-col h-full"
-            >
+          )) : displayNews.map((news, index) => {
+            const newsId = (news as any)._id || news.id;
+            return (
+              <Link
+                key={`news-${index}-${newsId}`} 
+                to={`/news/${newsId}`}
+                className="group bg-white dark:bg-slate-950 rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-200 border border-gray-100 dark:border-slate-800 hover:border-primary/20 hover:-translate-y-2 flex flex-col h-full"
+              >
               <div className="overflow-hidden h-64 relative">
                 <img src={news.image} alt={news.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-xs font-bold text-gray-900 shadow-md">
@@ -64,7 +66,8 @@ const News: React.FC<NewsProps> = ({ latestNews, isLoading = false }) => {
                 </div>
               </div>
             </Link>
-          ))}
+          );
+        })}
         </div>
       </div>
     </section>

@@ -3,6 +3,9 @@ import cors from 'cors';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import path from 'path';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
 import { connectDB } from './db';
 import { i18next, middleware as i18nMiddleware } from './i18n';
 import { i18nHelpers } from './utils/i18n-helpers';
@@ -329,13 +332,28 @@ app.use('*', (req, res) => {
 });
 
 // ============================================
-// START SERVER
+// START SERVER (PORT 4000 Dev / Port 80 & 443 Production)
 // ============================================
 
 const PORT = process.env.PORT || 4000;
 
+// Auto-detect SSL certificates in 'chung chi' or 'ssl'
+const defaultKeyPath = path.join(process.cwd(), 'chung chi', 'ctcdn_vn_private_key.key');
+const defaultCertPath = path.join(process.cwd(), 'chung chi', 'ctcdn_vn_cert_inter_root.crt');
+
+const sslKeyPath = process.env.SSL_KEY_PATH || (fs.existsSync(defaultKeyPath) ? defaultKeyPath : path.join(process.cwd(), 'ssl', 'server.key'));
+const sslCertPath = process.env.SSL_CERT_PATH || (fs.existsSync(defaultCertPath) ? defaultCertPath : path.join(process.cwd(), 'ssl', 'server.crt'));
+const hasSSL = fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath);
+
+if (hasSSL) {
+  console.log(`🔒 Found SSL Certificates in: ${path.dirname(sslKeyPath)}`);
+  console.log(`   - Key: ${path.basename(sslKeyPath)}`);
+  console.log(`   - Cert: ${path.basename(sslCertPath)}`);
+}
+
 console.log('⚡ Initializing CTC Web API server...');
 
+// Primary Express Server on PORT (default 4000)
 const server = app.listen(PORT, async () => {
   console.log(`🚀 API server listening on http://localhost:${PORT}`);
   console.log(`🔒 Security features enabled`);
@@ -353,4 +371,28 @@ const server = app.listen(PORT, async () => {
     startTranslationScheduler();
     console.log(`🌐 Translation scheduler active (every 12h)`);
   } catch (e) {}
+
+  // Optional: Start Port 80 & 443 direct listeners if SSL certs exist
+  if (hasSSL) {
+    try {
+      const httpsOptions = {
+        key: fs.readFileSync(sslKeyPath),
+        cert: fs.readFileSync(sslCertPath)
+      };
+      https.createServer(httpsOptions, app).listen(443, () => {
+        console.log('🔒 HTTPS Server listening on port 443 (https://ctcdn.vn)');
+      });
+
+      // HTTP Port 80 Redirect to HTTPS Port 443
+      http.createServer((req, res) => {
+        const host = req.headers.host || 'ctcdn.vn';
+        res.writeHead(301, { Location: `https://${host}${req.url}` });
+        res.end();
+      }).listen(80, () => {
+        console.log('🌐 HTTP Port 80 listening (Redirects to HTTPS 443)');
+      });
+    } catch (sslErr: any) {
+      console.error('⚠️ Could not bind Port 80/443 directly (Nginx/IIS Reverse Proxy recommended):', sslErr?.message || sslErr);
+    }
+  }
 });

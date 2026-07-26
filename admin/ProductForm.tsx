@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X, Image as ImageIcon, Plus, Trash2, Star, Sparkles } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { chatService } from '../services/chatService';
+
+const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 
 interface ProductCategory {
   id: string;
@@ -19,6 +21,7 @@ const ProductForm: React.FC = () => {
   const isEdit = !!id;
 
   const [loading, setLoading] = useState(false);
+  const [indexing, setIndexing] = useState(false);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [imagePickerTarget, setImagePickerTarget] = useState<'main' | number>('main');
@@ -450,14 +453,13 @@ Yêu cầu:
                 {isGeneratingAI ? 'Đang tạo mô tả bằng AI...' : '✨ Tạo mô tả bằng AI Gemini'}
               </button>
             </div>
-            <textarea
-              required
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={5}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-              placeholder="Mô tả chi tiết về sản phẩm..."
-            />
+            <Suspense fallback={<div className="h-48 flex items-center justify-center bg-gray-50 border rounded-xl"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+              <RichTextEditor
+                content={formData.description}
+                onChange={(html) => setFormData({ ...formData, description: html })}
+                placeholder="Mô tả chi tiết về sản phẩm, công nghệ, tính năng nổi bật..."
+              />
+            </Suspense>
           </div>
 
           <div>

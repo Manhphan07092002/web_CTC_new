@@ -1,15 +1,112 @@
 [
   {
-    "_id": "6a5b3bc65cf9276e6b83d60d",
-    "name": "Công Nghệ Điện Mặt Trời",
-    "slug": "cong-nghe",
-    "description": "",
-    "order": 0,
+    "_id": "6a5b3bc65cf9276e000001",
+    "name": "Tài Chính - Cổ Đông CTC",
+    "slug": "tai-chinh-co-dong",
+    "description": "Báo cáo tài chính, doanh thu 288 tỷ năm 2025, cổ tức, đại hội cổ đông và quản trị CTC.",
+    "order": 1,
     "isActive": true,
-    "newsCount": 0,
-    "translations": {},
-    "createdAt": "2026-07-18T08:39:34.224Z",
-    "updatedAt": "2026-07-18T08:39:34.224Z",
-    "__v": 0
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000002",
+    "name": "Hạ Tầng Viễn Thông & BTS",
+    "slug": "ha-tang-vien-thong",
+    "description": "Thi công tuyến cáp quang Bộ Công an, hạ tầng BTS, mạng truyền dẫn Metro Mobifone & VNPT Net.",
+    "order": 2,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000003",
+    "name": "Điện Mặt Trời & Solar EPC",
+    "slug": "dien-mat-troi-epc",
+    "description": "Các công trình Điện mặt trời mái nhà công nghiệp, Rooftop Solar, Commercial & Industrial EPC.",
+    "order": 3,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000004",
+    "name": "Điện Gió & Trạm Biến Áp 110kV",
+    "slug": "dien-gio-tram-bien-ap",
+    "description": "Nhà máy Điện gió Hướng Linh 4, Hướng Hiệp, trụ đo gió Điện Biên và trạm biến áp 110kV.",
+    "order": 4,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000005",
+    "name": "Trung Tâm Dữ Liệu & Data Center",
+    "slug": "data-center-cntt",
+    "description": "Hạ tầng Data Center chuẩn Tier III, Server, Cloud Hybrid và giải pháp số cho doanh nghiệp.",
+    "order": 5,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000006",
+    "name": "Giải Pháp An Ninh AI & IoT",
+    "slug": "an-ninh-ai-iot",
+    "description": "Hệ thống Camera AI giám sát công trường, kiểm soát truy cập sinh trắc học và IoT công nghiệp.",
+    "order": 6,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000007",
+    "name": "Văn Hóa & Con Người CTC",
+    "slug": "van-hoa-con-nguoi",
+    "description": "CTC Year End Party, Teambuilding, CTC Cup, chương trình Áo ấm cho em và vinh danh 53+ Kỹ sư.",
+    "order": 7,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000008",
+    "name": "Thông Báo Nội Bộ & Công Tác",
+    "slug": "thong-bao-cong-tac",
+    "description": "Thông báo lịch nghỉ lễ Tết, bảo trì tổng đài, lịch khám sức khỏe định kỳ và quy chế công tác.",
+    "order": 8,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000009",
+    "name": "Chính Sách & Năng Lượng Xanh",
+    "slug": "chinh-sach-xanh",
+    "description": "Phân tích Nghị định DPPA, chứng chỉ carbon REC, tiêu chuẩn CBAM Châu Âu và Net-Zero 2050.",
+    "order": 9,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
+  },
+  {
+    "_id": "6a5b3bc65cf9276e000010",
+    "name": "Công Trình Quốc Phòng & Dân Dụng",
+    "slug": "cong-trinh-quoc-phong",
+    "description": "Hạ tầng kỹ thuật Công trình Quốc phòng A70, công trình công nghiệp dân dụng và chống sét xung.",
+    "order": 10,
+    "isActive": true,
+    "newsCount": 20,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-25T00:00:00.000Z"
   }
 ]

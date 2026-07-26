@@ -24,17 +24,16 @@ async function syncCategoryCounts() {
     const productCategories = await ProductCategory.find();
     for (const category of productCategories) {
       const count = await Product.countDocuments({ 
-        categoryId: category._id.toString(),
+        $or: [
+          { categoryId: category._id.toString() },
+          { category: category.name }
+        ],
         isDeleted: { $ne: true }
       });
       
-      if (category.productCount !== count) {
-        category.productCount = count;
-        await category.save();
-        console.log(`  ✓ ${category.name}: ${count} products`);
-      } else {
-        console.log(`  - ${category.name}: ${count} products (no change)`);
-      }
+      category.productCount = count;
+      await category.save();
+      console.log(`  ✓ ${category.name}: ${count} products`);
     }
 
     // Sync News Categories
@@ -42,16 +41,15 @@ async function syncCategoryCounts() {
     const newsCategories = await NewsCategory.find();
     for (const category of newsCategories) {
       const count = await News.countDocuments({ 
-        categoryId: category._id.toString()
+        $or: [
+          { categoryId: category._id.toString() },
+          { category: category.name }
+        ]
       });
       
-      if (category.newsCount !== count) {
-        category.newsCount = count;
-        await category.save();
-        console.log(`  ✓ ${category.name}: ${count} news items`);
-      } else {
-        console.log(`  - ${category.name}: ${count} news items (no change)`);
-      }
+      category.newsCount = count;
+      await category.save();
+      console.log(`  ✓ ${category.name}: ${count} news items`);
     }
 
     // Sync Project Categories
@@ -59,16 +57,15 @@ async function syncCategoryCounts() {
     const projectCategories = await ProjectCategory.find();
     for (const category of projectCategories) {
       const count = await Project.countDocuments({ 
-        categoryId: category._id.toString()
+        $or: [
+          { categoryId: category._id.toString() },
+          { category: category.name }
+        ]
       });
       
-      if (category.projectCount !== count) {
-        category.projectCount = count;
-        await category.save();
-        console.log(`  ✓ ${category.name}: ${count} projects`);
-      } else {
-        console.log(`  - ${category.name}: ${count} projects (no change)`);
-      }
+      category.projectCount = count;
+      await category.save();
+      console.log(`  ✓ ${category.name}: ${count} projects`);
     }
 
     console.log('\n✅ Category counts synced successfully!');
@@ -93,8 +90,6 @@ async function syncCategoryCounts() {
 }
 
 // Run if called directly
-if (require.main === module) {
-  syncCategoryCounts();
-}
+syncCategoryCounts();
 
 export default syncCategoryCounts;

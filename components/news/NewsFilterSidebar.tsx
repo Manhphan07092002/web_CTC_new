@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, RotateCcw, Folder, Check, Newspaper } from 'lucide-react';
+import { Search, Filter, RotateCcw, Folder, Check, Newspaper, Tag as TagIcon } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLangText } from '../../utils/translation-helper';
 import { useNewsCategories } from '../../hooks/useCategories';
@@ -10,6 +10,9 @@ interface NewsFilterSidebarProps {
   onSearchChange: (query: string) => void;
   selectedCategoryId: string | null;
   onCategoryChange: (id: string | null) => void;
+  selectedTag?: string | null;
+  onTagChange?: (tag: string | null) => void;
+  availableTags?: string[];
   totalNews: number;
   filteredCount: number;
   featuredNews?: NewsItem[];
@@ -22,6 +25,9 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
   onSearchChange,
   selectedCategoryId,
   onCategoryChange,
+  selectedTag = null,
+  onTagChange,
+  availableTags = [],
   totalNews,
   filteredCount,
   featuredNews = [],
@@ -38,7 +44,7 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
         <h3 className="font-bold text-lg text-corporate dark:text-white flex items-center gap-2">
           <Filter size={20} className="text-primary" /> {getLangText(language, { vi: 'Bộ lọc tin tức', en: 'News Filters', ko: '뉴스 필터', ja: 'ニュースフィルター', zh: '新闻筛选', de: 'Nachrichtenfilter' })}
         </h3>
-        {(selectedCategoryId || searchQuery) && (
+        {(selectedCategoryId || searchQuery || selectedTag) && (
           <button
             onClick={onReset}
             className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium hover:underline transition-all"
@@ -86,22 +92,53 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
           </button>
 
           {!loading &&
-            categories.map((cat) => (
-              <button
-                key={cat.id || cat._id}
-                onClick={() => onCategoryChange(cat.id || cat._id || null)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                  selectedCategoryId === (cat.id || cat._id)
-                    ? 'bg-primary text-white shadow-md shadow-primary/20'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                }`}
-              >
-                <span>{cat.name}</span>
-                {selectedCategoryId === (cat.id || cat._id) && <Check size={16} />}
-              </button>
-            ))}
+            categories.map((cat, idx) => {
+              const catId = cat.id || (cat as any)._id || cat.slug || `cat-${idx}`;
+              const isSelected = selectedCategoryId === cat.id || selectedCategoryId === (cat as any)._id || selectedCategoryId === cat.name;
+              return (
+                <button
+                  key={`news-cat-btn-${catId}-${idx}`}
+                  onClick={() => onCategoryChange(cat.id || (cat as any)._id || cat.name || null)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    isSelected
+                      ? 'bg-primary text-white shadow-md shadow-primary/20'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <span>{cat.name}</span>
+                  {isSelected && <Check size={16} />}
+                </button>
+              );
+            })}
         </div>
       </div>
+
+      {/* Tag Cloud Widget */}
+      {availableTags.length > 0 && (
+        <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+          <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <TagIcon size={14} className="text-primary" /> {getLangText(language, { vi: 'Thẻ chủ đề nổi bật', en: 'Popular Tags', ko: '인기 태그', ja: '人気タグ', zh: '热门标签', de: 'Beliebte Tags' })}
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {availableTags.map((tag) => {
+              const isTagSelected = selectedTag === tag;
+              return (
+                <button
+                  key={`tag-btn-${tag}`}
+                  onClick={() => onTagChange && onTagChange(isTagSelected ? null : tag)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                    isTagSelected
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  #{tag}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Featured News Widget */}
       {featuredNews.length > 0 && (
@@ -110,25 +147,28 @@ const NewsFilterSidebar: React.FC<NewsFilterSidebarProps> = ({
             <Newspaper size={14} className="text-primary" /> {getLangText(language, { vi: 'Tin nổi bật', en: 'Featured News', ko: '주요 뉴스', ja: '注目ニュース', zh: '精选新闻', de: 'Ausgewählte Nachrichten' })}
           </label>
           <div className="space-y-3">
-            {featuredNews.slice(0, 3).map((item, idx) => (
-              <div 
-                key={`feat-news-sidebar-${item.id}-${idx}`}
-                onClick={() => onNewsClick && onNewsClick(item)}
-                className="flex items-center gap-3 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-xl transition-all"
-              >
-                <img 
-                  src={item.image} 
-                  alt={item.title} 
-                  className="w-14 h-14 rounded-lg object-cover flex-shrink-0 group-hover:scale-105 transition-transform"
-                />
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover:text-primary transition-colors line-clamp-2">
-                    {item.title}
-                  </h4>
-                  <span className="text-[11px] text-gray-400 mt-1 block">{item.date}</span>
+            {featuredNews.slice(0, 3).map((item, idx) => {
+              const itemId = item.id || (item as any)._id || `feat-${idx}`;
+              return (
+                <div 
+                  key={`feat-news-sidebar-${itemId}-${idx}`}
+                  onClick={() => onNewsClick && onNewsClick(item)}
+                  className="flex items-center gap-3 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-xl transition-all"
+                >
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    className="w-14 h-14 rounded-lg object-cover flex-shrink-0 group-hover:scale-105 transition-transform"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover:text-primary transition-colors line-clamp-2">
+                      {item.title}
+                    </h4>
+                    <span className="text-[11px] text-gray-400 mt-1 block">{item.date}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -7,6 +7,7 @@ import {
   Product,
   Project,
   News,
+  NewsComment,
   Testimonial,
   Partner,
   User,
@@ -24,6 +25,7 @@ import {
   type IProduct,
   type IProject,
   type INewsItem,
+  type INewsComment,
   type ITestimonial,
   type IPartner,
   type IUser,
@@ -44,10 +46,20 @@ import {
 // Helper to convert MongoDB document to plain object with id
 const toPlainObject = <T>(doc: any): T => {
   if (!doc) return null as any;
-  const obj = doc.toObject ? doc.toObject({ flattenMaps: true }) : doc;
+  const obj = doc.toObject ? doc.toObject({ flattenMaps: true, versionKey: false }) : { ...doc };
+  
+  // Extract real _id regardless of type (ObjectId, string, etc.)
+  let realId = '';
+  if (obj._id) {
+    realId = typeof obj._id === 'object' ? obj._id.toString() : String(obj._id);
+  } else if (obj.id) {
+    realId = String(obj.id);
+  }
+  
   return {
     ...obj,
-    id: obj._id?.toString() || obj.id
+    _id: realId,
+    id: realId
   };
 };
 
@@ -184,7 +196,14 @@ export const db = {
     },
     
     getById: async (id: string) => {
-      const newsItem = await News.findById(id);
+      // Try findById first (handles valid ObjectId strings)
+      try {
+        const newsItem = await News.findById(id);
+        if (newsItem) return toPlainObject<INewsItem>(newsItem);
+      } catch (_) { /* invalid ObjectId format, fall through */ }
+      
+      // Fallback: find by id field or slug
+      const newsItem = await News.findOne({ $or: [{ id: id }, { slug: id }] });
       return newsItem ? toPlainObject<INewsItem>(newsItem) : null;
     },
     
@@ -202,7 +221,81 @@ export const db = {
     delete: async (id: string) => {
       const result = await News.findByIdAndDelete(id);
       return !!result;
-    }
+    },
+
+    incrementViewCount: async (id: string) => {
+      await News.findByIdAndUpdate(id, { $inc: { viewCount: 1 } });
+    },
+
+    getFeatured: async (limit = 5) => {
+      const items = await News.find({ isFeatured: true }).sort({ featuredOrder: 1, createdAt: -1 }).limit(limit);
+      return items.map(toPlainObject<INewsItem>);
+    },
+  },
+
+  // ==================== COMMENTS ====================
+  comments: {
+    getByNewsId: async (newsId: string) => {
+      const items = await NewsComment.find({ newsId, isApproved: true })
+        .sort({ createdAt: 1 })
+        .lean();
+      return items.map(doc => {
+        const realId = doc._id ? doc._id.toString() : '';
+        return { ...doc, _id: realId, id: realId };
+      });
+    },
+
+    countByNewsId: async (newsId: string) => {
+      return NewsComment.countDocuments({ newsId, isApproved: true });
+    },
+
+    add: async (data: { newsId: string; name: string; email?: string; content: string }) => {
+      const comment = new NewsComment({
+        ...data,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random&color=fff&size=64`,
+        isApproved: true,
+        likes: 0,
+      });
+      await comment.save();
+      const obj = comment.toObject({ flattenMaps: true });
+      const realId = obj._id ? obj._id.toString() : '';
+      return { ...obj, _id: realId, id: realId };
+    },
+
+    likeComment: async (commentId: string) => {
+      await NewsComment.findByIdAndUpdate(commentId, { $inc: { likes: 1 } });
+    },
+
+    delete: async (commentId: string) => {
+      const result = await NewsComment.findByIdAndDelete(commentId);
+      return !!result;
+    },
+
+    getAllForAdmin: async () => {
+      const items = await NewsComment.find().sort({ createdAt: -1 }).lean();
+      return items.map(doc => {
+        const realId = doc._id ? doc._id.toString() : '';
+        return { ...doc, _id: realId, id: realId };
+      });
+    },
+
+    replyComment: async (commentId: string, replyText: string) => {
+      const updated = await NewsComment.findByIdAndUpdate(
+        commentId,
+        { reply: replyText },
+        { new: true }
+      ).lean();
+      return updated;
+    },
+
+    toggleApproval: async (commentId: string, isApproved: boolean) => {
+      const updated = await NewsComment.findByIdAndUpdate(
+        commentId,
+        { isApproved },
+        { new: true }
+      ).lean();
+      return updated;
+    },
   },
 
   testimonials: {

@@ -23,23 +23,30 @@ const NewsDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchNews = async () => {
-      if (id) {
-        setLoading(true);
-        try {
-          const newsData = await api.news.getById(id);
-          setNews(newsData);
-          
-          if (newsData) {
-            const allNews = await api.news.getAll();
-            const related = allNews.filter(n => n.category === newsData.category && n.id !== newsData.id).slice(0, 3);
-            setRelatedNews(related);
-          }
-        } catch (error) {
-          console.error('Error fetching news:', error);
-        }
+      if (!id || id === 'undefined') {
         setLoading(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setNews(null);
+        return;
       }
+      
+      setLoading(true);
+      try {
+        const newsData = await api.news.getById(id);
+        setNews(newsData);
+        api.news.incrementView(id).catch(() => {});
+        
+        if (newsData) {
+          const allNews = await api.news.getAll();
+          const targetId = newsData._id || newsData.id;
+          const related = (allNews || []).filter(n => n.category === newsData.category && (n._id || n.id) !== targetId).slice(0, 3);
+          setRelatedNews(related);
+        }
+      } catch (error) {
+        console.error('Error fetching news:', error);
+        setNews(null);
+      }
+      setLoading(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     fetchNews();
   }, [id]);
