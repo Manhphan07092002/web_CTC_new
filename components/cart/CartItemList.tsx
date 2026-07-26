@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Trash2, Plus, Minus, ChevronUp, ChevronDown, Package, ArrowLeft, ShoppingBag, Truck } from 'lucide-react';
 import PriceDisplay from '../PriceDisplay';
 import { DeliveryTimeline } from './DeliveryTimeline';
+import { getProductUrl } from '../../utils/news-url-helper';
 
 interface CartItem {
   product_id: string;
@@ -106,8 +107,9 @@ export const CartItemList: React.FC<CartItemListProps> = ({
 
                 {/* Product Details */}
                 <div className="flex-1 min-w-0 space-y-1">
+
                   <Link
-                    to={`/products/${item.product_id}`}
+                    to={getProductUrl({ id: item.product_id, name: item.product_name })}
                     className="font-bold text-sm sm:text-base text-gray-900 dark:text-white hover:text-primary transition-colors line-clamp-2 leading-snug"
                   >
                     {item.product_name}
