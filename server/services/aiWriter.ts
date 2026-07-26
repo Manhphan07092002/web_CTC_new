@@ -6,7 +6,7 @@
  *    - 5W1H (Who - What - Where - When - Why - How - Tổng hợp tin tức)
  *    - Case Study / Storytelling (Câu chuyện thực tế/Dự án/Review)
  *    - Comparison & Pros/Cons (So sánh - Đánh giá - Tư vấn thiết bị)
- * 2. URL Article Web Scraper (Automatically fetches full text from article links).
+ * 2. URL Article Web Scraper & Image Extractor (Extracts full text & real images from article links).
  * 3. Reads Admin Settings (`db.settings.get()`) for Gemini API / OpenAI API Keys.
  * 4. Strict Yoast SEO 95-100 & Readability 95-100 score guarantees.
  */
@@ -177,9 +177,9 @@ function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: st
 }
 
 /**
- * Automatically Scrape Article Content from URL (Cheerio-style Web Scraping)
+ * Automatically Scrape Article Content & Images from URL (Cheerio-style Web Scraping)
  */
-async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[] }> {
+async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[] }> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
@@ -192,10 +192,10 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
     });
     clearTimeout(timeout);
 
-    if (!res.ok) return { scrapedTitle: '', scrapedParagraphs: [] };
+    if (!res.ok) return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [] };
     const html = await res.text();
 
-    // Extract Title
+    // 1. Extract Title
     let scrapedTitle = '';
     const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i) || html.match(/<h1[^>]*>(.*?)<\/h1>/i);
     if (titleMatch) {
@@ -203,7 +203,7 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
       scrapedTitle = scrapedTitle.replace(/\s*[-|\u2013\u2014]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV).*$/i, '');
     }
 
-    // Extract Body Paragraphs (<p> tags)
+    // 2. Extract Body Paragraphs (<p> tags)
     const scrapedParagraphs: string[] = [];
     const pRegex = /<p[^>]*>(.*?)<\/p>/gi;
     let pMatch;
@@ -214,11 +214,51 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
       }
     }
 
-    return { scrapedTitle, scrapedParagraphs };
+    // 3. Extract Real Images from HTML
+    const scrapedImages: string[] = [];
+    const ogMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"'\s]+)["']/i) ||
+                    html.match(/<meta[^>]+content=["']([^"'\s]+)["'][^>]+property=["']og:image["']/i);
+    if (ogMatch && ogMatch[1]) {
+      let ogUrl = ogMatch[1].trim();
+      if (ogUrl.startsWith('//')) ogUrl = 'https:' + ogUrl;
+      if (ogUrl.startsWith('http')) scrapedImages.push(ogUrl);
+    }
+
+    const imgRegex = /<img[^>]+(?:src|data-src|data-original|data-lazy-src)=["']([^"'\s]+)["'][^>]*>/gi;
+    let imgMatch;
+    while ((imgMatch = imgRegex.exec(html)) !== null && scrapedImages.length < 5) {
+      let imgUrl = imgMatch[1].trim();
+      if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
+      if (!imgUrl.startsWith('http')) continue;
+
+      if (!/(?:logo|icon|avatar|pixel|spinner|loading|banner_ad|button|\.gif|\.svg)/i.test(imgUrl)) {
+        if (!scrapedImages.includes(imgUrl)) {
+          scrapedImages.push(imgUrl);
+        }
+      }
+    }
+
+    return { scrapedTitle, scrapedParagraphs, scrapedImages };
   } catch (err) {
     console.error('[AI Scrape Article URL Error]:', err);
-    return { scrapedTitle: '', scrapedParagraphs: [] };
+    return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [] };
   }
+}
+
+/**
+ * Extract image URLs directly embedded in raw text or HTML
+ */
+function extractImageUrlsFromText(text: string): string[] {
+  const images: string[] = [];
+  const urlRegex = /(https?:\/\/[^\s<"']+\.(?:jpg|jpeg|png|webp|avif)(?:\?[^\s<"']*)?)/gi;
+  let match;
+  while ((match = urlRegex.exec(text)) !== null && images.length < 5) {
+    const url = match[1].trim();
+    if (!images.includes(url) && !/(?:logo|icon|avatar|pixel|\.gif|\.svg)/i.test(url)) {
+      images.push(url);
+    }
+  }
+  return images;
 }
 
 /**
@@ -462,7 +502,7 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
 
 /**
  * Dynamic AI Article Generator:
- * Supports 5 Structures, URL Web Scraping, Reference Content Rewriting & Admin Settings AI Key!
+ * Supports 5 Structures, URL Web Scraping, Reference Content Rewriting & Image Extraction!
  */
 export async function generateAiArticle(
   userTitle: string,
@@ -475,18 +515,32 @@ export async function generateAiArticle(
 ): Promise<AiGeneratedArticle> {
   let cleanTitle = userTitle.trim();
   let rawReferenceText = (referenceContent || '').trim();
+  let extractedImages: string[] = [];
 
-  // 1. If Article URL is provided, Scrape Full Text from Web Link automatically
+  // 1. If Article URL is provided, Scrape Full Text & Images from Web Link automatically
   let scrapedUrlSuccess = false;
   if (articleUrl && articleUrl.trim().startsWith('http')) {
-    console.log(`[AI Writer]: Auto scraping article content from URL: ${articleUrl}`);
-    const { scrapedTitle, scrapedParagraphs } = await scrapeArticleFromUrl(articleUrl.trim());
+    console.log(`[AI Writer]: Auto scraping article content & images from URL: ${articleUrl}`);
+    const { scrapedTitle, scrapedParagraphs, scrapedImages } = await scrapeArticleFromUrl(articleUrl.trim());
     if (scrapedParagraphs.length > 0) {
       scrapedUrlSuccess = true;
       if (!cleanTitle && scrapedTitle) {
         cleanTitle = scrapedTitle;
       }
       rawReferenceText = scrapedParagraphs.join('\n\n');
+      if (scrapedImages.length > 0) {
+        extractedImages = scrapedImages;
+      }
+    }
+  }
+
+  // Extract any images directly inside pasted reference text as well
+  if (rawReferenceText) {
+    const textImgs = extractImageUrlsFromText(rawReferenceText);
+    for (const img of textImgs) {
+      if (!extractedImages.includes(img)) {
+        extractedImages.push(img);
+      }
     }
   }
 
@@ -500,7 +554,11 @@ export async function generateAiArticle(
   // 2. Resolve Focus Keyword & Domain
   const kw = resolveFocusKeyword(cleanTitle, userFocusKeyword);
   const domain = detectTopicDomain(cleanTitle, kw);
-  const domainImg = getDomainImage(domain);
+
+  // Determine Primary & Secondary Feature Images
+  const mainImage = extractedImages[0] || getDomainImage(domain);
+  const secondImage = extractedImages[1] || null;
+  const thirdImage = extractedImages[2] || null;
 
   // 3. Live Google Search IF no reference content or URL was supplied
   let searchResult = { rawSnippets: [] as string[], combinedText: '' };
@@ -557,7 +615,7 @@ Yêu cầu định dạng HTML output:
     console.log('[AI Writer]: Successfully generated article using Admin Settings LLM API Key!');
     content = aiLlmGeneratedContent;
   } else {
-    // Built-in Paraphrasing Engine with 5 Structure Layout Support
+    // Built-in Paraphrasing Engine with 5 Structure Layout & Multi-Image Support
     const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi từ đông đảo cộng đồng. ${toneCallout} Bài viết này cung cấp cái nhìn toàn diện về bối cảnh, phân tích thực trạng và đưa ra những khuyến nghị thiết thực nhất.</p>`;
 
     let body_1 = '';
@@ -621,6 +679,20 @@ ${p6}
   <li><strong>Trang liên hệ chi tiết:</strong> Đăng ký hỗ trợ tại <a href="/contact" class="text-primary font-bold underline">Trang Liên Hệ CTC</a>.</li>
 </ul>`;
 
+    const secondImgBlock = secondImage ? `
+<figure class="my-6">
+  <img src="${secondImage}" alt="Ảnh thực tế ${kw}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
+  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh minh họa diễn biến thực tế liên quan đến ${kw}.</figcaption>
+</figure>
+` : '';
+
+    const thirdImgBlock = thirdImage ? `
+<figure class="my-6">
+  <img src="${thirdImage}" alt="Khảo sát ${kw}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
+  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh khảo sát thực tế và đánh giá từ chuyên gia.</figcaption>
+</figure>
+` : '';
+
     content = `
 ${introP}
 
@@ -635,15 +707,19 @@ ${introP}
 </div>
 
 <figure class="my-6">
-  <img src="${domainImg}" alt="Thông tin ${kw} CTC" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-96" />
-  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh minh họa thông tin ${kw}.</figcaption>
+  <img src="${mainImage}" alt="Thông tin ${kw} CTC" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
+  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh minh họa chính bài viết về ${kw}.</figcaption>
 </figure>
 
 <h2>${headings.h2_1}</h2>
 ${body_1}
 
+${secondImgBlock}
+
 <h2>${headings.h2_2}</h2>
 ${body_2}
+
+${thirdImgBlock}
 
 <h2>${headings.h2_3}</h2>
 ${body_3}
@@ -662,10 +738,10 @@ ${body_4}
     content,
     focusKeyword: kw,
     tags,
-    image: domainImg,
+    image: mainImage,
     status: 'pending',
     sources: scrapedUrlSuccess
-      ? [`Cào dữ liệu tự động từ đường link: ${articleUrl}`, 'CTC Knowledge Base']
+      ? [`Cào dữ liệu & hình ảnh từ đường link: ${articleUrl}`, 'CTC Knowledge Base']
       : hasReferenceText 
         ? ['Nội dung bài báo mẫu do người dùng cung cấp (AI đã biên tập lại 100%)', 'CTC Knowledge Base']
         : searchResult.rawSnippets.length > 0 
