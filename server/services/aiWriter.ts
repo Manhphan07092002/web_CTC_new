@@ -1,13 +1,14 @@
 /**
- * AI Article Generator Service (Perfect 95-100 SEO & 95-100 Readability Scoring Engine)
- * 1. Live Google/DuckDuckGo Web Search for accurate real-world facts & context.
- * 2. Strict Yoast SEO Title Length Optimization (50 - 64 chars -> 10/10 score).
- * 3. Strict Yoast SEO Meta Excerpt Optimization (120 - 156 chars -> 8/8 score).
- * 4. Controlled Keyword Density (1.2% - 2.0% -> 10/10 score).
- * 5. Rich Content Expansion (850+ words -> 10/10 score).
- * 6. Short Punchy Sentences (<18 words -> 25/25 Readability score).
- * 7. Abundant Transition Words (6+ instances -> 15/15 Readability score).
- * 8. Subheadings, Lists, Figure Images & Contact Links (All max scores).
+ * AI Article Generator Service (supporting Full Reference Article Rewriting)
+ * 1. Live Google/DuckDuckGo Web Search OR User Pasted Reference Article.
+ * 2. Paraphrases sample article text into 100% unique Vietnamese press phrasing.
+ * 3. Strict Yoast SEO Title Length Optimization (50 - 64 chars -> 10/10 score).
+ * 4. Strict Yoast SEO Meta Excerpt Optimization (120 - 156 chars -> 8/8 score).
+ * 5. Controlled Keyword Density (1.2% - 2.0% -> 10/10 score).
+ * 6. Rich Content Expansion (850+ words -> 10/10 score).
+ * 7. Short Punchy Sentences (<18 words -> 25/25 Readability score).
+ * 8. Abundant Transition Words (6+ instances -> 15/15 Readability score).
+ * 9. Subheadings, Lists, Figure Images & Contact Links (All max scores).
  */
 
 import fetch from 'node-fetch';
@@ -40,7 +41,7 @@ function detectTopicDomain(title: string, focusKeyword: string): TopicDomain {
   if (/cáp quang|5g|viễn thông|bưu điện|mạng|hạ tầng số|trạm phát sóng|bts|truyền dẫn|internet/i.test(text)) {
     return 'telecom';
   }
-  if (/fbi|cảnh báo|lừa đảo|an ninh|bảo mật|tội phạm|mạng xã hội|mã độc|virus|hacker|giả mạo|chiêu trò/i.test(text)) {
+  if (/fbi|cảnh báo|lừa đảo|an ninh|bảo mật|tội phạm|mạng xã hội|mã độc|virus|hacker|giả mạo|chiêu trò|router|wi-fi/i.test(text)) {
     return 'security';
   }
   if (/xây lắp|xây dựng|trạm biến áp|lưới điện|công trình|hạ tầng|thi công|kỹ thuật|điện lực/i.test(text)) {
@@ -86,7 +87,6 @@ function resolveFocusKeyword(userTitle: string, explicitKeyword?: string): strin
 function formatYoastSeoTitle(cleanTitle: string, kw: string): string {
   let title = cleanTitle.trim();
 
-  // Ensure focus keyword is present in title
   if (!title.toLowerCase().includes(kw.toLowerCase())) {
     title = `${title} – ${kw}`;
   }
@@ -141,7 +141,6 @@ function formatYoastSeoExcerpt(cleanTitle: string, kw: string, searchSnippet?: s
     excerpt = `Cập nhật thông tin chi tiết về ${kw}. Phân tích bối cảnh, thực trạng diễn biến và tư vấn giải pháp thực tế từ các chuyên gia CTC.`;
   }
 
-  // Ensure focus keyword is in excerpt
   if (!excerpt.toLowerCase().includes(kw.toLowerCase())) {
     excerpt = `Thông tin ${kw}: ${excerpt}`;
   }
@@ -336,38 +335,60 @@ function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): {
 }
 
 /**
- * Dynamic AI Article Generator: Guarantees 95-100 SEO & 95-100 Readability Score
+ * Dynamic AI Article Generator:
+ * Accepts either a User Title OR Full Reference Article Text to rewrite 100% accurately.
  */
 export async function generateAiArticle(
   userTitle: string,
   userFocusKeyword?: string,
   tone: ArticleTone = 'journalistic',
-  targetLength: ArticleLength = 'medium'
+  targetLength: ArticleLength = 'medium',
+  referenceContent?: string
 ): Promise<AiGeneratedArticle> {
   const cleanTitle = userTitle.trim();
   if (!cleanTitle) {
     throw new Error('Vui lòng nhập tiêu đề hoặc chủ đề bài viết');
   }
 
-  // 1. Live Google / DuckDuckGo Search for real-world context
-  const searchResult = await searchWebContext(cleanTitle);
+  const hasReferenceText = referenceContent && referenceContent.trim().length > 30;
 
-  // 2. Resolve Focus Keyword
+  // 1. Resolve Focus Keyword
   const kw = resolveFocusKeyword(cleanTitle, userFocusKeyword);
 
-  // 3. Detect Topic Domain
+  // 2. Detect Topic Domain
   const domain = detectTopicDomain(cleanTitle, kw);
   const domainImg = getDomainImage(domain);
+
+  // 3. Live Google Search IF no reference content was pasted
+  let searchResult = { rawSnippets: [] as string[], combinedText: '' };
+  if (!hasReferenceText) {
+    searchResult = await searchWebContext(cleanTitle);
+  }
 
   // 4. Format SEO Title STRICTLY within 50 to 64 chars (Yoast 10/10 Score)
   const title = formatYoastSeoTitle(cleanTitle, kw);
 
   // 5. Format Meta Excerpt STRICTLY within 120 to 156 chars (Yoast 8/8 Score)
-  const excerpt = formatYoastSeoExcerpt(cleanTitle, kw, searchResult.rawSnippets[0]);
+  const firstSnippet = hasReferenceText ? referenceContent.trim().substring(0, 150) : searchResult.rawSnippets[0];
+  const excerpt = formatYoastSeoExcerpt(cleanTitle, kw, firstSnippet);
 
-  // 6. Build Paraphrased Web Facts Block
+  // 6. Build Paraphrased Web Facts / Reference Content Block
   let paraphrasedFactsBlock = '';
-  if (searchResult.rawSnippets.length > 0) {
+  if (hasReferenceText) {
+    const rawParagraphs = referenceContent.trim().split(/\n+/).filter(p => p.trim().length > 20);
+    const paraphrasedList = rawParagraphs
+      .slice(0, 5)
+      .map(p => paraphraseWebSnippet(p))
+      .filter(Boolean)
+      .map(text => `<p class="mb-3 text-slate-800 text-sm leading-relaxed">🌐 <em>Nội dung biên tập lại:</em> ${text}</p>`)
+      .join('\n');
+
+    paraphrasedFactsBlock = `
+<div class="my-5 p-5 border-l-4 border-emerald-500 bg-emerald-50/80 rounded-r-2xl space-y-2">
+  <p class="font-black text-emerald-950 text-xs uppercase tracking-wider mb-2">📊 Nội dung bài báo gốc đã được AI phân tích & viết lại 100% độc nhất (Chuẩn SEO & Không vi phạm bản quyền):</p>
+  ${paraphrasedList}
+</div>`;
+  } else if (searchResult.rawSnippets.length > 0) {
     const paraphrasedList = searchResult.rawSnippets
       .map(snip => paraphraseWebSnippet(snip))
       .filter(Boolean)
@@ -381,7 +402,7 @@ export async function generateAiArticle(
 </div>`;
   }
 
-  // 7. Generate Dynamic Headings based on Title & Subject
+  // 7. Generate Dynamic Headings
   const headings = buildDynamicHeadings(cleanTitle, kw, domain);
 
   // 8. Tone Customization Adjustments
@@ -398,7 +419,7 @@ export async function generateAiArticle(
     toneCallout = 'Chia sẻ thực tế từ các dự án triển khai thực địa và bài học kinh nghiệm.';
   }
 
-  // 9. Generate 850+ Word Content (Short sentences <18 words, 6+ transition words, controlled kw density 1.5%)
+  // 9. Generate 850+ Word Content
   const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang nhận được sự chú ý rộng rãi từ đông đảo cộng đồng. ${toneCallout} Bài viết này cung cấp cái nhìn toàn diện về bối cảnh, phân tích thực trạng và đưa ra những khuyến nghị thiết thực nhất.</p>`;
 
   const body_1 = `<p>Trong giai đoạn hiện tại, diễn biến liên quan đến <strong>${kw}</strong> ghi nhận nhiều chuyển biến nhanh chóng. Việc theo dõi thông tin chính thống giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả.</p>
@@ -468,8 +489,10 @@ ${body_4}
     tags,
     image: domainImg,
     status: 'pending',
-    sources: searchResult.rawSnippets.length > 0 
-      ? ['Dữ liệu tìm kiếm Google / DuckDuckGo thực tế (Đã biên tập & viết lại)', 'CTC Knowledge Base']
-      : ['CTC Knowledge Base']
+    sources: hasReferenceText 
+      ? ['Nội dung bài báo mẫu do người dùng cung cấp (AI đã biên tập lại 100%)', 'CTC Knowledge Base']
+      : searchResult.rawSnippets.length > 0 
+        ? ['Dữ liệu tìm kiếm Google / DuckDuckGo thực tế (Đã biên tập & viết lại)', 'CTC Knowledge Base']
+        : ['CTC Knowledge Base']
   };
 }

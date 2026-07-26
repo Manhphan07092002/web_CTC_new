@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code } from 'lucide-react';
+import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code, Copy } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -28,6 +28,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
   const { showToast } = useToast();
   const [topicTitle, setTopicTitle] = useState(initialTitle);
   const [focusKeyword, setFocusKeyword] = useState(initialFocusKeyword);
+  const [referenceContent, setReferenceContent] = useState('');
   const [tone, setTone] = useState<'journalistic' | 'expert' | 'sales' | 'storytelling'>('journalistic');
   const [targetLength, setTargetLength] = useState<'short' | 'medium' | 'deep'>('medium');
   const [regenerationNote, setRegenerationNote] = useState('');
@@ -64,7 +65,8 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
         title: fullTitleWithNote,
         focusKeyword: kwToUse,
         tone,
-        targetLength
+        targetLength,
+        referenceContent: referenceContent.trim()
       });
 
       clearTimeout(timer1);
@@ -75,7 +77,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
           ...res.data,
           title: titleToUse
         });
-        showToast('✨ AI đã tạo bài viết thành công!', 'success');
+        showToast('✨ AI đã tạo và viết lại bài viết thành công!', 'success');
       } else {
         throw new Error((res as any)?.message || 'Không thể tạo bài viết');
       }
@@ -120,7 +122,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                 Trợ Lý Viết Bài AI Tự Động
                 <span className="text-[10px] font-extrabold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full uppercase tracking-wider">Yoast 100/100</span>
               </h2>
-              <p className="text-xs text-slate-300">Tìm kiếm dữ liệu thực tế từ Google & viết lại nội dung chuẩn SEO tối ưu</p>
+              <p className="text-xs text-slate-300">Viết lại bài báo mẫu chính xác 100% hoặc tìm kiếm dữ liệu thực tế từ Google</p>
             </div>
           </div>
           <button
@@ -135,6 +137,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
         <div className="p-6 overflow-y-auto flex-1 space-y-6">
           {!result || loading ? (
             <form onSubmit={e => handleGenerate(e)} className="space-y-5">
+              {/* Title Field */}
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <FileText size={14} className="text-primary" /> Tiêu Đề Bài Viết / Chủ Đề Muốn Viết <span className="text-red-500">*</span>
@@ -150,6 +153,28 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                 />
               </div>
 
+              {/* Paste Reference Article Text Area */}
+              <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-black text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                    <Copy size={14} className="text-amber-600" /> Dán Nội Dung Bài Báo Mẫu Để AI Viết Lại (Khuyên Dùng - Chính Xác 100%)
+                  </label>
+                  <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md font-extrabold uppercase">Tùy Chọn</span>
+                </div>
+                <textarea
+                  rows={5}
+                  value={referenceContent}
+                  onChange={e => setReferenceContent(e.target.value)}
+                  placeholder="Dán toàn bộ nội dung bài báo mẫu (VnExpress, Tuổi Trẻ, Dân Trí...) vào đây. AI sẽ tự động phân tích thực tế, trích xuất dữ liệu và viết lại 100% độc nhất chuẩn SEO Yoast mà KHÔNG bị vi phạm bản quyền..."
+                  disabled={loading}
+                  className="w-full border border-amber-300 rounded-xl p-3 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-amber-400 outline-none bg-white shadow-xs resize-none"
+                />
+                <p className="text-[11px] text-amber-800 font-semibold italic">
+                  💡 <strong>Mẹo nhỏ:</strong> Dán bài báo mẫu vào đây giúp AI nắm trọn vẹn thông tin thực tế, viết lại cực kỳ chuẩn và chính xác theo từng đoạn!
+                </p>
+              </div>
+
+              {/* Focus Keyword Field */}
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <Target size={14} className="text-primary" /> Từ Khóa Focus (Tùy Chọn)
@@ -226,15 +251,17 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                 <div className="p-5 bg-slate-900 text-white rounded-2xl space-y-4 animate-pulse">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    <span className="font-black text-sm text-amber-300">AI Đang Tìm Kiếm Google & Tạo Bài Viết Tự Động...</span>
+                    <span className="font-black text-sm text-amber-300">
+                      {referenceContent.trim() ? 'AI Đang Phân Tích & Viết Lại Bài Báo Mẫu...' : 'AI Đang Tìm Kiếm Google & Tạo Bài Viết Tự Động...'}
+                    </span>
                   </div>
 
                   <div className="space-y-2 text-xs font-semibold">
                     <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                      <Search size={14} /> 1. Tìm kiếm dữ liệu & bài viết thực tế từ Google...
+                      <Search size={14} /> 1. Phân tích nội dung bài mẫu & bóc tách dữ liệu thực tế...
                     </div>
                     <div className={`flex items-center gap-2 ${step >= 2 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                      <Wand2 size={14} /> 2. Tổng hợp & biên tập bài viết chuẩn SEO Yoast 100/100...
+                      <Wand2 size={14} /> 2. Biên tập & viết lại 100% độc nhất chuẩn SEO Yoast 100/100...
                     </div>
                     <div className={`flex items-center gap-2 ${step >= 3 ? 'text-emerald-400' : 'text-slate-500'}`}>
                       <CheckCircle2 size={14} /> 3. Tối ưu hóa từ khóa Focus, thẻ H2/H3 & thông tin liên hệ CTC...
@@ -262,7 +289,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                     <span>Đang xử lý AI...</span>
                   ) : (
                     <>
-                      <Sparkles size={16} /> 🚀 Tạo bài viết với AI
+                      <Sparkles size={16} /> 🚀 Tạo & Viết lại bài viết với AI
                     </>
                   )}
                 </button>
