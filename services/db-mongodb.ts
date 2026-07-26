@@ -3,6 +3,7 @@
  * Provides a unified interface for database operations using Mongoose models
  */
 
+import mongoose from 'mongoose';
 import { 
   Product,
   Project,
