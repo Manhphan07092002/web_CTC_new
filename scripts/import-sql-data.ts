@@ -369,20 +369,38 @@ async function seedRBAC() {
   const createdRoles = await RoleModel.insertMany(roles);
   console.log(`   ✅ [RBAC] Đã khởi tạo ${createdRoles.length} vai trò hệ thống.`);
 
-  const superAdminRole = createdRoles.find((r: any) => r.name === 'super_admin');
+  const roleMap = new Map<string, any>();
+  createdRoles.forEach((r: any) => roleMap.set(r.name, r));
 
   const db = mongoose.connection.db;
-  if (db && superAdminRole) {
+  if (db) {
     const users = await db.collection('users').find({}).toArray();
+
+    // Map specific role per user email
+    const userRoleMapping: Record<string, string> = {
+      'admin@ctcdn.vn': 'super_admin',      // Super Admin (Level 100)
+      'ducnam@ctcdn.vn': 'admin',            // Admin (Level 90)
+      'khanhnd@ctcdn.vn': 'editor',          // Editor (Level 50)
+      'phanmanh@ctcdn.vn': 'moderator',      // Moderator (Level 40)
+      'phanmanh1@ctcdn.vn': 'author',        // Author (Level 30)
+      'phanmanhctc@ctcdn.vn': 'editor',      // Editor (Level 50)
+      'thuygiang@ctcdn.vn': 'viewer'         // Viewer (Level 10)
+    };
+
     for (const u of users) {
-      const up = new UserPermissionModel({
-        userId: u._id,
-        roleId: superAdminRole._id,
-        assignedBy: u._id,
-        notes: 'Tự động phân quyền Super Admin Level 100'
-      });
-      await up.save();
-      console.log(`   👑 [RBAC] Gán vai trò Super Admin (Level 100 - 48 quyền) cho: ${u.email}`);
+      const targetRoleName = userRoleMapping[u.email] || 'viewer';
+      const roleObj = roleMap.get(targetRoleName) || roleMap.get('super_admin');
+
+      if (roleObj) {
+        const up = new UserPermissionModel({
+          userId: u._id,
+          roleId: roleObj._id,
+          assignedBy: u._id,
+          notes: `Tự động phân quyền vai trò ${roleObj.displayName} (Level ${roleObj.level})`
+        });
+        await up.save();
+        console.log(`   👑 [RBAC] Gán vai trò ${roleObj.displayName.padEnd(25)} (Level ${String(roleObj.level).padStart(3)}) cho: ${u.email}`);
+      }
     }
   }
 }
