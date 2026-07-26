@@ -1,4 +1,5 @@
 import { BackendModule, Services, InitOptions, ReadCallback } from 'i18next';
+import mongoose from 'mongoose';
 import { Translation } from '../../models/Translation';
 import { translationCache } from './translation-cache';
 import fs from 'fs';
