@@ -121,7 +121,7 @@ router.get('/sitemap.xml', async (req, res) => {
     const stream = new SitemapStream({ hostname: SITE_URL });
     const xml = await streamToPromise(Readable.from(links).pipe(stream)).then(data => data.toString());
 
-    res.header('Content-Type', 'application/xml');
+    res.header('Content-Type', 'application/xml; charset=utf-8');
     res.header('Cache-Control', 'public, max-age=3600'); // Cache 1 hour
     res.send(xml);
 
