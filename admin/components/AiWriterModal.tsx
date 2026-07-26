@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Search, CheckCircle2, AlertCircle, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag } from 'lucide-react';
+import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -28,15 +28,20 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
   const { showToast } = useToast();
   const [topicTitle, setTopicTitle] = useState(initialTitle);
   const [focusKeyword, setFocusKeyword] = useState(initialFocusKeyword);
+  const [regenerationNote, setRegenerationNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<number>(0);
   const [result, setResult] = useState<any | null>(null);
 
   if (!isOpen) return null;
 
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!topicTitle.trim()) {
+  const handleGenerate = async (e?: React.FormEvent, customTitle?: string, customKw?: string) => {
+    if (e) e.preventDefault();
+
+    const titleToUse = (customTitle !== undefined ? customTitle : topicTitle).trim();
+    const kwToUse = (customKw !== undefined ? customKw : focusKeyword).trim();
+
+    if (!titleToUse) {
       showToast('Vui lòng nhập tiêu đề hoặc chủ đề bài viết', 'error');
       return;
     }
@@ -44,22 +49,30 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
     setLoading(true);
     setStep(1);
 
-    // Simulated progress steps for great UX
     const timer1 = setTimeout(() => setStep(2), 1200);
     const timer2 = setTimeout(() => setStep(3), 2800);
 
     try {
+      // Append user's regeneration note if present to guide AI search & focus
+      const fullTitleWithNote = regenerationNote.trim() 
+        ? `${titleToUse} (${regenerationNote.trim()})` 
+        : titleToUse;
+
       const res = await api.ai.generateArticle({
-        title: topicTitle.trim(),
-        focusKeyword: focusKeyword.trim()
+        title: fullTitleWithNote,
+        focusKeyword: kwToUse
       });
 
       clearTimeout(timer1);
       clearTimeout(timer2);
 
       if (res && res.success && res.data) {
-        setResult(res.data);
-        showToast('✨ Tạo bài viết AI thành công!', 'success');
+        setResult({
+          ...res.data,
+          // Keep clean user-edited title on result
+          title: titleToUse
+        });
+        showToast('✨ AI đã tạo bài viết thành công!', 'success');
       } else {
         throw new Error((res as any)?.message || 'Không thể tạo bài viết');
       }
@@ -79,7 +92,11 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
       excerpt: result.excerpt,
       content: result.content,
       focusKeyword: result.focusKeyword,
-      tags: result.tags || [],
+      tags: Array.isArray(result.tags) 
+        ? result.tags 
+        : typeof result.tags === 'string' 
+          ? (result.tags as string).split(',').map((t: string) => t.trim()).filter(Boolean)
+          : [],
       image: result.image
     });
     showToast('🚀 Đã áp dụng bài viết AI vào Form thành công!', 'success');
@@ -88,7 +105,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-3xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Modal Header */}
         <div className="bg-gradient-to-r from-slate-900 via-primary/90 to-slate-900 p-5 text-white flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -113,8 +130,8 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto flex-1 space-y-6">
-          {!result ? (
-            <form onSubmit={handleGenerate} className="space-y-5">
+          {!result || loading ? (
+            <form onSubmit={e => handleGenerate(e)} className="space-y-5">
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <FileText size={14} className="text-primary" /> Tiêu Đề Bài Viết / Chủ Đề Muốn Viết <span className="text-red-500">*</span>
@@ -123,7 +140,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                   type="text"
                   value={topicTitle}
                   onChange={e => setTopicTitle(e.target.value)}
-                  placeholder="VD: Cho Thuê Mái Nhà Lắp Pin Mặt Trời Giúp Tiết Kiệm 80% Tiền Điện"
+                  placeholder="VD: FBI Cảnh Báo Về Bộ Phát Wi-Fi Router Cũ Dễ Bị Tin Tặc Tấn Công"
                   disabled={loading}
                   className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-slate-50 shadow-xs transition-all disabled:opacity-60"
                   required
@@ -138,7 +155,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                   type="text"
                   value={focusKeyword}
                   onChange={e => setFocusKeyword(e.target.value)}
-                  placeholder="VD: pin mặt trời (Để trống AI sẽ tự trích xuất từ khóa chuẩn nhất)"
+                  placeholder="VD: cảnh báo bộ phát wi (Để trống AI sẽ tự trích xuất chuẩn nhất)"
                   disabled={loading}
                   className="w-full border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-slate-50 shadow-xs transition-all disabled:opacity-60"
                 />
@@ -161,12 +178,12 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                 <div className="p-5 bg-slate-900 text-white rounded-2xl space-y-4 animate-pulse">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    <span className="font-black text-sm text-amber-300">AI Đang Tạo Bài Viết Tự Động...</span>
+                    <span className="font-black text-sm text-amber-300">AI Đang Tìm Kiếm Google & Tạo Bài Viết Tự Động...</span>
                   </div>
 
                   <div className="space-y-2 text-xs font-semibold">
                     <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                      <Search size={14} /> 1. Tìm kiếm dữ liệu & bài viết gốc từ Google...
+                      <Search size={14} /> 1. Tìm kiếm dữ liệu & bài viết thực tế từ Google...
                     </div>
                     <div className={`flex items-center gap-2 ${step >= 2 ? 'text-emerald-400' : 'text-slate-500'}`}>
                       <Wand2 size={14} /> 2. Tổng hợp & biên tập bài viết chuẩn SEO Yoast 100/100...
@@ -204,7 +221,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
               </div>
             </form>
           ) : (
-            /* Result Preview Card */
+            /* Fully Editable Result Preview Screen */
             <div className="space-y-5">
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between">
                 <div className="flex items-center gap-2 text-emerald-800 text-xs font-black">
@@ -215,71 +232,124 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                   onClick={() => setResult(null)}
                   className="px-3 py-1 bg-white hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors flex items-center gap-1"
                 >
-                  <RefreshCw size={12} /> Viết bài khác
+                  <RefreshCw size={12} /> Viết bài mới
                 </button>
               </div>
 
-              {/* Generated Title */}
+              {/* Editable Title */}
               <div>
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Tiêu Đề Bài Viết ({result.title.length} ký tự)</label>
-                <h3 className="text-base font-black text-slate-900 mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl">{result.title}</h3>
-              </div>
-
-              {/* Generated Excerpt */}
-              <div>
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Mô Tả Ngắn (Meta) ({result.excerpt.length} ký tự)</label>
-                <p className="text-xs font-semibold text-slate-700 mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl">{result.excerpt}</p>
-              </div>
-
-              {/* Keyword & Tags */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                    <Target size={11} /> Từ Khóa Focus
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1">
+                    <Edit3 size={12} className="text-primary" /> Tiêu Đề Bài Viết ({result.title?.length || 0} ký tự)
                   </label>
-                  <div className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-100 text-sky-900 text-xs font-black rounded-lg border border-sky-200">
-                    🔑 {result.focusKeyword}
-                  </div>
+                  <span className="text-[10px] text-slate-400 font-semibold">(Cho phép sửa trực tiếp)</span>
+                </div>
+                <input
+                  type="text"
+                  value={result.title || ''}
+                  onChange={e => setResult({ ...result, title: e.target.value })}
+                  className="w-full text-sm font-bold text-slate-900 p-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none shadow-xs"
+                />
+              </div>
+
+              {/* Editable Excerpt */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1">
+                    <FileText size={12} className="text-primary" /> Mô Tả Ngắn (Meta Excerpt) ({result.excerpt?.length || 0} ký tự)
+                  </label>
+                  <span className="text-[10px] text-slate-400 font-semibold">(Cho phép sửa trực tiếp)</span>
+                </div>
+                <textarea
+                  rows={2}
+                  value={result.excerpt || ''}
+                  onChange={e => setResult({ ...result, excerpt: e.target.value })}
+                  className="w-full text-xs font-semibold text-slate-800 p-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none shadow-xs resize-none"
+                />
+              </div>
+
+              {/* Editable Focus Keyword & Tags */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Target size={12} className="text-primary" /> Từ Khóa Focus
+                  </label>
+                  <input
+                    type="text"
+                    value={result.focusKeyword || ''}
+                    onChange={e => setResult({ ...result, focusKeyword: e.target.value })}
+                    className="w-full text-xs font-bold text-sky-900 p-2.5 bg-sky-50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-300 outline-none"
+                  />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                    <Tag size={11} /> Thẻ Gắn (Tags)
+                  <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Tag size={12} className="text-primary" /> Thẻ Gắn (Phân cách bằng dấu phẩy)
                   </label>
-                  <div className="mt-1 flex flex-wrap gap-1">
-                    {result.tags?.map((t: string) => (
-                      <span key={t} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-md">#{t}</span>
-                    ))}
-                  </div>
+                  <input
+                    type="text"
+                    value={Array.isArray(result.tags) ? result.tags.join(', ') : (result.tags || '')}
+                    onChange={e => {
+                      const tagArray = e.target.value.split(',').map((t: string) => t.trim()).filter(Boolean);
+                      setResult({ ...result, tags: tagArray });
+                    }}
+                    className="w-full text-xs font-bold text-slate-800 p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
+                  />
                 </div>
               </div>
 
-              {/* HTML Content Scroll Box */}
+              {/* Regeneration Instructions Note */}
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl space-y-2">
+                <label className="text-[11px] font-black text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                  <MessageSquare size={13} className="text-amber-600" /> Ghi chú điều chỉnh để AI Tạo lại cho đúng ý bạn
+                </label>
+                <input
+                  type="text"
+                  value={regenerationNote}
+                  onChange={e => setRegenerationNote(e.target.value)}
+                  placeholder="VD: Nhấn mạnh cảnh báo bộ phát Wi-Fi Router cũ chưa cập nhật firmware dễ bị hack..."
+                  className="w-full text-xs font-semibold text-slate-900 p-2.5 bg-white border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-400 outline-none"
+                />
+              </div>
+
+              {/* HTML Content Preview */}
               <div>
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Nội Dung Chi Tiết (Xem Trước)</label>
+                <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider mb-1 block">Nội Dung Chi Tiết (Xem Trước)</label>
                 <div 
-                  className="mt-1 p-4 bg-slate-50 border border-slate-200 rounded-2xl max-h-56 overflow-y-auto text-xs text-slate-800 prose prose-sm max-w-none"
+                  className="p-4 bg-slate-50 border border-slate-200 rounded-2xl max-h-52 overflow-y-auto text-xs text-slate-800 prose prose-sm max-w-none shadow-inner"
                   dangerouslySetInnerHTML={{ __html: result.content }}
                 />
               </div>
 
-              {/* Apply Button */}
-              <div className="pt-3 flex justify-end gap-3 border-t border-slate-100">
+              {/* Action Buttons */}
+              <div className="pt-3 flex items-center justify-between border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setResult(null)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors"
+                  onClick={() => handleGenerate(undefined, result.title, result.focusKeyword)}
+                  disabled={loading}
+                  className="px-4 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold rounded-xl text-xs transition-colors flex items-center gap-1.5 border border-amber-300"
                 >
-                  Tạo lại
+                  <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+                  <span>🔄 AI Tạo lại theo điều chỉnh này</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={handleApplyResult}
-                  className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-black rounded-xl text-xs shadow-md transition-all flex items-center gap-2"
-                >
-                  <span>📥 Bơm vào bài viết (Áp dụng ngay)</span>
-                  <ArrowRight size={14} />
-                </button>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setResult(null)}
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors"
+                  >
+                    Viết bài mới
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleApplyResult}
+                    className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-black rounded-xl text-xs shadow-md transition-all flex items-center gap-2"
+                  >
+                    <span>📥 Bơm vào bài viết (Áp dụng ngay)</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
               </div>
             </div>
           )}
