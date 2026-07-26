@@ -493,15 +493,30 @@ const NewsForm: React.FC = () => {
                 </div>
                 {formData.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
-                    {formData.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full"
-                      >
-                        #{tag}
-                        <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-500 font-bold leading-none">×</button>
-                      </span>
-                    ))}
+                    {formData.tags.map((tag) => {
+                      const isCurrentFocus = focusKeyword.toLowerCase().trim() === tag.toLowerCase().trim();
+                      return (
+                        <span
+                          key={tag}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full border transition-all ${
+                            isCurrentFocus
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300 font-extrabold shadow-sm'
+                              : 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/20'
+                          }`}
+                        >
+                          #{tag}
+                          <button
+                            type="button"
+                            onClick={() => handleFocusKeywordChange(tag)}
+                            className="text-[10px] bg-white/70 px-1 py-0.5 rounded text-slate-600 hover:text-primary font-bold ml-0.5"
+                            title="Đặt tag này làm từ khóa Focus"
+                          >
+                            {isCurrentFocus ? '★ Focus' : '🎯 Focus'}
+                          </button>
+                          <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-500 font-bold leading-none ml-0.5">×</button>
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
               </div>

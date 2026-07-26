@@ -466,8 +466,15 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
 
       {/* Focus keyword */}
       <div className="p-4 border-b border-gray-100 bg-slate-50 space-y-2">
-        <label className="text-xs font-black text-slate-700 uppercase tracking-wide flex items-center gap-1">
-          <Target size={12} className="text-primary" /> Từ khóa Focus
+        <label className="text-xs font-black text-slate-700 uppercase tracking-wide flex items-center justify-between">
+          <span className="flex items-center gap-1">
+            <Target size={12} className="text-primary" /> Từ khóa Focus (SEO Keyword)
+          </span>
+          {focusKeyword && (
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+              ✓ Đã thiết lập
+            </span>
+          )}
         </label>
         
         <div className="flex gap-2">
@@ -475,8 +482,9 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
             type="text"
             value={tempKeyword}
             onChange={e => {
-              setTempKeyword(e.target.value);
-              onFocusKeywordChange(e.target.value);
+              const val = e.target.value;
+              setTempKeyword(val);
+              onFocusKeywordChange(val);
             }}
             onKeyDown={e => {
               if (e.key === 'Enter') {
@@ -484,36 +492,40 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
                 handleApplyKeyword();
               }
             }}
-            placeholder="VD: điện mặt trời CTC"
+            placeholder="Nhập từ khóa Focus (VD: pin mặt trời)"
             className="flex-1 border border-gray-300 rounded-xl px-3.5 py-2 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white shadow-sm"
           />
           <button
             type="button"
             onClick={handleApplyKeyword}
-            className="w-10 h-10 bg-primary hover:bg-secondary text-white rounded-xl font-black text-lg shadow-sm transition-all flex items-center justify-center flex-shrink-0"
+            className="px-4 py-2 bg-primary hover:bg-secondary text-white rounded-xl font-extrabold text-sm shadow-sm transition-all flex items-center gap-1 flex-shrink-0"
             title="Thêm/Áp dụng từ khóa Focus"
           >
-            +
+            <span className="text-base leading-none">+</span> Thêm
           </button>
         </div>
 
-        {focusKeyword && (
-          <div className="flex items-center gap-2 pt-1">
+        {focusKeyword ? (
+          <div className="flex items-center justify-between pt-1">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-100 text-sky-800 text-xs font-extrabold rounded-lg border border-sky-200 shadow-sm">
-              🔑 {focusKeyword}
+              🔑 Phân tích cho: <strong className="text-primary font-black">"{focusKeyword}"</strong>
               <button
                 type="button"
                 onClick={() => {
                   setTempKeyword('');
                   onFocusKeywordChange('');
                 }}
-                className="hover:text-red-500 font-bold ml-1 text-sm"
+                className="hover:text-red-500 font-bold ml-1 text-sm bg-white/50 w-4 h-4 rounded-full inline-flex items-center justify-center"
                 title="Xóa từ khóa Focus"
               >
                 ×
               </button>
             </span>
           </div>
+        ) : (
+          <p className="text-[11px] text-amber-700 font-semibold pt-0.5">
+            ⚠️ Hãy nhập từ khóa Focus chính và nhấn <strong className="font-bold">+ Thêm</strong> để tính điểm SEO.
+          </p>
         )}
       </div>
 
