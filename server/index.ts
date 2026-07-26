@@ -271,10 +271,12 @@ app.use('/api/search', searchRouter);
 app.use('/', seoRouter);
 
 // ============================================
-// SERVE REACT FRONTEND IN PRODUCTION
+// SERVE REACT FRONTEND IN PRODUCTION & SPA FALLBACK
 // ============================================
-if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(process.cwd(), 'dist');
+const distPath = path.join(process.cwd(), 'dist');
+const indexPath = path.join(distPath, 'index.html');
+
+if (fs.existsSync(indexPath)) {
   app.use(express.static(distPath, {
     maxAge: '7d',
     etag: true,
@@ -288,10 +290,43 @@ if (process.env.NODE_ENV === 'production') {
   }));
 
   // SPA fallback – serve index.html for all non-API routes
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
-      res.sendFile(path.join(distPath, 'index.html'));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
     }
+    res.sendFile(indexPath);
+  });
+} else {
+  // Fallback when dist/index.html is not built yet
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="vi">
+        <head>
+          <title>CTC Web - Đang khởi động</title>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+            .card { background: #1e293b; border: 1px solid #334155; padding: 2.5rem; border-radius: 1.5rem; max-width: 500px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+            h1 { color: #38bdf8; margin-top: 0; font-size: 1.8rem; }
+            p { color: #94a3b8; line-height: 1.6; }
+            code { background: #0f172a; padding: 0.3rem 0.6rem; border-radius: 0.4rem; color: #f59e0b; font-weight: bold; font-family: monospace; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>⚡ CTC Web Server</h1>
+            <p>Máy chủ Backend Express API đã sẵn sàng!</p>
+            <p>Vui lòng chạy lệnh biên dịch giao diện Frontend:</p>
+            <p><code>npm run build</code></p>
+          </div>
+        </body>
+      </html>
+    `);
   });
 }
 
