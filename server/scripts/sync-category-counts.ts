@@ -23,49 +23,63 @@ async function syncCategoryCounts() {
     console.log('📦 Syncing Product Categories...');
     const productCategories = await ProductCategory.find();
     for (const category of productCategories) {
-      const count = await Product.countDocuments({ 
-        $or: [
-          { categoryId: category._id.toString() },
-          { category: category.name }
-        ],
-        isDeleted: { $ne: true }
-      });
+      if (!category) continue;
+      const catId = category._id ? category._id.toString() : (category.id || '');
+      const catName = category.name || '';
+
+      const orConditions: any[] = [];
+      if (catId) orConditions.push({ categoryId: catId });
+      if (catName) orConditions.push({ category: catName });
+
+      const count = orConditions.length > 0 
+        ? await Product.countDocuments({ $or: orConditions, isDeleted: { $ne: true } })
+        : 0;
       
       category.productCount = count;
       await category.save();
-      console.log(`  ✓ ${category.name}: ${count} products`);
+      console.log(`  ✓ ${catName}: ${count} products`);
     }
 
     // Sync News Categories
     console.log('\n📰 Syncing News Categories...');
     const newsCategories = await NewsCategory.find();
     for (const category of newsCategories) {
-      const count = await News.countDocuments({ 
-        $or: [
-          { categoryId: category._id.toString() },
-          { category: category.name }
-        ]
-      });
+      if (!category) continue;
+      const catId = category._id ? category._id.toString() : (category.id || '');
+      const catName = category.name || '';
+
+      const orConditions: any[] = [];
+      if (catId) orConditions.push({ categoryId: catId });
+      if (catName) orConditions.push({ category: catName });
+
+      const count = orConditions.length > 0 
+        ? await News.countDocuments({ $or: orConditions })
+        : 0;
       
       category.newsCount = count;
       await category.save();
-      console.log(`  ✓ ${category.name}: ${count} news items`);
+      console.log(`  ✓ ${catName}: ${count} news items`);
     }
 
     // Sync Project Categories
     console.log('\n🏗️ Syncing Project Categories...');
     const projectCategories = await ProjectCategory.find();
     for (const category of projectCategories) {
-      const count = await Project.countDocuments({ 
-        $or: [
-          { categoryId: category._id.toString() },
-          { category: category.name }
-        ]
-      });
+      if (!category) continue;
+      const catId = category._id ? category._id.toString() : (category.id || '');
+      const catName = category.name || '';
+
+      const orConditions: any[] = [];
+      if (catId) orConditions.push({ categoryId: catId });
+      if (catName) orConditions.push({ category: catName });
+
+      const count = orConditions.length > 0 
+        ? await Project.countDocuments({ $or: orConditions })
+        : 0;
       
       category.projectCount = count;
       await category.save();
-      console.log(`  ✓ ${category.name}: ${count} projects`);
+      console.log(`  ✓ ${catName}: ${count} projects`);
     }
 
     console.log('\n✅ Category counts synced successfully!');
