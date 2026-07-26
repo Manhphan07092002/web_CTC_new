@@ -3,6 +3,8 @@
  * Helps Google understand and display rich snippets
  */
 
+import { getProductUrl, getNewsUrl } from './news-url-helper';
+
 // Site configuration - Thông tin công ty CTC
 const SITE_URL = 'https://www.ctcdn.vn';
 const SITE_NAME = 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung';
@@ -119,14 +121,17 @@ export interface ProductSchemaData {
 }
 
 export function generateProductSchema(product: ProductSchemaData) {
+  const seoPath = getProductUrl(product);
+  const fullUrl = `${SITE_URL}${seoPath}`;
+
   const schema: any = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    '@id': `${SITE_URL}/products/${product.id}`,
+    '@id': fullUrl,
     name: product.name,
     description: product.description,
     image: product.image.startsWith('http') ? product.image : `${SITE_URL}${product.image}`,
-    url: `${SITE_URL}/products/${product.id}`,
+    url: fullUrl,
     brand: {
       '@type': 'Brand',
       name: product.brand || SITE_NAME
@@ -139,7 +144,7 @@ export function generateProductSchema(product: ProductSchemaData) {
   if (product.price) {
     schema.offers = {
       '@type': 'Offer',
-      url: `${SITE_URL}/products/${product.id}`,
+      url: fullUrl,
       priceCurrency: product.currency || 'VND',
       price: product.price,
       availability: `https://schema.org/${product.availability || 'InStock'}`,
@@ -279,10 +284,13 @@ export interface ArticleSchemaData {
 }
 
 export function generateArticleSchema(article: ArticleSchemaData) {
+  const seoPath = getNewsUrl(article);
+  const fullUrl = `${SITE_URL}${seoPath}`;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    '@id': `${SITE_URL}/news/${article.id}`,
+    '@id': fullUrl,
     headline: article.title,
     description: article.description,
     image: article.image.startsWith('http') ? article.image : `${SITE_URL}${article.image}`,
