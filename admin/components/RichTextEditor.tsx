@@ -12,7 +12,7 @@ import {
   List, ListOrdered, Quote, Minus, Link2, ImageIcon,
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Heading1, Heading2, Heading3,
-  Highlighter, Undo, Redo, Code, Table2, FolderImage, ExternalLink, Unlink
+  Highlighter, Undo, Redo, Code, Table2, FolderOpen, ExternalLink, Unlink
 } from 'lucide-react';
 import FilePickerModal from '../FilePickerModal';
 
@@ -235,7 +235,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
             className="px-2 py-1 text-xs font-bold text-primary hover:bg-primary/10 rounded flex items-center gap-1 transition-colors"
             title="Chọn ảnh từ Thư viện tệp / Upload máy tính"
           >
-            <FolderImage size={15} />
+            <FolderOpen size={15} />
             <span>Thư viện ảnh</span>
           </button>
           <button
