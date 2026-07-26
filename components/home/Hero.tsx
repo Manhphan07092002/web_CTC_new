@@ -233,12 +233,9 @@ const Hero: React.FC = () => {
     let isLowPowerMode = false;
     let videoLoaded = false;
 
-    if ('connection' in navigator) {
-      const conn = (navigator as any).connection;
-      if (conn && (conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g' || conn.saveData)) {
-        isLowPowerMode = true;
-        video.preload = 'none';
-      }
+    if (window.innerWidth < 768 || ('connection' in navigator && ((navigator as any).connection?.saveData || (navigator as any).connection?.effectiveType === 'slow-2g' || (navigator as any).connection?.effectiveType === '2g'))) {
+      isLowPowerMode = true;
+      video.preload = 'none';
     }
 
     const nav = navigator as any;

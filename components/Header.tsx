@@ -539,6 +539,7 @@ const Header: React.FC = () => {
               className="p-2.5 text-slate-800 dark:text-white hover:text-primary transition-colors flex items-center justify-center cursor-pointer"
               style={{ color: isScrolled ? undefined : 'white' }}
               title="Tìm kiếm"
+              aria-label="Tìm kiếm"
             >
               <Search size={20} />
             </button>
@@ -547,6 +548,7 @@ const Header: React.FC = () => {
               to="/cart" 
               className="relative p-2.5 text-slate-800 dark:text-white hover:text-primary transition-colors flex items-center gap-1.5 font-bold"
               style={{ color: isScrolled ? undefined : 'white' }}
+              aria-label="Giỏ hàng"
             >
               <ShoppingCart size={20} />
               {totalItems > 0 && (
@@ -560,6 +562,7 @@ const Header: React.FC = () => {
               href={settings.headerCtaLink || "https://zalo.me/0915059666"} 
               target={settings.headerCtaLink?.startsWith('http') ? "_blank" : undefined} 
               rel="noopener noreferrer"
+              aria-label="Liên hệ Zalo"
               className="btn-header-contact inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-lg transition-all active:scale-95"
             >
               <span className="btn-header-contact-shimmer"></span>
@@ -583,6 +586,7 @@ const Header: React.FC = () => {
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="p-2 text-slate-800 dark:text-white hover:text-primary transition-colors flex items-center justify-center cursor-pointer"
               style={{ color: isScrolled ? undefined : 'white' }}
+              aria-label="Tìm kiếm"
             >
               <Search size={24} />
             </button>
@@ -591,6 +595,7 @@ const Header: React.FC = () => {
               to="/cart" 
               className="relative p-2"
               style={{ color: isScrolled ? undefined : 'white' }}
+              aria-label="Giỏ hàng"
             >
               <ShoppingCart size={24} />
               {totalItems > 0 && (

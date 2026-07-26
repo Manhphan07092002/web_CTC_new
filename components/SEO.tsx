@@ -110,23 +110,37 @@ const SEO: React.FC<SEOProps> = ({
   const url = `${siteUrl}${location.pathname}`;
   const fullTitle = `${title} | ${settings.siteName || COMPANY_INFO.shortName}`;
   
-  // Favicon URLs & Dynamic Rounded Favicon
-  const faviconUrl = settings.favicon || settings.logo || '/favicon.svg';
-  const [processedFavicon, setProcessedFavicon] = useState<string>(faviconUrl);
+  // Favicon URLs & Dynamic Rounded Favicon from Admin Settings
+  const rawFavicon = settings.favicon || settings.logoHeader || settings.logo || settings.logoFooter || '/favicon.svg';
+  const [processedFavicon, setProcessedFavicon] = useState<string>(rawFavicon);
 
   useEffect(() => {
     let isMounted = true;
-    if (faviconUrl) {
-      getRoundedFaviconUrl(faviconUrl).then((roundedUrl) => {
-        if (isMounted) {
-          setProcessedFavicon(roundedUrl);
-        }
-      });
-    }
+    const targetUrl = rawFavicon.startsWith('http') 
+      ? rawFavicon 
+      : `${siteUrl}${rawFavicon.startsWith('/') ? '' : '/'}${rawFavicon}`;
+
+    getRoundedFaviconUrl(targetUrl).then((roundedUrl) => {
+      if (isMounted) {
+        const finalFavicon = roundedUrl || targetUrl;
+        setProcessedFavicon(finalFavicon);
+        
+        // Cập nhật trực tiếp lên các thẻ link icon trong DOM để trình duyệt đổi biểu tượng tab ngay lập tức
+        try {
+          const existingLinks = document.querySelectorAll("link[rel*='icon']");
+          if (existingLinks.length > 0) {
+            existingLinks.forEach((link: any) => {
+              link.href = finalFavicon;
+            });
+          }
+        } catch (e) {}
+      }
+    });
+
     return () => {
       isMounted = false;
     };
-  }, [faviconUrl]);
+  }, [rawFavicon, siteUrl]);
 
   return (
     <Helmet>
