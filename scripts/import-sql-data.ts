@@ -261,23 +261,118 @@ async function seedRBAC() {
   ];
 
   const createdPermissions = await PermissionModel.insertMany(permissions);
-  const permIds = createdPermissions.map(p => p._id);
-
-  const superAdminRole = new RoleModel({
-    name: 'super_admin',
-    displayName: 'Super Admin',
-    description: 'Quyền cao nhất, có thể làm tất cả',
-    level: 100,
-    isSystem: true,
-    isActive: true,
-    color: '#DC2626',
-    icon: 'Crown',
-    permissions: permIds
+  
+  const permissionMap = new Map<string, mongoose.Types.ObjectId>();
+  createdPermissions.forEach((p: any) => {
+    permissionMap.set(p.name, p._id);
   });
-  await superAdminRole.save();
+
+  const roles = [
+    {
+      name: 'super_admin',
+      displayName: 'Super Admin',
+      description: 'Quyền cao nhất, có thể làm tất cả',
+      level: 100,
+      isSystem: true,
+      isActive: true,
+      color: '#DC2626',
+      icon: 'Crown',
+      permissions: Array.from(permissionMap.values())
+    },
+    {
+      name: 'admin',
+      displayName: 'Admin',
+      description: 'Quản trị viên, có thể quản lý hầu hết chức năng hệ thống',
+      level: 90,
+      isSystem: true,
+      isActive: true,
+      color: '#7C3AED',
+      icon: 'Shield',
+      permissions: [
+        'view_content', 'create_content', 'edit_content', 'delete_content', 'publish_content',
+        'view_products', 'create_products', 'edit_products', 'delete_products', 'manage_product_categories',
+        'view_news', 'create_news', 'edit_news', 'delete_news', 'manage_news_categories',
+        'view_projects', 'create_projects', 'edit_projects', 'delete_projects', 'manage_project_categories',
+        'view_users', 'create_users', 'edit_users', 'delete_users',
+        'view_roles', 'view_permissions', 'view_user_permissions',
+        'view_system_settings', 'manage_system_settings', 'manage_file_uploads',
+        'view_security_logs', 'view_audit_logs', 'manage_ip_blacklist',
+        'view_analytics', 'view_reports', 'export_data'
+      ].map(name => permissionMap.get(name)).filter(Boolean)
+    },
+    {
+      name: 'editor',
+      displayName: 'Biên Tập Viên (Editor)',
+      description: 'Có thể tạo, chỉnh sửa và xuất bản nội dung tin tức, sản phẩm, dự án',
+      level: 50,
+      isSystem: true,
+      isActive: true,
+      color: '#059669',
+      icon: 'Edit',
+      permissions: [
+        'view_content', 'create_content', 'edit_content', 'publish_content',
+        'view_products', 'create_products', 'edit_products',
+        'view_news', 'create_news', 'edit_news',
+        'view_projects', 'create_projects', 'edit_projects',
+        'manage_file_uploads', 'view_analytics', 'view_reports'
+      ].map(name => permissionMap.get(name)).filter(Boolean)
+    },
+    {
+      name: 'moderator',
+      displayName: 'Điều Hành Viên (Moderator)',
+      description: 'Quản lý nội dung bài viết, bình luận và người dùng cơ bản',
+      level: 40,
+      isSystem: false,
+      isActive: true,
+      color: '#F59E0B',
+      icon: 'Shield',
+      permissions: [
+        'view_content', 'edit_content', 'delete_content', 'publish_content',
+        'view_products', 'edit_products', 'delete_products',
+        'view_news', 'edit_news', 'delete_news',
+        'view_projects', 'edit_projects', 'delete_projects',
+        'view_users', 'view_security_logs', 'view_audit_logs'
+      ].map(name => permissionMap.get(name)).filter(Boolean)
+    },
+    {
+      name: 'author',
+      displayName: 'Tác Giả (Author)',
+      description: 'Có thể soạn thảo bài viết mới và chỉnh sửa nội dung của mình',
+      level: 30,
+      isSystem: true,
+      isActive: true,
+      color: '#2563EB',
+      icon: 'PenTool',
+      permissions: [
+        'view_content', 'create_content', 'edit_content',
+        'view_products', 'create_products',
+        'view_news', 'create_news',
+        'view_projects', 'create_projects',
+        'manage_file_uploads'
+      ].map(name => permissionMap.get(name)).filter(Boolean)
+    },
+    {
+      name: 'viewer',
+      displayName: 'Người Xem (Viewer)',
+      description: 'Chỉ có quyền xem thông tin công khai và báo cáo tổng quan',
+      level: 10,
+      isSystem: true,
+      isActive: true,
+      color: '#6B7280',
+      icon: 'Eye',
+      permissions: [
+        'view_content', 'view_products', 'view_news', 'view_projects'
+      ].map(name => permissionMap.get(name)).filter(Boolean)
+    }
+  ];
+
+  const createdRoles = await RoleModel.insertMany(roles);
+  console.log(`   ✅ [RBAC] Đã khởi tạo ${createdRoles.length} vai trò hệ thống.`);
+
+  const superAdminRole = createdRoles.find((r: any) => r.name === 'super_admin');
 
   const db = mongoose.connection.db;
-  if (db) {
+  if (db && superAdminRole) {
     const users = await db.collection('users').find({}).toArray();
     for (const u of users) {
       const up = new UserPermissionModel({
