@@ -409,6 +409,16 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'seo' | 'readability'>('seo');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [tempKeyword, setTempKeyword] = useState(focusKeyword || '');
+
+  // Sync tempKeyword when focusKeyword prop changes
+  React.useEffect(() => {
+    setTempKeyword(focusKeyword || '');
+  }, [focusKeyword]);
+
+  const handleApplyKeyword = () => {
+    onFocusKeywordChange(tempKeyword.trim());
+  };
 
   const seoChecks = useMemo(
     () => runSeoChecks(title, excerpt, content, image, focusKeyword),
@@ -455,21 +465,55 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
       </div>
 
       {/* Focus keyword */}
-      <div className="p-4 border-b border-gray-100 bg-slate-50">
-        <label className="text-xs font-black text-slate-700 uppercase tracking-wide flex items-center gap-1 mb-2">
+      <div className="p-4 border-b border-gray-100 bg-slate-50 space-y-2">
+        <label className="text-xs font-black text-slate-700 uppercase tracking-wide flex items-center gap-1">
           <Target size={12} className="text-primary" /> Từ khóa Focus
         </label>
-        <input
-          type="text"
-          value={focusKeyword}
-          onChange={e => onFocusKeywordChange(e.target.value)}
-          placeholder="VD: điện mặt trời CTC"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white shadow-sm"
-        />
+        
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={tempKeyword}
+            onChange={e => {
+              setTempKeyword(e.target.value);
+              onFocusKeywordChange(e.target.value);
+            }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleApplyKeyword();
+              }
+            }}
+            placeholder="VD: điện mặt trời CTC"
+            className="flex-1 border border-gray-300 rounded-xl px-3.5 py-2 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white shadow-sm"
+          />
+          <button
+            type="button"
+            onClick={handleApplyKeyword}
+            className="w-10 h-10 bg-primary hover:bg-secondary text-white rounded-xl font-black text-lg shadow-sm transition-all flex items-center justify-center flex-shrink-0"
+            title="Thêm/Áp dụng từ khóa Focus"
+          >
+            +
+          </button>
+        </div>
+
         {focusKeyword && (
-          <p className="text-xs text-slate-600 font-semibold mt-1.5">
-            Phân tích cho từ khóa: <strong className="text-primary font-black">"{focusKeyword}"</strong>
-          </p>
+          <div className="flex items-center gap-2 pt-1">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-100 text-sky-800 text-xs font-extrabold rounded-lg border border-sky-200 shadow-sm">
+              🔑 {focusKeyword}
+              <button
+                type="button"
+                onClick={() => {
+                  setTempKeyword('');
+                  onFocusKeywordChange('');
+                }}
+                className="hover:text-red-500 font-bold ml-1 text-sm"
+                title="Xóa từ khóa Focus"
+              >
+                ×
+              </button>
+            </span>
+          </div>
         )}
       </div>
 
