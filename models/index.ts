@@ -213,8 +213,7 @@ const ProductCategorySchema = new Schema<IProductCategory>({
   translations: createTranslationSchema()
 }, { timestamps: true });
 
-// Category Indexes for fast slug lookup & ordering
-ProductCategorySchema.index({ slug: 1 });
+// Category Indexes for fast ordering
 ProductCategorySchema.index({ isActive: 1, order: 1 });
 
 // News Category
@@ -234,7 +233,6 @@ const NewsCategorySchema = new Schema<INewsCategory>({
   translations: createTranslationSchema()
 }, { timestamps: true });
 
-NewsCategorySchema.index({ slug: 1 });
 NewsCategorySchema.index({ isActive: 1, order: 1 });
 
 // Project Category
@@ -254,7 +252,6 @@ const ProjectCategorySchema = new Schema<IProjectCategory>({
   translations: createTranslationSchema()
 }, { timestamps: true });
 
-ProjectCategorySchema.index({ slug: 1 });
 ProjectCategorySchema.index({ isActive: 1, order: 1 });
 
 // Project Schema
@@ -328,25 +325,25 @@ NewsSchema.index({ viewCount: -1 });
 
 // ==================== NEWS COMMENT MODEL ====================
 export interface INewsComment extends BaseDocument {
-  newsId: mongoose.Types.ObjectId;   // Reference to News
+  newsId: any;                        // Reference to News (ObjectId or String)
   name: string;                       // Tên người bình luận
   email?: string;                     // Email (không hiển thị)
   content: string;                    // Nội dung bình luận
   avatar?: string;                    // Avatar URL (tự tạo từ tên)
   likes?: number;                     // Lượt thích bình luận
   isApproved?: boolean;               // Admin duyệt bình luận
-  replyTo?: mongoose.Types.ObjectId;  // Reply bình luận khác
+  replyTo?: any;                      // Reply bình luận khác
 }
 
 const NewsCommentSchema = new Schema<INewsComment>({
-  newsId: { type: Schema.Types.ObjectId, ref: 'News', required: true },
+  newsId: { type: Schema.Types.Mixed, required: true },
   name: { type: String, required: true },
   email: { type: String },
   content: { type: String, required: true },
   avatar: { type: String },
   likes: { type: Number, default: 0 },
   isApproved: { type: Boolean, default: true }, // auto-approve
-  replyTo: { type: Schema.Types.ObjectId, ref: 'NewsComment' },
+  replyTo: { type: Schema.Types.Mixed },
 }, { timestamps: true });
 
 NewsCommentSchema.index({ newsId: 1, createdAt: -1 });
