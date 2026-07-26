@@ -8,6 +8,7 @@ import {
   Printer, DollarSign, PackageCheck, ListFilter, ShieldCheck, ExternalLink, Download
 } from 'lucide-react';
 import Loading from '../components/Loading';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface OrderItem {
   _id: string;
@@ -253,15 +254,31 @@ const OrdersManagement: React.FC = () => {
     }
   };
 
-  const handleDeleteOrder = async (orderId: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?')) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    order: Order | null;
+  }>({
+    isOpen: false,
+    order: null
+  });
+
+  const handleDeleteOrderClick = (order: Order) => {
+    setDeleteConfirm({
+      isOpen: true,
+      order
+    });
+  };
+
+  const handleConfirmDeleteOrder = async () => {
+    const order = deleteConfirm.order;
+    if (!order) return;
 
     try {
-      const response = await api.orders.delete(orderId);
+      const response = await api.orders.delete(order._id);
       if (response.success) {
         showToast('Xóa đơn hàng thành công!', 'success');
-        setOrders(prev => prev.filter(ord => ord._id !== orderId));
-        if (selectedOrder && selectedOrder._id === orderId) {
+        setOrders(prev => prev.filter(ord => ord._id !== order._id));
+        if (selectedOrder && selectedOrder._id === order._id) {
           setSelectedOrder(null);
         }
         fetchStats();
@@ -271,6 +288,8 @@ const OrdersManagement: React.FC = () => {
     } catch (error) {
       console.error('Error deleting order:', error);
       showToast('Không thể kết nối đến máy chủ.', 'error');
+    } finally {
+      setDeleteConfirm({ isOpen: false, order: null });
     }
   };
 
@@ -646,7 +665,7 @@ const OrdersManagement: React.FC = () => {
                         </button>
 
                         <button
-                          onClick={() => handleDeleteOrder(order._id)}
+                          onClick={() => handleDeleteOrderClick(order)}
                           className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors inline-flex"
                           title="Xóa đơn hàng"
                         >
@@ -1227,6 +1246,18 @@ const OrdersManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Order Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, order: null })}
+        onConfirm={handleConfirmDeleteOrder}
+        title="Xác nhận xóa đơn hàng"
+        itemName={`Đơn hàng #${deleteConfirm.order?._id}`}
+        description={`Bạn có chắc chắn muốn xóa đơn hàng #${deleteConfirm.order?._id} của khách hàng ${deleteConfirm.order?.customerName}?`}
+        warningText="Đơn hàng này sẽ bị xóa khỏi CSDL và không thể khôi phục."
+        confirmText="Đồng ý xóa đơn"
+      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search, FileText, Upload, Save, X } from 'lucide-react';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface Resource {
   _id: string;
@@ -107,12 +108,28 @@ const ResourceManagement: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa tài liệu này?')) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    resource: Resource | null;
+  }>({
+    isOpen: false,
+    resource: null
+  });
+
+  const handleDeleteClick = (resource: Resource) => {
+    setDeleteConfirm({
+      isOpen: true,
+      resource
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const resource = deleteConfirm.resource;
+    if (!resource) return;
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/resources/${id}`, { 
+      const response = await fetch(`/api/resources/${resource._id}`, { 
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -120,11 +137,11 @@ const ResourceManagement: React.FC = () => {
       });
       if (response.ok) {
         fetchResources();
-      } else {
-        alert('Có lỗi xảy ra khi xóa tài liệu');
       }
     } catch (error) {
       console.error('Error deleting resource:', error);
+    } finally {
+      setDeleteConfirm({ isOpen: false, resource: null });
     }
   };
 
@@ -392,7 +409,7 @@ const ResourceManagement: React.FC = () => {
                           <Edit2 size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(resource._id)}
+                          onClick={() => handleDeleteClick(resource)}
                           className="p-1.5 text-red-600 hover:bg-red-50 rounded"
                           title="Xóa"
                         >
@@ -414,6 +431,18 @@ const ResourceManagement: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* Delete Resource Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, resource: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa tài liệu"
+        itemName={deleteConfirm.resource?.title}
+        description={`Bạn có chắc chắn muốn xóa tài liệu "${deleteConfirm.resource?.title}"?`}
+        warningText="Tài liệu này sẽ bị xóa khỏi hệ thống và không thể tải xuống nữa."
+        confirmText="Đồng ý xóa"
+      />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { PermissionGate } from '../contexts/PermissionContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface TeamMember {
   id: string;
@@ -85,16 +86,34 @@ const TeamManagement: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Bạn có chắc muốn xóa thành viên "${name}"?`)) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    member: TeamMember | null;
+  }>({
+    isOpen: false,
+    member: null
+  });
+
+  const handleDeleteClick = (member: TeamMember) => {
+    setDeleteConfirm({
+      isOpen: true,
+      member
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const member = deleteConfirm.member;
+    if (!member) return;
 
     try {
-      await api.team.delete(id);
-      showToast(`Đã xóa ${name}`, 'success');
+      await api.team.delete(member.id);
+      showToast(`Đã xóa thành viên ${member.name} thành công!`, 'success');
       loadMembers();
     } catch (error) {
       console.error('Error deleting member:', error);
       showToast('Lỗi khi xóa', 'error');
+    } finally {
+      setDeleteConfirm({ isOpen: false, member: null });
     }
   };
 
@@ -285,7 +304,7 @@ const TeamManagement: React.FC = () => {
                   <Edit size={16} />
                 </button>
                 <button
-                  onClick={() => handleDelete(member.id, member.name)}
+                  onClick={() => handleDeleteClick(member)}
                   className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
                 >
                   <Trash2 size={16} />
@@ -451,6 +470,20 @@ const TeamManagement: React.FC = () => {
         isOpen={showImagePicker}
         onSelect={handleImageSelect}
         onClose={() => setShowImagePicker(false)}
+      />
+
+      {/* Delete Member Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, member: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa thành viên"
+        itemName={deleteConfirm.member?.name}
+        itemImage={deleteConfirm.member?.image}
+        itemCategory={deleteConfirm.member?.role}
+        description={`Bạn có chắc chắn muốn xóa thành viên "${deleteConfirm.member?.name}" khỏi đội ngũ?`}
+        warningText="Thành viên này sẽ bị xóa khỏi trang Giới thiệu công ty."
+        confirmText="Đồng ý xóa"
       />
     </div>
   );

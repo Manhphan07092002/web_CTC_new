@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Folder, FileImage } from 'lucide-react';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface UploadedFile {
   filename: string;
@@ -77,21 +78,38 @@ const FileManager: React.FC = () => {
     alert(`Đã copy: ${fullUrl}`);
   };
 
-  const handleDelete = async (filename: string) => {
-    if (!confirm('Xóa file này?')) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    file: UploadedFile | null;
+  }>({
+    isOpen: false,
+    file: null
+  });
+
+  const handleDeleteClick = (file: UploadedFile) => {
+    setDeleteConfirm({
+      isOpen: true,
+      file
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const file = deleteConfirm.file;
+    if (!file) return;
 
     try {
       setError(null);
-      const res = await fetch(`${API_BASE}/images/${encodeURIComponent(filename)}`, {
+      const res = await fetch(`${API_BASE}/images/${encodeURIComponent(file.filename)}`, {
         method: 'DELETE',
       });
-      // 204 = deleted OK, 404 = file vốn đã không tồn tại => coi như thành công
       if (!res.ok && res.status !== 204 && res.status !== 404) {
         throw new Error('Delete failed');
       }
       await loadFiles();
     } catch (e) {
       setError('Xóa file thất bại. Vui lòng thử lại.');
+    } finally {
+      setDeleteConfirm({ isOpen: false, file: null });
     }
   };
 
@@ -134,7 +152,7 @@ const FileManager: React.FC = () => {
                   )}
                   <button
                     type="button"
-                    onClick={() => handleDelete(f.filename)}
+                    onClick={() => handleDeleteClick(f)}
                     className="absolute top-1 right-1 bg-white/80 hover:bg-red-500 hover:text-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow"
                     title={f.isDirectory ? "Xóa folder" : "Xóa file"}
                   >
@@ -165,6 +183,19 @@ const FileManager: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Delete File Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, file: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa tệp"
+        itemName={deleteConfirm.file?.filename}
+        itemImage={deleteConfirm.file?.url}
+        description={`Bạn có chắc chắn muốn xóa tệp "${deleteConfirm.file?.filename}"?`}
+        warningText="Tệp tin sẽ bị xóa vĩnh viễn khỏi thư mục uploads."
+        confirmText="Đồng ý xóa"
+      />
     </div>
   );
 };

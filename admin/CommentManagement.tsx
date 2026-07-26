@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface CommentItem {
   _id: string;
@@ -45,8 +46,25 @@ const CommentManagement: React.FC = () => {
     fetchComments();
   }, []);
 
-  const handleDelete = async (commentId: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa bình luận này?')) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    comment: CommentItem | null;
+  }>({
+    isOpen: false,
+    comment: null
+  });
+
+  const handleDeleteClick = (comment: CommentItem) => {
+    setDeleteConfirm({
+      isOpen: true,
+      comment
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const comment = deleteConfirm.comment;
+    if (!comment) return;
+    const commentId = comment._id || comment.id;
 
     try {
       await api.news.deleteComment(commentId);
@@ -55,6 +73,8 @@ const CommentManagement: React.FC = () => {
     } catch (err) {
       console.error('Error deleting comment:', err);
       showToast('Lỗi khi xóa bình luận', 'error');
+    } finally {
+      setDeleteConfirm({ isOpen: false, comment: null });
     }
   };
 
@@ -180,7 +200,7 @@ const CommentManagement: React.FC = () => {
                     </button>
 
                     <button
-                      onClick={() => handleDelete(commentId)}
+                      onClick={() => handleDeleteClick(c)}
                       className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
                       title="Xóa bình luận"
                     >
@@ -244,6 +264,18 @@ const CommentManagement: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* Delete Comment Confirm Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, comment: null })}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa bình luận"
+        itemName={deleteConfirm.comment?.name}
+        description={`Bạn có chắc chắn muốn xóa bình luận của "${deleteConfirm.comment?.name}"?`}
+        warningText="Bình luận này sẽ bị xóa khỏi bài viết và không thể khôi phục."
+        confirmText="Đồng ý xóa"
+      />
     </div>
   );
 };

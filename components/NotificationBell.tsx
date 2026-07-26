@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Check, CheckCheck, Trash2, X } from 'lucide-react';
 import { api } from '../services/api';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 interface Notification {
   id: string;
@@ -81,9 +82,14 @@ const NotificationBell: React.FC = () => {
     }
   };
 
-  const handleDeleteAll = async () => {
-    if (!confirm('Bạn có chắc muốn xóa tất cả thông báo?')) return;
-    
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
+
+  const handleDeleteAllClick = () => {
+    if (notifications.length === 0) return;
+    setConfirmDeleteAll(true);
+  };
+
+  const handleConfirmDeleteAll = async () => {
     try {
       setLoading(true);
       await api.notifications.deleteAll();
@@ -92,6 +98,7 @@ const NotificationBell: React.FC = () => {
       console.error('Error deleting all notifications:', error);
     } finally {
       setLoading(false);
+      setConfirmDeleteAll(false);
     }
   };
 
@@ -173,7 +180,7 @@ const NotificationBell: React.FC = () => {
               )}
               {notifications.length > 0 && (
                 <button
-                  onClick={handleDeleteAll}
+                  onClick={handleDeleteAllClick}
                   disabled={loading}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                   title="Xóa tất cả"
@@ -257,6 +264,18 @@ const NotificationBell: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete All Notifications Confirm Modal */}
+      <DeleteConfirmModal
+        isOpen={confirmDeleteAll}
+        onClose={() => setConfirmDeleteAll(false)}
+        onConfirm={handleConfirmDeleteAll}
+        title="Xóa tất cả thông báo"
+        itemName={`Tất cả ${notifications.length} thông báo`}
+        description={`Bạn có chắc chắn muốn xóa toàn bộ ${notifications.length} thông báo khỏi hệ thống?`}
+        warningText="Tất cả thông báo sẽ bị xóa vĩnh viễn."
+        confirmText="Đồng ý xóa sạch"
+      />
     </div>
   );
 };

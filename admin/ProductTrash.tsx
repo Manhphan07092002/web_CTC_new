@@ -88,21 +88,26 @@ const ProductTrash: React.FC = () => {
     }
   };
 
-  const handleEmptyTrash = async () => {
+  const [emptyTrashConfirm, setEmptyTrashConfirm] = useState(false);
+
+  const handleEmptyTrash = () => {
     if (products.length === 0) {
       showToast('Thùng rác đã trống', 'info');
       return;
     }
+    setEmptyTrashConfirm(true);
+  };
 
-    if (!confirm(`XÓA VĨNH VIỄN TẤT CẢ ${products.length} sản phẩm trong thùng rác?\n\nHành động này KHÔNG THỂ HOÀN TÁC!`)) return;
-
+  const handleConfirmEmptyTrash = async () => {
     try {
-      await Promise.all(products.map(p => api.products.delete(p.id)));
-      showToast('Đã làm trống thùng rác', 'success');
+      await Promise.all(products.map(p => api.products.permanentDelete ? api.products.permanentDelete(p.id) : api.products.delete(p.id)));
+      showToast('Đã làm trống thùng rác thành công!', 'success');
       loadDeletedProducts();
     } catch (error) {
       console.error('Error emptying trash:', error);
       showToast('Lỗi khi làm trống thùng rác', 'error');
+    } finally {
+      setEmptyTrashConfirm(false);
     }
   };
 
@@ -238,6 +243,19 @@ const ProductTrash: React.FC = () => {
         productImage={deleteModal.product?.image}
         productPrice={deleteModal.product?.price}
         productCategory={deleteModal.product?.categoryLabel || deleteModal.product?.category}
+      />
+
+      {/* Empty Trash Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={emptyTrashConfirm}
+        onClose={() => setEmptyTrashConfirm(false)}
+        onConfirm={handleConfirmEmptyTrash}
+        title="Làm trống thùng rác"
+        type="permanent"
+        itemName={`Tất cả ${products.length} sản phẩm`}
+        description={`Bạn có chắc chắn muốn xóa vĩnh viễn toàn bộ ${products.length} sản phẩm trong thùng rác?`}
+        warningText="TẤT CẢ sản phẩm trong thùng rác sẽ bị xóa vĩnh viễn và không thể khôi phục!"
+        confirmText="Xóa sạch thùng rác"
       />
     </div>
   );
