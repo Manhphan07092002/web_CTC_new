@@ -91,7 +91,12 @@ Trả về duy nhất định dạng JSON chuẩn (không bọc trong markdown) 
         const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
         const match = cleanResponse.match(/\{[\s\S]*\}/);
         if (match) {
-          parsed = JSON.parse(match[0]);
+          try {
+            parsed = JSON.parse(match[0]);
+          } catch (jsonErr) {
+            const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+            parsed = JSON.parse(fixedJson);
+          }
         }
       } catch (e) {
         console.warn('JSON parse error from AI response, using text fallback:', e);
@@ -105,16 +110,23 @@ Trả về duy nhất định dạng JSON chuẩn (không bọc trong markdown) 
         }));
         showToast('✨ Đã tự động tạo bài mô tả sản phẩm Rich Text HTML bằng AI Gemini thành công!', 'success');
       } else if (response) {
-        // Fallback: Convert plain text response into HTML paragraphs
-        const formattedHtml = response
+        // Fallback: Convert plain text response into HTML paragraphs and extract short description
+        const cleanText = response.replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
+        const paragraphs = cleanText
           .split('\n\n')
           .map(paragraph => paragraph.trim())
-          .filter(Boolean)
+          .filter(Boolean);
+
+        const formattedHtml = paragraphs
           .map(p => p.startsWith('#') ? `<h3>${p.replace(/^#+\s*/, '')}</h3>` : `<p>${p}</p>`)
           .join('');
 
+        const firstParagraph = paragraphs.find(p => p.length > 10 && !p.startsWith('#')) || paragraphs[0] || '';
+        const extractedShortDesc = firstParagraph.replace(/<[^>]*>/g, '').slice(0, 250);
+
         setFormData(prev => ({
           ...prev,
+          shortDescription: prev.shortDescription || extractedShortDesc,
           description: formattedHtml,
         }));
         showToast('✨ Đã tạo nội dung mô tả bằng AI thành công!', 'success');

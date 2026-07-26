@@ -79,6 +79,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
     },
   });
 
+  // Synchronize external content changes (e.g. from AI generation or API fetch)
+  React.useEffect(() => {
+    if (editor && content !== undefined && content !== editor.getHTML()) {
+      editor.commands.setContent(content || '', { emitUpdate: false });
+    }
+  }, [content, editor]);
+
   const setLink = useCallback(() => {
     if (!editor) return;
     const previousUrl = editor.getAttributes('link').href;
