@@ -26,7 +26,7 @@ interface Product {
   isDeleted?: boolean;
   views?: number;
   likes?: number;
-  createdAt: string;
+  createdAt?: string;
 }
 
 interface Project {
@@ -88,7 +88,7 @@ const ContentManagement: React.FC = () => {
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     product: null as Product | null,
-    type: 'soft' as 'soft' | 'permanent' | 'restore'
+    type: 'soft' as 'soft' | 'permanent' | 'restore' | 'hard'
   });
 
   // Partner Modal States

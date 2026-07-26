@@ -423,7 +423,7 @@ const ProductAIPanel: React.FC<ProductAIPanelProps> = ({
                           </div>
                           <div className="flex items-center justify-between mt-2 pt-1 border-t border-gray-100 dark:border-gray-700">
                             <span className="text-[11px] font-semibold text-primary">
-                              {typeof prod.price === 'number' ? prod.price.toLocaleString('vi-VN') + 'đ' : (prod.price || 'Liên hệ')}
+                              {typeof prod.price === 'number' ? (prod.price as number).toLocaleString('vi-VN') + 'đ' : (prod.price || 'Liên hệ')}
                             </span>
                             {!isCurrent && (
                               <button 
@@ -506,7 +506,7 @@ const ProductAIPanel: React.FC<ProductAIPanelProps> = ({
                             <span>Công suất: <strong>{item.power || 'N/A'}W</strong></span>
                             <span>Hiệu suất: <strong>{item.efficiency || 'N/A'}%</strong></span>
                             <span className="text-primary font-semibold">
-                              {typeof item.price === 'number' ? item.price.toLocaleString('vi-VN') + 'đ' : (item.price || 'Liên hệ')}
+                              {typeof item.price === 'number' ? (item.price as number).toLocaleString('vi-VN') + 'đ' : (item.price || 'Liên hệ')}
                             </span>
                           </div>
                         </div>

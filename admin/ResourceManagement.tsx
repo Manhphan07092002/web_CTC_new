@@ -243,8 +243,8 @@ const ResourceManagement: React.FC = () => {
                 <select
                   value={
                     typeof currentResource.categoryId === 'object' && currentResource.categoryId
-                      ? currentResource.categoryId._id
-                      : (currentResource.categoryId || '')
+                      ? (currentResource.categoryId as any)._id
+                      : String(currentResource.categoryId || '')
                   }
                   onChange={e => setCurrentResource(prev => ({ ...prev, categoryId: e.target.value }))}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"

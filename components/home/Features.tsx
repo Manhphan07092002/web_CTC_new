@@ -90,7 +90,7 @@ export const Features: React.FC = () => {
     }
   };
 
-  const activeTabInfo = tabData[activeTab];
+  const activeTabInfo: any = tabData[activeTab];
 
   return (
     <section className="py-16 sm:py-24 relative overflow-hidden bg-slate-50 dark:bg-[#060d1d] transition-colors duration-300">
