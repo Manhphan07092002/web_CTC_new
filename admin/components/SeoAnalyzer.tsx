@@ -383,7 +383,7 @@ const ScoreCircle: React.FC<{ score: number; label: string }> = ({ score, label 
     <div className="flex flex-col items-center">
       <div className="relative w-20 h-20">
         <svg viewBox="0 0 80 80" className="w-full h-full -rotate-90">
-          <circle cx="40" cy="40" r={r} fill="none" stroke="#e5e7eb" strokeWidth="8" />
+          <circle cx="40" cy="40" r={r} fill="none" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="8" />
           <circle
             cx="40" cy="40" r={r}
             fill="none"
@@ -395,11 +395,11 @@ const ScoreCircle: React.FC<{ score: number; label: string }> = ({ score, label 
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-xl font-black text-gray-800">{score}</span>
+          <span className="text-xl font-black text-white drop-shadow-md">{score}</span>
         </div>
       </div>
-      <span className="text-xs font-bold mt-1" style={{ color }}>{label2}</span>
-      <span className="text-xs text-gray-400">{label}</span>
+      <span className="text-xs font-black mt-1.5" style={{ color }}>{label2}</span>
+      <span className="text-xs font-semibold text-slate-300">{label}</span>
     </div>
   );
 };
@@ -455,8 +455,8 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
       </div>
 
       {/* Focus keyword */}
-      <div className="p-4 border-b border-gray-100 bg-gray-50">
-        <label className="text-xs font-black text-gray-500 uppercase tracking-wide flex items-center gap-1 mb-2">
+      <div className="p-4 border-b border-gray-100 bg-slate-50">
+        <label className="text-xs font-black text-slate-700 uppercase tracking-wide flex items-center gap-1 mb-2">
           <Target size={12} className="text-primary" /> Từ khóa Focus
         </label>
         <input
@@ -464,23 +464,23 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
           value={focusKeyword}
           onChange={e => onFocusKeywordChange(e.target.value)}
           placeholder="VD: điện mặt trời CTC"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white shadow-sm"
         />
         {focusKeyword && (
-          <p className="text-xs text-gray-400 mt-1.5">
-            Phân tích cho: <strong className="text-primary">"{focusKeyword}"</strong>
+          <p className="text-xs text-slate-600 font-semibold mt-1.5">
+            Phân tích cho từ khóa: <strong className="text-primary font-black">"{focusKeyword}"</strong>
           </p>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-100">
+      <div className="flex border-b border-gray-200 bg-white">
         <button
           onClick={() => setActiveTab('seo')}
-          className={`flex-1 py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
+          className={`flex-1 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 transition-colors ${
             activeTab === 'seo'
-              ? 'text-primary border-b-2 border-primary bg-primary/5'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'text-primary border-b-2 border-primary bg-primary/10'
+              : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Search size={13} />
@@ -488,10 +488,10 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
         </button>
         <button
           onClick={() => setActiveTab('readability')}
-          className={`flex-1 py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
+          className={`flex-1 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 transition-colors ${
             activeTab === 'readability'
-              ? 'text-primary border-b-2 border-primary bg-primary/5'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'text-primary border-b-2 border-primary bg-primary/10'
+              : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <BookOpen size={13} />
