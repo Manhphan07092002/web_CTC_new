@@ -542,6 +542,7 @@ const Header: React.FC = () => {
               aria-label="Tìm kiếm"
             >
               <Search size={20} />
+              <span className="sr-only">Tìm kiếm</span>
             </button>
 
             <Link 
@@ -551,6 +552,7 @@ const Header: React.FC = () => {
               aria-label="Giỏ hàng"
             >
               <ShoppingCart size={20} />
+              <span className="sr-only">Giỏ hàng</span>
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md">
                   {totalItems}
@@ -589,6 +591,7 @@ const Header: React.FC = () => {
               aria-label="Tìm kiếm"
             >
               <Search size={24} />
+              <span className="sr-only">Tìm kiếm</span>
             </button>
 
             <Link 
@@ -598,6 +601,7 @@ const Header: React.FC = () => {
               aria-label="Giỏ hàng"
             >
               <ShoppingCart size={24} />
+              <span className="sr-only">Giỏ hàng</span>
               {totalItems > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold shadow-md">
                   {totalItems}

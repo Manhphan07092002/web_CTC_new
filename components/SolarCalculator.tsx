@@ -180,6 +180,7 @@ const SolarCalculator: React.FC = () => {
               onChange={(e) => setMonthlyBill(Number(e.target.value))}
               className="absolute inset-0 w-full opacity-0 cursor-pointer h-2"
               style={{ top: 0 }}
+              aria-label="Tiền điện hàng tháng (VNĐ)"
             />
             <div
               className="absolute -top-1 w-4 h-4 rounded-full bg-white border-2 border-primary shadow-md shadow-primary/30 transition-all duration-200 pointer-events-none"
@@ -212,6 +213,7 @@ const SolarCalculator: React.FC = () => {
               onChange={(e) => setDaytimeUsageRatio(Number(e.target.value) / 100)}
               className="absolute inset-0 w-full opacity-0 cursor-pointer h-2"
               style={{ top: 0 }}
+              aria-label="Tỷ lệ sử dụng ban ngày (%)"
             />
             <div
               className="absolute -top-1 w-4 h-4 rounded-full bg-white border-2 border-amber-400 shadow-md shadow-amber-300/30 transition-all duration-200 pointer-events-none"
