@@ -51,6 +51,8 @@ const Divider = () => <div className="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, placeholder }) => {
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [isHtmlMode, setIsHtmlMode] = useState(false);
+  const [htmlSource, setHtmlSource] = useState(content || '');
 
   const extensions = useMemo(() => [
     StarterKit.configure({
@@ -63,14 +65,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
     Underline,
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
     Highlight.configure({ multicolor: false }),
-    Placeholder.configure({ placeholder: placeholder || 'Nhập nội dung chi tiết... Bạn có thể chèn hình ảnh, đường dẫn liên kết, định dạng văn bản...' }),
+    Placeholder.configure({ placeholder: placeholder || 'Nhập nội dung chi tiết... Bạn có thể chèn hình ảnh, đường dẫn liên kết, dán mã HTML...' }),
   ], [placeholder]);
 
   const editor = useEditor({
     extensions,
     content: content || '',
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      const html = editor.getHTML();
+      onChange(html);
+      setHtmlSource(html);
     },
     editorProps: {
       attributes: {
@@ -79,12 +83,33 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
     },
   });
 
-  // Synchronize external content changes (e.g. from AI generation or API fetch)
+  // Synchronize external content changes
   React.useEffect(() => {
     if (editor && content !== undefined && content !== editor.getHTML()) {
       editor.commands.setContent(content || '', { emitUpdate: false });
+      setHtmlSource(content || '');
     }
   }, [content, editor]);
+
+  const toggleHtmlMode = useCallback(() => {
+    if (!editor) return;
+    if (isHtmlMode) {
+      // Switching from HTML code to Visual mode: Parse HTML tags into TipTap
+      editor.commands.setContent(htmlSource || '', { emitUpdate: true });
+      onChange(htmlSource);
+      setIsHtmlMode(false);
+    } else {
+      // Switching from Visual mode to HTML code view
+      setHtmlSource(editor.getHTML());
+      setIsHtmlMode(true);
+    }
+  }, [editor, isHtmlMode, htmlSource, onChange]);
+
+  const handleHtmlSourceChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setHtmlSource(val);
+    onChange(val);
+  };
 
   const setLink = useCallback(() => {
     if (!editor) return;
@@ -147,125 +172,153 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
   return (
     <div className="border border-gray-300 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary transition-all bg-white dark:bg-gray-800">
       {/* === TOOLBAR === */}
-      <div className="bg-gray-100/80 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-2 flex flex-wrap items-center gap-1">
-        
-        {/* Undo / Redo */}
-        <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Hoàn tác (Ctrl+Z)">
-          <Undo size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="Làm lại (Ctrl+Y)">
-          <Redo size={16} />
-        </ToolbarButton>
-
-        <Divider />
-
-        {/* Headings */}
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive('heading', { level: 1 })} title="Tiêu đề lớn (H1)">
-          <Heading1 size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive('heading', { level: 2 })} title="Tiêu đề vừa (H2)">
-          <Heading2 size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive('heading', { level: 3 })} title="Tiêu đề nhỏ (H3)">
-          <Heading3 size={16} />
-        </ToolbarButton>
-
-        <Divider />
-
-        {/* Text format */}
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Đậm (Ctrl+B)">
-          <Bold size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} title="Nghiêng (Ctrl+I)">
-          <Italic size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive('underline')} title="Gạch chân (Ctrl+U)">
-          <UnderlineIcon size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} title="Gạch ngang">
-          <Strikethrough size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHighlight().run()} active={editor.isActive('highlight')} title="Đánh dấu highlight">
-          <Highlighter size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive('code')} title="Mã Code inline">
-          <Code size={16} />
-        </ToolbarButton>
-
-        <Divider />
-
-        {/* Alignment */}
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} active={editor.isActive({ textAlign: 'left' })} title="Căn trái">
-          <AlignLeft size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} active={editor.isActive({ textAlign: 'center' })} title="Căn giữa">
-          <AlignCenter size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} active={editor.isActive({ textAlign: 'right' })} title="Căn phải">
-          <AlignRight size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('justify').run()} active={editor.isActive({ textAlign: 'justify' })} title="Căn đều 2 bên">
-          <AlignJustify size={16} />
-        </ToolbarButton>
-
-        <Divider />
-
-        {/* Lists */}
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive('bulletList')} title="Danh sách đầu chấm">
-          <List size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive('orderedList')} title="Danh sách số">
-          <ListOrdered size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} title="Đoạn trích dẫn">
-          <Quote size={16} />
-        </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Đường kẻ ngang">
-          <Minus size={16} />
-        </ToolbarButton>
-
-        <Divider />
-
-        {/* Link & Image & Table Buttons */}
-        <ToolbarButton onClick={setLink} active={editor.isActive('link')} title="Chèn / Sửa đường dẫn liên kết (Link)">
-          <Link2 size={16} />
-        </ToolbarButton>
-        {editor.isActive('link') && (
-          <ToolbarButton onClick={unsetLink} title="Xóa liên kết">
-            <Unlink size={16} className="text-red-500" />
+      <div className="bg-gray-100/80 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-2 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-1">
+          {/* Undo / Redo */}
+          <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Hoàn tác (Ctrl+Z)">
+            <Undo size={16} />
           </ToolbarButton>
-        )}
+          <ToolbarButton onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="Làm lại (Ctrl+Y)">
+            <Redo size={16} />
+          </ToolbarButton>
 
-        {/* Image insertion options */}
-        <div className="flex items-center gap-0.5 bg-white dark:bg-gray-800 rounded-lg p-0.5 border border-gray-200 dark:border-gray-700">
-          <button
-            type="button"
-            onClick={() => setShowImagePicker(true)}
-            className="px-2 py-1 text-xs font-bold text-primary hover:bg-primary/10 rounded flex items-center gap-1 transition-colors"
-            title="Chọn ảnh từ Thư viện tệp / Upload máy tính"
-          >
-            <FolderOpen size={15} />
-            <span>Thư viện ảnh</span>
-          </button>
-          <button
-            type="button"
-            onClick={addImageFromUrl}
-            className="p-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded"
-            title="Chèn ảnh từ URL đường dẫn"
-          >
-            <ImageIcon size={15} />
-          </button>
+          <Divider />
+
+          {/* Headings */}
+          <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive('heading', { level: 1 })} title="Tiêu đề lớn (H1)">
+            <Heading1 size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive('heading', { level: 2 })} title="Tiêu đề vừa (H2)">
+            <Heading2 size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive('heading', { level: 3 })} title="Tiêu đề nhỏ (H3)">
+            <Heading3 size={16} />
+          </ToolbarButton>
+
+          <Divider />
+
+          {/* Text format */}
+          <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Đậm (Ctrl+B)">
+            <Bold size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} title="Nghiêng (Ctrl+I)">
+            <Italic size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive('underline')} title="Gạch chân (Ctrl+U)">
+            <UnderlineIcon size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} title="Gạch ngang">
+            <Strikethrough size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleHighlight().run()} active={editor.isActive('highlight')} title="Đánh dấu highlight">
+            <Highlighter size={16} />
+          </ToolbarButton>
+
+          <Divider />
+
+          {/* Alignment */}
+          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} active={editor.isActive({ textAlign: 'left' })} title="Căn trái">
+            <AlignLeft size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} active={editor.isActive({ textAlign: 'center' })} title="Căn giữa">
+            <AlignCenter size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} active={editor.isActive({ textAlign: 'right' })} title="Căn phải">
+            <AlignRight size={16} />
+          </ToolbarButton>
+
+          <Divider />
+
+          {/* Lists */}
+          <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive('bulletList')} title="Danh sách đầu chấm">
+            <List size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive('orderedList')} title="Danh sách số">
+            <ListOrdered size={16} />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} title="Đoạn trích dẫn">
+            <Quote size={16} />
+          </ToolbarButton>
+
+          <Divider />
+
+          {/* Link & Image & Table Buttons */}
+          <ToolbarButton onClick={setLink} active={editor.isActive('link')} title="Chèn / Sửa đường dẫn liên kết (Link)">
+            <Link2 size={16} />
+          </ToolbarButton>
+          {editor.isActive('link') && (
+            <ToolbarButton onClick={unsetLink} title="Xóa liên kết">
+              <Unlink size={16} className="text-red-500" />
+            </ToolbarButton>
+          )}
+
+          <div className="flex items-center gap-0.5 bg-white dark:bg-gray-800 rounded-lg p-0.5 border border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              onClick={() => setShowImagePicker(true)}
+              className="px-2 py-1 text-xs font-bold text-primary hover:bg-primary/10 rounded flex items-center gap-1 transition-colors"
+              title="Chọn ảnh từ Thư viện tệp / Upload máy tính"
+            >
+              <FolderOpen size={15} />
+              <span>Thư viện ảnh</span>
+            </button>
+            <button
+              type="button"
+              onClick={addImageFromUrl}
+              className="p-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded"
+              title="Chèn ảnh từ URL đường dẫn"
+            >
+              <ImageIcon size={15} />
+            </button>
+          </div>
+
+          <ToolbarButton onClick={insertTable} title="Chèn bảng thông số">
+            <Table2 size={16} />
+          </ToolbarButton>
         </div>
 
-        <ToolbarButton onClick={insertTable} title="Chèn bảng thông số">
-          <Table2 size={16} />
-        </ToolbarButton>
+        {/* Nút bật tắt chế độ Mã nguồn HTML (<>) */}
+        <button
+          type="button"
+          onClick={toggleHtmlMode}
+          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm border ${
+            isHtmlMode 
+              ? 'bg-amber-500 text-white border-amber-600 ring-2 ring-amber-300' 
+              : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300 dark:bg-gray-700 dark:text-gray-200'
+          }`}
+          title="Bật/tắt chế độ Dán và Chỉnh sửa Mã nguồn HTML"
+        >
+          <Code size={15} />
+          <span>{isHtmlMode ? 'Chuyển sang Xem Trực Quan' : 'Chỉnh sửa Mã HTML (<>)'}</span>
+        </button>
       </div>
 
-      {/* === EDITOR AREA === */}
-      <div className="bg-white dark:bg-gray-800">
-        <EditorContent editor={editor} />
-      </div>
+      {/* === EDITOR AREA (Visual OR HTML Code Area) === */}
+      {isHtmlMode ? (
+        <div className="p-4 bg-slate-900 text-slate-100">
+          <div className="flex items-center justify-between text-xs text-amber-400 font-bold mb-2 pb-2 border-b border-slate-800">
+            <span>💻 CHẾ ĐỘ NHẬP MÃ NGUỒN HTML (Bạn có thể dán trực tiếp mã &lt;p&gt;, &lt;h2&gt;, &lt;img&gt; vào đây):</span>
+            <button
+              type="button"
+              onClick={toggleHtmlMode}
+              className="px-2.5 py-1 bg-amber-500 text-slate-950 font-black rounded-lg hover:bg-amber-400 text-xs"
+            >
+              ✓ Xem hiển thị trực quan
+            </button>
+          </div>
+          <textarea
+            value={htmlSource}
+            onChange={handleHtmlSourceChange}
+            rows={16}
+            className="w-full font-mono text-sm bg-slate-950 text-emerald-400 p-4 rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/50 leading-relaxed resize-y"
+            placeholder="Dán mã HTML vào đây... ví dụ: <p>Nội dung...</p> <h2>Tiêu đề...</h2>"
+          />
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-gray-800">
+          <EditorContent editor={editor} />
+        </div>
+      )}
 
       {/* Footer stats */}
       <div className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-medium">
@@ -274,7 +327,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
           &nbsp;·&nbsp;
           ~{Math.max(1, Math.ceil(editor.getText().length / 1200))} phút đọc
         </span>
-        <span className="hidden sm:inline text-gray-400">Dùng Ctrl+B = Đậm · Ctrl+I = Nghiêng · Chèn ảnh từ Thư viện hoặc URL</span>
+        <span className="hidden sm:inline text-gray-400">Dùng Ctrl+B = Đậm · Bấm nút "Chỉnh sửa Mã HTML (&lt;&gt;)" ở góc trên bên phải để dán mã HTML trực tiếp</span>
       </div>
 
       {/* Image Picker Modal */}
