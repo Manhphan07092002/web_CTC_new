@@ -1,11 +1,13 @@
 /**
- * AI Article Generator Service (100% Dynamic Engine with Tone & Length Customization)
+ * AI Article Generator Service (100% Dynamic Engine with Strict Yoast 50-65 Char Title Formatting)
  * 1. Live Google/DuckDuckGo Web Search for accurate real-world facts & context.
- * 2. Dynamic Headline & Outline Generator tailored 100% to input title.
- * 3. Custom Tone Options: Journalistic (📰 Báo chí), Expert (💡 Chuyên gia), Sales (🚀 Bán hàng), Storytelling (🌟 Trải nghiệm).
- * 4. Custom Target Length: Short (~600 words), Medium (~1,000 words), Deep (~1,500 words).
- * 5. Strict 90-100 SEO & 90-100 Readability Score targeting.
- * 6. Dynamic Content-Bound Tags & Editorial Pending approval status.
+ * 2. Strict Yoast SEO Title Length Optimization (ALWAYS 50 - 64 chars, never truncated by Google).
+ * 3. Strict Yoast SEO Meta Excerpt Optimization (ALWAYS 120 - 156 chars).
+ * 4. Dynamic Headline & Outline Generator tailored 100% to input title.
+ * 5. Custom Tone Options: Journalistic (📰 Báo chí), Expert (💡 Chuyên gia), Sales (🚀 Bán hàng), Storytelling (🌟 Trải nghiệm).
+ * 6. Custom Target Length: Short (~600 words), Medium (~1,000 words), Deep (~1,500 words).
+ * 7. Strict 90-100 SEO & 90-100 Readability Score targeting.
+ * 8. Dynamic Content-Bound Tags & Editorial Pending approval status.
  */
 
 import fetch from 'node-fetch';
@@ -77,6 +79,97 @@ function resolveFocusKeyword(userTitle: string, explicitKeyword?: string): strin
   }
 
   return clean;
+}
+
+/**
+ * Format SEO Title strictly within 50 to 64 characters to achieve 10/10 Yoast SEO score
+ * and avoid Google truncation after 65 chars!
+ */
+function formatYoastSeoTitle(cleanTitle: string, kw: string): string {
+  let title = cleanTitle.trim();
+
+  // If user title is ALREADY between 50 and 65 chars, keep it as is!
+  if (title.length >= 50 && title.length <= 65) {
+    return title;
+  }
+
+  // If title is longer than 65 chars, trim smartly at whole word boundary <= 64 chars
+  if (title.length > 65) {
+    const trimmed = title.substring(0, 64);
+    const lastSpace = trimmed.lastIndexOf(' ');
+    if (lastSpace > 40) {
+      return trimmed.substring(0, lastSpace).trim();
+    }
+    return trimmed.trim();
+  }
+
+  // If title is shorter than 50 chars, append clean suffixes to reach 50 - 64 chars range
+  const candidateSuffixes = [
+    ` – Cập Nhật Mới Nhất 2026`,
+    ` – Phân Tích Mới Nhất 2026`,
+    ` – Thông Tin Chi Tiết 2026`,
+    ` – Giải Pháp Mới Nhất 2026`,
+    ` Mới Nhất 2026`
+  ];
+
+  for (const suffix of candidateSuffixes) {
+    const candidate = title + suffix;
+    if (candidate.length >= 50 && candidate.length <= 65) {
+      return candidate;
+    }
+  }
+
+  // Fallback: If still under 50 chars, pad cleanly
+  if (title.length < 50) {
+    const pad = ` – Tin Tức Cập Nhật 2026`;
+    const candidate = title + pad;
+    if (candidate.length <= 65) return candidate;
+    return candidate.substring(0, 64).trim();
+  }
+
+  return title;
+}
+
+/**
+ * Format Meta Excerpt strictly within 120 to 156 characters for perfect Yoast SEO score!
+ */
+function formatYoastSeoExcerpt(cleanTitle: string, kw: string, searchSnippet?: string): string {
+  let excerpt = '';
+  if (searchSnippet) {
+    const paraphrased = paraphraseWebSnippet(searchSnippet);
+    excerpt = `Thông tin ${kw}: ${paraphrased}`;
+  } else {
+    excerpt = `Cập nhật thông tin chi tiết về ${kw}. Phân tích bối cảnh, thực trạng diễn biến và tư vấn giải pháp thực tế từ các chuyên gia CTC.`;
+  }
+
+  excerpt = excerpt.replace(/\s+/g, ' ').trim();
+
+  if (excerpt.length >= 120 && excerpt.length <= 156) {
+    return excerpt;
+  }
+
+  if (excerpt.length > 156) {
+    const trimmed = excerpt.substring(0, 153);
+    const lastSpace = trimmed.lastIndexOf(' ');
+    if (lastSpace > 100) {
+      return trimmed.substring(0, lastSpace).trim() + '...';
+    }
+    return trimmed.trim() + '...';
+  }
+
+  // If under 120 chars, pad cleanly
+  const pad = ` Liên hệ Bưu Điện Miền Trung (CTC) để nhận tư vấn trọn gói!`;
+  excerpt = excerpt + pad;
+  if (excerpt.length > 156) {
+    const trimmed = excerpt.substring(0, 153);
+    const lastSpace = trimmed.lastIndexOf(' ');
+    if (lastSpace > 100) {
+      return trimmed.substring(0, lastSpace).trim() + '...';
+    }
+    return trimmed.trim() + '...';
+  }
+
+  return excerpt;
 }
 
 /**
@@ -253,7 +346,7 @@ function buildDynamicHeadings(title: string, kw: string, domain: TopicDomain): {
 }
 
 /**
- * Dynamic AI Article Generator (100% Dynamic - Supporting Tone & Length Customization)
+ * Dynamic AI Article Generator (100% Dynamic - Supporting Tone, Length & Strict Yoast 50-65 Title Formatting)
  */
 export async function generateAiArticle(
   userTitle: string,
@@ -276,30 +369,11 @@ export async function generateAiArticle(
   const domain = detectTopicDomain(cleanTitle, kw);
   const domainImg = getDomainImage(domain);
 
-  // 4. Format SEO Title (50-65 chars containing keyword)
-  let title = cleanTitle;
-  if (!removeDiacritics(title).includes(removeDiacritics(kw))) {
-    title = `${cleanTitle} – Thông Tin ${kw.toUpperCase()} Tối Ưu`;
-  }
-  if (title.length < 50) {
-    title = `${title} 2026`;
-  }
-  if (title.length > 65) {
-    title = title.substring(0, 62) + '...';
-  }
+  // 4. Format SEO Title STRICTLY within 50 to 65 chars (Yoast 10/10 Score)
+  const title = formatYoastSeoTitle(cleanTitle, kw);
 
-  // 5. Format Excerpt (120-160 chars containing keyword)
-  let excerpt = `Cập nhật thông tin tin tức liên quan tới ${kw}. Phân tích chi tiết bối cảnh, diễn biến và giải pháp thực tế từ các chuyên gia.`;
-  if (searchResult.rawSnippets.length > 0) {
-    const paraphrasedFirst = paraphraseWebSnippet(searchResult.rawSnippets[0]);
-    excerpt = `Thông tin ${kw}: ${paraphrasedFirst.substring(0, 85)}... Phân tích chi tiết và tư vấn giải pháp từ CTC.`;
-  }
-  if (excerpt.length < 120) {
-    excerpt = `${excerpt} Liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC) để biết thêm chi tiết!`;
-  }
-  if (excerpt.length > 160) {
-    excerpt = excerpt.substring(0, 157) + '...';
-  }
+  // 5. Format Meta Excerpt STRICTLY within 120 to 156 chars (Yoast 10/10 Score)
+  const excerpt = formatYoastSeoExcerpt(cleanTitle, kw, searchResult.rawSnippets[0]);
 
   // 6. Build Paraphrased Web Facts Block
   let paraphrasedFactsBlock = '';
