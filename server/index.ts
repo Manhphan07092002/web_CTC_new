@@ -66,6 +66,7 @@ import resourcesRouter from './routes/resources.js';
 import documentCategoriesRouter from './routes/document-categories.js';
 import ordersRouter from './routes/orders';
 import searchRouter from './routes/search';
+import aiWriterRouter from './routes/aiWriter';
 import { startTranslationScheduler } from './services/translationScheduler.js';
 
 // Load envs
@@ -266,6 +267,7 @@ app.use('/api/resources', resourcesRouter);
 app.use('/api/document-categories', documentCategoriesRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/ai', aiWriterRouter);
 
 // SEO Routes (sitemap.xml, robots.txt)
 app.use('/', seoRouter);

@@ -238,6 +238,14 @@ export const api = {
     }),
   },
 
+  // AI Article Writer Assistant
+  ai: {
+    generateArticle: (data: { title: string; focusKeyword?: string }) => fetchAPI<{ success: boolean; data: any }>('/ai/generate-article', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+  },
+
   // Categories (Legacy)
   categories: {
     getAll: () => fetchAPI<any[]>('/categories'),

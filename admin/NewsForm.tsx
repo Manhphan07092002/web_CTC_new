@@ -13,6 +13,7 @@ import { useToast } from '../contexts/ToastContext';
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 import { getNewsUrl } from '../utils/news-url-helper';
 import SeoAnalyzer from './components/SeoAnalyzer';
+import AiWriterModal from './components/AiWriterModal';
 
 interface NewsCategory {
   id: string;
@@ -34,6 +35,7 @@ const NewsForm: React.FC = () => {
   const [preview, setPreview] = useState(false);
   const [activeTab, setActiveTab] = useState<'write' | 'seo'>('write');
   const [indexing, setIndexing] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
 
   const [focusKeyword, setFocusKeyword] = useState('');
 
@@ -122,6 +124,24 @@ const NewsForm: React.FC = () => {
     setFormData(prev => ({ ...prev, focusKeyword: kw }));
   };
 
+  const handleApplyAiArticle = (generated: {
+    title: string;
+    excerpt: string;
+    content: string;
+    focusKeyword: string;
+    tags: string[];
+  }) => {
+    setFocusKeyword(generated.focusKeyword);
+    setFormData(prev => ({
+      ...prev,
+      title: generated.title,
+      excerpt: generated.excerpt,
+      content: generated.content,
+      focusKeyword: generated.focusKeyword,
+      tags: Array.from(new Set([...prev.tags, ...(generated.tags || [])]))
+    }));
+  };
+
   const addTag = () => {
     const tag = tagInput.trim();
     if (tag && !formData.tags.includes(tag)) {
@@ -202,6 +222,17 @@ const NewsForm: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* AI Writer button */}
+          <button
+            type="button"
+            onClick={() => setShowAiModal(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 via-primary to-secondary text-white rounded-xl text-sm font-black transition-all shadow-sm hover:shadow-md hover:scale-105 cursor-pointer"
+            title="Mở Trợ lý AI tự động tìm kiếm Google & viết bài chuẩn SEO Yoast 100/100"
+          >
+            <Sparkles size={16} className="text-amber-200 animate-pulse" />
+            <span>✨ AI Viết Bài</span>
+          </button>
+
           {/* Indexing button */}
           {isEdit && id && (
             <button
@@ -540,6 +571,15 @@ const NewsForm: React.FC = () => {
         isOpen={showImagePicker}
         onSelect={handleImageSelect}
         onClose={() => setShowImagePicker(false)}
+      />
+
+      {/* AI Writer Assistant Modal */}
+      <AiWriterModal
+        isOpen={showAiModal}
+        onClose={() => setShowAiModal(false)}
+        onApply={handleApplyAiArticle}
+        initialTitle={formData.title}
+        initialFocusKeyword={focusKeyword}
       />
     </div>
   );
