@@ -24,7 +24,7 @@ export const getItemSeoUrl = (
   const shortId = idStr.length >= 8 ? idStr.slice(-8) : (idStr || '1');
   
   const basePath = type === 'news' ? 'news' : `${type}s`;
-  return `/${basePath}/${titleSlug}-${shortId}.html`;
+  return `/${basePath}/${titleSlug}-${shortId}`;
 };
 
 // Aliases for convenient backward compatibility

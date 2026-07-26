@@ -119,7 +119,7 @@ router.get('/sitemap.xml', async (req, res) => {
         const slugStr = (item as any).slug || createSlug((item as any).title);
         
         links.push({
-          url: `/news/${slugStr}-${shortHash}.html`,
+          url: `/news/${slugStr}-${shortHash}`,
           changefreq: 'weekly',
           priority: 0.7,
           lastmod: (item as any).updatedAt ? new Date((item as any).updatedAt).toISOString() : new Date().toISOString()
@@ -181,7 +181,7 @@ const handleRss = async (req: express.Request, res: express.Response) => {
       const fullId = (item._id || item.id || '').toString();
       const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
       const slugStr = (item as any).slug || createSlug((item as any).title);
-      const link = `${SITE_URL}/news/${slugStr}-${shortHash}.html`;
+      const link = `${SITE_URL}/news/${slugStr}-${shortHash}`;
       const title = (item.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const description = (item.excerpt || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const author = item.author || 'CTC News';
