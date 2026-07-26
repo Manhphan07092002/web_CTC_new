@@ -11,6 +11,7 @@ export interface AiGeneratedArticle {
   content: string;
   focusKeyword: string;
   tags: string[];
+  status: 'pending';
   sources?: string[];
 }
 
@@ -64,7 +65,7 @@ function removeDiacritics(str: string): string {
 }
 
 /**
- * Generate a complete, Yoast 100/100 SEO-optimized article
+ * Generate a complete, Yoast 100/100 SEO & High Readability (85-100) article
  */
 export async function generateAiArticle(
   userTitle: string,
@@ -93,7 +94,7 @@ export async function generateAiArticle(
   // 3. Format SEO Title (50-65 chars containing keyword)
   let title = cleanTitle;
   if (!removeDiacritics(title).includes(removeDiacritics(kw))) {
-    title = `${cleanTitle} – Giải Pháp ${kw.toUpperCase()} Tối Ưu Chi Phí`;
+    title = `${cleanTitle} – Giải Pháp ${kw.toUpperCase()} Tối Ưu`;
   }
   if (title.length < 50) {
     title = `${title} Mới Nhất 2026`;
@@ -103,10 +104,10 @@ export async function generateAiArticle(
   }
 
   // 4. Format Excerpt (120-160 chars containing keyword)
-  let excerpt = `Tìm hiểu giải pháp ${kw} giúp tiết kiệm chi phí năng lượng hiệu quả. Mô hình hiện đại mang lại lợi ích tối ưu cho gia đình và doanh nghiệp.`;
+  let excerpt = `Khám phá giải pháp ${kw} giúp tiết kiệm chi phí năng lượng hiệu quả. Mô hình hiện đại mang lại lợi ích tối ưu cho gia đình và doanh nghiệp.`;
   if (searchResults && searchResults.length > 40) {
     const firstSnippet = searchResults.split('\n\n')[0];
-    excerpt = `Khám phá ${kw}: ${firstSnippet.substring(0, 100)}... Giải pháp năng lượng sạch bền vững từ CTC.`;
+    excerpt = `Khám phá ${kw}: ${firstSnippet.substring(0, 90)}... Giải pháp năng lượng sạch bền vững từ CTC.`;
   }
   if (excerpt.length < 120) {
     excerpt = `${excerpt} Liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC) để tư vấn ngay!`;
@@ -115,57 +116,57 @@ export async function generateAiArticle(
     excerpt = excerpt.substring(0, 157) + '...';
   }
 
-  // 5. Generate Rich HTML Content (>900 words with H2/H3, bullet points, CTA)
+  // 5. Generate Rich HTML Content (>900 words with H2/H3, bullet points, transition words & short sentences)
   const contextBlock = searchResults 
     ? `<blockquote class="my-4 p-4 border-l-4 border-primary bg-primary/5 rounded-r-xl italic text-gray-700">
-        <strong>Thông tin cập nhật từ thị trường:</strong> ${searchResults.replace(/\n+/g, ' ')}
+        <strong>Thông tin thực tế từ thị trường:</strong> ${searchResults.replace(/\n+/g, ' ')}
        </blockquote>`
     : '';
 
   const content = `
-<p><strong>NĂNG LƯỢNG SẠCH 2026</strong> — Trong bối cảnh giá điện sinh hoạt và sản xuất biến động, việc đầu tư lắp đặt hệ thống <strong>${kw}</strong> đang trở thành xu hướng tất yếu giúp hàng ngàn gia đình và doanh nghiệp cắt giảm tới 80% chi phí hóa đơn điện hàng tháng.</p>
+<p><strong>NĂNG LƯỢNG SẠCH 2026</strong> — Trong bối cảnh giá điện sinh hoạt biến động, việc lắp đặt <strong>${kw}</strong> đang trở thành giải pháp tối ưu. Mô hình này giúp hàng ngàn gia đình cắt giảm tới 80% chi phí hóa đơn điện hàng tháng.</p>
 
 ${contextBlock}
 
-<p>Với sự phát triển của công nghệ năng lượng tái tạo, việc ứng dụng hệ thống <strong>${kw}</strong> không chỉ giúp bảo vệ môi trường mà còn mang lại nguồn lợi kinh tế dài lâu. Dưới đây là phân tích chi tiết về mô hình và giải pháp triển khai hiệu quả nhất hiện nay.</p>
+<p>Bên cạnh đó, việc sử dụng <strong>${kw}</strong> không chỉ giúp tiết kiệm chi phí mà còn bảo vệ môi trường bền vững. Do đó, xu hướng chuyển đổi sang năng lượng tái tạo đang phát triển rất mạnh mẽ tại Việt Nam.</p>
 
 <h2>1. Tổng quan thị trường và nhu cầu lắp đặt ${kw}</h2>
 
-<p>Tây Ban Nha và các quốc gia châu Âu cùng nhiều vùng tại Việt Nam đang ghi nhận tốc độ bùng nổ của các dự án năng lượng mặt trời. Nhờ lợi thế từ hàng nghìn giờ nắng mỗi năm, việc khai thác điện từ hệ thống <strong>${kw}</strong> giúp chủ đầu tư tự chủ nguồn điện và bán lại phần điện thừa vào lưới điện quốc gia.</p>
+<p>Hiện nay, nhu cầu khai thác điện mặt trời tại các đô thị tăng cao. Nhờ lợi thế từ nguồn nắng dạt dào, hệ thống <strong>${kw}</strong> cho phép người dùng tự chủ nguồn điện hoàn toàn. Đồng thời, lượng điện thừa có thể phát ngược lên lưới điện quốc gia.</p>
 
-<p>Tuy nhiên, một rào cản lớn với nhiều hộ gia đình sống tại chung cư hoặc nhà thuê là không sở hữu mái nhà riêng. Để giải quyết thách thức này, mô hình hợp tác xã năng lượng và dịch vụ cho thuê mái nhà đã ra đời, mang lại cơ hội tiếp cận năng lượng sạch giá rẻ cho mọi người dân.</p>
+<p>Tuy nhiên, nhiều hộ gia đình sống tại chung cư lại không sở hữu mái nhà riêng. Vì vậy, mô hình hợp tác xã cho thuê mái nhà đã ra đời. Giải pháp này giúp người dân dễ dàng tiếp cận nguồn năng lượng sạch với chi phí rất hợp lý.</p>
 
 <h2>2. Lợi ích vượt trội của giải pháp ${kw}</h2>
 
-<p>Triển khai hệ thống <strong>${kw}</strong> mang lại nhiều giá trị thiết thực cả về mặt tài chính lẫn môi trường:</p>
+<p>Ngoài ra, việc đầu tư lắp đặt hệ thống <strong>${kw}</strong> mang lại nhiều giá trị kinh tế lâu dài:</p>
 
 <ul>
-  <li><strong>Tiết kiệm đến 80% tiền điện:</strong> Tự sản xuất và tiêu thụ điện mặt trời tại chỗ giúp giảm phụ thuộc tối đa vào điện lưới quốc gia.</li>
-  <li><strong>Hoàn vốn nhanh chóng:</strong> Thời gian hoàn vốn đầu tư ban đầu trung bình chỉ từ 3 đến 5 năm, trong khi tuổi thọ hệ thống lên đến 25-30 năm.</li>
-  <li><strong>Bảo vệ môi trường:</strong> Giảm lượng khí thải CO2, đóng góp tích cực vào mục tiêu chuyển dịch năng lượng xanh toàn cầu.</li>
-  <li><strong>Vận hành thông minh:</strong> Trang bị hệ thống theo dõi sản lượng và lưu trữ điện năng trực tiếp qua ứng dụng di động.</li>
+  <li><strong>Tiết kiệm đến 80% tiền điện:</strong> Tự cung cấp nguồn điện sạch tại chỗ giúp giảm tối đa hóa đơn điện hàng tháng.</li>
+  <li><strong>Thời gian hoàn vốn nhanh:</strong> Hoàn vốn đầu tư chỉ từ 3 đến 5 năm với tuổi thọ thiết bị trên 25 năm.</li>
+  <li><strong>Bảo vệ môi trường:</strong> Giảm phát thải khí nhà kính và đóng góp cho mục tiêu năng lượng xanh.</li>
+  <li><strong>Vận hành thông minh:</strong> Dễ dàng giám sát sản lượng điện phát ra qua ứng dụng trên điện thoại.</li>
 </ul>
 
 <h3>2.1. Công nghệ tấm pin mặt trời thế hệ mới</h3>
-<p>Các thế hệ tấm <strong>${kw}</strong> hiện đại sở hữu hiệu suất chuyển đổi điện năng đạt trên 22.5%, hoạt động bền bỉ dưới mọi điều kiện thời tiết khắc nghiệt. Việc tích hợp bộ biến tần (Inverter) thông minh giúp tối ưu hóa công suất phát điện hàng ngày.</p>
+<p>Đặc biệt, các thế hệ tấm <strong>${kw}</strong> hiện nay sở hữu hiệu suất chuyển đổi điện năng lên tới 22.5%. Thiết bị hoạt động rất bền bỉ dưới mọi điều kiện thời tiết.</p>
 
-<h3>2.2. Mô hình hợp tác xã và cho thuê mái nhà linh hoạt</h3>
-<p>Tại các khu đô thị lớn, mô hình hợp tác xã lắp đặt <strong>${kw}</strong> tập trung trên mái nhà chung cộng đồng hoặc nhà thờ giúp hàng trăm hộ dân không có mái nhà riêng vẫn được hưởng nguồn điện giá rẻ với chi phí đầu tư ban đầu siêu thấp.</p>
+<h3>2.2. Mô hình hợp tác xã chia sẻ năng lượng linh hoạt</h3>
+<p>Hơn nữa, mô hình lắp đặt <strong>${kw}</strong> trên các mái nhà công cộng giúp cộng đồng dân cư cùng chia sẻ lợi ích. Người dân không cần chi trả quá nhiều tiền vẫn có điện sạch sử dụng.</p>
 
 <h2>3. Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC) – Đơn vị thi công ${kw} uy tín</h2>
 
-<p>Tự hào là đơn vị hàng đầu trong lĩnh vực tư vấn, thiết kế và thi công trọn gói các hệ thống điện mặt trời áp mái, <strong>Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</strong> cam kết mang đến giải pháp <strong>${kw}</strong> chất lượng cao, đạt chuẩn quốc tế.</p>
+<p>Nói chung, việc lựa chọn đơn vị thi công uy tín là yếu tố quyết định chất lượng công trình. <strong>Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</strong> tự hào là đối tác cậy tin hàng đầu hiện nay.</p>
 
-<p>Với đội ngũ kỹ sư giàu kinh nghiệm, <strong>CTC</strong> cung cấp đầy đủ các dịch vụ từ khảo sát địa hình, thiết kế kỹ thuật, lắp đặt thiết bị đến bảo trì bảo dưỡng định kỳ 24/7.</p>
+<p>Đội ngũ kỹ sư tại <strong>CTC</strong> luôn tư vấn giải pháp <strong>${kw}</strong> thiết thực nhất. Chúng tôi hỗ trợ trọn gói từ khảo sát, thiết kế đến bảo hành dài hạn.</p>
 
 <h2>4. Liên hệ tư vấn lắp đặt ${kw} trọn gói</h2>
 
-<p>Quý khách hàng, hộ gia đình và doanh nghiệp có nhu cầu tư vấn giải pháp lắp đặt <strong>${kw}</strong> tiết kiệm 80% chi phí điện năng xin vui lòng liên hệ trực tiếp với chúng tôi:</p>
+<p>Tóm lại, hãy liên hệ ngay với <strong>CTC</strong> để nhận báo giá <strong>${kw}</strong> ưu đãi nhất:</p>
 
 <ul>
   <li><strong>Tên đơn vị:</strong> Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</li>
   <li><strong>Hotline tư vấn 24/7:</strong> <a href="tel:0915059666" class="text-primary font-bold">0915 059 666</a></li>
-  <li><strong>Trang liên hệ chi tiết:</strong> Tìm hiểu thêm và gửi yêu cầu báo giá tại <a href="/contact" class="text-primary font-bold underline">Trang Liên Hệ CTC</a>.</li>
+  <li><strong>Trang liên hệ chi tiết:</strong> Đăng ký tư vấn trực tiếp tại <a href="/contact" class="text-primary font-bold underline">Trang Liên Hệ CTC</a>.</li>
 </ul>
 `.trim();
 
@@ -184,6 +185,7 @@ ${contextBlock}
     content,
     focusKeyword: kw,
     tags,
+    status: 'pending', // Mặc định ở chế độ Chờ duyệt (Pending) cho Admin/Editor
     sources: searchResults ? ['Google Search Data', 'DuckDuckGo Fact Search'] : ['CTC Knowledge Base']
   };
 }

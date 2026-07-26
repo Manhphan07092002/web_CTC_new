@@ -562,6 +562,18 @@ const ContentManagement: React.FC = () => {
                 <div key={`news-${idx}-${item.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow flex gap-4">
                   <img src={item.image} alt={item.title} className="w-32 h-32 object-cover rounded-lg flex-shrink-0" />
                   <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${
+                        (item as any).status === 'pending'
+                          ? 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse'
+                          : (item as any).status === 'draft'
+                          ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                      }`}>
+                        {(item as any).status === 'pending' ? '🟡 Chờ duyệt (Pending)' :
+                         (item as any).status === 'draft' ? '📝 Bản nháp' : '🟢 Đã xuất bản'}
+                      </span>
+                    </div>
                     <h3 className="font-bold text-gray-800 mb-2">{item.title}</h3>
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2">{item.excerpt}</p>
                     <div className="flex items-center gap-4 text-xs text-gray-400">
@@ -570,11 +582,29 @@ const ContentManagement: React.FC = () => {
                       {item.category && <span>🏷️ {item.category}</span>}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 justify-center">
+                    {(item as any).status !== 'published' && (
+                      <button
+                        onClick={async () => {
+                          try {
+                            await api.news.update(item.id, { ...item, status: 'published' });
+                            showToast('🎉 Đã duyệt bài viết & xuất bản thành công!', 'success');
+                            loadContent();
+                          } catch (err) {
+                            showToast('Lỗi khi duyệt bài viết', 'error');
+                          }
+                        }}
+                        className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-xs flex items-center gap-1"
+                        title="Duyệt bài viết này ngay lập tức"
+                      >
+                        ✅ Duyệt bài
+                      </button>
+                    )}
                     <PermissionGate permission="edit_news">
                       <button
                         onClick={() => navigate(`/admin/news/edit/${item.id}`)}
-                        className="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"
+                        className="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 flex items-center justify-center"
+                        title="Chỉnh sửa bài viết"
                       >
                         <Edit size={16} />
                       </button>
@@ -582,7 +612,8 @@ const ContentManagement: React.FC = () => {
                     <PermissionGate permission="delete_news">
                       <button
                         onClick={() => openOtherDeleteModal(item, 'news')}
-                        className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
+                        className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 flex items-center justify-center"
+                        title="Xóa bài viết"
                       >
                         <Trash2 size={16} />
                       </button>

@@ -97,6 +97,7 @@ export interface NewsItem {
   author?: string;
   tags?: string[];
   focusKeyword?: string;
+  status?: 'published' | 'pending' | 'draft';
   isFeatured?: boolean;
   featuredOrder?: number;
   viewCount?: number;

@@ -298,6 +298,7 @@ export interface INewsItem extends BaseDocument {
   featuredOrder?: number;    // Thứ tự nổi bật
   tags?: string[];           // Tags
   focusKeyword?: string;     // Từ khóa SEO chính
+  status?: 'published' | 'pending' | 'draft'; // Trạng thái duyệt bài
   translations?: TranslationsMap<NewsTranslation>;
 }
 
@@ -315,6 +316,7 @@ const NewsSchema = new Schema<INewsItem>({
   featuredOrder: { type: Number, default: 0 },
   tags: [{ type: String }],
   focusKeyword: { type: String, default: '' },
+  status: { type: String, enum: ['published', 'pending', 'draft'], default: 'published' },
   translations: createTranslationSchema()
 }, { timestamps: true });
 

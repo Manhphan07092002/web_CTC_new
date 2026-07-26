@@ -15,7 +15,13 @@ const getLanguage = (req: any): SupportedLanguage => {
 router.get('/', async (req, res) => {
   try {
     const lang = getLanguage(req);
+    const includeAll = req.query.includeAll === 'true' || !!req.headers.authorization;
     let items = await db.news.getAll();
+    
+    // Đảm bảo các bài chờ duyệt (pending) hoặc nháp (draft) không hiển thị trên trang công khai
+    if (!includeAll) {
+      items = items.filter((item: any) => !item.status || item.status === 'published');
+    }
     
     if (lang !== 'vi') {
       items = applyTranslationsToArray(items, [...TRANSLATION_FIELDS.news], lang);
@@ -81,8 +87,10 @@ router.post('/', async (req, res) => {
       return `/news/${slugStr}-${shortHash}`;
     };
 
-    // Auto Instant Indexing (IndexNow + Google/Bing Ping)
-    triggerInstantIndexing(getCleanUrl(created)).catch(() => {});
+    // Auto Instant Indexing (Chỉ ép index khi bài viết ĐÃ ĐƯỢC DUYỆT & XUẤT BẢN)
+    if (!created.status || created.status === 'published') {
+      triggerInstantIndexing(getCleanUrl(created)).catch(() => {});
+    }
 
     res.status(201).json(created);
   } catch (error) {
@@ -107,8 +115,10 @@ router.put('/:id', async (req, res) => {
       return `/news/${slugStr}-${shortHash}`;
     };
 
-    // Auto Instant Indexing (IndexNow + Google/Bing Ping)
-    triggerInstantIndexing(getCleanUrl(updated)).catch(() => {});
+    // Auto Instant Indexing (Chỉ ép index khi bài viết ĐÃ ĐƯỢC DUYỆT & XUẤT BẢN)
+    if (!updated.status || updated.status === 'published') {
+      triggerInstantIndexing(getCleanUrl(updated)).catch(() => {});
+    }
 
     res.json(updated);
   } catch (error) {

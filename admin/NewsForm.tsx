@@ -51,6 +51,7 @@ const NewsForm: React.FC = () => {
     isFeatured: false,
     tags: [] as string[],
     focusKeyword: '',
+    status: 'published' as 'published' | 'pending' | 'draft',
   });
 
   const [tagInput, setTagInput] = useState('');
@@ -101,6 +102,7 @@ const NewsForm: React.FC = () => {
         isFeatured: news.isFeatured || false,
         tags: news.tags || [],
         focusKeyword: loadedKw,
+        status: (news.status as any) || 'published',
       });
     } catch (error) {
       console.error('Error loading news:', error);
@@ -138,8 +140,43 @@ const NewsForm: React.FC = () => {
       excerpt: generated.excerpt,
       content: generated.content,
       focusKeyword: generated.focusKeyword,
+      status: 'pending', // Đưa vào chế độ Chờ duyệt (Pending) cho Editor/Admin
       tags: Array.from(new Set([...prev.tags, ...(generated.tags || [])]))
     }));
+    showToast('📝 Bài viết AI được đưa vào chế độ CHỜ DUYỆT (Pending)!', 'info');
+  };
+
+  const handlePublishAndIndex = async () => {
+    if (!formData.title.trim()) { showToast('Vui lòng nhập tiêu đề bài viết', 'error'); return; }
+    if (!formData.excerpt.trim()) { showToast('Vui lòng nhập mô tả ngắn', 'error'); return; }
+    if (!formData.image) { showToast('Vui lòng chọn hình ảnh đại diện', 'error'); return; }
+
+    setSaving(true);
+    try {
+      const payload = { ...formData, focusKeyword, status: 'published' };
+      let savedItem: any;
+      if (isEdit && id) {
+        savedItem = await api.news.update(id, payload);
+        showToast('🎉 Đã duyệt và xuất bản bài viết thành công!', 'success');
+      } else {
+        savedItem = await api.news.create(payload);
+        showToast('🎉 Đã xuất bản bài viết thành công!', 'success');
+      }
+      setFormData(prev => ({ ...prev, status: 'published' }));
+
+      // Kích hoạt Indexing sau khi đã duyệt xuất bản
+      const targetId = savedItem?._id || savedItem?.id || id;
+      if (targetId) {
+        const cleanUrl = getNewsUrl({ id: targetId, title: formData.title, slug: (savedItem || formData as any).slug });
+        api.indexing.triggerPing([cleanUrl]).catch(() => {});
+      }
+
+      navigate('/admin/content?tab=news');
+    } catch (error) {
+      console.error('Error publishing news:', error);
+      showToast('Lỗi khi duyệt bài viết', 'error');
+    }
+    setSaving(false);
   };
 
   const addTag = () => {
@@ -222,32 +259,61 @@ const NewsForm: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Status selector */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-xl shadow-xs">
+            <span className="text-xs font-bold text-slate-500 hidden sm:inline">Trạng thái:</span>
+            <select
+              value={formData.status}
+              onChange={e => setFormData({ ...formData, status: e.target.value as any })}
+              className={`text-xs font-black outline-none bg-transparent cursor-pointer ${
+                formData.status === 'published' ? 'text-emerald-600' :
+                formData.status === 'pending' ? 'text-amber-600 font-extrabold' : 'text-slate-600'
+              }`}
+            >
+              <option value="published">🟢 Đã xuất bản (Published)</option>
+              <option value="pending">🟡 Chờ duyệt (Pending)</option>
+              <option value="draft">📝 Bản nháp (Draft)</option>
+            </select>
+          </div>
+
           {/* AI Writer button */}
           <button
             type="button"
             onClick={() => setShowAiModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 via-primary to-secondary text-white rounded-xl text-sm font-black transition-all shadow-sm hover:shadow-md hover:scale-105 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-amber-500 via-primary to-secondary text-white rounded-xl text-sm font-black transition-all shadow-sm hover:shadow-md hover:scale-105 cursor-pointer"
             title="Mở Trợ lý AI tự động tìm kiếm Google & viết bài chuẩn SEO Yoast 100/100"
           >
             <Sparkles size={16} className="text-amber-200 animate-pulse" />
-            <span>✨ AI Viết Bài</span>
+            <span className="hidden md:inline">✨ AI Viết Bài</span>
           </button>
 
-          {/* Indexing button */}
-          {isEdit && id && (
+          {/* Approve & Publish button for Pending/Draft articles */}
+          {formData.status !== 'published' ? (
             <button
               type="button"
-              onClick={handleManualIndex}
-              disabled={indexing}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-bold transition-all disabled:opacity-50 shadow-sm"
-              title="Gửi thông báo ép Google & Bing lập chỉ mục URL này ngay lập tức"
+              onClick={handlePublishAndIndex}
+              disabled={saving}
+              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-black transition-all shadow-md hover:scale-105 cursor-pointer disabled:opacity-50"
+              title="Duyệt bài viết này và kích hoạt ép lập chỉ mục Google & Bing"
             >
-              {indexing ? (
-                <span className="animate-spin text-xs">🌀</span>
-              ) : (
-                <span>🚀 Index ngay</span>
-              )}
+              <span>✅ Duyệt & Xuất Bản</span>
             </button>
+          ) : (
+            isEdit && id && (
+              <button
+                type="button"
+                onClick={handleManualIndex}
+                disabled={indexing}
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-bold transition-all disabled:opacity-50 shadow-sm"
+                title="Gửi thông báo ép Google & Bing lập chỉ mục URL này ngay lập tức"
+              >
+                {indexing ? (
+                  <span className="animate-spin text-xs">🌀</span>
+                ) : (
+                  <span>🚀 Index ngay</span>
+                )}
+              </button>
+            )
           )}
 
           {/* Preview toggle */}
@@ -259,7 +325,7 @@ const NewsForm: React.FC = () => {
             }`}
           >
             {preview ? <EyeOff size={15} /> : <Eye size={15} />}
-            {preview ? 'Tắt xem trước' : 'Xem trước'}
+            <span className="hidden sm:inline">{preview ? 'Tắt xem' : 'Xem trước'}</span>
           </button>
 
           {/* Save button */}
@@ -267,12 +333,12 @@ const NewsForm: React.FC = () => {
             type="button"
             onClick={handleSubmit}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 bg-primary text-white rounded-xl font-bold hover:bg-secondary transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-sm transition-all shadow-sm disabled:opacity-50"
           >
             {saving ? (
               <><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> Đang lưu...</>
             ) : (
-              <><Save size={16} /> {isEdit ? 'Cập nhật' : 'Đăng bài'}</>
+              <><Save size={16} /> {isEdit ? 'Lưu bài' : 'Lưu nháp'}</>
             )}
           </button>
         </div>
