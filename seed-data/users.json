@@ -3,7 +3,7 @@
     "_id": "177100000000000000000001",
     "name": "Administrator",
     "email": "admin@ctcdn.vn",
-    "password": "$2b$10$3Scm8C43yDEwJ2f..TbM1OuR4GsWARKVTRh6nU9fyMGcao1eJAicm",
+    "password": "$2b$10$ngzmsQo3v1EhOTCgQjWXzu78Nugs1HEZei6KWn7.Zg43vm2yjjqGi",
     "phone": "0915059666",
     "role": "admin"
   },
@@ -11,15 +11,15 @@
     "_id": "177100000000000000000002",
     "name": "Nguyễn Đức Nam",
     "email": "ducnam@ctcdn.vn",
-    "password": "$2b$10$3Scm8C43yDEwJ2f..TbM1OuR4GsWARKVTRh6nU9fyMGcao1eJAicm",
-    "phone": 976553523,
+    "password": "$2b$10$ngzmsQo3v1EhOTCgQjWXzu78Nugs1HEZei6KWn7.Zg43vm2yjjqGi",
+    "phone": "0976553523",
     "role": "admin"
   },
   {
     "_id": "177100000000000000000003",
     "name": "Duy Khanh",
     "email": "khanhnd@ctcdn.vn",
-    "password": "$2b$10$3Scm8C43yDEwJ2f..TbM1OuR4GsWARKVTRh6nU9fyMGcao1eJAicm",
+    "password": "$2b$10$ngzmsQo3v1EhOTCgQjWXzu78Nugs1HEZei6KWn7.Zg43vm2yjjqGi",
     "phone": "test",
     "role": "admin"
   },
@@ -27,32 +27,32 @@
     "_id": "177100000000000000000004",
     "name": "Phan Mạnh",
     "email": "phanmanh@ctcdn.vn",
-    "password": "$2b$10$3Scm8C43yDEwJ2f..TbM1OuR4GsWARKVTRh6nU9fyMGcao1eJAicm",
-    "phone": 979900874,
+    "password": "$2b$10$ngzmsQo3v1EhOTCgQjWXzu78Nugs1HEZei6KWn7.Zg43vm2yjjqGi",
+    "phone": "0979900874",
     "role": "admin"
   },
   {
     "_id": "177100000000000000000005",
     "name": "Phan Xuân Mạnh",
     "email": "phanmanh1@ctcdn.vn",
-    "password": "$2b$10$3Scm8C43yDEwJ2f..TbM1OuR4GsWARKVTRh6nU9fyMGcao1eJAicm",
-    "phone": 979900874,
+    "password": "$2b$10$ngzmsQo3v1EhOTCgQjWXzu78Nugs1HEZei6KWn7.Zg43vm2yjjqGi",
+    "phone": "0979900874",
     "role": "admin"
   },
   {
     "_id": "177100000000000000000006",
     "name": "Phan Xuân Mạnh",
     "email": "phanmanhctc@ctcdn.vn",
-    "password": "$2b$10$3Scm8C43yDEwJ2f..TbM1OuR4GsWARKVTRh6nU9fyMGcao1eJAicm",
-    "phone": 979900874,
+    "password": "$2b$10$ngzmsQo3v1EhOTCgQjWXzu78Nugs1HEZei6KWn7.Zg43vm2yjjqGi",
+    "phone": "0979900874",
     "role": "admin"
   },
   {
     "_id": "177100000000000000000007",
     "name": "Thùy Giang",
     "email": "thuygiang@ctcdn.vn",
-    "password": "$2b$10$3Scm8C43yDEwJ2f..TbM1OuR4GsWARKVTRh6nU9fyMGcao1eJAicm",
-    "phone": 988789789,
+    "password": "$2b$10$ngzmsQo3v1EhOTCgQjWXzu78Nugs1HEZei6KWn7.Zg43vm2yjjqGi",
+    "phone": "0988789789",
     "role": "admin"
   }
 ]

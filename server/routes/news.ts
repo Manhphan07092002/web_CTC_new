@@ -103,6 +103,18 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ok = await db.news.delete(id);
+    if (!ok) return res.status(404).json({ message: 'News not found' });
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting news', error);
+    res.status(500).json({ message: 'Failed to delete news' });
+  }
+});
+
 router.post('/:id/view', async (req, res) => {
   try {
     const { id } = req.params;

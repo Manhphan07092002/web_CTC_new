@@ -2,7 +2,7 @@
   {
     "_id": "138900000000000000000001",
     "name": "Khách hàng liên hệ",
-    "phone": 901234567,
+    "phone": "0901234567",
     "email": "an.nguyen@email.com",
     "service": "Tư vấn xây dựng nhà phố",
     "message": "Tôi muốn được tư vấn về dịch vụ thiết kế và thi công nhà phố 3 tầng. Xin gửi báo giá chi tiết.",
@@ -11,7 +11,7 @@
   {
     "_id": "138900000000000000000002",
     "name": "Khách hàng liên hệ",
-    "phone": 912345678,
+    "phone": "0912345678",
     "email": "binh.tran@company.com",
     "service": "Hợp tác dự án khu công nghiệp",
     "message": "Công ty chúng tôi có dự án khu công nghiệp cần tìm đối tác thi công. Mong được hợp tác.",
@@ -20,7 +20,7 @@
   {
     "_id": "138900000000000000000003",
     "name": "Khách hàng liên hệ",
-    "phone": 923456789,
+    "phone": "0923456789",
     "email": "cuong.le@gmail.com",
     "service": "Thi công biệt thự",
     "message": "Gia đình tôi có kế hoạch xây biệt thự tại Đà Nẵng. Xin liên hệ tư vấn.",
@@ -29,7 +29,7 @@
   {
     "_id": "138900000000000000000004",
     "name": "Khách hàng liên hệ",
-    "phone": 934567890,
+    "phone": "0934567890",
     "email": "ha.pham@email.com",
     "service": "Lắp đặt hệ thống viễn thông",
     "message": "Cần báo giá lắp đặt hệ thống cáp quang cho tòa nhà 20 tầng.",
@@ -38,7 +38,7 @@
   {
     "_id": "138900000000000000000005",
     "name": "Khách hàng liên hệ",
-    "phone": 945678901,
+    "phone": "0945678901",
     "email": "nam.hoang@company.vn",
     "service": "Tuyển dụng kỹ sư",
     "message": "Tôi muốn ứng tuyển vị trí kỹ sư xây dựng tại công ty. Xin gửi CV đính kèm.",

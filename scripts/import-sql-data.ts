@@ -41,7 +41,7 @@ function makeObjectId(prefix: number, id: number | string): string {
   return `${prefixHex}${idHex}`;
 }
 
-// Parse T-SQL VALUES clause
+// Parse T-SQL VALUES clause preserving string quotes for nested regex
 function parseSqlValues(valsStr: string): any[] {
   const values: any[] = [];
   let current = '';
@@ -54,10 +54,11 @@ function parseSqlValues(valsStr: string): any[] {
         current += "'";
         i++;
       } else {
-        if (!inString && (current.trim() === 'N' || current.trim() === 'n')) {
-          current = '';
+        if (!inString && (current.endsWith('N') || current.endsWith('n'))) {
+          current = current.slice(0, -1);
         }
         inString = !inString;
+        current += "'";
       }
     } else if (char === ',' && !inString) {
       values.push(cleanValue(current.trim()));
@@ -79,7 +80,14 @@ function cleanValue(valStr: string): any {
   // Handle CAST(...) for dates or numbers
   if (valStr.toUpperCase().startsWith('CAST(')) {
     const dateMatch = valStr.match(/'([^']+)'/);
-    if (dateMatch) return dateMatch[1];
+    if (dateMatch) {
+      const rawDate = dateMatch[1];
+      const d = new Date(rawDate);
+      if (!isNaN(d.getTime())) {
+        return d.toISOString().split('T')[0]; // YYYY-MM-DD
+      }
+      return rawDate.split(' ')[0];
+    }
     const numMatch = valStr.match(/CAST\(([0-9.]+)\s+AS/i);
     if (numMatch) return parseFloat(numMatch[1]);
   }
@@ -168,6 +176,21 @@ function cleanHtmlText(html: string): string {
 function stripHtml(html: string): string {
   if (!html) return '';
   return cleanHtmlText(html).replace(/<[^>]*>?/gm, '').trim();
+}
+
+// Format date to YYYY-MM-DD
+function formatDate(val: any): string {
+  if (!val) return '2024-10-15';
+  const str = String(val).trim();
+  if (str.startsWith('CAST(')) {
+    const match = str.match(/'([^']+)'/);
+    if (match) return match[1].split(' ')[0];
+  }
+  const d = new Date(str);
+  if (!isNaN(d.getTime())) {
+    return d.toISOString().split('T')[0];
+  }
+  return str.split(' ')[0] || '2024-10-15';
 }
 
 async function seedRBAC() {
@@ -417,7 +440,7 @@ async function migrateData() {
     const catObj = projectCategoriesData.find(c => String(c._id) === String(catMongoId));
 
     const capacityStr = p.Contractor || (p.ProjectValue ? `${(Number(p.ProjectValue) / 1e9).toFixed(1)} Tỷ VNĐ` : 'Tiêu chuẩn');
-    const dateStr = p.CompletionDate ? String(p.CompletionDate).split(' ')[0] : '2024';
+    const dateStr = formatDate(p.CompletionDate || p.StartDate || '2024-10-15');
 
     return {
       _id: new mongoose.Types.ObjectId(mongoId),
@@ -466,7 +489,7 @@ async function migrateData() {
 
     const content = cleanHtmlText(b.Content || b.Name || '');
     const excerpt = stripHtml(content).slice(0, 180) + '...';
-    const dateStr = b.CreateTime ? String(b.CreateTime).split(' ')[0] : '15/10/2024';
+    const dateStr = formatDate(b.CreateTime);
 
     newsData.push({
       _id: new mongoose.Types.ObjectId(mongoId),
@@ -488,7 +511,7 @@ async function migrateData() {
   rawNews.forEach((n, index) => {
     const mongoId = makeObjectId(3003, n.NewsID || (index + 1));
     const content = cleanHtmlText(n.Content || n.Title || '');
-    const dateStr = n.PublishedDate || n.CreatedDate ? String(n.PublishedDate || n.CreatedDate).split(' ')[0] : '15/10/2024';
+    const dateStr = formatDate(n.PublishedDate || n.CreatedDate);
 
     newsData.push({
       _id: new mongoose.Types.ObjectId(mongoId),
