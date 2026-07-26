@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import SEO from '../components/SEO';
 import { useAuth } from '../contexts/AuthContext';
+import { getProductUrl, getProjectUrl, getNewsUrl } from '../utils/news-url-helper';
 import {
   Search as SearchIcon, FileText, ShoppingBag, FolderOpen, Newspaper, ClipboardList,
   ChevronRight, RefreshCw, XCircle, ArrowLeft, Download, Tag, Calendar, MapPin
@@ -203,7 +204,7 @@ const Search: React.FC = () => {
                     {/* Render content specific to types */}
                     {sec.key === 'products' && (
                       <div className="space-y-3 flex-1 flex flex-col justify-between">
-                        <Link to={`/products/${item._id}`}>
+                        <Link to={getProductUrl(item)}>
                           <img src={item.image} className="w-full h-32 object-cover rounded-lg mb-3 border border-gray-100 dark:border-gray-700" />
                           <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary truncate">{highlightKeyword(item.name, queryParam)}</h3>
                           <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase mt-1">{item.code || item.category}</p>
@@ -228,7 +229,7 @@ const Search: React.FC = () => {
 
                     {sec.key === 'projects' && (
                       <div className="space-y-3 flex-1 flex flex-col justify-between">
-                        <Link to={`/projects/${item._id}`}>
+                        <Link to={getProjectUrl(item)}>
                           <img src={item.image} className="w-full h-32 object-cover rounded-lg mb-3 border border-gray-100 dark:border-gray-700" />
                           <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary truncate">{highlightKeyword(item.title, queryParam)}</h3>
                         </Link>
@@ -261,7 +262,7 @@ const Search: React.FC = () => {
 
                     {sec.key === 'news' && (
                       <div className="space-y-3 flex-1 flex flex-col justify-between">
-                        <Link to={`/news/${item._id}`}>
+                        <Link to={getNewsUrl(item)}>
                           <img src={item.image} className="w-full h-32 object-cover rounded-lg mb-3 border border-gray-100 dark:border-gray-700" />
                           <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary line-clamp-2 leading-snug">{highlightKeyword(item.title, queryParam)}</h3>
                         </Link>
@@ -382,7 +383,12 @@ const Search: React.FC = () => {
                 </a>
               ) : (
                 <Link
-                  to={item.path || (typeParam === 'products' ? `/products/${item._id}` : typeParam === 'projects' ? `/projects/${item._id}` : typeParam === 'news' ? `/news/${item._id}` : `/track-order?query=${item.orderCode}`)}
+                  to={
+                    typeParam === 'products' ? getProductUrl(item) :
+                    typeParam === 'projects' ? getProjectUrl(item) :
+                    typeParam === 'news' ? getNewsUrl(item) :
+                    (item.path || `/track-order?query=${item.orderCode}`)
+                  }
                   className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all active:scale-[0.98]"
                 >
                   <span>Xem chi tiết</span>
