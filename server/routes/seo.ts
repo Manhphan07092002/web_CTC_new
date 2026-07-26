@@ -28,6 +28,12 @@ router.get('/BingSiteAuth.xml', (req, res) => {
 </users>`);
 });
 
+// Google Search Console HTML File Verification Route
+router.get('/google5138f08f412385a9.html', (req, res) => {
+  res.header('Content-Type', 'text/html');
+  res.send('google-site-verification: google5138f08f412385a9.html');
+});
+
 // Manual Instant Indexing Trigger API
 router.post('/api/indexing/ping', async (req, res) => {
   try {

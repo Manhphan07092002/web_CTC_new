@@ -137,6 +137,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="keywords" content={keywords} />
       <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
       <meta name="msvalidate.01" content="83836E53859E9433C6450A20F7053C0F" />
+      <meta name="google-site-verification" content="JnGNV8fGgZMWP35KAI8XN6bY-rrsqhMd14fVdTgHqec" />
       <link rel="canonical" href={url} />
       
       {/* Favicon with smooth rounded corners */}
