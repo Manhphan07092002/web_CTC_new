@@ -19,6 +19,15 @@ router.get(`/${INDEXNOW_KEY_FILENAME}`, (req, res) => {
   res.send(INDEXNOW_KEY);
 });
 
+// Bing Webmaster Tools Verification Route
+router.get('/BingSiteAuth.xml', (req, res) => {
+  res.header('Content-Type', 'text/xml');
+  res.send(`<?xml version="1.0"?>
+<users>
+	<user>83836E53859E9433C6450A20F7053C0F</user>
+</users>`);
+});
+
 // Manual Instant Indexing Trigger API
 router.post('/api/indexing/ping', async (req, res) => {
   try {
