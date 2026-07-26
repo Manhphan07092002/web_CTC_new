@@ -1,6 +1,7 @@
 /**
  * AI Article Generator Service
  * Searches web context and synthesizes Yoast 100/100 SEO-optimized news articles
+ * with high readability (85-100) and content-bound dynamic tags.
  */
 
 import fetch from 'node-fetch';
@@ -65,6 +66,54 @@ function removeDiacritics(str: string): string {
 }
 
 /**
+ * Dynamically extract content-bound SEO tags based on Title, Body Content, and Focus Keyword
+ */
+function extractSmartTags(title: string, content: string, focusKeyword: string): string[] {
+  const plainText = content.replace(/<[^>]+>/g, ' ');
+  const combined = `${title} ${focusKeyword} ${plainText}`.toLowerCase();
+
+  const candidateTagsMap: { [key: string]: string[] } = {
+    'cho thuê': ['cho thuê mái nhà', 'mô hình cho thuê mái nhà'],
+    'mái nhà': ['điện mặt trời áp mái', 'mái nhà năng lượng'],
+    'tiết kiệm': ['tiết kiệm 80% tiền điện', 'tiết kiệm chi phí điện'],
+    'hợp tác xã': ['hợp tác xã năng lượng', 'cộng đồng chia sẻ điện'],
+    'pin': ['pin mặt trời', 'tấm pin năng lượng', 'công nghệ pin mới'],
+    'điện': ['điện mặt trời', 'năng lượng sạch 2026'],
+    'doanh nghiệp': ['điện mặt trời doanh nghiệp', 'giải pháp năng lượng'],
+    'ctc': ['bưu điện miền trung', 'CTC', 'thi công điện mặt trời'],
+    'bưu điện': ['bưu điện miền trung', 'CTC'],
+    'lắp đặt': ['lắp đặt pin mặt trời', 'thi công trọn gói'],
+    'tây ban nha': ['xu hướng năng lượng châu âu', 'điện mặt trời quốc tế'],
+    'châu âu': ['xu hướng năng lượng châu âu', 'năng lượng tái tạo']
+  };
+
+  const extracted = new Set<string>();
+
+  // 1. Primary Focus Keyword
+  if (focusKeyword) {
+    extracted.add(focusKeyword.trim().toLowerCase());
+  }
+
+  // 2. Scan content for matching candidate tags
+  Object.entries(candidateTagsMap).forEach(([triggerKey, relatedTags]) => {
+    if (combined.includes(triggerKey)) {
+      relatedTags.forEach(tag => extracted.add(tag));
+    }
+  });
+
+  // 3. Fallback core tags if needed
+  extracted.add('pin mặt trời');
+  extracted.add('điện mặt trời');
+  extracted.add('CTC');
+
+  // Return clean list of 5-8 relevant content-bound tags
+  return Array.from(extracted)
+    .map(t => t.trim())
+    .filter(t => t.length >= 2)
+    .slice(0, 7);
+}
+
+/**
  * Generate a complete, Yoast 100/100 SEO & High Readability (85-100) article
  */
 export async function generateAiArticle(
@@ -116,21 +165,31 @@ export async function generateAiArticle(
     excerpt = excerpt.substring(0, 157) + '...';
   }
 
-  // 5. Generate Rich HTML Content (>900 words with H2/H3, bullet points, transition words & short sentences)
+  // 5. Generate Rich HTML Content (>900 words with H2/H3, Table of Contents, Bullet Points & Transition Words)
   const contextBlock = searchResults 
     ? `<blockquote class="my-4 p-4 border-l-4 border-primary bg-primary/5 rounded-r-xl italic text-gray-700">
-        <strong>Thông tin thực tế từ thị trường:</strong> ${searchResults.replace(/\n+/g, ' ')}
+        <strong>Thông tin thực tế cập nhật từ thị trường:</strong> ${searchResults.replace(/\n+/g, ' ')}
        </blockquote>`
     : '';
 
   const content = `
-<p><strong>NĂNG LƯỢNG SẠCH 2026</strong> — Trong bối cảnh giá điện sinh hoạt biến động, việc lắp đặt <strong>${kw}</strong> đang trở thành giải pháp tối ưu. Mô hình này giúp hàng ngàn gia đình cắt giảm tới 80% chi phí hóa đơn điện hàng tháng.</p>
+<p><strong>NĂNG LƯỢNG SẠCH 2026</strong> — Trong bối cảnh giá điện sinh hoạt biến động, việc đầu tư lắp đặt <strong>${kw}</strong> đang trở thành giải pháp tối ưu. Mô hình này giúp hàng ngàn gia đình và doanh nghiệp cắt giảm tới 80% chi phí hóa đơn điện hàng tháng.</p>
 
 ${contextBlock}
 
-<p>Bên cạnh đó, việc sử dụng <strong>${kw}</strong> không chỉ giúp tiết kiệm chi phí mà còn bảo vệ môi trường bền vững. Do đó, xu hướng chuyển đổi sang năng lượng tái tạo đang phát triển rất mạnh mẽ tại Việt Nam.</p>
+<div class="my-6 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
+  <p class="font-black text-slate-800 text-sm uppercase tracking-wider mb-2">📌 Mục lục bài viết:</p>
+  <ul class="list-decimal pl-5 space-y-1 text-xs font-semibold text-primary">
+    <li>Thực trạng thị trường và nhu cầu lắp đặt ${kw}</li>
+    <li>Lợi ích vượt trội của giải pháp ${kw}</li>
+    <li>Công nghệ tấm pin mặt trời và mô hình cho thuê mái nhà</li>
+    <li>Đơn vị thi công CTC uy tín và thông tin liên hệ</li>
+  </ul>
+</div>
 
-<h2>1. Tổng quan thị trường và nhu cầu lắp đặt ${kw}</h2>
+<p>Bên cạnh đó, việc sử dụng hệ thống <strong>${kw}</strong> không chỉ giúp tiết kiệm chi phí mà còn bảo vệ môi trường bền vững. Do đó, xu hướng chuyển đổi sang năng lượng tái tạo đang phát triển rất mạnh mẽ tại Việt Nam.</p>
+
+<h2>1. Thực trạng thị trường và nhu cầu lắp đặt ${kw}</h2>
 
 <p>Hiện nay, nhu cầu khai thác điện mặt trời tại các đô thị tăng cao. Nhờ lợi thế từ nguồn nắng dạt dào, hệ thống <strong>${kw}</strong> cho phép người dùng tự chủ nguồn điện hoàn toàn. Đồng thời, lượng điện thừa có thể phát ngược lên lưới điện quốc gia.</p>
 
@@ -170,14 +229,8 @@ ${contextBlock}
 </ul>
 `.trim();
 
-  // 6. Generate Tags
-  const tags = Array.from(new Set([
-    kw,
-    'pin mặt trời',
-    'điện mặt trời',
-    'CTC',
-    'tiết kiệm điện'
-  ])).slice(0, 5);
+  // 6. Extract dynamic, content-bound tags
+  const tags = extractSmartTags(title, content, kw);
 
   return {
     title,
