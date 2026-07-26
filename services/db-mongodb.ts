@@ -82,9 +82,44 @@ export const db = {
       return products.map(toPlainObject<IProduct>);
     },
     
-    getById: async (id: string) => {
-      const product = await Product.findById(id);
-      return product ? toPlainObject<IProduct>(product) : null;
+    getById: async (idParam: string) => {
+      if (!idParam) return null;
+      const cleanParam = idParam.replace(/\.html$/i, '');
+
+      try {
+        const itemById = await Product.findById(cleanParam);
+        if (itemById) return toPlainObject<IProduct>(itemById);
+      } catch (_) {}
+
+      const parts = cleanParam.split('-');
+      const possibleHash = parts[parts.length - 1];
+      const baseSlug = parts.slice(0, -1).join('-');
+
+      if (possibleHash && possibleHash.length === 24) {
+        try {
+          const itemByHash = await Product.findById(possibleHash);
+          if (itemByHash) return toPlainObject<IProduct>(itemByHash);
+        } catch (_) {}
+      }
+
+      let item = await Product.findOne({
+        $or: [
+          { id: cleanParam },
+          { slug: cleanParam },
+          { slug: baseSlug },
+          { id: possibleHash }
+        ]
+      });
+
+      if (!item && possibleHash && possibleHash.length >= 4) {
+        const allItems = await Product.find({ isDeleted: { $ne: true } });
+        item = allItems.find(p => {
+          const fullId = String(p._id || (p as any).id);
+          return fullId.endsWith(possibleHash) || fullId.includes(possibleHash);
+        }) || null;
+      }
+
+      return item ? toPlainObject<IProduct>(item) : null;
     },
     
     getFeatured: async (limit: number = 4) => {
@@ -166,8 +201,43 @@ export const db = {
       return projects.map(toPlainObject<IProject>);
     },
     
-    getById: async (id: string) => {
-      const project = await Project.findById(id);
+    getById: async (idParam: string) => {
+      if (!idParam) return null;
+      const cleanParam = idParam.replace(/\.html$/i, '');
+
+      try {
+        const itemById = await Project.findById(cleanParam);
+        if (itemById) return toPlainObject<IProject>(itemById);
+      } catch (_) {}
+
+      const parts = cleanParam.split('-');
+      const possibleHash = parts[parts.length - 1];
+      const baseSlug = parts.slice(0, -1).join('-');
+
+      if (possibleHash && possibleHash.length === 24) {
+        try {
+          const itemByHash = await Project.findById(possibleHash);
+          if (itemByHash) return toPlainObject<IProject>(itemByHash);
+        } catch (_) {}
+      }
+
+      let project = await Project.findOne({
+        $or: [
+          { id: cleanParam },
+          { slug: cleanParam },
+          { slug: baseSlug },
+          { id: possibleHash }
+        ]
+      });
+
+      if (!project && possibleHash && possibleHash.length >= 4) {
+        const allItems = await Project.find();
+        project = allItems.find(p => {
+          const fullId = String(p._id || (p as any).id);
+          return fullId.endsWith(possibleHash) || fullId.includes(possibleHash);
+        }) || null;
+      }
+
       return project ? toPlainObject<IProject>(project) : null;
     },
     

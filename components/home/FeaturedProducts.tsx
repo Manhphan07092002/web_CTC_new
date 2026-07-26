@@ -5,6 +5,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { getLangText } from '../../utils/translation-helper';
 import { useInView } from '../../hooks/useInView';
 import { Product } from '../../types';
+import { getProductUrl } from '../../utils/news-url-helper';
 
 interface FeaturedProductsProps {
   featuredProducts: Product[];
@@ -104,7 +105,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, i
               return (
                 <Link
                   key={`product-${index}-${product._id || product.id}`}
-                  to={`/products/${product._id || product.id}`}
+                  to={getProductUrl(product)}
                   onMouseEnter={() => setHoveredCard(index)}
                   onMouseLeave={() => setHoveredCard(null)}
                   className="group flex flex-col rounded-3xl overflow-hidden bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/30 transition-all duration-500 hover:-translate-y-2"
