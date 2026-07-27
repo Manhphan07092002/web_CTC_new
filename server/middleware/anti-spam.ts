@@ -26,13 +26,14 @@ export const honeypotCheck = (req: Request, res: Response, next: NextFunction) =
 };
 
 /**
- * Rate Limiter for Contact Form Submissions (Max 5 submissions per 10 minutes per IP)
+ * Rate Limiter for Contact Form Submissions (Max 15 submissions per 10 minutes per IP)
  */
 export const contactRateLimiter = (req: Request, res: Response, next: NextFunction) => {
   const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const isLocal = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || process.env.NODE_ENV !== 'production';
   const now = Date.now();
   const windowMs = 10 * 60 * 1000; // 10 minutes
-  const maxSubmissions = 5;
+  const maxSubmissions = isLocal ? 100 : 15;
 
   const record = contactLimitStore.get(ip);
 
@@ -44,7 +45,7 @@ export const contactRateLimiter = (req: Request, res: Response, next: NextFuncti
   if (record.count >= maxSubmissions) {
     return res.status(429).json({
       success: false,
-      error: 'Quá nhiều yêu cầu gửi từ thiết bị của bạn. Vui lòng thử lại sau 10 phút.'
+      error: 'Quá nhiều yêu cầu gửi từ thiết bị của bạn. Vui lòng thử lại sau vài phút.'
     });
   }
 
@@ -53,13 +54,14 @@ export const contactRateLimiter = (req: Request, res: Response, next: NextFuncti
 };
 
 /**
- * Rate Limiter for Order Creation & Tracking (Max 5 orders per 10 minutes per IP)
+ * Rate Limiter for Order Creation & Tracking (Max 20 orders per 10 minutes per IP)
  */
 export const orderRateLimiter = (req: Request, res: Response, next: NextFunction) => {
   const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const isLocal = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || process.env.NODE_ENV !== 'production';
   const now = Date.now();
   const windowMs = 10 * 60 * 1000; // 10 minutes
-  const maxOrders = 5;
+  const maxOrders = isLocal ? 100 : 20;
 
   const record = orderLimitStore.get(ip);
 
