@@ -104,6 +104,7 @@ YÊU CẦU CHUẨN SEO YOAST BẮT BUỘC:
      * CÂU VĂN NGẮN: Tất cả các câu BẮT BUỘC ngắn gọn (dưới 15-18 từ/câu). Ngắt câu bằng dấu chấm thường xuyên.
      * ĐOẠN VĂN NGẮN: Mỗi thẻ <p> chỉ chứa 2-3 câu ngắn (dưới 60 từ/đoạn) để thoáng mắt.
      * CHÈN DANH SÁCH: BẮT BUỘC chèn ít nhất 2 danh sách dạng <ul><li>...</li></ul> trong bài cho Đặc điểm nổi bật và Ứng dụng thực tế.
+   - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC chèn 1 đoạn chứa liên kết nội bộ: <p className="mt-4 pt-4 border-t">Quý khách có thể xem thêm các thiết bị khác tại <a href="/products" className="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc liên hệ nhận báo giá ưu đãi tại <a href="/contact" className="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
    - Chèn ít nhất 1 hình ảnh minh họa dạng HTML có thuộc tính alt chứa từ khóa Focus: <img src="${formData.image || 'https://ctcdn.vn/images/solar-panel.jpg'}" alt="[focusKeyword] chính hãng CTC" class="rounded-xl my-4 w-full" />.
 
 Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):

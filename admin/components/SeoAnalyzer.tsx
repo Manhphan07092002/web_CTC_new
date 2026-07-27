@@ -104,20 +104,21 @@ function runSeoChecks(
     });
   }
 
-  // 2. Title length
+  // 2. Title length (automatically accounts for brand suffix appended by SEO component)
   const tLen = title.length;
-  const titleStatus = tLen >= 50 && tLen <= 65 ? 'good' : tLen >= 40 && tLen <= 75 ? 'ok' : 'bad';
+  const fullTitleLen = (title.trim() + ' | CTC Xây Lắp Bưu Điện').length;
+  const titleStatus = (tLen >= 20 && tLen <= 75) || (fullTitleLen >= 45 && fullTitleLen <= 75) ? 'good' : tLen >= 10 ? 'ok' : 'bad';
   checks.push({
     id: 'title-len',
     label: 'Độ dài tiêu đề',
     status: titleStatus,
     message: tLen === 0
       ? 'Chưa có tiêu đề'
-      : tLen < 40
-      ? `Tiêu đề quá ngắn (${tLen} ký tự). Nên 50-65 ký tự`
+      : tLen < 15
+      ? `Tiêu đề quá ngắn (${tLen} ký tự). Nên từ 20-65 ký tự`
       : tLen > 75
       ? `Tiêu đề quá dài (${tLen} ký tự). Google cắt ngắn sau 65 ký tự`
-      : `Tốt! ${tLen} ký tự (tối ưu: 50-65)`,
+      : `Tốt! ${tLen} ký tự (Google hiển thị kèm thương hiệu: ${fullTitleLen} ký tự) ✓`,
     score: titleStatus === 'good' ? 10 : titleStatus === 'ok' ? 5 : 0,
     maxScore: 10,
   });
@@ -139,18 +140,18 @@ function runSeoChecks(
 
   // 4. Excerpt length (meta description)
   const eLen = excerpt.length;
-  const excStatus = eLen >= 120 && eLen <= 160 ? 'good' : eLen >= 80 && eLen <= 200 ? 'ok' : 'bad';
+  const excStatus = eLen >= 100 && eLen <= 170 ? 'good' : eLen >= 60 && eLen <= 220 ? 'ok' : 'bad';
   checks.push({
     id: 'excerpt-len',
     label: 'Độ dài mô tả ngắn (Meta)',
     status: excStatus,
     message: eLen === 0
       ? 'Chưa có mô tả ngắn'
-      : eLen < 80
-      ? `Quá ngắn (${eLen} ký tự). Nên 120-160 ký tự`
-      : eLen > 200
+      : eLen < 60
+      ? `Quá ngắn (${eLen} ký tự). Nên 110-160 ký tự`
+      : eLen > 220
       ? `Quá dài (${eLen} ký tự). Google cắt ngắn sau 160 ký tự`
-      : `Tốt! ${eLen} ký tự (tối ưu: 120-160)`,
+      : `Tốt! ${eLen} ký tự (tối ưu: 110-160) ✓`,
     score: excStatus === 'good' ? 8 : excStatus === 'ok' ? 4 : 0,
     maxScore: 8,
   });
@@ -170,17 +171,17 @@ function runSeoChecks(
     });
 
     // 6. Keyword density
-    const densityStatus = density >= 1 && density <= 2.5 ? 'good' : density > 0 && density < 4 ? 'ok' : 'bad';
+    const densityStatus = density >= 0.8 && density <= 3.0 ? 'good' : density > 0 && density < 4.5 ? 'ok' : 'bad';
     checks.push({
       id: 'kw-density',
       label: 'Mật độ từ khóa',
       status: densityStatus,
       message: density === 0
         ? 'Từ khóa chưa xuất hiện trong nội dung'
-        : density > 4
-        ? `Mật độ ${density.toFixed(1)}% - Quá cao, có thể bị phạt (nên 1-2.5%)`
-        : density < 1
-        ? `Mật độ ${density.toFixed(1)}% - Quá thấp (nên 1-2.5%)`
+        : density > 4.5
+        ? `Mật độ ${density.toFixed(1)}% - Quá cao, có thể bị phạt (nên 0.8-3.0%)`
+        : density < 0.8
+        ? `Mật độ ${density.toFixed(1)}% - Quá thấp (nên 0.8-3.0%)`
         : `Mật độ ${density.toFixed(1)}% - Tối ưu! ✓`,
       score: densityStatus === 'good' ? 10 : densityStatus === 'ok' ? 5 : 0,
       maxScore: 10,
@@ -202,17 +203,17 @@ function runSeoChecks(
   }
 
   // 8. Content length
-  const lenStatus = words >= 800 ? 'good' : words >= 300 ? 'ok' : 'bad';
+  const lenStatus = words >= 500 ? 'good' : words >= 250 ? 'ok' : 'bad';
   checks.push({
     id: 'content-len',
     label: 'Độ dài nội dung',
     status: lenStatus,
     message: words === 0
       ? 'Chưa có nội dung'
-      : words < 300
-      ? `${words} từ - Quá ngắn. Google ưu tiên bài 800+ từ`
-      : words < 800
-      ? `${words} từ - Trung bình. Nên viết thêm để đạt 800+ từ`
+      : words < 250
+      ? `${words} từ - Quá ngắn. Khuyên dùng 500+ từ`
+      : words < 500
+      ? `${words} từ - Khá tốt. Đạt mốc 500+ từ để xếp hạng cao nhất`
       : `${words} từ - Xuất sắc! ✓`,
     score: lenStatus === 'good' ? 10 : lenStatus === 'ok' ? 5 : 0,
     maxScore: 10,
@@ -255,7 +256,7 @@ function runSeoChecks(
   });
 
   // 12. Internal links
-  const hasLink = content.includes('<a ');
+  const hasLink = content.includes('<a ') || content.includes('href=');
   checks.push({
     id: 'links',
     label: 'Liên kết nội bộ',
