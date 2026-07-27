@@ -419,6 +419,17 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
     setTempKeyword(focusKeyword || '');
   }, [focusKeyword]);
 
+  const handleAutoSuggestKeyword = () => {
+    if (!title) return;
+    const cleanTitle = title.replace(/[^\w\sàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]/gi, ' ').trim();
+    const words = cleanTitle.split(/\s+/).filter(Boolean);
+    const suggested = words.slice(0, Math.min(4, words.length)).join(' ').toLowerCase();
+    if (suggested) {
+      setTempKeyword(suggested);
+      onFocusKeywordChange(suggested);
+    }
+  };
+
   const handleApplyKeyword = () => {
     onFocusKeywordChange(tempKeyword.trim());
   };
@@ -527,9 +538,25 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
             </span>
           </div>
         ) : (
-          <p className="text-[11px] text-slate-500 font-medium pt-0.5 flex items-center gap-1">
-            <span className="text-amber-500">💡</span> Nhập từ khóa chính & nhấn <strong className="text-slate-700 font-bold">+ Thêm</strong> để chấm điểm SEO.
-          </p>
+          <div className="space-y-1.5 pt-0.5">
+            <p className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
+              <span className="text-amber-500">💡</span> Nhập từ khóa chính & nhấn <strong className="text-slate-700 font-bold">+ Thêm</strong> để chấm điểm SEO.
+            </p>
+            {title && (
+              <button
+                type="button"
+                onClick={handleAutoSuggestKeyword}
+                className="w-full text-left text-[11px] font-bold text-primary hover:text-secondary bg-primary/5 hover:bg-primary/10 px-2.5 py-1.5 rounded-lg border border-primary/20 transition-all flex items-center justify-between gap-1.5 cursor-pointer"
+                title="Tự động trích xuất từ khóa SEO từ tiêu đề"
+              >
+                <span className="flex items-center gap-1">
+                  <span>⚡ Gợi ý từ tiêu đề:</span>
+                  <strong className="text-slate-800 font-extrabold truncate max-w-[180px]">"{title.split(/\s+/).slice(0, 3).join(' ')}"</strong>
+                </span>
+                <span className="text-[10px] bg-primary text-white px-1.5 py-0.5 rounded font-black flex-shrink-0">Lấy ngay</span>
+              </button>
+            )}
+          </div>
         )}
       </div>
 

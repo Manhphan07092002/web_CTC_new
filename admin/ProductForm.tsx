@@ -77,20 +77,38 @@ const ProductForm: React.FC = () => {
 
     setIsGeneratingAI(true);
     try {
-      const prompt = `Bạn là chuyên gia kỹ thuật điện mặt trời & xây lắp CTC. Hãy tự động viết TOÀN BỘ thông tin sản phẩm chuyên nghiệp, chuẩn kỹ thuật & SEO bằng tiếng Việt cho website Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC).
+      const prompt = `Bạn là chuyên gia kỹ thuật điện mặt trời & xây lắp CTC, đồng thời là chuyên gia SEO Yoast Top 1 Google.
+Hãy tự động tạo TOÀN BỘ thông tin sản phẩm và bài viết mô tả kỹ thuật CHUẨN SEO 100/100 bằng tiếng Việt cho Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC).
 
 Thông tin sản phẩm đầu vào:
 - Tên sản phẩm: "${formData.name}"
 - Mã sản phẩm: "${formData.code || 'N/A'}"
 - Danh mục: "${formData.categoryLabel || formData.category || 'Thiết bị Năng Lượng Mặt Trời'}"
 
-YÊU CẦU BẮT BUỘC:
-Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (không bọc trong markdown) chứa đầy đủ các trường sau:
+YÊU CẦU CHUẨN SEO YOAST BẮT BUỘC:
+1. Từ khóa Focus (focusKeyword): Tự động rút ra 1 từ khóa SEO chính 2-4 từ từ tên sản phẩm (VD: "pin mặt trời 550w", "inverter sungrow 100kw").
+2. Tiêu đề Meta: Phải chứa chính xác từ khóa Focus.
+3. Mô tả ngắn (shortDescription): Độ dài CHÍNH XÁC từ 120 đến 160 ký tự, PHẢI CHỨA TỪ KHÓA FOCUS.
+4. Nội dung bài viết (description): 
+   - Độ dài BẮT BUỘC TRÊN 800 TỪ (viết rất chi tiết, phân tích chuyên sâu).
+   - Từ khóa Focus xuất hiện ngay ở đoạn mở đầu (150 từ đầu tiên).
+   - Mật độ từ khóa Focus phân bổ đều 1.2% - 2.0% trong bài (xuất hiện 8-15 lần).
+   - BẮT BUỘC sử dụng thẻ <h2> và <h3> chuẩn cấu trúc SEO Yoast:
+     * <h2>Giới Thiệu Tổng Quan Về [focusKeyword]</h2>
+     * <h2>Đặc Điểm & Công Nghệ Kỹ Thuật Nổi Bật</h2>
+     * <h3>Thiết Kế & Tiêu Chuẩn Độ Bền Kỹ Thuật</h3>
+     * <h2>Ứng Dụng Thực Tế & Lợi Ích Đầu Tư</h2>
+     * <h2>Tại Sao Nên Chọn Giải Pháp Điện Mặt Trời Tại CTC?</h2>
+   - Sử dụng nhiều từ nối SEO: "Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra", "Tóm lại".
+   - Chèn ít nhất 1 hình ảnh minh họa dạng HTML có thuộc tính alt chứa từ khóa Focus: <img src="${formData.image || 'https://ctcdn.vn/images/solar-panel.jpg'}" alt="[focusKeyword] chính hãng CTC" class="rounded-xl my-4 w-full" />.
+
+Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
 
 {
-  "shortDescription": "Đoạn 1-2 câu tóm tắt nổi bật cuốn hút về ứng dụng và thế mạnh cốt lõi của sản phẩm.",
-  "description": "<p>Đoạn mở đầu giới thiệu về công nghệ và thương hiệu...</p><h3>Đặc Điểm Nổi Bật</h3><ul><li><strong>Tính năng 1:</strong> Mô tả chi tiết...</li><li><strong>Tính năng 2:</strong> Mô tả chi tiết...</li></ul><h3>Công Nghệ & Hiệu Suất Kỹ Thuật</h3><p>Đoạn phân tích độ bền, tiêu chuẩn an toàn và hiệu suất...</p><h3>Ứng Dụng Thực Tế</h3><p>Các giải pháp ứng dụng cho gia đình, nhà xưởng, điện mặt trời mái nhà...</p>",
-  "specifications": "Tóm tắt tổng quan các thông số kỹ thuật chính (Công nghệ cell, chuẩn chống nước IP, dải nhiệt độ hoạt động, tiêu chuẩn chất lượng IEC)...",
+  "focusKeyword": "từ khóa focus chính",
+  "shortDescription": "Đoạn mô tả ngắn chuẩn 120-160 ký tự chứa từ khóa focus...",
+  "description": "<p>Đoạn mở đầu có chứa từ khóa focus...</p><h2>Giới Thiệu...</h2>...",
+  "specifications": "Tóm tắt thông số kỹ thuật...",
   "power": 0.55,
   "efficiency": 21.5,
   "warranty": "25 năm hiệu suất, 12 năm vật lý",
@@ -130,8 +148,12 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
       }
 
       if (parsed && (parsed.description || parsed.shortDescription || parsed.technicalSpecs || parsed.features)) {
+        const generatedKw = parsed.focusKeyword || focusKeyword || formData.name.toLowerCase().trim();
+        setFocusKeyword(generatedKw);
+
         setFormData(prev => ({
           ...prev,
+          focusKeyword: generatedKw,
           shortDescription: parsed.shortDescription || prev.shortDescription,
           description: parsed.description || prev.description,
           specifications: parsed.specifications || prev.specifications,
@@ -141,7 +163,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
           features: Array.isArray(parsed.features) && parsed.features.length > 0 ? parsed.features : prev.features,
           technicalSpecs: (parsed.technicalSpecs && typeof parsed.technicalSpecs === 'object') ? parsed.technicalSpecs : prev.technicalSpecs,
         }));
-        showToast('✨ Đã tự động tạo và điền TOÀN BỘ bài mô tả, thông số & tính năng sản phẩm bằng AI Gemini thành công!', 'success');
+        showToast('✨ Đã tự động tạo bài viết chuẩn SEO Yoast & từ khóa Focus thành công!', 'success');
       } else if (response) {
         // Fallback: Convert plain text response into HTML paragraphs and extract short description
         const cleanText = response.replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
@@ -151,14 +173,17 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
           .filter(Boolean);
 
         const formattedHtml = paragraphs
-          .map(p => p.startsWith('#') ? `<h3>${p.replace(/^#+\s*/, '')}</h3>` : `<p>${p}</p>`)
+          .map(p => p.startsWith('#') ? `<h2>${p.replace(/^#+\s*/, '')}</h2>` : `<p>${p}</p>`)
           .join('');
 
         const firstParagraph = paragraphs.find(p => p.length > 10 && !p.startsWith('#')) || paragraphs[0] || '';
-        const extractedShortDesc = firstParagraph.replace(/<[^>]*>/g, '').slice(0, 250);
+        const extractedShortDesc = firstParagraph.replace(/<[^>]*>/g, '').slice(0, 150);
+        const fallbackKw = formData.name.toLowerCase().trim();
 
+        setFocusKeyword(fallbackKw);
         setFormData(prev => ({
           ...prev,
+          focusKeyword: fallbackKw,
           shortDescription: prev.shortDescription || extractedShortDesc,
           description: formattedHtml,
         }));
