@@ -14,6 +14,8 @@ const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 import { getNewsUrl } from '../utils/news-url-helper';
 import SeoAnalyzer from './components/SeoAnalyzer';
 import AiWriterModal from './components/AiWriterModal';
+import UnsavedChangesModal from './components/UnsavedChangesModal';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 
 interface NewsCategory {
   id: string;
@@ -54,6 +56,8 @@ const NewsForm: React.FC = () => {
     status: 'published' as 'published' | 'pending' | 'draft',
   });
 
+  const { showUnsavedModal, setShowUnsavedModal, setBaseline, confirmNavigation } = useUnsavedChanges(formData, saving || loading);
+
   const [tagInput, setTagInput] = useState('');
 
   const handleManualIndex = async () => {
@@ -72,7 +76,11 @@ const NewsForm: React.FC = () => {
 
   useEffect(() => {
     loadCategories();
-    if (isEdit && id) loadNews(id);
+    if (isEdit && id) {
+      loadNews(id);
+    } else {
+      setBaseline(formData);
+    }
   }, [id]);
 
   const loadCategories = async () => {
@@ -90,7 +98,7 @@ const NewsForm: React.FC = () => {
       const news = await api.news.getById(newsId);
       const loadedKw = news.focusKeyword || news.focus_keyword || (news.tags && news.tags.length > 0 ? news.tags[0] : '');
       setFocusKeyword(loadedKw);
-      setFormData({
+      const loadedNewsData = {
         title: news.title || '',
         excerpt: news.excerpt || '',
         content: news.content || '',
@@ -103,7 +111,9 @@ const NewsForm: React.FC = () => {
         tags: news.tags || [],
         focusKeyword: loadedKw,
         status: (news.status as any) || 'published',
-      });
+      };
+      setFormData(loadedNewsData);
+      setBaseline(loadedNewsData);
     } catch (error) {
       console.error('Error loading news:', error);
       showToast('Lỗi khi tải tin tức', 'error');
@@ -200,11 +210,14 @@ const NewsForm: React.FC = () => {
     setFormData({ ...formData, tags: formData.tags.filter(t => t !== tag) });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.title.trim()) { showToast('Vui lòng nhập tiêu đề bài viết', 'error'); return; }
-    if (!formData.excerpt.trim()) { showToast('Vui lòng nhập mô tả ngắn', 'error'); return; }
-    if (!formData.image) { showToast('Vui lòng chọn hình ảnh đại diện', 'error'); return; }
+  const handleExit = () => {
+    confirmNavigation(() => navigate('/admin/content?tab=news'));
+  };
+
+  const saveNewsInternal = async (): Promise<boolean> => {
+    if (!formData.title.trim()) { showToast('Vui lòng nhập tiêu đề bài viết', 'error'); return false; }
+    if (!formData.excerpt.trim()) { showToast('Vui lòng nhập mô tả ngắn', 'error'); return false; }
+    if (!formData.image) { showToast('Vui lòng chọn hình ảnh đại diện', 'error'); return false; }
 
     setSaving(true);
     try {
@@ -216,12 +229,23 @@ const NewsForm: React.FC = () => {
         await api.news.create(payload);
         showToast('✅ Đăng bài viết thành công!', 'success');
       }
-      navigate('/admin/content?tab=news');
+      setBaseline(payload);
+      setSaving(false);
+      return true;
     } catch (error) {
       console.error('Error saving news:', error);
       showToast('Lỗi khi lưu tin tức', 'error');
+      setSaving(false);
+      return false;
     }
-    setSaving(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await saveNewsInternal();
+    if (success) {
+      navigate('/admin/content?tab=news');
+    }
   };
 
   const estimatedReadTime = Math.max(1, Math.ceil(formData.content.replace(/<[^>]*>/g, '').length / 1200));
@@ -243,7 +267,7 @@ const NewsForm: React.FC = () => {
       {/* === HEADER === */}
       <div className="flex items-center justify-between mb-6 sticky top-0 z-30 bg-gray-50 py-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/admin/content?tab=news')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+          <button onClick={handleExit} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 cursor-pointer">
             <X size={20} />
           </button>
           <div>
@@ -648,6 +672,24 @@ const NewsForm: React.FC = () => {
         onApply={handleApplyAiArticle}
         initialTitle={formData.title}
         initialFocusKeyword={focusKeyword}
+      />
+
+      {/* Unsaved Changes Modal */}
+      <UnsavedChangesModal
+        isOpen={showUnsavedModal}
+        onClose={() => setShowUnsavedModal(false)}
+        onDiscard={() => {
+          setShowUnsavedModal(false);
+          navigate('/admin/content?tab=news');
+        }}
+        onSaveAndExit={async () => {
+          setShowUnsavedModal(false);
+          const success = await saveNewsInternal();
+          if (success) {
+            navigate('/admin/content?tab=news');
+          }
+        }}
+        isSaving={saving}
       />
     </div>
   );

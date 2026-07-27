@@ -5,6 +5,8 @@ import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { chatService } from '../services/chatService';
+import UnsavedChangesModal from './components/UnsavedChangesModal';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 
@@ -50,6 +52,8 @@ const ProductForm: React.FC = () => {
     isFeatured: false,
     featuredOrder: 0
   });
+
+  const { showUnsavedModal, setShowUnsavedModal, setBaseline, confirmNavigation } = useUnsavedChanges(formData, loading);
 
   const [techSpecKey, setTechSpecKey] = useState('');
   const [techSpecValue, setTechSpecValue] = useState('');
@@ -162,6 +166,8 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
     loadCategories();
     if (isEdit && id) {
       loadProduct(id);
+    } else {
+      setBaseline(formData);
     }
   }, [id]);
 
@@ -192,7 +198,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
     setLoading(true);
     try {
       const product = await api.products.getById(productId);
-      setFormData({
+      const initialProductData = {
         name: product.name || '',
         category: product.category || '',
         categoryId: product.categoryId || '',
@@ -215,7 +221,9 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
         technicalSpecs: product.technicalSpecs || {},
         isFeatured: product.isFeatured || false,
         featuredOrder: product.featuredOrder || 0
-      });
+      };
+      setFormData(initialProductData);
+      setBaseline(initialProductData);
     } catch (error) {
       console.error('Error loading product:', error);
       showToast('Lỗi khi tải sản phẩm', 'error');
@@ -285,17 +293,18 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleExit = () => {
+    confirmNavigation(() => navigate('/admin/content?tab=products'));
+  };
+
+  const saveProductInternal = async (): Promise<boolean> => {
     if (!formData.name || !formData.category || !formData.description || !formData.image) {
       showToast('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
-      return;
+      return false;
     }
 
     setLoading(true);
     try {
-      // Filter out empty features and images
       const cleanedData = {
         ...formData,
         features: formData.features.filter(f => f.trim() !== ''),
@@ -309,12 +318,23 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
         await api.products.create(cleanedData);
         showToast('Thêm sản phẩm thành công!', 'success');
       }
-      navigate('/admin/content?tab=products');
+      setBaseline(cleanedData);
+      setLoading(false);
+      return true;
     } catch (error) {
       console.error('Error saving product:', error);
       showToast('Lỗi khi lưu sản phẩm', 'error');
+      setLoading(false);
+      return false;
     }
-    setLoading(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await saveProductInternal();
+    if (success) {
+      navigate('/admin/content?tab=products');
+    }
   };
 
   if (loading && isEdit) {
@@ -333,7 +353,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
             {isEdit ? 'Chỉnh sửa Sản phẩm' : 'Thêm Sản phẩm mới'}
           </h1>
           <button
-            onClick={() => navigate('/admin/content?tab=products')}
+            onClick={handleExit}
             className="text-gray-400 hover:text-gray-600"
           >
             <X size={24} />
@@ -707,15 +727,15 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
           <div className="flex justify-end gap-3 pt-6 border-t">
             <button
               type="button"
-              onClick={() => navigate('/admin/content?tab=products')}
-              className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors"
+              onClick={handleExit}
+              className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? (
                 <>
@@ -738,6 +758,24 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
         isOpen={showImagePicker}
         onSelect={handleImageSelect}
         onClose={() => setShowImagePicker(false)}
+      />
+
+      {/* Unsaved Changes Confirmation Modal */}
+      <UnsavedChangesModal
+        isOpen={showUnsavedModal}
+        onClose={() => setShowUnsavedModal(false)}
+        onDiscard={() => {
+          setShowUnsavedModal(false);
+          navigate('/admin/content?tab=products');
+        }}
+        onSaveAndExit={async () => {
+          setShowUnsavedModal(false);
+          const success = await saveProductInternal();
+          if (success) {
+            navigate('/admin/content?tab=products');
+          }
+        }}
+        isSaving={loading}
       />
     </div>
   );

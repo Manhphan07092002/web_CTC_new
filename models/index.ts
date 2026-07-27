@@ -93,6 +93,7 @@ export interface IProduct extends BaseDocument {
   shortDescription?: string; // Mô tả ngắn
   specifications?: string; // Chi tiết kỹ thuật
   price?: string;
+  originalPrice?: string; // Giá gốc (để tạo hiệu ứng giảm giá)
   contactPrice?: boolean; // Liên hệ để biết giá
   image: string;
   images?: string[];
@@ -136,6 +137,7 @@ const ProductSchema = new Schema<IProduct>({
   shortDescription: String,
   specifications: String,
   price: String,
+  originalPrice: String,
   contactPrice: { type: Boolean, default: false },
   image: { type: String, required: false },
   images: [String],

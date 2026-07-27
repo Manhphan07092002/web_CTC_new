@@ -4,6 +4,8 @@ import { Save, X, Image as ImageIcon } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
+import UnsavedChangesModal from './components/UnsavedChangesModal';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 
@@ -34,10 +36,14 @@ const ProjectForm: React.FC = () => {
     category: ''
   });
 
+  const { showUnsavedModal, setShowUnsavedModal, setBaseline, confirmNavigation } = useUnsavedChanges(formData, loading);
+
   useEffect(() => {
     loadCategories();
     if (isEdit && id) {
       loadProject(id);
+    } else {
+      setBaseline(formData);
     }
   }, [id]);
 
@@ -54,7 +60,7 @@ const ProjectForm: React.FC = () => {
     setLoading(true);
     try {
       const project = await api.projects.getById(projectId);
-      setFormData({
+      const initialProjectData = {
         title: project.title || '',
         location: project.location || '',
         capacity: project.capacity || '',
@@ -63,7 +69,9 @@ const ProjectForm: React.FC = () => {
         description: project.description || '',
         categoryId: project.categoryId || '',
         category: project.category || ''
-      });
+      };
+      setFormData(initialProjectData);
+      setBaseline(initialProjectData);
     } catch (error) {
       console.error('Error loading project:', error);
       showToast('Lỗi khi tải dự án', 'error');
@@ -85,12 +93,14 @@ const ProjectForm: React.FC = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleExit = () => {
+    confirmNavigation(() => navigate('/admin/content?tab=projects'));
+  };
+
+  const saveProjectInternal = async (): Promise<boolean> => {
     if (!formData.title || !formData.location || !formData.capacity || !formData.completionDate || !formData.image || !formData.description) {
       showToast('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
-      return;
+      return false;
     }
 
     setLoading(true);
@@ -102,12 +112,23 @@ const ProjectForm: React.FC = () => {
         await api.projects.create(formData);
         showToast('Thêm dự án thành công!', 'success');
       }
-      navigate('/admin/content?tab=projects');
+      setBaseline(formData);
+      setLoading(false);
+      return true;
     } catch (error) {
       console.error('Error saving project:', error);
       showToast('Lỗi khi lưu dự án', 'error');
+      setLoading(false);
+      return false;
     }
-    setLoading(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await saveProjectInternal();
+    if (success) {
+      navigate('/admin/content?tab=projects');
+    }
   };
 
   if (loading && isEdit) {
@@ -126,8 +147,8 @@ const ProjectForm: React.FC = () => {
             {isEdit ? 'Chỉnh sửa Dự án' : 'Thêm Dự án mới'}
           </h1>
           <button
-            onClick={() => navigate('/admin/content?tab=projects')}
-            className="text-gray-400 hover:text-gray-600"
+            onClick={handleExit}
+            className="text-gray-400 hover:text-gray-600 cursor-pointer"
           >
             <X size={24} />
           </button>
@@ -223,7 +244,7 @@ const ProjectForm: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowImagePicker(true)}
-                className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
+                className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
               >
                 <div className="text-center">
                   <ImageIcon size={32} className="text-gray-400 mx-auto mb-2" />
@@ -251,15 +272,15 @@ const ProjectForm: React.FC = () => {
           <div className="flex justify-end gap-3 pt-6 border-t">
             <button
               type="button"
-              onClick={() => navigate('/admin/content?tab=projects')}
-              className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors"
+              onClick={handleExit}
+              className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? (
                 <>
@@ -282,6 +303,24 @@ const ProjectForm: React.FC = () => {
         isOpen={showImagePicker}
         onSelect={handleImageSelect}
         onClose={() => setShowImagePicker(false)}
+      />
+
+      {/* Unsaved Changes Modal */}
+      <UnsavedChangesModal
+        isOpen={showUnsavedModal}
+        onClose={() => setShowUnsavedModal(false)}
+        onDiscard={() => {
+          setShowUnsavedModal(false);
+          navigate('/admin/content?tab=projects');
+        }}
+        onSaveAndExit={async () => {
+          setShowUnsavedModal(false);
+          const success = await saveProjectInternal();
+          if (success) {
+            navigate('/admin/content?tab=projects');
+          }
+        }}
+        isSaving={loading}
       />
     </div>
   );
