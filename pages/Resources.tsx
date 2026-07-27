@@ -114,7 +114,7 @@ const Resources: React.FC = () => {
   if (loading) return <Loading fullScreen={false} className="h-[60vh]" />;
 
   return (
-    <div className="w-full pb-20 animate-fade-in relative bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="w-full pt-28 md:pt-36 pb-20 animate-fade-in relative bg-gray-50 dark:bg-gray-900 min-h-screen">
       <SEO 
         title={t('resources.title') || 'Tài liệu kỹ thuật'} 
         description="Thư viện tài liệu kỹ thuật, catalogue sản phẩm, hướng dẫn sử dụng và chính sách bảo hành điện mặt trời của CTC."

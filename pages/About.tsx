@@ -52,7 +52,7 @@ const About: React.FC = () => {
   };
 
   return (
-    <div className="w-full font-sans text-gray-700 overflow-hidden bg-white">
+    <div className="w-full font-sans text-gray-700 overflow-hidden bg-white pt-28 md:pt-36">
       <SEO 
         title={t('nav.about')} 
         description={t('about.hero_subtitle')}

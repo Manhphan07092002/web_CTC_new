@@ -54,7 +54,7 @@ const Solutions: React.FC = () => {
   };
 
   return (
-    <div className="w-full animate-fade-in font-sans text-gray-700">
+    <div className="w-full animate-fade-in font-sans text-gray-700 pt-28 md:pt-36">
        <SEO 
         title={t('solutions.hero_title')} 
         description={t('solutions.hero_desc')}

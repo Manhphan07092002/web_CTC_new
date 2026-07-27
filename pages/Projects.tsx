@@ -119,7 +119,7 @@ const Projects: React.FC = () => {
   if (loading) return <Loading fullScreen={false} className="h-[60vh]" />;
 
   return (
-    <div className="w-full pb-20 animate-fade-in relative bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="w-full pt-28 md:pt-36 pb-20 animate-fade-in relative bg-gray-50 dark:bg-gray-900 min-h-screen">
       <SEO 
         title={selectedProject ? selectedProject.title : t('projects.title')}
         description={selectedProject ? `${selectedProject.title} - ${selectedProject.location}. ${selectedProject.capacity}.` : t('projects.subtitle')}

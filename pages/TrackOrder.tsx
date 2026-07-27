@@ -114,7 +114,7 @@ const TrackOrder: React.FC = () => {
   const isCancelled = selectedOrder?.status === 'cancelled';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-900 pt-8 sm:pt-12 pb-16 px-4 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900 pt-28 md:pt-36 pb-16 px-4 transition-colors duration-300">
       <SEO
         title="Tra Cứu Đơn Hàng - CTC"
         description="Tra cứu trạng thái đơn hàng báo giá của bạn tại CTC Solar theo mã đơn hàng hoặc số điện thoại."

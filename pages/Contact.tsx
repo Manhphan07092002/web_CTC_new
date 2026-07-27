@@ -41,7 +41,7 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 pb-20 animate-fade-in relative min-h-screen overflow-hidden">
+    <div className="w-full bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 pt-28 md:pt-36 pb-20 animate-fade-in relative min-h-screen overflow-hidden">
       
       {/* Floating Ambient Glass Background Lights */}
       <div className="absolute top-96 left-10 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />

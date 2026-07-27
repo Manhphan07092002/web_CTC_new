@@ -152,7 +152,7 @@ const News: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors pt-28 md:pt-36">
       <SEO 
         title="Tin tức & Sự kiện CTC | Năng lượng mặt trời & Viễn thông Miền Trung"
         description="Cập nhật tin tức mới nhất về ngành năng lượng mặt trời, điện gió, đường dây & trạm biến áp, hạ tầng viễn thông và các hoạt động của Công ty CTC."
