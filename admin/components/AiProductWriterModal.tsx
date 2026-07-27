@@ -441,64 +441,142 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               </div>
             </form>
           ) : (
-            /* Result Generated Preview */
+            /* Result Generated - Editable Preview */
             <div className="space-y-5">
-              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 text-emerald-800">
                   <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
                   <span className="text-xs font-black">
-                    🎉 Đã tự động tạo sản phẩm & bài viết chuẩn SEO 100/100 thành công!
+                    🎉 AI tạo xong! Chỉnh sửa bên dưới nếu cần, rồi nhấn Áp dụng.
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setResult(null)}
-                  className="text-xs font-bold text-slate-600 hover:text-primary flex items-center gap-1 cursor-pointer"
-                >
-                  <RefreshCw size={12} /> Tạo lại
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={loading}
+                    className="text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-1.5 rounded-xl flex items-center gap-1 cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
+                    ✨ AI Tạo Lại
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setResult(null)}
+                    className="text-xs font-bold text-slate-600 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <Edit3 size={12} /> Nhập lại yêu cầu
+                  </button>
+                </div>
               </div>
 
-              {/* Generated summary cards */}
+              {/* Editable summary fields */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">Tên sản phẩm</span>
-                  <p className="text-xs font-black text-slate-800 truncate">{result.name}</p>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">Tên sản phẩm</label>
+                  <input
+                    type="text"
+                    value={result.name || ''}
+                    onChange={e => setResult({ ...result, name: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  />
                 </div>
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">Mã Model / SKU</span>
-                  <p className="text-xs font-bold text-slate-800">{result.code || 'N/A'}</p>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">Mã Model / SKU</label>
+                  <input
+                    type="text"
+                    value={result.code || ''}
+                    onChange={e => setResult({ ...result, code: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  />
                 </div>
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">Từ khóa Focus</span>
-                  <p className="text-xs font-black text-primary truncate">🔑 "{result.focusKeyword}"</p>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">🔑 Từ khóa Focus</label>
+                  <input
+                    type="text"
+                    value={result.focusKeyword || ''}
+                    onChange={e => setResult({ ...result, focusKeyword: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-primary/40 rounded-xl text-xs font-black text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  />
                 </div>
               </div>
 
-              {/* Scraped Images Preview Cards */}
+              {/* Editable Meta Description */}
+              <div>
+                <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">
+                  📝 Mô tả ngắn Meta ({result.shortDescription?.length || 0}/160 ký tự)
+                </label>
+                <textarea
+                  value={result.shortDescription || ''}
+                  onChange={e => setResult({ ...result, shortDescription: e.target.value })}
+                  rows={2}
+                  maxLength={160}
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 italic focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+                />
+              </div>
+
+              {/* Scraped Images - editable with delete & URL edit */}
               {(result.image || (Array.isArray(result.images) && result.images.length > 0)) && (
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                   <span className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    📸 Hình ảnh sản phẩm AI cào & tự động điền vào Form:
+                    📸 Hình ảnh sản phẩm (xóa ảnh sai, sửa URL nếu cần):
                   </span>
-                  <div className="flex items-center gap-3 overflow-x-auto pb-1">
+                  <div className="flex items-start gap-3 overflow-x-auto pb-1 flex-wrap">
                     {result.image && (
-                      <div className="relative group flex-shrink-0">
-                        <img src={result.image} alt="Main Product" className="w-20 h-20 object-cover rounded-xl border-2 border-primary shadow-xs" />
-                        <span className="absolute bottom-1 left-1 bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded">Ảnh chính</span>
+                      <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                        <div className="relative">
+                          <img
+                            src={result.image}
+                            alt="Main"
+                            className="w-20 h-20 object-cover rounded-xl border-2 border-primary shadow-xs"
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'; }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setResult({ ...result, image: '' })}
+                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 cursor-pointer"
+                          ><X size={10} /></button>
+                          <span className="absolute bottom-1 left-1 bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded">Ảnh chính</span>
+                        </div>
+                        <input
+                          type="text"
+                          value={result.image || ''}
+                          onChange={e => setResult({ ...result, image: e.target.value })}
+                          className="w-20 text-[9px] text-slate-500 border border-slate-200 rounded px-1 py-0.5 outline-none truncate bg-white"
+                          placeholder="URL ảnh..."
+                        />
                       </div>
                     )}
                     {Array.isArray(result.images) && result.images.map((imgUrl: string, idx: number) => (
-                      <div key={idx} className="relative group flex-shrink-0">
-                        <img src={imgUrl} alt={`Extra ${idx + 1}`} className="w-20 h-20 object-cover rounded-xl border border-slate-300 shadow-xs" />
-                        <span className="absolute bottom-1 left-1 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Ảnh phụ {idx + 1}</span>
+                      <div key={idx} className="flex flex-col items-center gap-1 flex-shrink-0">
+                        <div className="relative">
+                          <img
+                            src={imgUrl}
+                            alt={`Extra ${idx + 1}`}
+                            className="w-20 h-20 object-cover rounded-xl border border-slate-300 shadow-xs"
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'; }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => { const ni = [...result.images]; ni.splice(idx,1); setResult({ ...result, images: ni }); }}
+                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 cursor-pointer"
+                          ><X size={10} /></button>
+                          <span className="absolute bottom-1 left-1 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Ảnh phụ {idx+1}</span>
+                        </div>
+                        <input
+                          type="text"
+                          value={imgUrl}
+                          onChange={e => { const ni = [...result.images]; ni[idx] = e.target.value; setResult({ ...result, images: ni }); }}
+                          className="w-20 text-[9px] text-slate-500 border border-slate-200 rounded px-1 py-0.5 outline-none truncate bg-white"
+                          placeholder="URL ảnh..."
+                        />
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Tabs for preview vs HTML code */}
+              {/* Tabs for preview vs editable HTML */}
               <div className="flex border-b border-slate-200">
                 <button
                   type="button"
@@ -516,18 +594,12 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     showCodeEditor ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  💻 Mã HTML bài viết
+                  ✏️ Chỉnh sửa HTML
                 </button>
               </div>
 
               {!showCodeEditor ? (
-                <div className="border border-slate-200 rounded-2xl p-6 bg-white max-h-96 overflow-y-auto space-y-4">
-                  <div className="border-b pb-3">
-                    <span className="text-xs font-bold text-slate-400">Mô tả ngắn Meta ({result.shortDescription?.length || 0} ký tự):</span>
-                    <p className="text-sm font-medium text-slate-700 italic border-l-2 border-primary pl-3 mt-1">
-                      {result.shortDescription}
-                    </p>
-                  </div>
+                <div className="border border-slate-200 rounded-2xl p-6 bg-white max-h-80 overflow-y-auto">
                   <div
                     className="prose prose-sm max-w-none text-slate-800"
                     dangerouslySetInnerHTML={{ __html: result.description || '' }}
@@ -535,21 +607,24 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                 </div>
               ) : (
                 <textarea
-                  readOnly
                   value={result.description || ''}
-                  rows={10}
-                  className="w-full p-4 font-mono text-xs bg-slate-900 text-emerald-400 rounded-2xl border border-slate-800 outline-none"
+                  onChange={e => setResult({ ...result, description: e.target.value })}
+                  rows={12}
+                  className="w-full p-4 font-mono text-xs bg-slate-900 text-emerald-400 rounded-2xl border border-slate-800 outline-none resize-y"
+                  placeholder="Chỉnh sửa mã HTML bài viết tại đây..."
                 />
               )}
 
               {/* Actions */}
-              <div className="pt-3 border-t border-slate-100 flex justify-end gap-3">
+              <div className="pt-3 border-t border-slate-100 flex justify-between items-center gap-3 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => setResult(null)}
-                  className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="px-5 py-2.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  Tạo Lại Bài Khác
+                  <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+                  ✨ AI Tạo Lại Nội Dung Mới
                 </button>
                 <button
                   type="button"
