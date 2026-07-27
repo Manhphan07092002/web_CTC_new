@@ -173,14 +173,14 @@ router.get('/:id', async (req: any, res) => {
 // Create new order (Public check-out with anti-spam)
 router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
   try {
-    const name = req.body.customerName || req.body.customer_name || req.body.name;
+    const customerName = req.body.customerName || req.body.customer_name || req.body.name;
     const phone = req.body.phone || req.body.customer_phone;
     const email = req.body.email || req.body.customer_email || '';
     const address = req.body.address || req.body.customer_address || 'Nhận tại Showroom CTC Đà Nẵng';
     const note = req.body.note || '';
     const rawItems = req.body.items;
 
-    if (!name || !phone || !Array.isArray(rawItems) || rawItems.length === 0) {
+    if (!customerName || !phone || !Array.isArray(rawItems) || rawItems.length === 0) {
       return res.status(400).json({ success: false, error: 'Vui lòng điền đầy đủ các thông tin bắt buộc (Họ tên, Số điện thoại và sản phẩm).' });
     }
 
@@ -212,17 +212,17 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
       });
     }
 
-    const finalAmount = req.body.total_amount || req.body.totalAmount || calculatedTotal;
+    const totalAmount = req.body.total_amount || req.body.totalAmount || calculatedTotal;
 
     // Create and save Order
     const order = new Order({
       orderCode,
-      customerName: name,
+      customerName,
       phone,
       email,
       address,
       note,
-      totalAmount: finalAmount,
+      totalAmount,
       status: 'pending'
     });
 

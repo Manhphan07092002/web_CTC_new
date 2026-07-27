@@ -35,6 +35,10 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
   // Hide listed price line if listed price <= 0 or listed price == promotional price
   const showListedPrice = !isContact && listedPriceWithVat > 0 && listedPriceWithVat !== promotionalPriceWithVat;
 
+  const discountPercent = (!isContact && showListedPrice && listedPriceWithVat > promotionalPriceWithVat)
+    ? Math.round(((listedPriceWithVat - promotionalPriceWithVat) / listedPriceWithVat) * 100)
+    : 0;
+
   const stock = product.stock !== undefined ? product.stock : 1;
 
   return (
@@ -89,11 +93,16 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
               {t('products.contact_price') || 'Liên hệ báo giá'}
             </span>
           ) : (
-            <div className="flex items-baseline flex-wrap gap-2">
+            <div className="flex items-center flex-wrap gap-2">
               <span className="text-red-600 dark:text-red-500 font-bold text-2xl sm:text-3xl">
                 {formatVnCurrency(promotionalPriceWithVat)}
               </span>
-              <span className="text-gray-400 dark:text-gray-500 text-xs sm:text-sm font-normal">
+              {discountPercent > 0 && (
+                <span className="inline-flex items-center px-2.5 py-0.5 bg-red-100/80 dark:bg-red-950/60 text-red-600 dark:text-red-400 font-bold text-xs sm:text-sm rounded-full border border-red-200/60 dark:border-red-900/40">
+                  -{discountPercent}%
+                </span>
+              )}
+              <span className="text-gray-400 dark:text-gray-500 text-xs sm:text-sm font-normal ml-0.5">
                 [Giá đã có VAT]
               </span>
             </div>
