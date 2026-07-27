@@ -663,6 +663,21 @@
         transition: none !important;
       }
 
+      /* ===== Global Form Input Visibility Fix ===== */
+      .bg-white input,
+      .bg-white select,
+      .bg-white textarea,
+      input.bg-white,
+      select.bg-white,
+      textarea.bg-white {
+        color: #0f172a !important;
+      }
+
+      .bg-white input::placeholder,
+      input.bg-white::placeholder {
+        color: #94a3b8 !important;
+      }
+
       /* Respect users who prefer reduced motion, including marquee sections. */
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after {

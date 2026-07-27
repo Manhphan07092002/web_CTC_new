@@ -14,7 +14,7 @@ export const COMPANY = {
   // Pháp lý
   taxId: '0400458940',
   foundingDate: '2004-01-30',
-  founder: 'Nguyễn Văn Duy',
+  founder: 'Ban Lãnh Đạo CTC',
   charterCapital: '9.987.660.000 VNĐ',
   
   // Liên hệ

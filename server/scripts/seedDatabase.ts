@@ -328,7 +328,7 @@ const seedDatabase = async () => {
 
     console.log('Inserting Team, Testimonials, Partners...');
     await TeamMember.insertMany([
-      { name: 'Nguyễn Văn A', role: 'Giám đốc Điều hành', bio: 'Hơn 15 năm kinh nghiệm', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80', email: 'a@ctcdn.vn', phone: '0901234567', order: 1 },
+      { name: 'Ban Giám Đốc CTC', role: 'Hội đồng Quản trị & Điều hành', bio: 'Hội đồng Quản trị & Ban Điều hành Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)', image: '/images/why_choose_us_visual.webp', email: 'info@ctcdn.vn', phone: '0915059666', order: 1 },
       { name: 'Trần Thị B', role: 'Kỹ sư trưởng', bio: 'Chuyên gia thiết kế hệ thống', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80', email: 'b@ctcdn.vn', phone: '0909876543', order: 2 }
     ]);
 

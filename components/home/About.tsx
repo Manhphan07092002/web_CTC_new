@@ -136,9 +136,13 @@ const About: React.FC<AboutProps> = ({ onOpenModal }) => {
             background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .dark .about-title-gradient {
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 60%, #1e40af 100%);
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 60%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .about-glass-card {

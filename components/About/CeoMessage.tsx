@@ -76,9 +76,9 @@ const CeoMessage: React.FC = () => {
               style={{ transform: `translateY(${parallax.y * 0.15}px) translateX(${parallax.x * 0.15}px)` }}
             >
               <img 
-                src="/images/about_solar_install.webp"
+                src="/images/why_choose_us_visual.webp"
                 alt={t('about.ceo_title')} 
-                className="w-full h-[320px] lg:h-[350px] object-cover hover:scale-105 transition-transform duration-700 ease-out"
+                className="w-full h-[320px] lg:h-[350px] object-cover object-center hover:scale-105 transition-transform duration-700 ease-out"
               />
               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#060d1d] via-[#060d1d]/70 to-transparent p-6 pt-16 text-white">
                 <h3 className="text-xl font-bold tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -275,7 +275,7 @@ const CeoMessage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Fixed CEO Signature block */}
+              {/* Fixed Leadership Signature block */}
               <div className="mt-10 flex justify-end">
                 <div className="about-glass-card p-5 text-center w-72 shadow-md bg-white/80 dark:bg-slate-950/80 border border-slate-200/50 dark:border-white/5 rounded-2xl hover:border-sky-500/20 transition-all duration-300">
                   <p className="text-slate-400 dark:text-slate-500 text-xxs uppercase tracking-widest font-bold mb-1">
@@ -283,12 +283,12 @@ const CeoMessage: React.FC = () => {
                   </p>
                   <div className="h-14 flex items-center justify-center my-1 select-none">
                     <span 
-                      className={`text-3xl text-sky-600 dark:text-sky-400 rotate-[-3deg] tracking-wide whitespace-nowrap ${
+                      className={`text-2xl text-sky-600 dark:text-sky-400 rotate-[-1deg] tracking-wider whitespace-nowrap font-bold ${
                         isInView ? 'signature-animated' : 'opacity-0'
                       }`}
-                      style={{ fontFamily: '"Dancing Script", cursive, serif', fontWeight: 700 }}
+                      style={{ fontFamily: "'Montserrat', sans-serif" }}
                     >
-                      Nguyen Van Duy
+                      CTC LEADERSHIP
                     </span>
                   </div>
                   <h4 
