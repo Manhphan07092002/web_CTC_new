@@ -331,6 +331,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
             value={htmlSource}
             onChange={handleHtmlSourceChange}
             rows={16}
+            spellCheck={false}
             placeholder="Dán hoặc chỉnh sửa mã HTML ở đây..."
             className="w-full bg-transparent outline-none font-mono text-xs leading-relaxed text-amber-300 resize-y min-h-[380px]"
           />

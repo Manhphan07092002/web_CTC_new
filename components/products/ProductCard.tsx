@@ -2,6 +2,7 @@ import React from 'react';
 import { Eye, ShoppingCart } from 'lucide-react';
 import { Product } from '../../types';
 import PriceDisplay from '../PriceDisplay';
+import { stripHtmlAndJson } from '../../utils/priceUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -18,6 +19,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   t,
   placeholderImage
 }) => {
+  const cleanDesc = stripHtmlAndJson(product.shortDescription || product.description);
   return (
     <div
       onClick={onClick}
@@ -80,7 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Description */}
         <div className="mb-4 flex-grow">
           <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-            {product.description}
+            {cleanDesc}
           </p>
         </div>
 

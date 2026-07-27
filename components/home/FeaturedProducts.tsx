@@ -6,6 +6,7 @@ import { getLangText } from '../../utils/translation-helper';
 import { useInView } from '../../hooks/useInView';
 import { Product } from '../../types';
 import { getProductUrl } from '../../utils/news-url-helper';
+import { stripHtmlAndJson } from '../../utils/priceUtils';
 
 interface FeaturedProductsProps {
   featuredProducts: Product[];
@@ -145,7 +146,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, i
                       {product.name}
                     </h3>
                     <p className="text-xs text-gray-500 dark:text-slate-400 line-clamp-2 leading-relaxed flex-1 mb-4">
-                      {product.description}
+                      {stripHtmlAndJson(product.shortDescription || product.description)}
                     </p>
 
                     {/* Bottom row */}

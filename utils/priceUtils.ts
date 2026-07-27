@@ -148,3 +148,28 @@ export function formatVnCurrency(value: number | string | null | undefined): str
   if (isNaN(num) || num < 0) return '0đ';
   return new Intl.NumberFormat('vi-VN').format(num) + 'đ';
 }
+
+/**
+ * Strip HTML tags and parse accidental JSON strings in descriptions
+ */
+export function stripHtmlAndJson(text: string | null | undefined): string {
+  if (!text) return '';
+  let str = String(text).trim();
+
+  // Strip HTML tags first
+  str = str.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+
+  // If text starts with JSON object like {"shortDescription": "..."} or {"description": "..."}
+  if (str.startsWith('{') && str.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(str);
+      str = parsed.shortDescription || parsed.description || parsed.content || str;
+      // Strip HTML again if JSON content had HTML
+      str = String(str).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    } catch (e) {
+      // ignore JSON parse error
+    }
+  }
+
+  return str.replace(/\s+/g, ' ').trim();
+}
