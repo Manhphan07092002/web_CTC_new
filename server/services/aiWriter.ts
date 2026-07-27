@@ -23,6 +23,7 @@ export interface AiGeneratedArticle {
   focusKeyword: string;
   tags: string[];
   image: string;
+  images?: string[];
   status: 'pending';
   sources?: string[];
 }
@@ -830,6 +831,7 @@ ${body_4}
     focusKeyword: kw,
     tags,
     image: mainImage,
+    images: extractedImages.slice(1, 4),
     status: 'pending',
     sources: scrapedUrlSuccess
       ? [`Cào dữ liệu & hình ảnh từ đường link: ${articleUrl}`, 'CTC Knowledge Base']

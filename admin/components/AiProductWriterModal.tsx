@@ -19,6 +19,7 @@ interface AiProductWriterModalProps {
     features?: string[];
     technicalSpecs?: { [key: string]: string };
     image?: string;
+    images?: string[];
   }) => void;
   initialName?: string;
   initialCode?: string;
@@ -51,8 +52,10 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
     if (e) e.preventDefault();
 
     const nameToUse = productName.trim();
-    if (!nameToUse) {
-      showToast('Vui lòng nhập tên hoặc mã sản phẩm', 'error');
+    const urlToUse = referenceUrl.trim();
+
+    if (!nameToUse && !urlToUse) {
+      showToast('Vui lòng nhập Tên sản phẩm hoặc dán Đường dẫn Link sản phẩm', 'error');
       return;
     }
 
@@ -63,21 +66,57 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
     const timer2 = setTimeout(() => setStep(3), 2800);
 
     try {
-      const prompt = `Bạn là chuyên gia kỹ thuật & Giám đốc Sản phẩm CTC, đồng thời là chuyên gia SEO Yoast Top 1 Google.
+      let parsed: any = null;
+
+      // 1. Try server-side scraping if URL is provided
+      if (urlToUse) {
+        try {
+          const res = await api.ai.generateArticle({
+            title: nameToUse || 'Sản phẩm mới từ link',
+            focusKeyword: focusKeyword.trim(),
+            tone: style,
+            targetLength,
+            articleUrl: urlToUse
+          });
+
+          if (res && res.data) {
+            parsed = {
+              name: res.data.title || nameToUse || 'Sản phẩm CTC',
+              code: productCode || ('CTC-' + Math.floor(1000 + Math.random() * 9000)),
+              focusKeyword: res.data.focusKeyword || focusKeyword || 'san pham ctc',
+              shortDescription: res.data.excerpt || '',
+              description: res.data.content || '',
+              specifications: 'Sản phẩm chính hãng CTC đầy đủ chứng nhận CO/CQ',
+              image: res.data.image,
+              images: res.data.images || [],
+              warranty: '24 tháng chính hãng'
+            };
+          }
+        } catch (serverErr) {
+          console.warn('[AI Scraper API Fallback to Gemini LLM]:', serverErr);
+        }
+      }
+
+      // 2. Client-side Gemini fallback prompt if server scraper didn't return complete JSON
+      if (!parsed) {
+        const prompt = `Bạn là chuyên gia kỹ thuật & Giám đốc Sản phẩm CTC, đồng thời là chuyên gia SEO Yoast Top 1 Google.
 Hãy tự động tạo TOÀN BỘ thông tin sản phẩm và bài viết mô tả kỹ thuật CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt cho website Công ty CTC.
 
 Thông tin đầu vào:
-- Tên/Model sản phẩm: "${nameToUse}"
+- Tên/Model sản phẩm: "${nameToUse || 'TỰ ĐỘNG BÓC TÁCH TỪ LINK'}"
 - Mã sản phẩm: "${productCode || 'Auto'}"
 - Danh mục: "${initialCategory || 'Thiết bị Công Nghệ & Điện Tử'}"
-- Link tham khảo: "${referenceUrl || 'None'}"
+- Link sản phẩm/bài viết tham khảo: "${urlToUse || 'None'}"
 - Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'Phân tích so sánh ưu điểm'}
 - Độ sâu bài viết: ${targetLength === 'deep' ? 'Viết rất chi tiết 900-1200 từ' : 'Tiêu chuẩn 600-800 từ'}
 
 YÊU CẦU SEO YOAST & READABILITY BẮT BUỘC:
-1. focusKeyword: Rút ra 1 từ khóa SEO chính 2-4 từ đại diện tốt nhất cho sản phẩm (VD: "${focusKeyword || nameToUse.toLowerCase().split(' ').slice(0, 3).join(' ')}").
-2. shortDescription: Mô tả ngắn Meta CHÍNH XÁC từ 120 đến 160 ký tự, BẮT BUỘC CHỨA TỪ KHÓA FOCUS.
-3. description (HTML): 
+1. name: Nếu tên sản phẩm trống, BẮT BUỘC tự động sinh Tên sản phẩm chuẩn SEO hấp dẫn nhất dựa theo link sản phẩm (${urlToUse}).
+2. focusKeyword: Rút ra 1 từ khóa SEO chính 2-4 từ đại diện tốt nhất cho sản phẩm.
+3. shortDescription: Mô tả ngắn Meta CHÍNH XÁC từ 120 đến 160 ký tự, BẮT BUỘC CHỨA TỪ KHÓA FOCUS.
+4. image: BẮT BUỘC trả về URL Ảnh chính sắc nét nhất cào được từ link (${urlToUse}).
+5. images: BẮT BUỘC trả về MẢNG CHỨA 1 ĐẾN 3 URL Hình ảnh bổ sung (ảnh thực tế, ảnh các góc nghiêng) cào được từ link (${urlToUse}).
+6. description (HTML): 
    - Bài viết mô tả sản phẩm hấp dẫn, đầy đủ cấu trúc H2 và H3.
    - Từ khóa Focus xuất hiện ngay 150 từ đầu tiên.
    - Mật độ từ khóa Focus 1.2% - 2.0%.
@@ -86,16 +125,19 @@ YÊU CẦU SEO YOAST & READABILITY BẮT BUỘC:
    - CHÈN DANH SÁCH: BẮT BUỘC có ít nhất 2 danh sách <ul><li>...</li></ul> cho Tính năng nổi bật & Ứng dụng.
    - TỪ NỐI CHUYỂN TIẾP: Dùng ít nhất 4-6 từ nối ("Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra").
    - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC có: <p class="mt-4 pt-4 border-t">Quý khách có thể tham khảo thêm các thiết bị tại <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc liên hệ báo giá tại <a href="/contact" class="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
-   - CÀO ẢNH & VIDEO TỪ LINK THAM KHẢO (${referenceUrl || 'None'}): Nếu có link tham khảo, AI BẮT BUỘC cào dữ liệu thực tế, lấy tất cả liên kết hình ảnh sản phẩm gốc (thẻ <img src="...">) và video demo/review sản phẩm đính kèm (thẻ <iframe src="..."> hoặc YouTube/Vimeo) để chèn vào bài viết HTML.
-   - HÌNH ẢNH & VIDEO: Chèn ít nhất 1-2 ảnh minh họa <img src="[URL_ẢNH_THỰC_TẾ_SẢN_PHẨM]" alt="[focusKeyword] chính hãng CTC" class="rounded-xl my-4 w-full object-cover" /> và 1 khung video nếu tìm thấy: <div class="aspect-video my-6 rounded-2xl overflow-hidden shadow-lg"><iframe src="[URL_VIDEO_YOUTUBE_HOẶC_GỐC]" class="w-full h-full" allowfullscreen></iframe></div>.
 
 Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
 
 {
-  "name": "${nameToUse}",
+  "name": "Tên sản phẩm tự động sinh...",
   "code": "${productCode || 'CTC-' + Math.floor(1000 + Math.random() * 9000)}",
-  "focusKeyword": "${focusKeyword || nameToUse.toLowerCase().split(' ').slice(0, 3).join(' ')}",
-  "shortDescription": "Đoạn mô tả ngắn Meta 120-160 ký tự chứa từ khóa focus...",
+  "focusKeyword": "${focusKeyword || 'san pham'}",
+  "shortDescription": "Đoạn mô tả ngắn Meta 120-160 ký tự...",
+  "image": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
+  "images": [
+    "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800",
+    "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800"
+  ],
   "description": "<p>Đoạn mở đầu chứa từ khóa focus...</p><h2>...</h2>...",
   "specifications": "Tóm tắt tổng quan thông số kỹ thuật...",
   "power": 0.55,
@@ -104,41 +146,41 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
   "features": [
     "Tính năng nổi bật 1",
     "Tính năng nổi bật 2",
-    "Tính năng nổi bật 3",
-    "Tính năng nổi bật 4"
+    "Tính năng nổi bật 3"
   ],
   "technicalSpecs": {
     "Kích thước": "Tiêu chuẩn nhà sản xuất",
-    "Trọng lượng": "Tối ưu nhỏ gọn",
-    "Tiêu chuẩn": "ISO / IEC / CE",
     "Bảo hành": "Chính hãng 24 tháng"
   }
 }
 `;
 
-      const response = await chatService.sendMessage(prompt);
+        const response = await chatService.sendMessage(prompt);
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+
+        try {
+          const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
+          const match = cleanResponse.match(/\{[\s\S]*\}/);
+          if (match) {
+            try {
+              parsed = JSON.parse(match[0]);
+            } catch (jsonErr) {
+              const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+              parsed = JSON.parse(fixedJson);
+            }
+          }
+        } catch (e) {
+          console.warn('JSON parse error, fallback to raw:', e);
+        }
+      }
+
       clearTimeout(timer1);
       clearTimeout(timer2);
 
-      let parsed: any = null;
-      try {
-        const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
-        const match = cleanResponse.match(/\{[\s\S]*\}/);
-        if (match) {
-          try {
-            parsed = JSON.parse(match[0]);
-          } catch (jsonErr) {
-            const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
-            parsed = JSON.parse(fixedJson);
-          }
-        }
-      } catch (e) {
-        console.warn('JSON parse error, fallback to raw:', e);
-      }
-
       if (parsed && (parsed.name || parsed.description)) {
         setResult(parsed);
-        showToast('✨ AI đã tự động tạo TOÀN BỘ thông tin sản phẩm chuẩn SEO thành công!', 'success');
+        showToast('✨ AI đã tự động cào thông tin, sinh tên sản phẩm & trích xuất hình ảnh thành công!', 'success');
       } else {
         throw new Error('Không thể đọc cấu trúc dữ liệu sản phẩm từ AI');
       }
@@ -165,9 +207,10 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
       warranty: result.warranty || '24 tháng',
       features: Array.isArray(result.features) ? result.features : [],
       technicalSpecs: typeof result.technicalSpecs === 'object' ? result.technicalSpecs : {},
-      image: result.image
+      image: result.image || '',
+      images: Array.isArray(result.images) ? result.images : []
     });
-    showToast('🎉 Đã áp dụng toàn bộ thông tin sản phẩm AI vào Form thành công!', 'success');
+    showToast('🎉 Đã áp dụng Tên sản phẩm, Ảnh chính, 1-3 Ảnh phụ & Bài viết AI vào Form thành công!', 'success');
     onClose();
   };
 
@@ -235,14 +278,13 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
-                    Tên hoặc Model sản phẩm <span className="text-red-500">*</span>
+                    Tên hoặc Model sản phẩm <span className="text-emerald-600 font-bold lowercase">(tự động từ Link nếu để trống)</span>
                   </label>
                   <input
                     type="text"
-                    required
                     value={productName}
                     onChange={e => setProductName(e.target.value)}
-                    placeholder="VD: Laptop ASUS Vivobook S14 S3407VA-LY146W hoặc Tấm pin Canadian Solar 550W"
+                    placeholder="VD: Laptop ASUS Vivobook (hoặc để trống nếu đã dán Link)"
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
@@ -407,6 +449,29 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                   <p className="text-xs font-black text-primary truncate">🔑 "{result.focusKeyword}"</p>
                 </div>
               </div>
+
+              {/* Scraped Images Preview Cards */}
+              {(result.image || (Array.isArray(result.images) && result.images.length > 0)) && (
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    📸 Hình ảnh sản phẩm AI cào & tự động điền vào Form:
+                  </span>
+                  <div className="flex items-center gap-3 overflow-x-auto pb-1">
+                    {result.image && (
+                      <div className="relative group flex-shrink-0">
+                        <img src={result.image} alt="Main Product" className="w-20 h-20 object-cover rounded-xl border-2 border-primary shadow-xs" />
+                        <span className="absolute bottom-1 left-1 bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded">Ảnh chính</span>
+                      </div>
+                    )}
+                    {Array.isArray(result.images) && result.images.map((imgUrl: string, idx: number) => (
+                      <div key={idx} className="relative group flex-shrink-0">
+                        <img src={imgUrl} alt={`Extra ${idx + 1}`} className="w-20 h-20 object-cover rounded-xl border border-slate-300 shadow-xs" />
+                        <span className="absolute bottom-1 left-1 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Ảnh phụ {idx + 1}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Tabs for preview vs HTML code */}
               <div className="flex border-b border-slate-200">

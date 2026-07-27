@@ -84,6 +84,7 @@ const ProductForm: React.FC = () => {
     features?: string[];
     technicalSpecs?: { [key: string]: string };
     image?: string;
+    images?: string[];
   }) => {
     setFocusKeyword(data.focusKeyword);
     setFormData(prev => ({
@@ -99,7 +100,8 @@ const ProductForm: React.FC = () => {
       warranty: data.warranty || prev.warranty,
       features: data.features && data.features.length > 0 ? data.features : prev.features,
       technicalSpecs: data.technicalSpecs || prev.technicalSpecs,
-      image: prev.image || data.image || ''
+      image: data.image || prev.image || '',
+      images: data.images && data.images.length > 0 ? data.images : prev.images
     }));
   };
 
