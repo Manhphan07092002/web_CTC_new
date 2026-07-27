@@ -173,10 +173,15 @@ router.get('/:id', async (req: any, res) => {
 // Create new order (Public check-out with anti-spam)
 router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
   try {
-    const { customerName, phone, email, address, note, items } = req.body;
+    const name = req.body.customerName || req.body.customer_name || req.body.name;
+    const phone = req.body.phone || req.body.customer_phone;
+    const email = req.body.email || req.body.customer_email || '';
+    const address = req.body.address || req.body.customer_address || 'Nhận tại Showroom CTC Đà Nẵng';
+    const note = req.body.note || '';
+    const rawItems = req.body.items;
 
-    if (!customerName || !phone || !email || !address || !items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ success: false, error: 'Required fields are missing' });
+    if (!name || !phone || !Array.isArray(rawItems) || rawItems.length === 0) {
+      return res.status(400).json({ success: false, error: 'Vui lòng điền đầy đủ các thông tin bắt buộc (Họ tên, Số điện thoại và sản phẩm).' });
     }
 
     // Generate unique order code
@@ -189,33 +194,35 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
     }
 
     // Calculate total amount
-    let totalAmount = 0;
+    let calculatedTotal = 0;
     const itemsToSave = [];
 
-    for (const item of items) {
+    for (const item of rawItems) {
       const price = Number(item.price) || 0;
       const quantity = Number(item.quantity) || 1;
       const subtotal = price * quantity;
-      totalAmount += subtotal;
+      calculatedTotal += subtotal;
 
       itemsToSave.push({
-        productId: item.product_id,
-        productName: item.product_name,
+        productId: item.productId || item.product_id || item.id,
+        productName: item.productName || item.product_name || item.name || 'Sản phẩm',
         price,
         quantity,
         subtotal
       });
     }
 
+    const finalAmount = req.body.total_amount || req.body.totalAmount || calculatedTotal;
+
     // Create and save Order
     const order = new Order({
       orderCode,
-      customerName,
+      customerName: name,
       phone,
       email,
       address,
-      note: note || '',
-      totalAmount,
+      note,
+      totalAmount: finalAmount,
       status: 'pending'
     });
 

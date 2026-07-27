@@ -159,11 +159,16 @@ const Cart: React.FC = () => {
 
     setIsSubmitting(true);
     try {
+      const orderAddress = deliveryMethod === 'pickup' ? 'Nhận tại Showroom CTC Đà Nẵng' : address;
       const orderPayload = {
+        customerName: customerName,
         customer_name: customerName,
+        phone: phone,
         customer_phone: phone,
+        email: email,
         customer_email: email,
-        customer_address: deliveryMethod === 'pickup' ? 'Nhận tại Showroom CTC Đà Nẵng' : address,
+        address: orderAddress,
+        customer_address: orderAddress,
         note: note,
         delivery_method: deliveryMethod,
         payment_method: paymentMethod,
@@ -172,11 +177,14 @@ const Cart: React.FC = () => {
         company_address: paymentMethod === 'vat_invoice' ? companyAddress : undefined,
         invoice_email: paymentMethod === 'vat_invoice' ? invoiceEmail : undefined,
         items: cartItems.map(item => ({
+          productId: item.product_id,
           product_id: item.product_id,
+          productName: item.product_name,
           product_name: item.product_name,
           quantity: item.quantity,
           price: item.price
         })),
+        totalAmount: finalTotalAmount,
         total_amount: finalTotalAmount,
         original_amount: totalAmount,
         discount_amount: appliedDiscount,
