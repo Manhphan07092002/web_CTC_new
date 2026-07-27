@@ -86,7 +86,8 @@ YÊU CẦU SEO YOAST & READABILITY BẮT BUỘC:
    - CHÈN DANH SÁCH: BẮT BUỘC có ít nhất 2 danh sách <ul><li>...</li></ul> cho Tính năng nổi bật & Ứng dụng.
    - TỪ NỐI CHUYỂN TIẾP: Dùng ít nhất 4-6 từ nối ("Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra").
    - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC có: <p class="mt-4 pt-4 border-t">Quý khách có thể tham khảo thêm các thiết bị tại <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc liên hệ báo giá tại <a href="/contact" class="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
-   - HÌNH ẢNH: Chèn ít nhất 1 ảnh minh họa <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800" alt="[focusKeyword] chính hãng CTC" class="rounded-xl my-4 w-full" />.
+   - CÀO ẢNH & VIDEO TỪ LINK THAM KHẢO (${referenceUrl || 'None'}): Nếu có link tham khảo, AI BẮT BUỘC cào dữ liệu thực tế, lấy tất cả liên kết hình ảnh sản phẩm gốc (thẻ <img src="...">) và video demo/review sản phẩm đính kèm (thẻ <iframe src="..."> hoặc YouTube/Vimeo) để chèn vào bài viết HTML.
+   - HÌNH ẢNH & VIDEO: Chèn ít nhất 1-2 ảnh minh họa <img src="[URL_ẢNH_THỰC_TẾ_SẢN_PHẨM]" alt="[focusKeyword] chính hãng CTC" class="rounded-xl my-4 w-full object-cover" /> và 1 khung video nếu tìm thấy: <div class="aspect-video my-6 rounded-2xl overflow-hidden shadow-lg"><iframe src="[URL_VIDEO_YOUTUBE_HOẶC_GỐC]" class="w-full h-full" allowfullscreen></iframe></div>.
 
 Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
 
@@ -285,6 +286,9 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     placeholder="https://..."
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
+                  <p className="text-[11px] text-emerald-600 font-bold mt-1 flex items-center gap-1">
+                    <span>🌐 AI sẽ tự động cào dữ liệu, trích xuất hình ảnh thực tế & nhúng video YouTube/Vimeo từ link này!</span>
+                  </p>
                 </div>
               </div>
 

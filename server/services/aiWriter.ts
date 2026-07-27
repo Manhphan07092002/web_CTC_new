@@ -181,7 +181,7 @@ function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: st
 /**
  * Automatically Scrape Article Content & Images from URL (Cheerio-style Web Scraping)
  */
-async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[] }> {
+async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[] }> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
@@ -194,7 +194,7 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
     });
     clearTimeout(timeout);
 
-    if (!res.ok) return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [] };
+    if (!res.ok) return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
     const html = await res.text();
 
     // 1. Extract Title
@@ -240,10 +240,32 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
       }
     }
 
-    return { scrapedTitle, scrapedParagraphs, scrapedImages };
+    // 4. Extract Real Videos (YouTube, Vimeo, HTML5 Video)
+    const scrapedVideos: string[] = [];
+    const iframeRegex = /<iframe[^>]+src=["']([^"'\s]+(?:youtube|youtu\.be|vimeo)[^"'\s]*)["'][^>]*>/gi;
+    let vMatch;
+    while ((vMatch = iframeRegex.exec(html)) !== null && scrapedVideos.length < 3) {
+      let vUrl = vMatch[1].trim();
+      if (vUrl.startsWith('//')) vUrl = 'https:' + vUrl;
+      if (!scrapedVideos.includes(vUrl)) {
+        scrapedVideos.push(vUrl);
+      }
+    }
+
+    const videoTagRegex = /<(?:video|source)[^>]+src=["']([^"'\s]+\.(?:mp4|webm|ogg))["'][^>]*>/gi;
+    let mp4Match;
+    while ((mp4Match = videoTagRegex.exec(html)) !== null && scrapedVideos.length < 3) {
+      let mp4Url = mp4Match[1].trim();
+      if (mp4Url.startsWith('//')) mp4Url = 'https:' + mp4Url;
+      if (mp4Url.startsWith('http') && !scrapedVideos.includes(mp4Url)) {
+        scrapedVideos.push(mp4Url);
+      }
+    }
+
+    return { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos };
   } catch (err) {
     console.error('[AI Scrape Article URL Error]:', err);
-    return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [] };
+    return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
   }
 }
 
@@ -519,12 +541,14 @@ export async function generateAiArticle(
   let rawReferenceText = (referenceContent || '').trim();
   let extractedImages: string[] = [];
 
-  // 1. Auto Scrape Article Text & Images if URL is supplied
+  let extractedVideos: string[] = [];
+
+  // 1. Auto Scrape Article Text, Images & Videos if URL is supplied
   let scrapedUrlSuccess = false;
   if (articleUrl && articleUrl.trim().startsWith('http')) {
-    console.log(`[AI Writer]: Auto scraping article content & images from URL: ${articleUrl}`);
-    const { scrapedTitle, scrapedParagraphs, scrapedImages } = await scrapeArticleFromUrl(articleUrl.trim());
-    if (scrapedParagraphs.length > 0) {
+    console.log(`[AI Writer]: Auto scraping article content, images & videos from URL: ${articleUrl}`);
+    const { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos } = await scrapeArticleFromUrl(articleUrl.trim());
+    if (scrapedParagraphs.length > 0 || scrapedImages.length > 0) {
       scrapedUrlSuccess = true;
       if (!cleanTitle && scrapedTitle) {
         cleanTitle = scrapedTitle;
@@ -532,6 +556,9 @@ export async function generateAiArticle(
       rawReferenceText = scrapedParagraphs.join('\n\n');
       if (scrapedImages.length > 0) {
         extractedImages = scrapedImages;
+      }
+      if (scrapedVideos && scrapedVideos.length > 0) {
+        extractedVideos = scrapedVideos;
       }
     }
   }
@@ -744,10 +771,21 @@ ${p6}
 </figure>
 ` : '';
 
+    const scrapedVideoBlock = (extractedVideos && extractedVideos.length > 0) ? `
+<div class="my-6">
+  <p class="font-bold text-xs text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1">🎬 Video trải nghiệm & review thực tế:</p>
+  <div class="aspect-video w-full rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-black">
+    <iframe src="${extractedVideos[0]}" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</div>
+` : '';
+
     content = `
 ${introP}
 
 ${execSummaryBox}
+
+${scrapedVideoBlock}
 
 <div class="my-6 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
   <p class="font-black text-slate-800 text-sm uppercase tracking-wider mb-2">📌 Mục lục bài viết:</p>
