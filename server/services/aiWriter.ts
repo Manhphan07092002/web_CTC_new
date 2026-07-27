@@ -18,6 +18,7 @@ import { db } from '../../services/db-mongodb';
 
 export interface AiGeneratedArticle {
   title: string;
+  rawTitle?: string; // Original scraped/clean title before Yoast formatting (use this as product/project name)
   excerpt: string;
   content: string;
   focusKeyword: string;
@@ -588,8 +589,11 @@ export async function generateAiArticle(
     }
   }
 
-  if (!cleanTitle) {
+  if (!cleanTitle && !articleUrl) {
     throw new Error('Vui lòng nhập tiêu đề hoặc dán đường dẫn link bài báo mẫu');
+  }
+  if (!cleanTitle) {
+    throw new Error('Không thể tự động lấy tên sản phẩm từ link. Trang web có thể chặn cào dữ liệu.');
   }
 
   const refParagraphs = parseCleanReferenceParagraphs(rawReferenceText);
@@ -840,6 +844,7 @@ ${body_4}
 
   return {
     title,
+    rawTitle: cleanTitle, // Original scraped title - use this as product/project name in forms
     excerpt,
     content,
     focusKeyword: kw,

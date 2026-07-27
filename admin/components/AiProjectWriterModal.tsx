@@ -1,47 +1,43 @@
 import React, { useState } from 'react';
-import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code, Copy, Link2, LayoutGrid, Package, ShieldCheck, Zap } from 'lucide-react';
+import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code, Copy, Link2, LayoutGrid, Building2, MapPin, Zap, Calendar } from 'lucide-react';
 import { chatService } from '../../services/chatService';
 import { useToast } from '../../contexts/ToastContext';
 import { api } from '../../services/api';
 import { formatSeoProductHtml } from '../utils/seoProductFormatter';
 
-interface AiProductWriterModalProps {
+interface AiProjectWriterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApply: (generatedData: {
-    name: string;
-    code?: string;
+    title: string;
+    location: string;
+    capacity: string;
+    completionDate: string;
     focusKeyword: string;
-    shortDescription: string;
-    description: string;
-    specifications: string;
-    power?: number;
-    efficiency?: number;
-    warranty?: string;
-    features?: string[];
-    technicalSpecs?: { [key: string]: string };
-    image?: string;
+    excerpt: string;
+    content: string;
+    image: string;
     images?: string[];
   }) => void;
-  initialName?: string;
-  initialCode?: string;
+  initialTitle?: string;
+  initialLocation?: string;
   initialCategory?: string;
 }
 
-const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
+const AiProjectWriterModal: React.FC<AiProjectWriterModalProps> = ({
   isOpen,
   onClose,
   onApply,
-  initialName = '',
-  initialCode = '',
+  initialTitle = '',
+  initialLocation = '',
   initialCategory = ''
 }) => {
   const { showToast } = useToast();
-  const [productName, setProductName] = useState(initialName);
-  const [productCode, setProductCode] = useState(initialCode);
+  const [projectTitle, setProjectTitle] = useState(initialTitle);
+  const [location, setLocation] = useState(initialLocation);
   const [focusKeyword, setFocusKeyword] = useState('');
   const [referenceUrl, setReferenceUrl] = useState('');
-  const [style, setStyle] = useState<'technical' | 'sales' | 'comparison'>('technical');
+  const [style, setStyle] = useState<'technical' | 'storytelling' | 'roi'>('technical');
   const [targetLength, setTargetLength] = useState<'standard' | 'deep'>('deep');
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,11 +49,11 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
   const handleGenerate = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    const nameToUse = productName.trim();
+    const titleToUse = projectTitle.trim();
     const urlToUse = referenceUrl.trim();
 
-    if (!nameToUse && !urlToUse) {
-      showToast('Vui lòng nhập Tên sản phẩm hoặc dán Đường dẫn Link sản phẩm', 'error');
+    if (!titleToUse && !urlToUse) {
+      showToast('Vui lòng nhập Tên dự án hoặc dán Link bài viết dự án mẫu', 'error');
       return;
     }
 
@@ -74,97 +70,80 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
       if (urlToUse) {
         try {
           const res = await api.ai.generateArticle({
-            title: nameToUse || '',
+            title: titleToUse || 'Dự án công trình CTC',
             focusKeyword: focusKeyword.trim(),
-            tone: style,
+            tone: style === 'storytelling' ? 'storytelling' : 'expert',
             targetLength,
-            articleUrl: urlToUse
+            articleUrl: urlToUse,
+            structure: 'pas'
           });
 
           if (res && res.data) {
-            // Use rawTitle (scraped from page) as product name, fallback to user input
-            const scrapedName = res.data.rawTitle || nameToUse || '';
             parsed = {
-              name: scrapedName,
-              code: productCode || ('CTC-' + Math.floor(1000 + Math.random() * 9000)),
-              focusKeyword: res.data.focusKeyword || focusKeyword || 'san pham ctc',
-              shortDescription: res.data.excerpt || '',
-              description: res.data.content || '',
-              specifications: 'Sản phẩm chính hãng CTC đầy đủ chứng nhận CO/CQ',
+              title: res.data.title || titleToUse || 'Dự án Xây Lắp Bưu Điện Miền Trung (CTC)',
+              location: location || 'Đà Nẵng & Các Tỉnh Miền Trung',
+              capacity: 'Công suất thiết kế tiêu chuẩn',
+              completionDate: '2026',
+              focusKeyword: res.data.focusKeyword || focusKeyword || 'dự án ctc',
+              excerpt: res.data.excerpt || '',
+              content: res.data.content || '',
               image: res.data.image,
-              images: res.data.images || [],
-              warranty: '24 tháng chính hãng'
+              images: res.data.images || []
             };
           }
         } catch (serverErr) {
-          console.warn('[AI Scraper API Fallback to Gemini LLM]:', serverErr);
+          console.warn('[AI Scraper API Fallback for Project]:', serverErr);
         }
       }
 
       // 2. Client-side Gemini fallback prompt if server scraper didn't return complete JSON
       if (!parsed) {
-        const prompt = `Bạn là chuyên gia kỹ thuật & Giám đốc Sản phẩm CTC, đồng thời là chuyên gia SEO Yoast Top 1 Google.
-Hãy tự động tạo TOÀN BỘ thông tin sản phẩm và bài viết mô tả kỹ thuật CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt cho website Công ty CTC.
+        const prompt = `Bạn là Giám đốc Dự án & Chuyên gia Kỹ thuật CTC (Công ty Cổ phần Xây lắp Bưu Điện Miền Trung), đồng thời là chuyên gia SEO Yoast Top 1 Google.
+Hãy tự động viết TOÀN BỘ hồ sơ năng lực / bài viết Case Study dự án CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
 
 Thông tin đầu vào:
-- Tên/Model sản phẩm: "${nameToUse || 'TỰ ĐỘNG BÓC TÁCH TỪ LINK BÊN DƯỚI'}"
-- Mã sản phẩm: "${productCode || 'Auto'}"
-- Danh mục: "${initialCategory || 'Thiết bị Công Nghệ & Điện Tử'}"
-- Link sản phẩm/bài viết tham khảo: "${urlToUse || 'None'}"
-- Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'Phân tích so sánh ưu điểm'}
+- Tên/Quy mô dự án: "${titleToUse || 'TỰ ĐỘNG BÓC TÁCH TỪ LINK'}"
+- Địa điểm: "${location || 'Tự động bóc tách'}"
+- Danh mục công trình: "${initialCategory || 'Năng Lượng Mặt Trời / Hạ Tầng Số'}"
+- Link bài viết/Case Study tham khảo: "${urlToUse || 'None'}"
+- Phong cách: ${style === 'technical' ? 'Báo cáo kỹ thuật B2B' : style === 'storytelling' ? 'Câu chuyện thực tế & Review dự án' : 'Phân tích hiệu quả đầu tư & Tiết kiệm chi phí'}
 - Độ sâu bài viết: ${targetLength === 'deep' ? 'Viết rất chi tiết 900-1200 từ' : 'Tiêu chuẩn 600-800 từ'}
 
-YÊU CẦU QUAN TRỌNG NHẤT - TÊN SẢN PHẨM:
-${urlToUse ? `BẮT BUỘC: Bóc tách chính xác Tên sản phẩm / Model thực tế từ nội dung trang web tại link "${urlToUse}".
-KHÔNG ĐƯỢC tự ý đặt tên sáng tạo, KHÔNG thêm hậu tố marketing.
-Ví dụ: Nếu link là trang laptop MSI Modern 15 → name = "Laptop MSI Modern 15"
-Ví dụ: Nếu link là trang pin mặt trời Jinko 550W → name = "Tấm pin mặt trời Jinko Solar 550W"` : `Dùng tên sản phẩm: "${nameToUse}"`}
-
-YÊU CẦU SEO YOAST & READABILITY BẮT BUỘC:
-1. name: TÊN SẢN PHẨM CHÍNH XÁC từ link (KHÔNG phải tiêu đề SEO, KHÔNG thêm "– Tin Tức Cập Nhật 2026" hay bất kỳ hậu tố nào).
-2. focusKeyword: Rút ra 1 từ khóa SEO chính 2-4 từ đại diện tốt nhất cho sản phẩm.
-3. shortDescription: Mô tả ngắn Meta CHÍNH XÁC từ 120 đến 160 ký tự, BẮT BUỘC CHỨA TỪ KHÓA FOCUS.
-4. image: BẮT BUỘC trả về URL Ảnh chính sắc nét nhất cào được từ link (${urlToUse}).
-5. images: BẮT BUỘC trả về MẢNG CHỨA 1 ĐẾN 3 URL Hình ảnh bổ sung (ảnh thực tế, ảnh các góc nghiêng) cào được từ link (${urlToUse}).
-6. description (HTML): 
-   - Bài viết mô tả sản phẩm hấp dẫn, đầy đủ cấu trúc H2 và H3.
+YÊU CẦU SEO YOAST & DỄ ĐỌC BẮT BUỘC:
+1. title: Nếu tên dự án trống, BẮT BUỘC tự động sinh Tên dự án chuẩn SEO dựa theo thông tin cào từ Link.
+2. location: Địa điểm thi công dự án (VD: "Đà Nẵng", "KCN Quảng Ngãi").
+3. capacity: Quy mô/Công suất công trình (VD: "1.2 MWp" hoặc "Trạm biến áp 110kV").
+4. completionDate: Năm/Thời gian hoàn thành (VD: "2026").
+5. focusKeyword: Rút ra 1 từ khóa SEO chính 2-4 từ đại diện tốt nhất cho dự án.
+6. excerpt: Đoạn tóm tắt Meta CHÍNH XÁC từ 120 đến 160 ký tự, BẮT BUỘC CHỨA TỪ KHÓA FOCUS.
+7. image: BẮT BUỘC trả về URL Ảnh bìa chính công trình cào được từ link (${urlToUse}).
+8. images: BẮT BUỘC trả về MẢNG CHỨA 1 ĐẾN 3 URL Hình ảnh thực tế dự án cào được từ link.
+9. content (HTML): 
+   - Bài viết Case Study dự án hấp dẫn, đầy đủ cấu trúc H2 và H3.
    - Từ khóa Focus xuất hiện ngay 150 từ đầu tiên.
    - Mật độ từ khóa Focus 1.2% - 2.0%.
-   - CÂU VĂN NGẮN: Tất cả câu văn dưới 16 từ/câu, ngắt chấm thường xuyên.
-   - ĐOẠN VĂN NGẮN: Mỗi thẻ <p> chỉ 2-3 câu ngắn (dưới 60 từ).
-   - CHÈN DANH SÁCH: BẮT BUỘC có ít nhất 2 danh sách <ul><li>...</li></ul> cho Tính năng nổi bật & Ứng dụng.
-   - TỪ NỐI CHUYỂN TIẾP: Dùng ít nhất 4-6 từ nối ("Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra").
-   - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC có: <p class="mt-4 pt-4 border-t">Quý khách có thể tham khảo thêm các thiết bị tại <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc liên hệ báo giá tại <a href="/contact" class="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
+   - CÂU VĂN NGẮN: Tất cả câu văn dưới 16 từ/câu.
+   - ĐOẠN VĂN NGẮN: Mỗi thẻ <p> chỉ 2-3 câu ngắn.
+   - CHÈN DANH SÁCH: BẮT BUỘC có ít nhất 2 danh sách <ul><li>...</li></ul> cho Hạng mục thi công & Kết quả nghiệm thu.
+   - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC có: <p class="mt-4 pt-4 border-t">Quý khách có thể xem thêm các dự án khác tại <a href="/projects" class="text-primary font-bold hover:underline">Danh mục Dự án CTC</a> hoặc liên hệ tư vấn tại <a href="/contact" class="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
 
 Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
 
 {
-  "name": "Tên sản phẩm CHÍNH XÁC bóc tách từ link (VD: Laptop MSI Modern 15, Tấm pin Jinko 550W)...",
-  "code": "${productCode || 'CTC-' + Math.floor(1000 + Math.random() * 9000)}",
-  "focusKeyword": "${focusKeyword || 'san pham'}",
-  "shortDescription": "Đoạn mô tả ngắn Meta 120-160 ký tự...",
-  "image": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
+  "title": "Hệ thống điện mặt trời áp mái 1.2MWp...",
+  "location": "Quảng Ngãi",
+  "capacity": "1.2 MWp",
+  "completionDate": "2026",
+  "focusKeyword": "điện mặt trời áp mái",
+  "excerpt": "Đoạn mô tả ngắn Meta 120-160 ký tự...",
+  "image": "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800",
   "images": [
-    "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800",
+    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
     "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800"
   ],
-  "description": "<p>Đoạn mở đầu chứa từ khóa focus...</p><h2>...</h2>...",
-  "specifications": "Tóm tắt tổng quan thông số kỹ thuật...",
-  "power": 0.55,
-  "efficiency": 21.5,
-  "warranty": "24 tháng chính hãng",
-  "features": [
-    "Tính năng nổi bật 1",
-    "Tính năng nổi bật 2",
-    "Tính năng nổi bật 3"
-  ],
-  "technicalSpecs": {
-    "Kích thước": "Tiêu chuẩn nhà sản xuất",
-    "Bảo hành": "Chính hãng 24 tháng"
-  }
+  "content": "<p>Đoạn mở đầu chứa từ khóa focus...</p><h2>...</h2>..."
 }
 `;
-
 
         const response = await chatService.sendMessage(prompt);
         clearTimeout(timer1);
@@ -189,10 +168,10 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
       clearTimeout(timer1);
       clearTimeout(timer2);
 
-      if (parsed && (parsed.name || parsed.description)) {
-        const kwToUse = parsed.focusKeyword || focusKeyword || parsed.name || 'sản phẩm';
+      if (parsed && (parsed.title || parsed.content)) {
+        const kwToUse = parsed.focusKeyword || focusKeyword || parsed.title || 'dự án ctc';
         const { cleanHtml, finalMainImage, finalExtraImages } = formatSeoProductHtml(
-          parsed.description || '',
+          parsed.content || '',
           kwToUse,
           parsed.image,
           parsed.images || []
@@ -201,16 +180,16 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
         setResult({
           ...parsed,
           focusKeyword: kwToUse,
-          description: cleanHtml,
+          content: cleanHtml,
           image: finalMainImage,
           images: finalExtraImages
         });
-        showToast('✨ AI đã tự động cào thông tin, sinh tên sản phẩm & trích xuất hình ảnh thành công!', 'success');
+        showToast('✨ AI đã tự động cào dữ liệu & tạo hồ sơ Dự án chuẩn SEO thành công!', 'success');
       } else {
-        throw new Error('Không thể đọc cấu trúc dữ liệu sản phẩm từ AI');
+        throw new Error('Không thể đọc cấu trúc dữ liệu dự án từ AI');
       }
     } catch (err: any) {
-      console.error('AI Product Generator Error:', err);
+      console.error('AI Project Generator Error:', err);
       showToast(err.message || 'Lỗi khi kết nối AI Gemini', 'error');
     } finally {
       setLoading(false);
@@ -221,21 +200,17 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
   const handleApplyResult = () => {
     if (!result) return;
     onApply({
-      name: result.name || productName,
-      code: result.code || productCode,
-      focusKeyword: result.focusKeyword || focusKeyword || productName.toLowerCase(),
-      shortDescription: result.shortDescription || '',
-      description: result.description || '',
-      specifications: result.specifications || '',
-      power: typeof result.power === 'number' ? result.power : parseFloat(result.power) || 0,
-      efficiency: typeof result.efficiency === 'number' ? result.efficiency : parseFloat(result.efficiency) || 0,
-      warranty: result.warranty || '24 tháng',
-      features: Array.isArray(result.features) ? result.features : [],
-      technicalSpecs: typeof result.technicalSpecs === 'object' ? result.technicalSpecs : {},
+      title: result.title || projectTitle,
+      location: result.location || location || 'Việt Nam',
+      capacity: result.capacity || 'Tiêu chuẩn',
+      completionDate: result.completionDate || '2026',
+      focusKeyword: result.focusKeyword || focusKeyword || 'du an ctc',
+      excerpt: result.excerpt || '',
+      content: result.content || '',
       image: result.image || '',
       images: Array.isArray(result.images) ? result.images : []
     });
-    showToast('🎉 Đã áp dụng Tên sản phẩm, Ảnh chính, 1-3 Ảnh phụ & Bài viết AI vào Form thành công!', 'success');
+    showToast('🎉 Đã áp dụng Tên dự án, Địa điểm, Ảnh công trình & Nội dung AI vào Form thành công!', 'success');
     onClose();
   };
 
@@ -253,19 +228,19 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-              <Package size={24} className="text-amber-300 animate-pulse" />
+              <Building2 size={24} className="text-amber-300 animate-pulse" />
             </div>
             <div>
               <span className="text-xs font-black uppercase tracking-wider text-amber-300 bg-amber-400/20 px-2.5 py-0.5 rounded-full border border-amber-300/30">
-                ✨ Gemini AI Product Generator
+                ✨ Gemini AI Project Generator
               </span>
               <h2 className="text-xl md:text-2xl font-black tracking-tight text-white mt-0.5">
-                Trợ Lý AI Tạo Sản Phẩm Chuẩn SEO Yoast (100/100)
+                Trợ Lý AI Tạo Dự Án Chuẩn SEO Yoast (100/100)
               </h2>
             </div>
           </div>
           <p className="text-xs text-slate-200 ml-12 font-medium">
-            Tự động viết tên, mã model, mô tả chuẩn SEO, từ khóa Focus, thông số kỹ thuật & tính năng sản phẩm chỉ trong vài giây.
+            Tự động cào dữ liệu, sinh tên dự án, địa điểm, công suất, ảnh công trình & viết bài Case Study chuẩn SEO 100/100.
           </p>
         </div>
 
@@ -277,7 +252,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
                   <Wand2 size={16} className="animate-spin text-amber-300" />
-                  Đang tạo sản phẩm AI...
+                  Đang tạo bài viết dự án AI...
                 </span>
                 <span className="text-xs text-slate-400 font-bold">Bước {step}/3</span>
               </div>
@@ -290,9 +265,9 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               </div>
 
               <p className="text-sm font-semibold text-slate-200">
-                {step === 1 && '🔍 Đang phân tích mã model & tra cứu thông tin sản phẩm...'}
-                {step === 2 && '🎯 Đang bóc tách từ khóa Focus & lập cấu trúc H2/H3 chuẩn Yoast...'}
-                {step === 3 && '✍️ Đang viết bài mô tả chi tiết, bảng thông số kỹ thuật & tối ưu độ dễ đọc 90-100...'}
+                {step === 1 && '🔍 Đang cào thông tin công trình & địa điểm dự án...'}
+                {step === 2 && '🎯 Đang bóc tách từ khóa Focus & lập cấu trúc Case Study H2/H3 chuẩn Yoast...'}
+                {step === 3 && '✍️ Đang viết bài phân tích kỹ thuật, chèn ảnh công trình & tối ưu độ dễ đọc 90-100...'}
               </p>
             </div>
           )}
@@ -303,26 +278,26 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
-                    Tên hoặc Model sản phẩm <span className="text-emerald-600 font-bold lowercase">(tự động từ Link nếu để trống)</span>
+                    Tên hoặc Quy mô Dự án <span className="text-emerald-600 font-bold lowercase">(tự động từ Link nếu để trống)</span>
                   </label>
                   <input
                     type="text"
-                    value={productName}
-                    onChange={e => setProductName(e.target.value)}
-                    placeholder="VD: Laptop ASUS Vivobook (hoặc để trống nếu đã dán Link)"
+                    value={projectTitle}
+                    onChange={e => setProjectTitle(e.target.value)}
+                    placeholder="VD: Điện mặt trời áp mái 1.2MWp KCN Quảng Ngãi"
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
-                    Mã sản phẩm / SKU (Tùy chọn)
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <MapPin size={13} className="text-primary" /> Địa điểm thi công (Tùy chọn)
                   </label>
                   <input
                     type="text"
-                    value={productCode}
-                    onChange={e => setProductCode(e.target.value)}
-                    placeholder="VD: S3407VA-LY146W"
+                    value={location}
+                    onChange={e => setLocation(e.target.value)}
+                    placeholder="VD: Đà Nẵng, Quảng Ngãi"
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
@@ -337,14 +312,14 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     type="text"
                     value={focusKeyword}
                     onChange={e => setFocusKeyword(e.target.value)}
-                    placeholder="VD: laptop asus vivobook"
+                    placeholder="VD: điện mặt trời áp mái"
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <Link2 size={13} className="text-primary" /> Link tham khảo / Mã Datasheet (Tùy chọn)
+                    <Link2 size={13} className="text-primary" /> Link tham khảo Case Study dự án (Tùy chọn)
                   </label>
                   <input
                     type="url"
@@ -353,8 +328,8 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     placeholder="https://..."
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
-                  <p className="text-[11px] text-emerald-600 font-bold mt-1 flex items-center gap-1">
-                    <span>🌐 AI sẽ tự động cào dữ liệu, trích xuất hình ảnh thực tế & nhúng video YouTube/Vimeo từ link này!</span>
+                  <p className="text-[11px] text-emerald-600 font-bold mt-1">
+                    🌐 AI sẽ tự động cào dữ liệu, trích xuất hình ảnh thực tế & nhúng video từ link này!
                   </p>
                 </div>
               </div>
@@ -376,21 +351,21 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     </button>
                     <button
                       type="button"
-                      onClick={() => setStyle('sales')}
+                      onClick={() => setStyle('storytelling')}
                       className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'sales' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        style === 'storytelling' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                       }`}
                     >
-                      🔥 Bán hàng B2C
+                      📖 Case Study
                     </button>
                     <button
                       type="button"
-                      onClick={() => setStyle('comparison')}
+                      onClick={() => setStyle('roi')}
                       className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'comparison' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        style === 'roi' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                       }`}
                     >
-                      📊 So sánh ưu điểm
+                      💰 Hiệu quả ROI
                     </button>
                   </div>
                 </div>
@@ -436,7 +411,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                   className="px-6 py-2.5 bg-gradient-to-r from-amber-500 via-primary to-secondary text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Sparkles size={16} className="text-amber-200 animate-pulse" />
-                  Bắt Đầu Tạo Sản Phẩm AI
+                  Bắt Đầu Tạo Dự Án AI
                 </button>
               </div>
             </form>
@@ -447,7 +422,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                 <div className="flex items-center gap-2 text-emerald-800">
                   <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
                   <span className="text-xs font-black">
-                    🎉 Đã tự động tạo sản phẩm & bài viết chuẩn SEO 100/100 thành công!
+                    🎉 Đã tự động tạo hồ sơ Dự án & bài viết chuẩn SEO 100/100 thành công!
                   </span>
                 </div>
                 <button
@@ -460,14 +435,18 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               </div>
 
               {/* Generated summary cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">Tên sản phẩm</span>
-                  <p className="text-xs font-black text-slate-800 truncate">{result.name}</p>
+                  <span className="text-[10px] font-black text-slate-400 uppercase">Tên Dự án</span>
+                  <p className="text-xs font-black text-slate-800 truncate">{result.title}</p>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">Mã Model / SKU</span>
-                  <p className="text-xs font-bold text-slate-800">{result.code || 'N/A'}</p>
+                  <span className="text-[10px] font-black text-slate-400 uppercase">Địa điểm</span>
+                  <p className="text-xs font-bold text-slate-800 truncate">📍 {result.location}</p>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="text-[10px] font-black text-slate-400 uppercase">Quy mô/Công suất</span>
+                  <p className="text-xs font-bold text-slate-800 truncate">⚡ {result.capacity}</p>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                   <span className="text-[10px] font-black text-slate-400 uppercase">Từ khóa Focus</span>
@@ -479,18 +458,38 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               {(result.image || (Array.isArray(result.images) && result.images.length > 0)) && (
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
                   <span className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    📸 Hình ảnh sản phẩm AI cào & tự động điền vào Form:
+                    📸 Hình ảnh công trình AI cào & tự động điền vào Form:
                   </span>
                   <div className="flex items-center gap-3 overflow-x-auto pb-1">
                     {result.image && (
                       <div className="relative group flex-shrink-0">
-                        <img src={result.image} alt="Main Product" className="w-20 h-20 object-cover rounded-xl border-2 border-primary shadow-xs" />
+                        <img
+                          src={result.image}
+                          alt="Main Project"
+                          className="w-20 h-20 object-cover rounded-xl border-2 border-primary shadow-xs"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800';
+                          }}
+                        />
                         <span className="absolute bottom-1 left-1 bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded">Ảnh chính</span>
                       </div>
                     )}
                     {Array.isArray(result.images) && result.images.map((imgUrl: string, idx: number) => (
                       <div key={idx} className="relative group flex-shrink-0">
-                        <img src={imgUrl} alt={`Extra ${idx + 1}`} className="w-20 h-20 object-cover rounded-xl border border-slate-300 shadow-xs" />
+                        <img
+                          src={imgUrl}
+                          alt={`Extra ${idx + 1}`}
+                          className="w-20 h-20 object-cover rounded-xl border border-slate-300 shadow-xs"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            const fallbacks = [
+                              'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800',
+                              'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800'
+                            ];
+                            e.currentTarget.src = fallbacks[idx % fallbacks.length];
+                          }}
+                        />
                         <span className="absolute bottom-1 left-1 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Ảnh phụ {idx + 1}</span>
                       </div>
                     ))}
@@ -523,20 +522,20 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               {!showCodeEditor ? (
                 <div className="border border-slate-200 rounded-2xl p-6 bg-white max-h-96 overflow-y-auto space-y-4">
                   <div className="border-b pb-3">
-                    <span className="text-xs font-bold text-slate-400">Mô tả ngắn Meta ({result.shortDescription?.length || 0} ký tự):</span>
+                    <span className="text-xs font-bold text-slate-400">Mô tả tóm tắt Meta ({result.excerpt?.length || 0} ký tự):</span>
                     <p className="text-sm font-medium text-slate-700 italic border-l-2 border-primary pl-3 mt-1">
-                      {result.shortDescription}
+                      {result.excerpt}
                     </p>
                   </div>
                   <div
                     className="prose prose-sm max-w-none text-slate-800"
-                    dangerouslySetInnerHTML={{ __html: result.description || '' }}
+                    dangerouslySetInnerHTML={{ __html: result.content || '' }}
                   />
                 </div>
               ) : (
                 <textarea
                   readOnly
-                  value={result.description || ''}
+                  value={result.content || ''}
                   rows={10}
                   className="w-full p-4 font-mono text-xs bg-slate-900 text-emerald-400 rounded-2xl border border-slate-800 outline-none"
                 />
@@ -557,7 +556,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                   className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
                 >
                   <CheckCircle2 size={16} />
-                  ✅ Áp Dụng Tất Cả Vào Form Sản Phẩm
+                  ✅ Áp Dụng Tất Cả Vào Form Dự Án
                 </button>
               </div>
             </div>
@@ -568,4 +567,4 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
   );
 };
 
-export default AiProductWriterModal;
+export default AiProjectWriterModal;
