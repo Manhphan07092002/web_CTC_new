@@ -563,22 +563,30 @@ const SeoAnalyzer: React.FC<SeoAnalyzerProps> = ({
       {/* Tabs */}
       <div className="flex border-b border-gray-200 bg-white">
         <button
-          onClick={() => setActiveTab('seo')}
-          className={`flex-1 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 transition-colors ${
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab('seo');
+          }}
+          className={`flex-1 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
             activeTab === 'seo'
               ? 'text-primary border-b-2 border-primary bg-primary/10'
-              : 'text-slate-600 hover:text-slate-900'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <Search size={13} />
           SEO ({seoScore}/100)
         </button>
         <button
-          onClick={() => setActiveTab('readability')}
-          className={`flex-1 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 transition-colors ${
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab('readability');
+          }}
+          className={`flex-1 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
             activeTab === 'readability'
               ? 'text-primary border-b-2 border-primary bg-primary/10'
-              : 'text-slate-600 hover:text-slate-900'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <BookOpen size={13} />
