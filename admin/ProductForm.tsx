@@ -11,6 +11,7 @@ import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 import SeoAnalyzer from './components/SeoAnalyzer';
 import AiProductWriterModal from './components/AiProductWriterModal';
+import { formatSeoProductHtml } from './utils/seoProductFormatter';
 
 interface ProductCategory {
   id: string;
@@ -86,6 +87,13 @@ const ProductForm: React.FC = () => {
     image?: string;
     images?: string[];
   }) => {
+    const { cleanHtml, finalMainImage, finalExtraImages } = formatSeoProductHtml(
+      data.description,
+      data.focusKeyword,
+      data.image,
+      data.images || []
+    );
+
     setFocusKeyword(data.focusKeyword);
     setFormData(prev => ({
       ...prev,
@@ -93,15 +101,15 @@ const ProductForm: React.FC = () => {
       code: data.code || prev.code,
       focusKeyword: data.focusKeyword,
       shortDescription: data.shortDescription || prev.shortDescription,
-      description: data.description || prev.description,
+      description: cleanHtml || prev.description,
       specifications: data.specifications || prev.specifications,
       power: data.power || prev.power,
       efficiency: data.efficiency || prev.efficiency,
       warranty: data.warranty || prev.warranty,
       features: data.features && data.features.length > 0 ? data.features : prev.features,
       technicalSpecs: data.technicalSpecs || prev.technicalSpecs,
-      image: data.image || prev.image || '',
-      images: data.images && data.images.length > 0 ? data.images : prev.images
+      image: finalMainImage || prev.image || '',
+      images: finalExtraImages && finalExtraImages.length > 0 ? finalExtraImages : prev.images
     }));
   };
 
@@ -190,45 +198,49 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
       if (parsed && (parsed.description || parsed.shortDescription || parsed.technicalSpecs || parsed.features)) {
         const generatedKw = parsed.focusKeyword || focusKeyword || formData.name.toLowerCase().trim();
-        setFocusKeyword(generatedKw);
+        const { cleanHtml, finalMainImage, finalExtraImages } = formatSeoProductHtml(
+          parsed.description || '',
+          generatedKw,
+          parsed.image || formData.image,
+          parsed.images || []
+        );
 
+        setFocusKeyword(generatedKw);
         setFormData(prev => ({
           ...prev,
           focusKeyword: generatedKw,
           shortDescription: parsed.shortDescription || prev.shortDescription,
-          description: parsed.description || prev.description,
+          description: cleanHtml || prev.description,
           specifications: parsed.specifications || prev.specifications,
           power: typeof parsed.power === 'number' ? parsed.power : (parseFloat(parsed.power) || prev.power),
           efficiency: typeof parsed.efficiency === 'number' ? parsed.efficiency : (parseFloat(parsed.efficiency) || prev.efficiency),
           warranty: parsed.warranty || prev.warranty,
           features: Array.isArray(parsed.features) && parsed.features.length > 0 ? parsed.features : prev.features,
           technicalSpecs: (parsed.technicalSpecs && typeof parsed.technicalSpecs === 'object') ? parsed.technicalSpecs : prev.technicalSpecs,
+          image: finalMainImage || prev.image || '',
+          images: finalExtraImages && finalExtraImages.length > 0 ? finalExtraImages : prev.images
         }));
-        showToast('✨ Đã tự động tạo bài viết chuẩn SEO Yoast & từ khóa Focus thành công!', 'success');
+        showToast('✨ Đã tự động tạo bài viết chuẩn SEO Yoast, ảnh minh họa & từ khóa Focus thành công!', 'success');
       } else if (response) {
-        // Fallback: Convert plain text response into HTML paragraphs and extract short description
         const cleanText = response.replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
-        const paragraphs = cleanText
-          .split('\n\n')
-          .map(paragraph => paragraph.trim())
-          .filter(Boolean);
-
-        const formattedHtml = paragraphs
-          .map(p => p.startsWith('#') ? `<h2>${p.replace(/^#+\s*/, '')}</h2>` : `<p>${p}</p>`)
-          .join('');
-
-        const firstParagraph = paragraphs.find(p => p.length > 10 && !p.startsWith('#')) || paragraphs[0] || '';
-        const extractedShortDesc = firstParagraph.replace(/<[^>]*>/g, '').slice(0, 150);
         const fallbackKw = formData.name.toLowerCase().trim();
+        const { cleanHtml, finalMainImage, finalExtraImages } = formatSeoProductHtml(
+          cleanText,
+          fallbackKw,
+          formData.image,
+          []
+        );
 
         setFocusKeyword(fallbackKw);
         setFormData(prev => ({
           ...prev,
           focusKeyword: fallbackKw,
-          shortDescription: prev.shortDescription || extractedShortDesc,
-          description: formattedHtml,
+          description: cleanHtml,
+          shortDescription: cleanText.replace(/<[^>]*>/g, '').slice(0, 150),
+          image: finalMainImage || prev.image || '',
+          images: finalExtraImages && finalExtraImages.length > 0 ? finalExtraImages : prev.images
         }));
-        showToast('✨ Đã tạo nội dung mô tả bằng AI thành công!', 'success');
+        showToast('✨ Đã tạo nội dung mô tả & chèn ảnh chuẩn SEO thành công!', 'success');
       }
     } catch (error) {
       console.error('Error generating AI description:', error);

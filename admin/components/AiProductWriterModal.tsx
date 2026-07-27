@@ -3,6 +3,7 @@ import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileTe
 import { chatService } from '../../services/chatService';
 import { useToast } from '../../contexts/ToastContext';
 import { api } from '../../services/api';
+import { formatSeoProductHtml } from '../utils/seoProductFormatter';
 
 interface AiProductWriterModalProps {
   isOpen: boolean;
@@ -180,7 +181,21 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
       clearTimeout(timer2);
 
       if (parsed && (parsed.name || parsed.description)) {
-        setResult(parsed);
+        const kwToUse = parsed.focusKeyword || focusKeyword || parsed.name || 'sản phẩm';
+        const { cleanHtml, finalMainImage, finalExtraImages } = formatSeoProductHtml(
+          parsed.description || '',
+          kwToUse,
+          parsed.image,
+          parsed.images || []
+        );
+
+        setResult({
+          ...parsed,
+          focusKeyword: kwToUse,
+          description: cleanHtml,
+          image: finalMainImage,
+          images: finalExtraImages
+        });
         showToast('✨ AI đã tự động cào thông tin, sinh tên sản phẩm & trích xuất hình ảnh thành công!', 'success');
       } else {
         throw new Error('Không thể đọc cấu trúc dữ liệu sản phẩm từ AI');
