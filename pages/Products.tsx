@@ -257,7 +257,7 @@ const Products: React.FC = () => {
       />
 
       {/* Breadcrumb / Toolbar Header */}
-      <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[110px] lg:top-[124px] z-30 shadow-sm transition-colors duration-300">
+      <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[150px] sm:top-[160px] md:top-[170px] lg:top-[180px] z-30 shadow-sm transition-colors duration-300">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">

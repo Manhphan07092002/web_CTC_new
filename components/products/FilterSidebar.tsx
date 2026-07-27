@@ -48,7 +48,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const isFilterActive = techFilters.minPrice || techFilters.maxPrice || techFilters.minPower || techFilters.maxPower || techFilters.minEff || techFilters.maxEff;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sticky top-32">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sticky top-[220px]">
       {/* Categories */}
       <h3 className="font-bold text-lg text-corporate dark:text-sky-400 mb-6 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
         <List size={20} className="text-primary" /> {t('products.category_list')}
