@@ -373,43 +373,73 @@ const TrackOrder: React.FC = () => {
             {/* Timeline Progress */}
             {!isCancelled ? (
               <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 p-6 shadow-sm">
-                <h3 className="text-gray-850 dark:text-white font-bold text-sm uppercase tracking-wider mb-6">
-                  Tiến trình đơn hàng
+                <h3 className="text-gray-850 dark:text-white font-bold text-sm uppercase tracking-wider mb-6 flex items-center gap-2">
+                  <Truck size={18} className="text-primary" />
+                  <span>Lộ trình xử lý & Giao hàng</span>
                 </h3>
-                <div className="relative pl-6">
-                  {/* Vertical Progress Line */}
-                  <div className="absolute left-8 top-5 bottom-5 w-0.5 bg-gray-100 dark:bg-gray-750" />
+                <div className="relative pl-2 sm:pl-4">
+                  {/* Vertical Progress Background Line */}
+                  <div className="absolute left-[21px] sm:left-[29px] top-4 bottom-6 w-0.5 bg-gray-200 dark:bg-gray-700" />
+                  
+                  {/* Active Filled Vertical Progress Line */}
                   <div
-                    className="absolute left-8 top-5 w-0.5 bg-primary transition-all duration-700"
-                    style={{ height: `${(currentStepIndex / (STATUS_STEPS.length - 1)) * 90}%` }}
+                    className="absolute left-[21px] sm:left-[29px] top-4 w-0.5 bg-primary transition-all duration-700"
+                    style={{ height: `${Math.max(0, (currentStepIndex / (STATUS_STEPS.length - 1))) * 88}%` }}
                   />
 
-                  <div className="space-y-6">
+                  <div className="space-y-7">
                     {STATUS_STEPS.map((step, idx) => {
                       const Icon = step.icon;
                       const isDone = idx <= currentStepIndex;
                       const isCurrent = idx === currentStepIndex;
                       return (
-                        <div key={step.key} className="flex items-start gap-4 relative">
-                          <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 border transition-all z-10 ${
+                        <div key={step.key} className="flex items-start gap-4 relative group">
+                          {/* Icon Badge */}
+                          <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all z-10 ${
                             isDone
-                              ? `${step.bg} border-transparent text-white shadow-md shadow-primary/10`
-                              : 'bg-white dark:bg-gray-850 border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600'
-                          } ${isCurrent ? 'ring-4 ring-primary/20' : ''}`}>
-                            <Icon size={14} />
+                              ? `${step.bg} border-transparent text-white shadow-md shadow-primary/20`
+                              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
+                          } ${isCurrent ? 'ring-4 ring-primary/20 scale-110' : ''}`}>
+                            <Icon size={16} />
                           </div>
-                          <div className="pt-1 flex-1 min-w-0">
-                            <p className={`font-bold text-sm ${isDone ? 'text-gray-850 dark:text-white' : 'text-gray-350 dark:text-gray-600'}`}>
-                              {step.label}
+
+                          {/* Step Information */}
+                          <div className="pt-0.5 flex-1 min-w-0">
+                            <div className="flex items-center flex-wrap gap-2 mb-1">
+                              <span className={`font-bold text-base ${
+                                isCurrent
+                                  ? 'text-primary dark:text-primary font-extrabold'
+                                  : isDone
+                                  ? 'text-gray-900 dark:text-white font-bold'
+                                  : 'text-gray-400 dark:text-gray-500 font-semibold'
+                              }`}>
+                                {step.label}
+                              </span>
+
                               {isCurrent && (
-                                <span className="ml-2 text-[9px] bg-primary text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">
-                                  Hiện tại
+                                <span className="text-[10px] bg-primary text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider font-extrabold shadow-sm animate-pulse">
+                                  HIỆN TẠI
                                 </span>
                               )}
+                              {isDone && !isCurrent && (
+                                <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-bold">
+                                  ✓ Đã hoàn thành
+                                </span>
+                              )}
+                              {!isDone && (
+                                <span className="text-[10px] bg-gray-100 dark:bg-gray-750 text-gray-400 dark:text-gray-500 px-2 py-0.5 rounded-full font-medium">
+                                  Chờ bước tiếp
+                                </span>
+                              )}
+                            </div>
+
+                            <p className={`text-xs sm:text-sm leading-relaxed ${
+                              isCurrent || isDone
+                                ? 'text-gray-600 dark:text-gray-300 font-normal'
+                                : 'text-gray-400 dark:text-gray-500 font-normal'
+                            }`}>
+                              {step.desc}
                             </p>
-                            {isCurrent && (
-                              <p className="text-gray-500 dark:text-gray-400 text-xs mt-1 leading-relaxed">{step.desc}</p>
-                            )}
                           </div>
                         </div>
                       );
@@ -469,23 +499,26 @@ const TrackOrder: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={handleReset}
-                className="flex-1 flex items-center justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 text-gray-750 dark:text-gray-200 border border-gray-200 dark:border-gray-700 font-bold py-3 px-5 rounded-xl transition-all shadow-sm text-sm"
+                className="flex-1 flex items-center justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 font-bold py-3 px-5 rounded-xl transition-all shadow-sm text-sm"
               >
-                <RefreshCw size={15} /> Tìm kiếm đơn khác
+                <RefreshCw size={15} className="text-gray-600 dark:text-gray-300" />
+                <span>Tìm kiếm đơn khác</span>
               </button>
               {matchingOrders.length > 1 && (
                 <button
                   onClick={() => setSelectedOrder(null)}
-                  className="flex-1 flex items-center justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 text-gray-750 dark:text-gray-200 border border-gray-200 dark:border-gray-700 font-bold py-3 px-5 rounded-xl transition-all shadow-sm text-sm"
+                  className="flex-1 flex items-center justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 font-bold py-3 px-5 rounded-xl transition-all shadow-sm text-sm"
                 >
-                  <ArrowLeft size={15} /> Quay lại danh sách ({matchingOrders.length})
+                  <ArrowLeft size={15} className="text-gray-600 dark:text-gray-300" />
+                  <span>Quay lại danh sách ({matchingOrders.length})</span>
                 </button>
               )}
               <Link
                 to="/products"
                 className="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold py-3 px-5 rounded-xl shadow-md transition-all text-sm"
               >
-                <ShoppingBag size={15} /> Tiếp tục mua hàng
+                <ShoppingBag size={15} />
+                <span>Tiếp tục mua hàng</span>
               </Link>
             </div>
           </div>
