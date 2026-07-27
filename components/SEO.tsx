@@ -157,6 +157,9 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="geo.placename" content="Đà Nẵng" />
       <meta name="geo.position" content="16.0759;108.2201" />
       <meta name="ICBM" content="16.0759, 108.2201" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="format-detection" content="telephone=no" />
       <link rel="canonical" href={url} />
       
       {/* Favicon with smooth rounded corners */}
