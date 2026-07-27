@@ -13,6 +13,8 @@ import { ProductsHero, FilterSidebar, ProductGrid, ProductsCTA } from '../compon
 import { useCart } from '../contexts/CartContext';
 import { getProductUrl } from '../utils/news-url-helper';
 
+import { calculatePriceWithVat, parseNumericPrice } from '../utils/priceUtils';
+
 const Products: React.FC = () => {
   const { addToCart, openCartModal } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,14 +49,6 @@ const Products: React.FC = () => {
 
   const { t, language } = useLanguage();
   const navigate = useNavigate();
-
-  // Helper for numeric price parsing
-  const parseNumericPrice = (val: any): number => {
-    if (typeof val === 'number') return val;
-    if (!val) return 0;
-    const cleaned = String(val).replace(/[^0-9.]/g, '');
-    return parseFloat(cleaned) || 0;
-  };
 
   // 1. Load Data
   useEffect(() => {
@@ -107,14 +101,14 @@ const Products: React.FC = () => {
       filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
 
-    // Filter by Price (VNĐ)
+    // Filter by Price with VAT (VNĐ)
     if (techFilters.minPrice && !isNaN(Number(techFilters.minPrice))) {
       const minP = Number(techFilters.minPrice);
-      filtered = filtered.filter(p => parseNumericPrice(p.price) >= minP);
+      filtered = filtered.filter(p => calculatePriceWithVat(p.price, p.vat) >= minP);
     }
     if (techFilters.maxPrice && !isNaN(Number(techFilters.maxPrice))) {
       const maxP = Number(techFilters.maxPrice);
-      filtered = filtered.filter(p => parseNumericPrice(p.price) <= maxP);
+      filtered = filtered.filter(p => calculatePriceWithVat(p.price, p.vat) <= maxP);
     }
 
     // Filter by Technical Specs (Power)
@@ -137,13 +131,13 @@ const Products: React.FC = () => {
       filtered = filtered.filter(p => (p.efficiency || 0) <= maxEff);
     }
 
-    // Sort
+    // Sort by Final Price with VAT or Name
     switch (sortOption) {
       case 'price-asc':
-        filtered.sort((a, b) => parseNumericPrice(a.price) - parseNumericPrice(b.price));
+        filtered.sort((a, b) => calculatePriceWithVat(a.price, a.vat) - calculatePriceWithVat(b.price, b.vat));
         break;
       case 'price-desc':
-        filtered.sort((a, b) => parseNumericPrice(b.price) - parseNumericPrice(a.price));
+        filtered.sort((a, b) => calculatePriceWithVat(b.price, b.vat) - calculatePriceWithVat(a.price, a.vat));
         break;
       case 'name-asc':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
