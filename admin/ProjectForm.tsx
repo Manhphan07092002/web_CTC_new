@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Image as ImageIcon } from 'lucide-react';
+import { Save, X, Image as ImageIcon, Sparkles } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
@@ -8,6 +8,7 @@ import UnsavedChangesModal from './components/UnsavedChangesModal';
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
+import SeoAnalyzer from './components/SeoAnalyzer';
 
 interface ProjectCategory {
   id: string;
@@ -25,6 +26,13 @@ const ProjectForm: React.FC = () => {
   const [categories, setCategories] = useState<ProjectCategory[]>([]);
   const [showImagePicker, setShowImagePicker] = useState(false);
   
+  const [focusKeyword, setFocusKeyword] = useState('');
+
+  const handleFocusKeywordChange = (kw: string) => {
+    setFocusKeyword(kw);
+    setFormData(prev => ({ ...prev, focusKeyword: kw }));
+  };
+
   const [formData, setFormData] = useState({
     title: '',
     location: '',
@@ -33,7 +41,8 @@ const ProjectForm: React.FC = () => {
     image: '',
     description: '',
     categoryId: '',
-    category: ''
+    category: '',
+    focusKeyword: ''
   });
 
   const { showUnsavedModal, setShowUnsavedModal, setBaseline, confirmNavigation } = useUnsavedChanges(formData, loading);
@@ -60,6 +69,8 @@ const ProjectForm: React.FC = () => {
     setLoading(true);
     try {
       const project = await api.projects.getById(projectId);
+      const loadedKw = (project as any).focusKeyword || '';
+      setFocusKeyword(loadedKw);
       const initialProjectData = {
         title: project.title || '',
         location: project.location || '',
@@ -68,7 +79,8 @@ const ProjectForm: React.FC = () => {
         image: project.image || '',
         description: project.description || '',
         categoryId: project.categoryId || '',
-        category: project.category || ''
+        category: project.category || '',
+        focusKeyword: loadedKw
       };
       setFormData(initialProjectData);
       setBaseline(initialProjectData);
@@ -266,6 +278,21 @@ const ProjectForm: React.FC = () => {
                 placeholder="Mô tả chi tiết về dự án, công nghệ, giải pháp thi công áp dụng..."
               />
             </Suspense>
+          </div>
+
+          {/* SEO Analyzer - Yoast-style for Projects */}
+          <div className="pt-4 border-t border-gray-100">
+            <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" /> PHÂN TÍCH & CHẤM ĐIỂM SEO DỰ ÁN (YOAST-STYLE)
+            </h3>
+            <SeoAnalyzer
+              title={formData.title}
+              excerpt={`Dự án ${formData.title} tại ${formData.location} với công suất ${formData.capacity}.`}
+              content={formData.description}
+              image={formData.image}
+              focusKeyword={focusKeyword}
+              onFocusKeywordChange={handleFocusKeywordChange}
+            />
           </div>
 
           {/* Actions */}
