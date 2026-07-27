@@ -252,6 +252,10 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data)
     }),
+    scrapeUrl: (url: string) => fetchAPI<{ success: boolean; data: { title: string; paragraphs: string[]; rawText: string; images: string[]; videos: string[] } }>('/ai/scrape-url', {
+      method: 'POST',
+      body: JSON.stringify({ url })
+    }),
   },
 
   // Categories (Legacy)

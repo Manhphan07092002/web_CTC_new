@@ -64,126 +64,121 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
     setLoading(true);
     setStep(1);
 
-    const timer1 = setTimeout(() => setStep(2), 1200);
-    const timer2 = setTimeout(() => setStep(3), 2800);
+    const timer1 = setTimeout(() => setStep(2), 1500);
+    const timer2 = setTimeout(() => setStep(3), 3500);
 
     try {
       let parsed: any = null;
 
-      // 1. Try server-side scraping if URL is provided
+      // ── BƯỚC 1: Cào dữ liệu thực từ URL (title, ảnh, nội dung gốc) ──
+      let scrapedTitle = nameToUse;
+      let scrapedImages: string[] = [];
+      let scrapedVideos: string[] = [];
+      let scrapedRawText = '';
+
       if (urlToUse) {
         try {
-          const res = await api.ai.generateArticle({
-            title: nameToUse || '',
-            focusKeyword: focusKeyword.trim(),
-            tone: style,
-            targetLength,
-            articleUrl: urlToUse
-          });
-
-          if (res && res.data) {
-            // Use rawTitle (scraped from page) as product name, fallback to user input
-            const scrapedName = res.data.rawTitle || nameToUse || '';
-            parsed = {
-              name: scrapedName,
-              code: productCode || ('CTC-' + Math.floor(1000 + Math.random() * 9000)),
-              focusKeyword: res.data.focusKeyword || focusKeyword || 'san pham ctc',
-              shortDescription: res.data.excerpt || '',
-              description: res.data.content || '',
-              specifications: 'Sản phẩm chính hãng CTC đầy đủ chứng nhận CO/CQ',
-              image: res.data.image,
-              images: res.data.images || [],
-              warranty: '24 tháng chính hãng'
-            };
+          console.log('[AI Modal] Scraping URL via dedicated endpoint:', urlToUse);
+          const scrapeRes = await api.ai.scrapeUrl(urlToUse);
+          if (scrapeRes?.data) {
+            if (scrapeRes.data.title && !nameToUse) scrapedTitle = scrapeRes.data.title;
+            if (scrapeRes.data.images?.length > 0) scrapedImages = scrapeRes.data.images;
+            if (scrapeRes.data.videos?.length > 0) scrapedVideos = scrapeRes.data.videos;
+            if (scrapeRes.data.rawText) scrapedRawText = scrapeRes.data.rawText;
+            console.log(`[AI Modal] Scraped: title="${scrapeRes.data.title}" images=${scrapedImages.length} videos=${scrapedVideos.length} text=${scrapedRawText.length}chars`);
           }
-        } catch (serverErr) {
-          console.warn('[AI Scraper API Fallback to Gemini LLM]:', serverErr);
+        } catch (scrapeErr) {
+          console.warn('[AI Modal] Scrape failed, proceeding with Gemini only:', scrapeErr);
         }
       }
 
-      // 2. Client-side Gemini fallback prompt if server scraper didn't return complete JSON
-      if (!parsed) {
-        const prompt = `Bạn là chuyên gia kỹ thuật & Giám đốc Sản phẩm CTC, đồng thời là chuyên gia SEO Yoast Top 1 Google.
-Hãy tự động tạo TOÀN BỘ thông tin sản phẩm và bài viết mô tả kỹ thuật CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt cho website Công ty CTC.
+      // ── BƯỚC 2: Gemini viết MÔ TẢ SẢN PHẨM dựa trên nội dung đã cào ──
+      const productCode2 = productCode || ('CTC-' + Math.floor(1000 + Math.random() * 9000));
 
-Thông tin đầu vào:
-- Tên/Model sản phẩm: "${nameToUse || 'TỰ ĐỘNG BÓC TÁCH TỪ LINK BÊN DƯỚI'}"
-- Mã sản phẩm: "${productCode || 'Auto'}"
-- Danh mục: "${initialCategory || 'Thiết bị Công Nghệ & Điện Tử'}"
-- Link sản phẩm/bài viết tham khảo: "${urlToUse || 'None'}"
+      // Embed video YouTube nếu có
+      const videoEmbeds = scrapedVideos.slice(0, 2).map(v => 
+        `<div class="my-6 aspect-video rounded-2xl overflow-hidden shadow-lg"><iframe src="${v}" class="w-full h-full" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`
+      ).join('\n');
+
+      const prompt = `Bạn là Chuyên gia Sản phẩm & SEO Yoast Top 1 Google của Công ty CTC.
+
+NHIỆM VỤ: Viết TOÀN BỘ thông tin sản phẩm và bài mô tả kỹ thuật CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
+
+═══ THÔNG TIN ĐẦU VÀO ═══
+- Tên/Model sản phẩm: "${scrapedTitle || nameToUse || 'Sản phẩm CTC'}"
+- Mã sản phẩm: "${productCode2}"
+- Danh mục: "${initialCategory || 'Thiết bị Công Nghệ'}"
 - Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'Phân tích so sánh ưu điểm'}
-- Độ sâu bài viết: ${targetLength === 'deep' ? 'Viết rất chi tiết 900-1200 từ' : 'Tiêu chuẩn 600-800 từ'}
+- Độ sâu: ${targetLength === 'deep' ? '900-1200 từ rất chi tiết' : '600-800 từ tiêu chuẩn'}
+${urlToUse ? `- Link nguồn: ${urlToUse}` : ''}
 
-YÊU CẦU QUAN TRỌNG NHẤT - TÊN SẢN PHẨM:
-${urlToUse ? `BẮT BUỘC: Bóc tách chính xác Tên sản phẩm / Model thực tế từ nội dung trang web tại link "${urlToUse}".
-KHÔNG ĐƯỢC tự ý đặt tên sáng tạo, KHÔNG thêm hậu tố marketing.
-Ví dụ: Nếu link là trang laptop MSI Modern 15 → name = "Laptop MSI Modern 15"
-Ví dụ: Nếu link là trang pin mặt trời Jinko 550W → name = "Tấm pin mặt trời Jinko Solar 550W"` : `Dùng tên sản phẩm: "${nameToUse}"`}
+═══ NỘI DUNG GỐC CÀO TỪ LINK (BẮT BUỘC BÁM SÁT) ═══
+${scrapedRawText ? scrapedRawText.slice(0, 3000) : '(Không có nội dung cào được — hãy tự suy luận từ tên sản phẩm)'}
 
-YÊU CẦU SEO YOAST & READABILITY BẮT BUỘC:
-1. name: TÊN SẢN PHẨM CHÍNH XÁC từ link (KHÔNG phải tiêu đề SEO, KHÔNG thêm "– Tin Tức Cập Nhật 2026" hay bất kỳ hậu tố nào).
-2. focusKeyword: Rút ra 1 từ khóa SEO chính 2-4 từ đại diện tốt nhất cho sản phẩm.
-3. shortDescription: Mô tả ngắn Meta CHÍNH XÁC từ 120 đến 160 ký tự, BẮT BUỘC CHỨA TỪ KHÓA FOCUS.
-4. image: BẮT BUỘC trả về URL Ảnh chính sắc nét nhất cào được từ link (${urlToUse}).
-5. images: BẮT BUỘC trả về MẢNG CHỨA 1 ĐẾN 3 URL Hình ảnh bổ sung (ảnh thực tế, ảnh các góc nghiêng) cào được từ link (${urlToUse}).
-6. description (HTML): 
-   - Bài viết mô tả sản phẩm hấp dẫn, đầy đủ cấu trúc H2 và H3.
-   - Từ khóa Focus xuất hiện ngay 150 từ đầu tiên.
-   - Mật độ từ khóa Focus 1.2% - 2.0%.
-   - CÂU VĂN NGẮN: Tất cả câu văn dưới 16 từ/câu, ngắt chấm thường xuyên.
-   - ĐOẠN VĂN NGẮN: Mỗi thẻ <p> chỉ 2-3 câu ngắn (dưới 60 từ).
-   - CHÈN DANH SÁCH: BẮT BUỘC có ít nhất 2 danh sách <ul><li>...</li></ul> cho Tính năng nổi bật & Ứng dụng.
-   - TỪ NỐI CHUYỂN TIẾP: Dùng ít nhất 4-6 từ nối ("Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra").
-   - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC có: <p class="mt-4 pt-4 border-t">Quý khách có thể tham khảo thêm các thiết bị tại <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc liên hệ báo giá tại <a href="/contact" class="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
+═══ HÌNH ẢNH ĐÃ CÀO ĐƯỢC TỪ LINK ═══
+${scrapedImages.length > 0 ? scrapedImages.map((img, i) => `Ảnh ${i+1}: ${img}`).join('\n') : '(Không cào được ảnh)'}
 
-Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
+═══ YÊU CẦU BẮT BUỘC ═══
 
+🔴 TÊN SẢN PHẨM (name):
+- PHẢI là tên thực tế bóc tách từ nội dung gốc bên trên
+- KHÔNG thêm hậu tố marketing, KHÔNG thêm "– Tin Tức Cập Nhật 2026"
+- Ví dụ đúng: "Laptop MSI Modern 14 F1MG-432VN", "Tấm pin Jinko Solar N-Type 580W"
+
+🔴 HÌNH ẢNH (image, images):
+${scrapedImages.length > 0 
+  ? `- image: Dùng URL ảnh đầu tiên trong danh sách hình ảnh đã cào: "${scrapedImages[0]}"
+- images: Dùng các URL ảnh còn lại: ${JSON.stringify(scrapedImages.slice(1, 4))}`
+  : `- image: Chọn 1 ảnh Unsplash phù hợp nhất với sản phẩm
+- images: Chọn 2-3 ảnh Unsplash phù hợp`}
+
+🔴 MÔ TẢ NGẮN META (shortDescription): 120-160 ký tự, chứa từ khóa focus
+
+🔴 MÔ TẢ CHI TIẾT (description - HTML):
+- BẮT BUỘC bám sát và tóm tắt từ "NỘI DUNG GỐC CÀO TỪ LINK" ở trên
+- KHÔNG bịa đặt thông số nếu không có trong nội dung gốc
+- Cấu trúc: H2 + H3 cho từng phần (Tổng quan, Tính năng, Thông số, Ứng dụng, Mua hàng)
+- Từ khóa Focus phải xuất hiện trong 150 từ đầu tiên
+- Mật độ từ khóa: 1.2% - 2.0%
+- Câu văn: tối đa 16 từ/câu
+- Đoạn văn: mỗi <p> tối đa 60 từ
+- BẮT BUỘC có ít nhất 2 <ul><li> danh sách (tính năng, ứng dụng)
+- Dùng 4-6 từ nối: "Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra"
+${videoEmbeds ? `- Chèn video embed này vào giữa bài: ${videoEmbeds}` : ''}
+- Cuối bài: <p class="mt-4 pt-4 border-t">Quý khách tham khảo thêm tại <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá</a>.</p>
+
+Trả về JSON thuần (KHÔNG bọc markdown):
 {
-  "name": "Tên sản phẩm CHÍNH XÁC bóc tách từ link (VD: Laptop MSI Modern 15, Tấm pin Jinko 550W)...",
-  "code": "${productCode || 'CTC-' + Math.floor(1000 + Math.random() * 9000)}",
-  "focusKeyword": "${focusKeyword || 'san pham'}",
-  "shortDescription": "Đoạn mô tả ngắn Meta 120-160 ký tự...",
-  "image": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
-  "images": [
-    "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800",
-    "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800"
-  ],
-  "description": "<p>Đoạn mở đầu chứa từ khóa focus...</p><h2>...</h2>...",
-  "specifications": "Tóm tắt tổng quan thông số kỹ thuật...",
-  "power": 0.55,
-  "efficiency": 21.5,
-  "warranty": "24 tháng chính hãng",
-  "features": [
-    "Tính năng nổi bật 1",
-    "Tính năng nổi bật 2",
-    "Tính năng nổi bật 3"
-  ],
-  "technicalSpecs": {
-    "Kích thước": "Tiêu chuẩn nhà sản xuất",
-    "Bảo hành": "Chính hãng 24 tháng"
-  }
-}
-`;
+  "name": "Tên sản phẩm chính xác từ nội dung gốc",
+  "code": "${productCode2}",
+  "focusKeyword": "từ khóa SEO 2-4 từ",
+  "shortDescription": "Mô tả meta 120-160 ký tự...",
+  "image": "${scrapedImages[0] || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'}",
+  "images": ${JSON.stringify(scrapedImages.slice(1, 4).length > 0 ? scrapedImages.slice(1, 4) : ['https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'])},
+  "description": "<p>Đoạn mở đầu bám sát nội dung gốc, chứa từ khóa focus...</p><h2>Tổng Quan Sản Phẩm</h2>...",
+  "specifications": "Thông số kỹ thuật rút gọn từ nội dung gốc...",
+  "warranty": "Theo nhà sản xuất",
+  "features": ["Tính năng 1 từ nội dung gốc", "Tính năng 2", "Tính năng 3"],
+  "technicalSpecs": { "Thông số 1": "Giá trị từ nội dung gốc" }
+}`;
 
+      const response = await chatService.sendMessage(prompt);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
 
-        const response = await chatService.sendMessage(prompt);
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-
-        try {
-          const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
-          const match = cleanResponse.match(/\{[\s\S]*\}/);
-          if (match) {
-            try {
-              parsed = JSON.parse(match[0]);
-            } catch (jsonErr) {
-              const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
-              parsed = JSON.parse(fixedJson);
-            }
+      try {
+        const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const match = cleanResponse.match(/\{[\s\S]*\}/);
+        if (match) {
+          try {
+            parsed = JSON.parse(match[0]);
+          } catch (jsonErr) {
+            const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+            parsed = JSON.parse(fixedJson);
           }
-        } catch (e) {
-          console.warn('JSON parse error, fallback to raw:', e);
         }
+      } catch (e) {
+        console.warn('JSON parse error, fallback to raw:', e);
       }
 
       clearTimeout(timer1);
@@ -191,21 +186,30 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
       if (parsed && (parsed.name || parsed.description)) {
         const kwToUse = parsed.focusKeyword || focusKeyword || parsed.name || 'sản phẩm';
+
+        // Merge scraped images với images từ Gemini (ưu tiên scraped)
+        const finalMainImg = scrapedImages[0] || parsed.image || '';
+        const finalExtraImgs = scrapedImages.length > 1
+          ? scrapedImages.slice(1, 4)
+          : (parsed.images || []);
+
         const { cleanHtml, finalMainImage, finalExtraImages } = formatSeoProductHtml(
           parsed.description || '',
           kwToUse,
-          parsed.image,
-          parsed.images || []
+          finalMainImg,
+          finalExtraImgs
         );
 
         setResult({
           ...parsed,
+          name: parsed.name || scrapedTitle || nameToUse,
           focusKeyword: kwToUse,
           description: cleanHtml,
           image: finalMainImage,
-          images: finalExtraImages
+          images: finalExtraImages,
+          _scrapedVideos: scrapedVideos // Store for reference
         });
-        showToast('✨ AI đã tự động cào thông tin, sinh tên sản phẩm & trích xuất hình ảnh thành công!', 'success');
+        showToast('✨ AI đã cào dữ liệu thực từ link và viết mô tả sản phẩm thành công!', 'success');
       } else {
         throw new Error('Không thể đọc cấu trúc dữ liệu sản phẩm từ AI');
       }
@@ -217,6 +221,8 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
       setStep(0);
     }
   };
+
+
 
   const handleApplyResult = () => {
     if (!result) return;

@@ -197,7 +197,7 @@ function resolveAbsoluteUrl(rawUrl: string, baseUrl: string): string | null {
  * Automatically Scrape Article Content, Images & Videos from URL
  * Uses multi-source extraction: JSON-LD, og:image, twitter:image, all data-* attrs, srcset, background-image CSS
  */
-async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[] }> {
+export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[] }> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
