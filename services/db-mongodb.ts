@@ -64,6 +64,50 @@ const toPlainObject = <T>(doc: any): T => {
   };
 };
 
+// Helper to find Product document by ObjectId, id, slug, or hash
+const findProductDoc = async (idParam: string) => {
+  if (!idParam) return null;
+  const cleanParam = idParam.replace(/\.html$/i, '');
+
+  if (mongoose.Types.ObjectId.isValid(cleanParam)) {
+    try {
+      const itemById = await Product.findById(cleanParam);
+      if (itemById) return itemById;
+    } catch (_) {}
+  }
+
+  const parts = cleanParam.split('-');
+  const possibleHash = parts[parts.length - 1];
+  const baseSlug = parts.slice(0, -1).join('-');
+
+  if (possibleHash && possibleHash.length === 24 && mongoose.Types.ObjectId.isValid(possibleHash)) {
+    try {
+      const itemByHash = await Product.findById(possibleHash);
+      if (itemByHash) return itemByHash;
+    } catch (_) {}
+  }
+
+  let item = await Product.findOne({
+    $or: [
+      { id: cleanParam },
+      { slug: cleanParam },
+      { slug: baseSlug },
+      { id: possibleHash }
+    ]
+  });
+
+  if (!item && possibleHash && possibleHash.length >= 4) {
+    const allItems = await Product.find({ isDeleted: { $ne: true } });
+    item = allItems.find(p => {
+      const fullId = String(p._id || (p as any).id);
+      return fullId.endsWith(possibleHash) || fullId.includes(possibleHash);
+    }) || null;
+  }
+
+  return item;
+};
+
+
 export const db = {
   products: {
     getAll: async () => {
@@ -84,43 +128,8 @@ export const db = {
     },
     
     getById: async (idParam: string) => {
-      if (!idParam) return null;
-      const cleanParam = idParam.replace(/\.html$/i, '');
-
-      try {
-        const itemById = await Product.findById(cleanParam);
-        if (itemById) return toPlainObject<IProduct>(itemById);
-      } catch (_) {}
-
-      const parts = cleanParam.split('-');
-      const possibleHash = parts[parts.length - 1];
-      const baseSlug = parts.slice(0, -1).join('-');
-
-      if (possibleHash && possibleHash.length === 24) {
-        try {
-          const itemByHash = await Product.findById(possibleHash);
-          if (itemByHash) return toPlainObject<IProduct>(itemByHash);
-        } catch (_) {}
-      }
-
-      let item = await Product.findOne({
-        $or: [
-          { id: cleanParam },
-          { slug: cleanParam },
-          { slug: baseSlug },
-          { id: possibleHash }
-        ]
-      });
-
-      if (!item && possibleHash && possibleHash.length >= 4) {
-        const allItems = await Product.find({ isDeleted: { $ne: true } });
-        item = allItems.find(p => {
-          const fullId = String(p._id || (p as any).id);
-          return fullId.endsWith(possibleHash) || fullId.includes(possibleHash);
-        }) || null;
-      }
-
-      return item ? toPlainObject<IProduct>(item) : null;
+      const doc = await findProductDoc(idParam);
+      return doc ? toPlainObject<IProduct>(doc) : null;
     },
     
     getFeatured: async (limit: number = 4) => {
@@ -168,30 +177,27 @@ export const db = {
     },
     
     incrementView: async (id: string) => {
-      const product = await Product.findByIdAndUpdate(
-        id,
-        { $inc: { views: 1 } },
-        { new: true }
-      );
-      return product ? toPlainObject<IProduct>(product) : null;
+      const product = await findProductDoc(id);
+      if (!product) return null;
+      product.views = (product.views || 0) + 1;
+      await product.save();
+      return toPlainObject<IProduct>(product);
     },
     
     incrementLike: async (id: string) => {
-      const product = await Product.findByIdAndUpdate(
-        id,
-        { $inc: { likes: 1 } },
-        { new: true }
-      );
-      return product ? toPlainObject<IProduct>(product) : null;
+      const product = await findProductDoc(id);
+      if (!product) return null;
+      product.likes = (product.likes || 0) + 1;
+      await product.save();
+      return toPlainObject<IProduct>(product);
     },
     
     incrementShare: async (id: string) => {
-      const product = await Product.findByIdAndUpdate(
-        id,
-        { $inc: { shares: 1 } },
-        { new: true }
-      );
-      return product ? toPlainObject<IProduct>(product) : null;
+      const product = await findProductDoc(id);
+      if (!product) return null;
+      product.shares = (product.shares || 0) + 1;
+      await product.save();
+      return toPlainObject<IProduct>(product);
     }
   },
 
@@ -520,7 +526,11 @@ export const db = {
     },
     
     getByEmail: async (email: string) => {
-      const user = await User.findOne({ email });
+      if (!email) return null;
+      const normalizedEmail = email.trim().toLowerCase();
+      const user = await User.findOne({
+        email: { $regex: new RegExp(`^${normalizedEmail.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}$`, 'i') }
+      });
       return user ? toPlainObject<IUser>(user) : null;
     },
     
@@ -915,13 +925,13 @@ export const db = {
     },
 
     getByProductId: async (productId: string) => {
-      const product = await Product.findById(productId);
+      const product = await findProductDoc(productId);
       if (!product || !product.reviews) return [];
       return product.reviews.map((review: any) => toPlainObject(review));
     },
 
     addToProduct: async (productId: string, reviewData: any) => {
-      const product = await Product.findById(productId);
+      const product = await findProductDoc(productId);
       if (!product) return null;
 
       if (!product.reviews) {
@@ -939,7 +949,7 @@ export const db = {
     },
 
     deleteFromProduct: async (productId: string, reviewIndex: number) => {
-      const product = await Product.findById(productId);
+      const product = await findProductDoc(productId);
       if (!product || !product.reviews || reviewIndex < 0 || reviewIndex >= product.reviews.length) {
         return false;
       }

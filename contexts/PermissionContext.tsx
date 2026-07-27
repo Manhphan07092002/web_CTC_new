@@ -72,6 +72,11 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     try {
       // First get user by email
       const userResponse = await fetch(`/api/users/email/${encodeURIComponent(user.email)}`);
+      if (!userResponse.ok) {
+        console.warn(`Failed to fetch user by email: ${userResponse.status}`);
+        setLoading(false);
+        return;
+      }
       const userData = await userResponse.json();
       
       if (!userData || !userData._id) {
@@ -81,6 +86,11 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
       // Then get user permissions
       const permResponse = await fetch(`/api/permissions/users/${userData._id}/permissions`);
+      if (!permResponse.ok) {
+        console.warn(`Failed to fetch user permissions: ${permResponse.status}`);
+        setLoading(false);
+        return;
+      }
       const permData = await permResponse.json();
 
       if (permData.success && permData.data) {

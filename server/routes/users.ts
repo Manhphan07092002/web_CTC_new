@@ -137,10 +137,7 @@ router.get('/', requireAdmin, async (req, res) => {
 router.get('/by-email/:email', async (req, res) => {
   try {
     const email = decodeURIComponent(req.params.email).toLowerCase().trim();
-    // Find user by email
-    
-    const items = await db.users.getAll();
-    const user = items.find((u: any) => u.email?.toLowerCase() === email);
+    const user = await db.users.getByEmail(email);
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -148,7 +145,6 @@ router.get('/by-email/:email', async (req, res) => {
     
     // Don't send password to client
     const { password, ...sanitized } = user as any;
-    // User found successfully
     res.json(sanitized);
   } catch (error) {
     logger.error('Error getting user by email', error);
@@ -160,10 +156,7 @@ router.get('/by-email/:email', async (req, res) => {
 router.get('/email/:email', async (req, res) => {
   try {
     const email = decodeURIComponent(req.params.email).toLowerCase().trim();
-    // Find user by email
-    
-    const items = await db.users.getAll();
-    const user = items.find((u: any) => u.email?.toLowerCase() === email);
+    const user = await db.users.getByEmail(email);
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -171,7 +164,6 @@ router.get('/email/:email', async (req, res) => {
     
     // Don't send password to client
     const { password, ...sanitized } = user as any;
-    // User found successfully
     res.json(sanitized);
   } catch (error) {
     logger.error('Error getting user by email', error);

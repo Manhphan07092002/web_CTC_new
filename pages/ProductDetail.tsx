@@ -65,7 +65,10 @@ const ProductDetail: React.FC = () => {
         setLoading(true);
         const [productData, reviewsData] = await Promise.all([
           api.products.getById(id),
-          api.reviews.getByProductId(id)
+          api.reviews.getByProductId(id).catch(err => {
+            console.error('Error fetching product reviews:', err);
+            return [];
+          })
         ]);
         
         setProduct(productData);
