@@ -115,6 +115,7 @@ export interface IProduct extends BaseDocument {
   views?: number; // Lượt xem
   likes?: number; // Lượt thích
   shares?: number; // Lượt chia sẻ
+  focusKeyword?: string; // Từ khóa SEO Focus
   // Multi-language translations
   translations?: TranslationsMap<ProductTranslation>;
 }
@@ -160,6 +161,7 @@ const ProductSchema = new Schema<IProduct>({
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },
   shares: { type: Number, default: 0 },
+  focusKeyword: { type: String, default: '' },
   // Multi-language translations
   translations: createTranslationSchema()
 }, { timestamps: true });

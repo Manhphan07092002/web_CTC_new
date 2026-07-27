@@ -9,6 +9,7 @@ import UnsavedChangesModal from './components/UnsavedChangesModal';
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
+import SeoAnalyzer from './components/SeoAnalyzer';
 
 interface ProductCategory {
   id: string;
@@ -28,6 +29,13 @@ const ProductForm: React.FC = () => {
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [imagePickerTarget, setImagePickerTarget] = useState<'main' | number>('main');
   
+  const [focusKeyword, setFocusKeyword] = useState('');
+
+  const handleFocusKeywordChange = (kw: string) => {
+    setFocusKeyword(kw);
+    setFormData(prev => ({ ...prev, focusKeyword: kw }));
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -51,7 +59,8 @@ const ProductForm: React.FC = () => {
     features: [''],
     technicalSpecs: {} as { [key: string]: string },
     isFeatured: false,
-    featuredOrder: 0
+    featuredOrder: 0,
+    focusKeyword: ''
   });
 
   const { showUnsavedModal, setShowUnsavedModal, setBaseline, confirmNavigation } = useUnsavedChanges(formData, loading);
@@ -199,6 +208,8 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
     setLoading(true);
     try {
       const product = await api.products.getById(productId);
+      const loadedKw = product.focusKeyword || '';
+      setFocusKeyword(loadedKw);
       const initialProductData = {
         name: product.name || '',
         category: product.category || '',
@@ -222,7 +233,8 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
         features: product.features && product.features.length > 0 ? product.features : [''],
         technicalSpecs: product.technicalSpecs || {},
         isFeatured: product.isFeatured || false,
-        featuredOrder: product.featuredOrder || 0
+        featuredOrder: product.featuredOrder || 0,
+        focusKeyword: loadedKw
       };
       setFormData(initialProductData);
       setBaseline(initialProductData);
@@ -754,6 +766,21 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
                 />
               </div>
             )}
+          </div>
+
+          {/* SEO Analyzer - Yoast-style for Products */}
+          <div className="pt-4 border-t border-gray-100">
+            <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" /> PHÂN TÍCH & CHẤM ĐIỂM SEO SẢN PHẨM (YOAST-STYLE)
+            </h3>
+            <SeoAnalyzer
+              title={formData.name}
+              excerpt={formData.shortDescription || formData.name}
+              content={formData.description + (formData.specifications ? '\n' + formData.specifications : '')}
+              image={formData.image}
+              focusKeyword={focusKeyword}
+              onFocusKeywordChange={handleFocusKeywordChange}
+            />
           </div>
 
           {/* Actions */}

@@ -44,6 +44,7 @@ export interface Product {
   views?: number; // Lượt xem
   likes?: number; // Lượt thích
   shares?: number; // Lượt chia sẻ
+  focusKeyword?: string; // Từ khóa SEO Focus
   createdAt?: string;
   updatedAt?: string;
 }
