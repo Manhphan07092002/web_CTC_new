@@ -588,7 +588,15 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
             </label>
             <div className="flex gap-4">
               {formData.image ? (
-                <img src={formData.image} alt="Preview" className="w-32 h-32 object-cover rounded-lg border" />
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded-lg border"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+                  }}
+                />
               ) : (
                 <div className="w-32 h-32 bg-gray-100 rounded-lg border flex items-center justify-center">
                   <span className="text-gray-400 text-sm">No Image</span>
@@ -614,7 +622,20 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               {formData.images.map((img, index) => (
                 <div key={index} className="relative">
                   {img ? (
-                    <img src={img} alt={`Image ${index + 1}`} className="w-full h-32 object-cover rounded-lg border" />
+                    <img
+                      src={img}
+                      alt={`Image ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg border"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        const fallbacks = [
+                          'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800',
+                          'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800',
+                          'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800'
+                        ];
+                        e.currentTarget.src = fallbacks[index % fallbacks.length];
+                      }}
+                    />
                   ) : (
                     <button
                       type="button"

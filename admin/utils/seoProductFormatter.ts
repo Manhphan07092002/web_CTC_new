@@ -64,13 +64,13 @@ export function formatSeoProductHtml(
   if (!hasImgTag) {
     const img1Block = `
 <figure class="my-6">
-  <img src="${finalMainImage}" alt="${focusKeyword} chính hãng CTC" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
+  <img src="${finalMainImage}" alt="${focusKeyword} chính hãng CTC" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';" />
   <figcaption class="text-center text-xs text-slate-500 mt-2 italic">Hình ảnh chi tiết ${focusKeyword} tại Bưu Điện Miền Trung (CTC)</figcaption>
 </figure>`;
 
     const img2Block = `
 <figure class="my-6">
-  <img src="${finalExtraImages[0] || fallbackImages[1]}" alt="Chi tiết kỹ thuật ${focusKeyword}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
+  <img src="${finalExtraImages[0] || fallbackImages[1]}" alt="Chi tiết kỹ thuật ${focusKeyword}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800';" />
   <figcaption class="text-center text-xs text-slate-500 mt-2 italic">Hình ảnh thực tế và kiểm định chất lượng ${focusKeyword}</figcaption>
 </figure>`;
 

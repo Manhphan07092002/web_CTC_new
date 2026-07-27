@@ -179,8 +179,21 @@ function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: st
   return excerpt;
 }
 
+function resolveAbsoluteUrl(rawUrl: string, baseUrl: string): string | null {
+  try {
+    let clean = rawUrl.trim();
+    if (!clean) return null;
+    if (clean.startsWith('//')) return 'https:' + clean;
+    if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+    const resolved = new URL(clean, baseUrl);
+    return resolved.href;
+  } catch (e) {
+    return null;
+  }
+}
+
 /**
- * Automatically Scrape Article Content & Images from URL (Cheerio-style Web Scraping)
+ * Automatically Scrape Article Content, Images & Videos from URL (Cheerio-style Web Scraping)
  */
 async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[] }> {
   try {
@@ -217,26 +230,27 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
       }
     }
 
-    // 3. Extract Real Images from HTML
+    // 3. Extract Real Images from HTML with Absolute URL Resolution
     const scrapedImages: string[] = [];
     const ogMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"'\s]+)["']/i) ||
                     html.match(/<meta[^>]+content=["']([^"'\s]+)["'][^>]+property=["']og:image["']/i);
     if (ogMatch && ogMatch[1]) {
-      let ogUrl = ogMatch[1].trim();
-      if (ogUrl.startsWith('//')) ogUrl = 'https:' + ogUrl;
-      if (ogUrl.startsWith('http')) scrapedImages.push(ogUrl);
+      const resolvedOg = resolveAbsoluteUrl(ogMatch[1], url);
+      if (resolvedOg && !scrapedImages.includes(resolvedOg)) {
+        scrapedImages.push(resolvedOg);
+      }
     }
 
     const imgRegex = /<img[^>]+(?:src|data-src|data-original|data-lazy-src)=["']([^"'\s]+)["'][^>]*>/gi;
     let imgMatch;
-    while ((imgMatch = imgRegex.exec(html)) !== null && scrapedImages.length < 6) {
-      let imgUrl = imgMatch[1].trim();
-      if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
-      if (!imgUrl.startsWith('http')) continue;
+    while ((imgMatch = imgRegex.exec(html)) !== null && scrapedImages.length < 8) {
+      let rawImg = imgMatch[1].trim();
+      if (!rawImg || rawImg.startsWith('data:image')) continue;
 
-      if (!/(?:logo|icon|avatar|pixel|spinner|loading|banner_ad|button|\.gif|\.svg)/i.test(imgUrl)) {
-        if (!scrapedImages.includes(imgUrl)) {
-          scrapedImages.push(imgUrl);
+      if (!/(?:logo|icon|avatar|pixel|spinner|loading|banner_ad|button|\.gif|\.svg)/i.test(rawImg)) {
+        const resolved = resolveAbsoluteUrl(rawImg, url);
+        if (resolved && !scrapedImages.includes(resolved)) {
+          scrapedImages.push(resolved);
         }
       }
     }
