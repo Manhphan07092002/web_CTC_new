@@ -174,6 +174,20 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
     }
   };
 
+  const formatPriceInput = (val: string | number | undefined | null): string => {
+    if (val === undefined || val === null) return '';
+    const str = String(val).trim();
+    if (!str) return '';
+    const digits = str.replace(/\D/g, '');
+    if (!digits) return str;
+    return Number(digits).toLocaleString('en-US');
+  };
+
+  const handlePriceChange = (field: 'price' | 'originalPrice', value: string) => {
+    const formatted = formatPriceInput(value);
+    setFormData(prev => ({ ...prev, [field]: formatted }));
+  };
+
   const loadProduct = async (productId: string) => {
     setLoading(true);
     try {
@@ -187,8 +201,8 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
         description: product.description || '',
         shortDescription: product.shortDescription || '',
         specifications: product.specifications || '',
-        price: product.price || '',
-        originalPrice: product.originalPrice || '',
+        price: formatPriceInput(product.price),
+        originalPrice: formatPriceInput(product.originalPrice),
         contactPrice: product.contactPrice || false,
         image: product.image || '',
         images: product.images || [],
@@ -379,9 +393,9 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
                 <input
                   type="text"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  onChange={(e) => handlePriceChange('price', e.target.value)}
                   disabled={formData.contactPrice}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
                   placeholder="VD: 15,000,000"
                 />
               </div>
@@ -391,10 +405,10 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
                 <input
                   type="text"
                   value={formData.originalPrice}
-                  onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
+                  onChange={(e) => handlePriceChange('originalPrice', e.target.value)}
                   disabled={formData.contactPrice}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100"
-                  placeholder="VD: 18000000"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
+                  placeholder="VD: 18,000,000"
                 />
                 <p className="text-xs text-gray-500 mt-1">Để tạo hiệu ứng giảm giá</p>
               </div>
