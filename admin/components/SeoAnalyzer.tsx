@@ -277,9 +277,9 @@ function runReadabilityChecks(content: string): SeoCheck[] {
   // Sentence length check (Filter out tables, figures, image URLs)
   const cleanProseText = plain.replace(/https?:\/\/[^\s]+/gi, '').replace(/\s+/g, ' ');
   const sentences = cleanProseText.split(/[.!?]+/).filter(s => s.trim().length > 5);
-  const longSentences = sentences.filter(s => wordCount(s) > 20).length;
+  const longSentences = sentences.filter(s => wordCount(s) > 22).length;
   const longRatio = sentences.length > 0 ? (longSentences / sentences.length) * 100 : 0;
-  const sentStatus = longRatio <= 25 ? 'good' : longRatio <= 50 ? 'ok' : 'bad';
+  const sentStatus = longRatio <= 30 ? 'good' : longRatio <= 55 ? 'ok' : 'bad';
   checks.push({
     id: 'sentence-len',
     label: 'Độ dài câu văn',
@@ -287,11 +287,11 @@ function runReadabilityChecks(content: string): SeoCheck[] {
     message: sentences.length === 0
       ? 'Chưa có nội dung để phân tích'
       : sentStatus === 'good'
-      ? `${Math.round(longRatio)}% câu trên 20 từ - Đạt chuẩn dễ đọc ✓`
+      ? `${Math.round(longRatio)}% câu dài (>22 từ) - Đạt chuẩn dễ đọc ✓`
       : sentStatus === 'ok'
-      ? `${Math.round(longRatio)}% câu trên 20 từ - Nên rút ngắn một số câu`
+      ? `${Math.round(longRatio)}% câu dài (>22 từ) - Nên ngắt ngắn một số câu`
       : `${Math.round(longRatio)}% câu quá dài - Chia nhỏ các câu phức tạp`,
-    score: sentStatus === 'good' ? 25 : sentStatus === 'ok' ? 15 : 5,
+    score: sentStatus === 'good' ? 25 : sentStatus === 'ok' ? 18 : 8,
     maxScore: 25,
   });
 
@@ -301,7 +301,7 @@ function runReadabilityChecks(content: string): SeoCheck[] {
     .map(p => stripHtml(p).trim())
     .filter(p => p.length > 0);
   const longParas = paragraphs.filter(p => wordCount(p) > 100).length;
-  const paraStatus = longParas === 0 ? 'good' : longParas <= 2 ? 'ok' : 'bad';
+  const paraStatus = longParas <= 1 ? 'good' : longParas <= 3 ? 'ok' : 'bad';
   checks.push({
     id: 'paragraphs',
     label: 'Độ dài đoạn văn',
@@ -313,12 +313,12 @@ function runReadabilityChecks(content: string): SeoCheck[] {
       : paraStatus === 'ok'
       ? `${longParas} đoạn dài (>100 từ) - Nên chia nhỏ`
       : `${longParas} đoạn quá dài - Chia thành đoạn ngắn 3-5 câu`,
-    score: paraStatus === 'good' ? 20 : paraStatus === 'ok' ? 10 : 5,
+    score: paraStatus === 'good' ? 20 : paraStatus === 'ok' ? 12 : 5,
     maxScore: 20,
   });
 
   // Lists check
-  const hasList = content.includes('<ul') || content.includes('<ol');
+  const hasList = content.includes('<ul') || content.includes('<ol') || content.includes('<li>');
   checks.push({
     id: 'lists',
     label: 'Danh sách (bullet/numbered)',

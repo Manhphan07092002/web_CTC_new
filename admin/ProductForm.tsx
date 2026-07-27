@@ -100,6 +100,10 @@ YÊU CẦU CHUẨN SEO YOAST BẮT BUỘC:
      * <h2>Ứng Dụng Thực Tế & Lợi Ích Đầu Tư</h2>
      * <h2>Tại Sao Nên Chọn Giải Pháp Điện Mặt Trời Tại CTC?</h2>
    - Sử dụng nhiều từ nối SEO: "Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra", "Tóm lại".
+   - QUY TẮC DỄ ĐỌC (READABILITY 100/100):
+     * CÂU VĂN NGẮN: Tất cả các câu BẮT BUỘC ngắn gọn (dưới 15-18 từ/câu). Ngắt câu bằng dấu chấm thường xuyên.
+     * ĐOẠN VĂN NGẮN: Mỗi thẻ <p> chỉ chứa 2-3 câu ngắn (dưới 60 từ/đoạn) để thoáng mắt.
+     * CHÈN DANH SÁCH: BẮT BUỘC chèn ít nhất 2 danh sách dạng <ul><li>...</li></ul> trong bài cho Đặc điểm nổi bật và Ứng dụng thực tế.
    - Chèn ít nhất 1 hình ảnh minh họa dạng HTML có thuộc tính alt chứa từ khóa Focus: <img src="${formData.image || 'https://ctcdn.vn/images/solar-panel.jpg'}" alt="[focusKeyword] chính hãng CTC" class="rounded-xl my-4 w-full" />.
 
 Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
