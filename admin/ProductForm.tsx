@@ -10,6 +10,7 @@ import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 import SeoAnalyzer from './components/SeoAnalyzer';
+import AiProductWriterModal from './components/AiProductWriterModal';
 
 interface ProductCategory {
   id: string;
@@ -68,6 +69,39 @@ const ProductForm: React.FC = () => {
   const [techSpecKey, setTechSpecKey] = useState('');
   const [techSpecValue, setTechSpecValue] = useState('');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
+
+  const handleApplyAiProduct = (data: {
+    name: string;
+    code?: string;
+    focusKeyword: string;
+    shortDescription: string;
+    description: string;
+    specifications: string;
+    power?: number;
+    efficiency?: number;
+    warranty?: string;
+    features?: string[];
+    technicalSpecs?: { [key: string]: string };
+    image?: string;
+  }) => {
+    setFocusKeyword(data.focusKeyword);
+    setFormData(prev => ({
+      ...prev,
+      name: data.name || prev.name,
+      code: data.code || prev.code,
+      focusKeyword: data.focusKeyword,
+      shortDescription: data.shortDescription || prev.shortDescription,
+      description: data.description || prev.description,
+      specifications: data.specifications || prev.specifications,
+      power: data.power || prev.power,
+      efficiency: data.efficiency || prev.efficiency,
+      warranty: data.warranty || prev.warranty,
+      features: data.features && data.features.length > 0 ? data.features : prev.features,
+      technicalSpecs: data.technicalSpecs || prev.technicalSpecs,
+      image: prev.image || data.image || ''
+    }));
+  };
 
   const handleGenerateAIDescription = async () => {
     if (!formData.name) {
@@ -402,12 +436,23 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           <h1 className="text-3xl font-bold text-gray-800">
             {isEdit ? 'Chỉnh sửa Sản phẩm' : 'Thêm Sản phẩm mới'}
           </h1>
-          <button
-            onClick={handleExit}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowAiModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 via-primary to-secondary text-white rounded-xl text-sm font-black transition-all shadow-sm hover:shadow-md hover:scale-105 cursor-pointer"
+              title="Mở Trợ lý AI tự động tạo toàn bộ thông tin sản phẩm chuẩn SEO Yoast 100/100"
+            >
+              <Sparkles size={16} className="text-amber-200 animate-pulse" />
+              <span>✨ AI Tạo Sản Phẩm</span>
+            </button>
+            <button
+              onClick={handleExit}
+              className="text-gray-400 hover:text-gray-600 p-2 cursor-pointer"
+            >
+              <X size={24} />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -866,6 +911,16 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           }
         }}
         isSaving={loading}
+      />
+
+      {/* AI Product Writer Modal */}
+      <AiProductWriterModal
+        isOpen={showAiModal}
+        onClose={() => setShowAiModal(false)}
+        onApply={handleApplyAiProduct}
+        initialName={formData.name}
+        initialCode={formData.code}
+        initialCategory={formData.categoryLabel || formData.category}
       />
     </div>
   );
