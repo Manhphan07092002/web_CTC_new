@@ -194,16 +194,20 @@ function resolveAbsoluteUrl(rawUrl: string, baseUrl: string): string | null {
 }
 
 /**
- * Automatically Scrape Article Content, Images & Videos from URL (Cheerio-style Web Scraping)
+ * Automatically Scrape Article Content, Images & Videos from URL
+ * Uses multi-source extraction: JSON-LD, og:image, twitter:image, all data-* attrs, srcset, background-image CSS
  */
 async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[] }> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 10000);
 
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8',
+        'Referer': new URL(url).origin
       },
       signal: controller.signal
     });
@@ -212,17 +216,34 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
     if (!res.ok) return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
     const html = await res.text();
 
-    // 1. Extract Title
+    // Helper to add unique resolved images
+    const addImage = (raw: string) => {
+      if (!raw || raw.startsWith('data:image') || raw.length < 5) return;
+      if (/(?:logo|icon|avatar|pixel|spinner|loading|\.gif$|\.svg$|1x1|blank|placeholder)/i.test(raw)) return;
+      const resolved = resolveAbsoluteUrl(raw, url);
+      if (resolved && !scrapedImages.includes(resolved)) {
+        scrapedImages.push(resolved);
+      }
+    };
+
+    // 1. Extract Title - try og:title first, then <title>, then h1
     let scrapedTitle = '';
-    const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i) || html.match(/<h1[^>]*>(.*?)<\/h1>/i);
-    if (titleMatch) {
-      scrapedTitle = titleMatch[1].replace(/<[^>]+>/g, '').trim();
-      scrapedTitle = scrapedTitle.replace(/\s*[-|\u2013\u2014]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV).*$/i, '');
+    const ogTitleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
+                         html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
+    if (ogTitleMatch) {
+      scrapedTitle = ogTitleMatch[1].replace(/<[^>]+>/g, '').trim();
+    } else {
+      const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i) || html.match(/<h1[^>]*>(.*?)<\/h1>/is);
+      if (titleMatch) {
+        scrapedTitle = titleMatch[1].replace(/<[^>]+>/g, '').trim();
+      }
     }
+    // Clean common site name suffixes
+    scrapedTitle = scrapedTitle.replace(/\s*[|–—-]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV|Tiki|Shopee|Lazada|MSI|Dell|ASUS|HP|Lenovo|CTC|ctcdn\.vn).*$/i, '').trim();
 
     // 2. Extract Body Paragraphs (<p> tags)
     const scrapedParagraphs: string[] = [];
-    const pRegex = /<p[^>]*>(.*?)<\/p>/gi;
+    const pRegex = /<p[^>]*>(.*?)<\/p>/gis;
     let pMatch;
     while ((pMatch = pRegex.exec(html)) !== null && scrapedParagraphs.length < 25) {
       const cleanP = pMatch[1].replace(/<[^>]+>/g, '').trim();
@@ -231,52 +252,141 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
       }
     }
 
-    // 3. Extract Real Images from HTML with Absolute URL Resolution
+    // 3. Extract Images - multi-source strategy
     const scrapedImages: string[] = [];
-    const ogMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"'\s]+)["']/i) ||
-                    html.match(/<meta[^>]+content=["']([^"'\s]+)["'][^>]+property=["']og:image["']/i);
-    if (ogMatch && ogMatch[1]) {
-      const resolvedOg = resolveAbsoluteUrl(ogMatch[1], url);
-      if (resolvedOg && !scrapedImages.includes(resolvedOg)) {
-        scrapedImages.push(resolvedOg);
+
+    // 3a. JSON-LD Schema.org (most reliable for product pages)
+    const jsonLdRegex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+    let jsonLdMatch;
+    while ((jsonLdMatch = jsonLdRegex.exec(html)) !== null && scrapedImages.length < 6) {
+      try {
+        const schema = JSON.parse(jsonLdMatch[1].trim());
+        const extractSchemaImages = (obj: any) => {
+          if (!obj) return;
+          if (Array.isArray(obj)) { obj.forEach(extractSchemaImages); return; }
+          if (typeof obj !== 'object') return;
+          if (obj['@type'] === 'Product' || obj['@type'] === 'ImageObject' || obj['@graph']) {
+            const graphs = obj['@graph'] || [obj];
+            for (const item of (Array.isArray(graphs) ? graphs : [graphs])) {
+              // Product images
+              if (item.image) {
+                const imgs = Array.isArray(item.image) ? item.image : [item.image];
+                for (const img of imgs) {
+                  if (typeof img === 'string') addImage(img);
+                  else if (img?.url) addImage(img.url);
+                  else if (img?.contentUrl) addImage(img.contentUrl);
+                }
+              }
+              // ImageObject
+              if (item['@type'] === 'ImageObject') {
+                if (item.url) addImage(item.url);
+                if (item.contentUrl) addImage(item.contentUrl);
+              }
+            }
+          } else {
+            if (obj.image) {
+              const imgs = Array.isArray(obj.image) ? obj.image : [obj.image];
+              for (const img of imgs) {
+                if (typeof img === 'string') addImage(img);
+                else if (img?.url) addImage(img.url);
+              }
+            }
+          }
+        };
+        extractSchemaImages(schema);
+      } catch {}
+    }
+
+    // 3b. Open Graph / Twitter meta tags
+    const metaImgPatterns = [
+      /<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"'\s]+)["']/gi,
+      /<meta[^>]+content=["']([^"'\s]+)["'][^>]+property=["']og:image["']/gi,
+      /<meta[^>]+name=["']twitter:image(?::src)?["'][^>]+content=["']([^"'\s]+)["']/gi,
+      /<meta[^>]+content=["']([^"'\s]+)["'][^>]+name=["']twitter:image["']/gi,
+    ];
+    for (const pattern of metaImgPatterns) {
+      let m;
+      while ((m = pattern.exec(html)) !== null && scrapedImages.length < 8) {
+        addImage(m[1]);
       }
     }
 
-    const imgRegex = /<img[^>]+(?:src|data-src|data-original|data-lazy-src)=["']([^"'\s]+)["'][^>]*>/gi;
-    let imgMatch;
-    while ((imgMatch = imgRegex.exec(html)) !== null && scrapedImages.length < 8) {
-      let rawImg = imgMatch[1].trim();
-      if (!rawImg || rawImg.startsWith('data:image')) continue;
-
-      if (!/(?:logo|icon|avatar|pixel|spinner|loading|banner_ad|button|\.gif|\.svg)/i.test(rawImg)) {
-        const resolved = resolveAbsoluteUrl(rawImg, url);
-        if (resolved && !scrapedImages.includes(resolved)) {
-          scrapedImages.push(resolved);
+    // 3c. <img> with all possible lazy-load attributes
+    const imgAttrRegex = /<img[^>]+>/gi;
+    let imgTagMatch;
+    while ((imgTagMatch = imgAttrRegex.exec(html)) !== null && scrapedImages.length < 10) {
+      const tag = imgTagMatch[0];
+      // Try all known image attributes in priority order
+      const attrPatterns = [
+        /data-zoom-image=["']([^"'\s]+)["']/i,
+        /data-large=["']([^"'\s]+)["']/i,
+        /data-full-src=["']([^"'\s]+)["']/i,
+        /data-original=["']([^"'\s]+)["']/i,
+        /data-lazy-src=["']([^"'\s]+)["']/i,
+        /data-lazysrc=["']([^"'\s]+)["']/i,
+        /data-src=["']([^"'\s]+)["']/i,
+        /data-img=["']([^"'\s]+)["']/i,
+        /srcset=["']([^"']+)["']/i,
+        /src=["']([^"'\s]+)["']/i,
+      ];
+      for (const ap of attrPatterns) {
+        const am = tag.match(ap);
+        if (am && am[1]) {
+          // srcset: take the largest (last) URL
+          if (ap.source.includes('srcset')) {
+            const parts = am[1].split(',').map((s: string) => s.trim().split(/\s+/)[0]);
+            for (const p of parts.reverse()) { addImage(p); if (scrapedImages.length >= 10) break; }
+          } else {
+            addImage(am[1]);
+          }
+          break; // take the best attribute, don't double-count same img tag
         }
       }
     }
 
-    // 4. Extract Real Videos (YouTube, Vimeo, HTML5 Video)
-    const scrapedVideos: string[] = [];
-    const iframeRegex = /<iframe[^>]+src=["']([^"'\s]+(?:youtube|youtu\.be|vimeo)[^"'\s]*)["'][^>]*>/gi;
-    let vMatch;
-    while ((vMatch = iframeRegex.exec(html)) !== null && scrapedVideos.length < 3) {
-      let vUrl = vMatch[1].trim();
-      if (vUrl.startsWith('//')) vUrl = 'https:' + vUrl;
-      if (!scrapedVideos.includes(vUrl)) {
-        scrapedVideos.push(vUrl);
-      }
+    // 3d. Background-image CSS in inline styles (for gallery/slider pages)
+    const bgImgRegex = /background-image\s*:\s*url\(\s*["']?([^"')]+)["']?\s*\)/gi;
+    let bgMatch;
+    while ((bgMatch = bgImgRegex.exec(html)) !== null && scrapedImages.length < 10) {
+      addImage(bgMatch[1]);
     }
 
-    const videoTagRegex = /<(?:video|source)[^>]+src=["']([^"'\s]+\.(?:mp4|webm|ogg))["'][^>]*>/gi;
-    let mp4Match;
-    while ((mp4Match = videoTagRegex.exec(html)) !== null && scrapedVideos.length < 3) {
-      let mp4Url = mp4Match[1].trim();
-      if (mp4Url.startsWith('//')) mp4Url = 'https:' + mp4Url;
-      if (mp4Url.startsWith('http') && !scrapedVideos.includes(mp4Url)) {
-        scrapedVideos.push(mp4Url);
-      }
+    // 3e. Direct image URLs in JSON attributes (common in React/Angular product pages)
+    const jsonImgRegex = /"(?:src|url|image|imageUrl|image_url|photo|thumbnail|productImage|mainImage|largeImage)":\s*"(https?:\/\/[^"]+\.(?:jpg|jpeg|png|webp|avif)[^"]*)"/gi;
+    let jsonImgMatch;
+    while ((jsonImgMatch = jsonImgRegex.exec(html)) !== null && scrapedImages.length < 10) {
+      addImage(jsonImgMatch[1]);
     }
+
+    // 4. Extract Videos (YouTube, Vimeo, HTML5)
+    const scrapedVideos: string[] = [];
+    const addVideo = (raw: string) => {
+      if (!raw) return;
+      let v = raw.trim();
+      if (v.startsWith('//')) v = 'https:' + v;
+      // Convert youtu.be short links to embed
+      v = v.replace(/youtu\.be\/([a-zA-Z0-9_-]+)/, 'www.youtube.com/embed/$1');
+      // Convert youtube.com/watch?v= to embed
+      v = v.replace(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/, 'youtube.com/embed/$1');
+      if (v.startsWith('http') && !scrapedVideos.includes(v)) {
+        scrapedVideos.push(v);
+      }
+    };
+
+    // iframe embeds
+    const iframeRegex = /<iframe[^>]+src=["']([^"'\s]+(?:youtube|youtu\.be|vimeo)[^"'\s]*)["'][^>]*>/gi;
+    let vMatch;
+    while ((vMatch = iframeRegex.exec(html)) !== null && scrapedVideos.length < 3) addVideo(vMatch[1]);
+
+    // YouTube links in href/data attributes
+    const ytLinkRegex = /(?:href|src|data-url|data-video)=["']([^"']*(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]+[^"']*)["']/gi;
+    while ((vMatch = ytLinkRegex.exec(html)) !== null && scrapedVideos.length < 3) addVideo(vMatch[1]);
+
+    // HTML5 video/source tags
+    const videoTagRegex = /<(?:video|source)[^>]+src=["']([^"'\s]+\.(?:mp4|webm|ogg))["'][^>]*>/gi;
+    while ((vMatch = videoTagRegex.exec(html)) !== null && scrapedVideos.length < 3) addVideo(vMatch[1]);
+
+    console.log(`[Scraper] URL: ${url} → Title: "${scrapedTitle}" | Images: ${scrapedImages.length} | Videos: ${scrapedVideos.length} | Paragraphs: ${scrapedParagraphs.length}`);
 
     return { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos };
   } catch (err) {
@@ -284,6 +394,7 @@ async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string
     return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
   }
 }
+
 
 /**
  * Extract image URLs directly embedded in raw text or HTML
