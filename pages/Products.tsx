@@ -250,14 +250,14 @@ const Products: React.FC = () => {
   };
 
   return (
-    <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300 pt-24 md:pt-28">
+    <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300">
       <SEO
         title={getCurrentCategoryName()}
         description="Danh mục sản phẩm điện năng lượng mặt trời chính hãng."
       />
 
       {/* Breadcrumb / Toolbar Header */}
-      <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[60px] z-30 shadow-sm transition-colors duration-300">
+      <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[110px] lg:top-[124px] z-30 shadow-sm transition-colors duration-300">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
