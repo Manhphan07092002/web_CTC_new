@@ -18,6 +18,7 @@ interface Product {
   code?: string;
   price?: string;
   originalPrice?: string;
+  vat?: number;
   contactPrice?: boolean;
   image: string;
   stock?: number;

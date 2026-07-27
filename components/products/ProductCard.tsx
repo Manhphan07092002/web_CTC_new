@@ -89,6 +89,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <PriceDisplay
             price={product.price || 0}
             originalPrice={product.originalPrice}
+            vat={product.vat}
             contactPrice={product.contactPrice}
             size="lg"
             layout="vertical"

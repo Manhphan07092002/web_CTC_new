@@ -363,6 +363,9 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
               images={imageList}
               productName={product.name}
               categoryName={product.category}
+              originalPrice={product.originalPrice}
+              price={product.price}
+              contactPrice={product.contactPrice}
             />
 
             {/* Info Section */}

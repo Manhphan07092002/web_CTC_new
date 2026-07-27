@@ -39,6 +39,7 @@ const ProductForm: React.FC = () => {
     specifications: '',
     price: '',
     originalPrice: '',
+    vat: 0 as number | string,
     contactPrice: false,
     image: '',
     images: [] as string[],
@@ -209,6 +210,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
         specifications: product.specifications || '',
         price: formatPriceInput(product.price),
         originalPrice: formatPriceInput(product.originalPrice),
+        vat: product.vat !== undefined ? product.vat : 0,
         contactPrice: product.contactPrice || false,
         image: product.image || '',
         images: product.images || [],
@@ -305,8 +307,14 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
 
     setLoading(true);
     try {
+      const parsedVat = typeof formData.vat === 'number'
+        ? formData.vat
+        : (parseFloat(String(formData.vat).replace(',', '.')) || 0);
+      const finalVat = Math.max(0, Math.min(100, isNaN(parsedVat) ? 0 : parsedVat));
+
       const cleanedData = {
         ...formData,
+        vat: finalVat,
         features: formData.features.filter(f => f.trim() !== ''),
         images: formData.images.filter(img => img.trim() !== '')
       };
@@ -407,33 +415,58 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng cấu trúc JSON chuẩn (khôn
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Giá hiện tại</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Giá khuyến mại (chưa VAT)</label>
                 <input
                   type="text"
                   value={formData.price}
                   onChange={(e) => handlePriceChange('price', e.target.value)}
                   disabled={formData.contactPrice}
                   className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
-                  placeholder="VD: 15,000,000"
+                  placeholder="VD: 17,900,000"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Giá gốc (tùy chọn)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Giá niêm yết (chưa VAT - tùy chọn)</label>
                 <input
                   type="text"
                   value={formData.originalPrice}
                   onChange={(e) => handlePriceChange('originalPrice', e.target.value)}
                   disabled={formData.contactPrice}
                   className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
-                  placeholder="VD: 18,000,000"
+                  placeholder="VD: 22,990,000"
                 />
-                <p className="text-xs text-gray-500 mt-1">Để tạo hiệu ứng giảm giá</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">VAT (%)</label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  max="100"
+                  value={formData.vat}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '') {
+                      setFormData(prev => ({ ...prev, vat: '' }));
+                      return;
+                    }
+                    const num = parseFloat(val);
+                    if (!isNaN(num) && num >= 0 && num <= 100) {
+                      setFormData(prev => ({ ...prev, vat: val }));
+                    }
+                  }}
+                  disabled={formData.contactPrice}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
+                  placeholder="VD: 10, 8 hoặc 0"
+                />
+                <p className="text-xs text-gray-500 mt-1">Thuế VAT (0-100%, mặc định: 0)</p>
               </div>
               
-              <div className="md:col-span-2">
+              <div className="md:col-span-3">
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"

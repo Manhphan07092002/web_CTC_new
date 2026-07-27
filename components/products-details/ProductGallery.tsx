@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { hasDiscount, calculateDiscount } from '../../utils/priceUtils';
 
 interface ProductGalleryProps {
   images: string[];
   productName: string;
   categoryName: string;
+  originalPrice?: string | number;
+  price?: string | number;
+  contactPrice?: boolean;
 }
 
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml,' + encodeURIComponent('<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#F3F4F6"/><g transform="translate(110, 60)"><path d="M160 120L110 60L80 95L30 30L0 120H160Z" fill="#D1D5DB"/><circle cx="130" cy="35" r="20" fill="#D1D5DB"/></g><text x="200" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="500" fill="#9CA3AF">No Image</text></svg>');
@@ -12,12 +16,17 @@ const PLACEHOLDER_IMAGE = 'data:image/svg+xml,' + encodeURIComponent('<svg width
 const ProductGallery: React.FC<ProductGalleryProps> = ({
   images,
   productName,
-  categoryName
+  categoryName,
+  originalPrice,
+  price,
+  contactPrice = false
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
   const imageList = images && images.length > 0 ? images : [];
+  const isDiscounted = !contactPrice && originalPrice && price && hasDiscount(originalPrice, price);
+  const discountPercent = isDiscounted ? calculateDiscount(originalPrice, price) : 0;
 
   // Auto-play logic
   useEffect(() => {
@@ -43,7 +52,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({
   return (
     <div className="space-y-4">
       <div 
-        className="relative group aspect-[4/3] overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+        className="relative group aspect-[4/3] overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-center cursor-pointer shadow-sm"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

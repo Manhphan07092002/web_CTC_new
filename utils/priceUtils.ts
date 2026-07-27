@@ -110,3 +110,41 @@ export function formatPriceRange(minPrice: string | number, maxPrice: string | n
   
   return `${min} - ${max}`;
 }
+
+/**
+ * Safely parse any price input (string, number, null, undefined) into integer number
+ */
+export function parseNumericPrice(val: string | number | null | undefined): number {
+  if (val === null || val === undefined || val === '') return 0;
+  if (typeof val === 'number') {
+    return isNaN(val) || val < 0 ? 0 : Math.round(val);
+  }
+  const digits = String(val).replace(/\D/g, '');
+  if (!digits) return 0;
+  const parsed = parseInt(digits, 10);
+  return isNaN(parsed) || parsed < 0 ? 0 : parsed;
+}
+
+/**
+ * Calculate price including VAT
+ * Formula: PriceWithVat = PriceBeforeVat * (1 + vat / 100)
+ */
+export function calculatePriceWithVat(price: string | number | null | undefined, vat: string | number | null | undefined): number {
+  const basePrice = parseNumericPrice(price);
+  if (basePrice <= 0) return 0;
+
+  const vatPercent = typeof vat === 'number' 
+    ? (isNaN(vat) || vat < 0 ? 0 : Math.min(100, vat))
+    : Math.max(0, Math.min(100, parseFloat(String(vat).replace(',', '.')) || 0));
+
+  return Math.round(basePrice * (1 + vatPercent / 100));
+}
+
+/**
+ * Format price for Vietnamese Dong currency (e.g. 19.690.000đ)
+ */
+export function formatVnCurrency(value: number | string | null | undefined): string {
+  const num = typeof value === 'number' ? value : parseNumericPrice(value);
+  if (isNaN(num) || num < 0) return '0đ';
+  return new Intl.NumberFormat('vi-VN').format(num) + 'đ';
+}

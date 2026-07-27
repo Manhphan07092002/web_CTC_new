@@ -22,6 +22,7 @@ export interface Product {
   specifications?: string; // Chi tiết kỹ thuật
   price?: string;
   originalPrice?: string;
+  vat?: number;
   contactPrice?: boolean; // Liên hệ để biết giá
   image: string;
   imageUrl?: string;

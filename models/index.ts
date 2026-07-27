@@ -94,6 +94,7 @@ export interface IProduct extends BaseDocument {
   specifications?: string; // Chi tiết kỹ thuật
   price?: string;
   originalPrice?: string; // Giá gốc (để tạo hiệu ứng giảm giá)
+  vat?: number; // Thuế VAT (%) áp dụng cho sản phẩm (VD: 0, 8, 10)
   contactPrice?: boolean; // Liên hệ để biết giá
   image: string;
   images?: string[];
@@ -138,6 +139,7 @@ const ProductSchema = new Schema<IProduct>({
   specifications: String,
   price: String,
   originalPrice: String,
+  vat: { type: Number, default: 0 },
   contactPrice: { type: Boolean, default: false },
   image: { type: String, required: false },
   images: [String],

@@ -1,11 +1,12 @@
 import React from 'react';
 import { MessageSquare, Phone } from 'lucide-react';
-import { formatPrice, calculateDiscount, hasDiscount, SupportedCurrency } from '../utils/priceUtils';
+import { formatPrice, calculateDiscount, hasDiscount, calculatePriceWithVat, SupportedCurrency } from '../utils/priceUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface PriceDisplayProps {
   price: string | number;
   originalPrice?: string | number;
+  vat?: number;
   contactPrice?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   layout?: 'horizontal' | 'vertical';
@@ -16,6 +17,7 @@ interface PriceDisplayProps {
 const PriceDisplay: React.FC<PriceDisplayProps> = ({
   price,
   originalPrice,
+  vat = 0,
   contactPrice = false,
   size = 'md',
   layout = 'horizontal',
@@ -48,9 +50,12 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
     );
   }
 
-  const currentPrice = formatPrice(price, { language: lang });
-  const hasOriginalPrice = originalPrice && hasDiscount(originalPrice, price);
-  const discountPercent = hasOriginalPrice ? calculateDiscount(originalPrice, price) : 0;
+  const finalPrice = vat > 0 ? calculatePriceWithVat(price, vat) : price;
+  const finalOriginal = vat > 0 && originalPrice ? calculatePriceWithVat(originalPrice, vat) : originalPrice;
+
+  const currentPrice = formatPrice(finalPrice, { language: lang });
+  const hasOriginalPrice = finalOriginal && hasDiscount(finalOriginal, finalPrice);
+  const discountPercent = hasOriginalPrice ? calculateDiscount(finalOriginal, finalPrice) : 0;
 
   if (layout === 'vertical') {
     return (
