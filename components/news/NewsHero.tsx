@@ -48,9 +48,9 @@ const NewsHero: React.FC<NewsHeroProps> = ({
             <span>TẠP CHÍ ĐIỆN TỬ CTC NEWS & EVENT</span>
           </div>
 
-          <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-[2.4rem] xl:text-[2.75rem] font-black tracking-tight text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+          <h1 className="text-base sm:text-xl md:text-2xl lg:text-[2.1rem] xl:text-[2.35rem] font-black tracking-normal text-white leading-relaxed py-2 px-1 overflow-visible">
             Tin Tức &amp; Thông Tin{' '}
-            <span className="bg-gradient-to-r from-cyan-400 via-primary to-amber-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cyan-400 via-primary to-amber-300 bg-clip-text text-transparent inline-block py-1">
               Chuyên Ngành Năng Lượng
             </span>
           </h1>
