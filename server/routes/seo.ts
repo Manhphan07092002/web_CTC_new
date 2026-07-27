@@ -66,6 +66,13 @@ router.get('/sitemap.xml', async (req, res) => {
     const links: any[] = [
       { url: '/', changefreq: 'daily', priority: 1.0 },
       { url: '/about', changefreq: 'monthly', priority: 0.8 },
+      { url: '/solutions', changefreq: 'weekly', priority: 0.9 },
+      { url: '/solutions/rooftop', changefreq: 'weekly', priority: 0.85 },
+      { url: '/solutions/farm', changefreq: 'weekly', priority: 0.85 },
+      { url: '/solutions/floating', changefreq: 'weekly', priority: 0.85 },
+      { url: '/solutions/electrical', changefreq: 'weekly', priority: 0.85 },
+      { url: '/solutions/datacenter', changefreq: 'weekly', priority: 0.85 },
+      { url: '/solutions/construction', changefreq: 'weekly', priority: 0.85 },
       { url: '/products', changefreq: 'weekly', priority: 0.9 },
       { url: '/projects', changefreq: 'weekly', priority: 0.8 },
       { url: '/news', changefreq: 'daily', priority: 0.8 },

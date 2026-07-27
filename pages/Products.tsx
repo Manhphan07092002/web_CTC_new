@@ -252,8 +252,23 @@ const Products: React.FC = () => {
   return (
     <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300 pt-28 md:pt-36">
       <SEO
-        title={getCurrentCategoryName()}
-        description="Danh mục sản phẩm điện năng lượng mặt trời chính hãng."
+        title={`${getCurrentCategoryName()} - Thiết Bị Điện Mặt Trời | CTC`}
+        description={`Cung cấp ${getCurrentCategoryName()} chính hãng, hiệu suất cao, đạt chứng chỉ CO/CQ. Bảo hành dài hạn 12-25 năm, tư vấn & báo giá ưu đãi tại CTC.`}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": `${getCurrentCategoryName()} - Thiết Bị Điện Mặt Trời CTC`,
+          "description": `Danh mục ${getCurrentCategoryName()} chính hãng do CTC phân phối.`,
+          "url": window.location.href,
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Trang chủ", "item": window.location.origin },
+              { "@type": "ListItem", "position": 2, "name": "Sản phẩm", "item": `${window.location.origin}/products` },
+              { "@type": "ListItem", "position": 3, "name": getCurrentCategoryName(), "item": window.location.href }
+            ]
+          }
+        }}
       />
 
       {/* Breadcrumb / Toolbar Header */}

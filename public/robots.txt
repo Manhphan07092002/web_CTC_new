@@ -1,0 +1,31 @@
+# Robots.txt for Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)
+# Website: https://ctcdn.vn
+# Phone: +84 236 3745 555 | Email: info@ctcdn.vn
+
+User-agent: *
+Allow: /
+
+# Disallow administrative, transaction & internal search pages
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /cart
+Disallow: /track-order
+Disallow: /search
+
+# Explicitly allow high-priority public sections
+Allow: /products
+Allow: /projects
+Allow: /solutions
+Allow: /news
+Allow: /about
+Allow: /contact
+Allow: /resources
+
+# Sitemaps & RSS Feeds
+Sitemap: https://ctcdn.vn/sitemap.xml
+Sitemap: https://ctcdn.vn/rss.xml
+
+# Crawl Optimization
+Crawl-delay: 1
+Host: https://ctcdn.vn

@@ -108,7 +108,8 @@ const SEO: React.FC<SEOProps> = ({
   
   const siteUrl = typeof window !== 'undefined' ? window.location.origin : COMPANY_INFO.website;
   const url = `${siteUrl}${location.pathname}`;
-  const fullTitle = `${title} | ${settings.siteName || COMPANY_INFO.shortName}`;
+  const siteBrand = settings.siteName || COMPANY_INFO.shortName;
+  const fullTitle = title.includes(siteBrand) ? title : `${title} | ${siteBrand}`;
   
   // Favicon URLs & Dynamic Rounded Favicon from Admin Settings
   const rawFavicon = settings.favicon || settings.logoHeader || settings.logo || settings.logoFooter || '/favicon.svg';
