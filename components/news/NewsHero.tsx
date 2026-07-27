@@ -42,14 +42,14 @@ const NewsHero: React.FC<NewsHeroProps> = ({
         </div>
 
         {/* Hero Title & Intro */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
+        <div className="text-center max-w-5xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-xs font-bold text-cyan-300 shadow-inner">
             <ShieldCheck size={14} />
             <span>TẠP CHÍ ĐIỆN TỬ CTC NEWS & EVENT</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-            Tin Tức &amp; Thông Tin <br className="hidden sm:block" />
+          <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-[2.4rem] xl:text-[2.75rem] font-black tracking-tight text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+            Tin Tức &amp; Thông Tin{' '}
             <span className="bg-gradient-to-r from-cyan-400 via-primary to-amber-300 bg-clip-text text-transparent">
               Chuyên Ngành Năng Lượng
             </span>
