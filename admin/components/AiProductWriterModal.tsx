@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code, Copy, Link2, LayoutGrid, Package, ShieldCheck, Zap } from 'lucide-react';
 import { chatService } from '../../services/chatService';
 import { useToast } from '../../contexts/ToastContext';
+import { api } from '../../services/api';
 
 interface AiProductWriterModalProps {
   isOpen: boolean;
