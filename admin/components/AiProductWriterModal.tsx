@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, CheckCircle2, X, Wand2, RefreshCw, Target, Edit3, Link2, Code, Package, ShieldCheck } from 'lucide-react';
+import { Sparkles, CheckCircle2, X, Wand2, RefreshCw, Target, Edit3, Link2, Code, Package, ShieldCheck, Download, DollarSign } from 'lucide-react';
 import { chatService } from '../../services/chatService';
 import { useToast } from '../../contexts/ToastContext';
 import { api } from '../../services/api';
@@ -22,6 +22,8 @@ interface AiProductWriterModalProps {
     technicalSpecs?: { [key: string]: string };
     image?: string;
     images?: string[];
+    price?: number;
+    priceOld?: number;
   }) => void;
   initialName?: string;
   initialCode?: string;
@@ -48,6 +50,9 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
   const [step, setStep] = useState<number>(0);
   const [stepLabel, setStepLabel] = useState('');
   const [result, setResult] = useState<any | null>(null);
+  const [scrapedPrice, setScrapedPrice] = useState<number>(0);
+  const [scrapedPriceOld, setScrapedPriceOld] = useState<number>(0);
+  const [downloadingImages, setDownloadingImages] = useState(false);
 
   if (!isOpen) return null;
 
@@ -214,7 +219,9 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
             scrapedVideos = d.videos || [];
             scrapedRawText = d.rawText || '';
             scrapedSource = 'server';
-            console.log(`[AI Modal] Server OK: text=${scrapedRawText.length}ch, img=${scrapedImages.length}, vid=${scrapedVideos.length}`);
+            if (d.price && d.price > 0) setScrapedPrice(d.price);
+            if (d.priceOld && d.priceOld > 0) setScrapedPriceOld(d.priceOld);
+            console.log(`[AI Modal] Server OK: text=${scrapedRawText.length}ch, img=${scrapedImages.length}, vid=${scrapedVideos.length}, price=${d.price}`);
           } else {
             console.warn('[AI Modal] Server returned empty → trying client CORS proxy...');
           }
@@ -432,11 +439,45 @@ Trả về JSON thuần không bọc markdown:
       features: Array.isArray(result.features) ? result.features : [],
       technicalSpecs: typeof result.technicalSpecs === 'object' ? result.technicalSpecs : {},
       image: result.image || '',
-      images: Array.isArray(result.images) ? result.images : []
+      images: Array.isArray(result.images) ? result.images : [],
+      price: scrapedPrice || 0,
+      priceOld: scrapedPriceOld || 0,
     });
-    showToast('🎉 Đã áp dụng Tên, Ảnh chính, Ảnh phụ & Bài viết AI vào Form sản phẩm!', 'success');
+    showToast('🎉 Đã áp dụng Tên, Ảnh, Bài viết AI & Giá vào Form sản phẩm!', 'success');
     onClose();
   };
+
+  // Tải ảnh cào được về máy chủ CTC
+  const handleDownloadImages = async () => {
+    if (!result) return;
+    const allImages = [result.image, ...(result.images || [])].filter(Boolean);
+    if (allImages.length === 0) { showToast('Không có ảnh nào để tải về', 'error'); return; }
+    setDownloadingImages(true);
+    const localUrls: string[] = [];
+    let successCount = 0;
+    for (const imgUrl of allImages.slice(0, 8)) {
+      try {
+        const res = await api.ai.downloadImage(imgUrl);
+        if (res?.success && res.localUrl) {
+          localUrls.push(res.localUrl);
+          successCount++;
+        }
+      } catch {}
+    }
+    setDownloadingImages(false);
+    if (successCount > 0) {
+      // Update result với URL local
+      const updatedResult = { ...result };
+      if (localUrls[0]) updatedResult.image = localUrls[0];
+      if (localUrls.length > 1) updatedResult.images = localUrls.slice(1);
+      setResult(updatedResult);
+      showToast(`✅ Đã tải ${successCount} ảnh về máy chủ CTC thành công!`, 'success');
+    } else {
+      showToast('⚠️ Không thể tải ảnh về máy chủ (trang nguồn chặn download)', 'error');
+    }
+  };
+
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn overflow-y-auto">
@@ -733,18 +774,35 @@ Trả về JSON thuần không bọc markdown:
 
               {/* Actions */}
               <div className="pt-3 border-t border-slate-100 flex justify-between items-center gap-3 flex-wrap">
-                <button type="button" onClick={handleGenerate} disabled={loading}
-                  className="px-5 py-2.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
-                  <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-                  ✨ AI Tạo Lại Nội Dung Mới
-                </button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button type="button" onClick={handleGenerate} disabled={loading}
+                    className="px-5 py-2.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
+                    <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+                    ✨ AI Tạo Lại
+                  </button>
+                  <button type="button" onClick={handleDownloadImages} disabled={downloadingImages}
+                    className="px-5 py-2.5 text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
+                    {downloadingImages ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
+                    {downloadingImages ? 'Đang tải ảnh...' : '⬇️ Tải Ảnh Về Máy Chủ CTC'}
+                  </button>
+                  {scrapedPrice > 0 && (
+                    <div className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-700">
+                      <DollarSign size={13} />
+                      Giá cào được: {scrapedPrice.toLocaleString('vi-VN')}₫
+                      {scrapedPriceOld > scrapedPrice && (
+                        <span className="line-through text-slate-400 font-normal ml-1">{scrapedPriceOld.toLocaleString('vi-VN')}₫</span>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <button type="button" onClick={handleApplyResult}
                   className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer">
                   <CheckCircle2 size={16} />
-                  ✅ Áp Dụng Tất Cả Vào Form Sản Phẩm
+                  ✅ Áp Dụng Vào Form Sản Phẩm
                 </button>
               </div>
             </div>
+
           )}
         </div>
       </div>

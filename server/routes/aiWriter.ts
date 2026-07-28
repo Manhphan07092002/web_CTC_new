@@ -45,7 +45,7 @@ router.post('/scrape-url', async (req, res) => {
     }
 
     console.log(`[AI Scraper] Scraping URL: ${url}`);
-    const { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos } = await scrapeArticleFromUrl(url.trim());
+    const { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos, scrapedPrice, scrapedPriceOld } = await scrapeArticleFromUrl(url.trim());
 
     res.json({
       success: true,
@@ -54,12 +54,40 @@ router.post('/scrape-url', async (req, res) => {
         paragraphs: scrapedParagraphs,
         rawText: scrapedParagraphs.join('\n\n'),
         images: scrapedImages,
-        videos: scrapedVideos
+        videos: scrapedVideos,
+        price: scrapedPrice || 0,
+        priceOld: scrapedPriceOld || 0
       }
     });
   } catch (error: any) {
     console.error('[AI Scraper Error]:', error.message || error);
     res.status(500).json({ success: false, message: error.message || 'Lỗi khi cào dữ liệu từ URL' });
+  }
+});
+
+/**
+ * POST /api/ai/download-image
+ * Downloads remote image URL and saves locally to /uploads/images/ai/
+ * Accepts { imageUrl: string }
+ * Returns { success: true, localUrl: string }
+ */
+router.post('/download-image', async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    if (!imageUrl || typeof imageUrl !== 'string' || !imageUrl.trim().startsWith('http')) {
+      return res.status(400).json({ success: false, message: 'URL ảnh không hợp lệ' });
+    }
+
+    const { downloadImageToLocalStorage } = await import('../services/aiWriter');
+    const localUrl = await downloadImageToLocalStorage(imageUrl.trim());
+    if (localUrl) {
+      res.json({ success: true, localUrl });
+    } else {
+      res.status(500).json({ success: false, message: 'Không thể tải ảnh từ link này' });
+    }
+  } catch (error: any) {
+    console.error('[Download Image Route Error]:', error);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi tải ảnh' });
   }
 });
 

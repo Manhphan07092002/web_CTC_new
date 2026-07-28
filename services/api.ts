@@ -252,9 +252,13 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data)
     }),
-    scrapeUrl: (url: string) => fetchAPI<{ success: boolean; data: { title: string; paragraphs: string[]; rawText: string; images: string[]; videos: string[] } }>('/ai/scrape-url', {
+    scrapeUrl: (url: string) => fetchAPI<{ success: boolean; data: { title: string; paragraphs: string[]; rawText: string; images: string[]; videos: string[]; price: number; priceOld: number } }>('/ai/scrape-url', {
       method: 'POST',
       body: JSON.stringify({ url })
+    }),
+    downloadImage: (imageUrl: string) => fetchAPI<{ success: boolean; localUrl: string }>('/ai/download-image', {
+      method: 'POST',
+      body: JSON.stringify({ imageUrl })
     }),
   },
 
