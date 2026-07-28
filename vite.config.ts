@@ -36,9 +36,16 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: true,
       target: 'es2020',
       minify: 'esbuild',
+      cssMinify: 'esbuild',
       sourcemap: false,
       reportCompressedSize: false,
       chunkSizeWarningLimit: 1000,
+      esbuildOptions: {
+        // Tận dụng đa nhân CPU để transform nhanh hơn
+        supported: { 'dynamic-import': true },
+        legalComments: 'none',
+        treeShaking: true,
+      },
       rollupOptions: {
         output: {
           // Function-based manualChunks: granular, admin-aware splitting

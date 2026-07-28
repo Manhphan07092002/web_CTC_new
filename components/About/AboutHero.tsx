@@ -65,12 +65,12 @@ const AboutHero: React.FC = () => {
         {/* Main Header - py-2 added to spans to prevent browser diacritic clipping */}
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-5 text-slate-900 dark:text-white font-sans leading-tight">
           <span className="block text-transparent bg-clip-text bg-gradient-to-b from-slate-800 to-slate-900 dark:from-white dark:to-slate-300 font-black py-2" style={{
-            fontFamily: "'Montserrat', 'Be Vietnam Pro', sans-serif"
+            fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif"
           }}>
             {t('nav.about')}
           </span>
           <span className="block mt-1 text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-sky-400 to-blue-600 dark:from-sky-400 dark:via-sky-300 dark:to-blue-500 drop-shadow-[0_2px_10px_rgba(14,165,233,0.12)] font-black py-2" style={{
-            fontFamily: "'Montserrat', 'Be Vietnam Pro', sans-serif"
+            fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif"
           }}>
             {t('about.hero_title')}
           </span>

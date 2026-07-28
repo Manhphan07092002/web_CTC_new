@@ -104,7 +104,7 @@ const About: React.FC<AboutProps> = ({ onOpenModal }) => {
         .aura-bottom-left { bottom: -20%; left: -10%; }
 
         .about-title-outline {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
             font-size: clamp(1.2rem, 3vw, 1.8rem);
             font-weight: 800;
             letter-spacing: 5px;
@@ -119,7 +119,7 @@ const About: React.FC<AboutProps> = ({ onOpenModal }) => {
         }
 
         .about-title-main {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
             font-size: clamp(1.5rem, 2.8vw, 2.2rem);
             font-weight: 900;
             line-height: 1.2;

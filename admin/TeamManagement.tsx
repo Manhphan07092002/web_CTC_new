@@ -194,8 +194,8 @@ const TeamManagement: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Quản lý Đội ngũ</h1>
-          <p className="text-gray-500 mt-1">{members.length} thành viên</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Quản lý Đội ngũ</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{members.length} thành viên</p>
         </div>
         <PermissionGate permission="view_users" minRoleLevel={50}>
           <button
@@ -212,19 +212,19 @@ const TeamManagement: React.FC = () => {
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500 mt-4">Đang tải...</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-4">Đang tải...</p>
         </div>
       ) : members.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <UserIcon size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">Chưa có thành viên nào</p>
+        <div className="text-center py-12 bg-white dark:bg-slate-800/90 rounded-xl border border-gray-100 dark:border-slate-700/60">
+          <UserIcon size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+          <p className="text-gray-500 dark:text-gray-400">Chưa có thành viên nào</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.map((member, index) => (
             <div
               key={member.id}
-              className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${
+              className={`bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-6 ${
                 !member.isActive ? 'opacity-50' : ''
               }`}
             >
@@ -232,16 +232,16 @@ const TeamManagement: React.FC = () => {
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                  className="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-slate-700"
                 />
                 <div className="flex-1">
-                  <h3 className="font-bold text-gray-800 mb-1">{member.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{member.role}</p>
+                  <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-1">{member.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{member.role}</p>
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleMoveUp(member)}
                       disabled={index === 0}
-                      className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="p-1 text-gray-400 dark:text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
                       title="Di chuyển lên"
                     >
                       <ArrowUp size={16} />
@@ -249,7 +249,7 @@ const TeamManagement: React.FC = () => {
                     <button
                       onClick={() => handleMoveDown(member)}
                       disabled={index === members.length - 1}
-                      className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="p-1 text-gray-400 dark:text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
                       title="Di chuyển xuống"
                     >
                       <ArrowDown size={16} />
@@ -259,20 +259,20 @@ const TeamManagement: React.FC = () => {
               </div>
 
               <div className="space-y-2 text-sm mb-4">
-                <div className="flex items-center gap-2 text-gray-600">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                   <Mail size={14} />
                   <a href={`mailto:${member.email}`} className="hover:text-primary">
                     {member.email}
                   </a>
                 </div>
-                <div className="flex items-center gap-2 text-gray-600">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                   <Phone size={14} />
                   <a href={`tel:${member.phone}`} className="hover:text-primary">
                     {member.phone}
                   </a>
                 </div>
                 {member.linkedin && (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                     <Linkedin size={14} />
                     <a
                       href={member.linkedin}
@@ -291,21 +291,21 @@ const TeamManagement: React.FC = () => {
                   onClick={() => handleToggleActive(member)}
                   className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium ${
                     member.isActive
-                      ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      : 'bg-green-50 text-green-600 hover:bg-green-100'
+                      ? 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                      : 'bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/60'
                   }`}
                 >
                   {member.isActive ? 'Ẩn' : 'Hiện'}
                 </button>
                 <button
                   onClick={() => handleEdit(member)}
-                  className="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"
+                  className="px-3 py-2 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/60"
                 >
                   <Edit size={16} />
                 </button>
                 <button
                   onClick={() => handleDeleteClick(member)}
-                  className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
+                  className="px-3 py-2 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/60"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -319,12 +319,12 @@ const TeamManagement: React.FC = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white">
-              <h3 className="text-lg font-bold text-gray-800">
+          <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-100 dark:border-slate-700/60 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-800">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
                 {editingMember ? 'Chỉnh sửa Thành viên' : 'Thêm Thành viên mới'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200">
                 <X size={20} />
               </button>
             </div>
@@ -332,17 +332,17 @@ const TeamManagement: React.FC = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {/* Image */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
                   Ảnh đại diện <span className="text-red-500">*</span>
                 </label>
                 <div className="flex gap-4 items-center">
                   {formData.image && (
-                    <img src={formData.image} alt="Preview" className="w-24 h-24 rounded-full object-cover border-2 border-gray-200" />
+                    <img src={formData.image} alt="Preview" className="w-24 h-24 rounded-full object-cover border-2 border-gray-200 dark:border-slate-700" />
                   )}
                   <button
                     type="button"
                     onClick={() => setShowImagePicker(true)}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium flex items-center gap-2"
+                    className="px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 font-medium flex items-center gap-2"
                   >
                     <ImageIcon size={18} />
                     Chọn ảnh
@@ -352,7 +352,7 @@ const TeamManagement: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
                     Họ tên <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -360,13 +360,13 @@ const TeamManagement: React.FC = () => {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     placeholder="VD: Nguyễn Văn A"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
                     Chức vụ <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -374,7 +374,7 @@ const TeamManagement: React.FC = () => {
                     required
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     placeholder="VD: Giám đốc Kỹ thuật"
                   />
                 </div>
@@ -382,7 +382,7 @@ const TeamManagement: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -390,13 +390,13 @@ const TeamManagement: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     placeholder="email@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
                     Số điện thoại <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -404,31 +404,31 @@ const TeamManagement: React.FC = () => {
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     placeholder="0123456789"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">LinkedIn</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">LinkedIn</label>
                 <input
                   type="url"
                   value={formData.linkedin}
                   onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   placeholder="https://linkedin.com/in/username"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Thứ tự hiển thị</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Thứ tự hiển thị</label>
                   <input
                     type="number"
                     value={formData.order}
                     onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   />
                 </div>
 
@@ -440,16 +440,16 @@ const TeamManagement: React.FC = () => {
                       onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                       className="rounded"
                     />
-                    <span className="text-sm font-medium text-gray-700">Hiển thị trên website</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Hiển thị trên website</span>
                   </label>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t">
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700/60">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-6 py-2 text-gray-600 hover:bg-gray-100 rounded-xl font-medium"
+                  className="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl font-medium"
                 >
                   Hủy
                 </button>

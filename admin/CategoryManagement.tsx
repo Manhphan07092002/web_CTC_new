@@ -233,13 +233,13 @@ const CategoryManagement: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Quản lý Danh mục</h1>
-          <p className="text-gray-500 mt-1">Quản lý danh mục cho sản phẩm, dự án, tin tức và tài liệu của hệ thống</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Quản lý Danh mục</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Quản lý danh mục cho sản phẩm, dự án, tin tức và tài liệu của hệ thống</p>
         </div>
         <PermissionGate permission="manage_product_categories">
           <button
             onClick={handleAdd}
-            className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2"
+            className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 shadow-sm"
           >
             <Plus size={18} />
             Thêm danh mục
@@ -248,17 +248,17 @@ const CategoryManagement: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-1 flex gap-1">
+      <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-1.5 flex gap-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm ${
                 activeTab === tab.id
                   ? 'bg-primary text-white shadow-md'
-                  : 'text-gray-600 hover:bg-gray-50'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700/60'
               }`}
             >
               <Icon size={18} />
@@ -272,81 +272,85 @@ const CategoryManagement: React.FC = () => {
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500 mt-4">Đang tải...</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-4">Đang tải...</p>
         </div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <Tag size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">Chưa có danh mục nào</p>
+        <div className="text-center py-12 bg-white dark:bg-slate-800/90 rounded-xl border border-gray-100 dark:border-slate-700/60">
+          <Tag size={48} className="mx-auto text-gray-300 dark:text-slate-600 mb-4" />
+          <p className="text-gray-500 dark:text-gray-400 font-medium">Chưa có danh mục nào</p>
           <button
             onClick={handleAdd}
-            className="mt-4 px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium"
+            className="mt-4 px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium shadow-sm"
           >
             Thêm danh mục đầu tiên
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((category) => (
             <div
               key={category.id}
-              className={`bg-white rounded-xl shadow-sm border-2 p-5 hover:shadow-md transition-all ${
-                category.isActive !== false ? 'border-gray-100' : 'border-gray-200 opacity-60'
+              className={`bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border-2 p-4 hover:shadow-md transition-all flex flex-col justify-between ${
+                category.isActive !== false 
+                  ? 'border-gray-100 dark:border-slate-700/60' 
+                  : 'border-gray-200 dark:border-slate-700 opacity-60'
               }`}
               style={{ borderLeftColor: category.color, borderLeftWidth: '4px' }}
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  {category.icon && (
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-                      style={{ backgroundColor: category.color }}
-                    >
-                      {category.icon}
+              <div>
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    {category.icon && (
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-xs"
+                        style={{ backgroundColor: category.color }}
+                      >
+                        {category.icon}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-gray-800 dark:text-gray-100 text-sm sm:text-base truncate" title={category.name}>{category.name}</h3>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">{category.slug}</p>
                     </div>
-                  )}
-                  <div>
-                    <h3 className="font-bold text-gray-800">{category.name}</h3>
-                    <p className="text-xs text-gray-400 font-mono">{category.slug}</p>
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <PermissionGate permission="manage_product_categories">
+                      <button
+                        onClick={() => handleEdit(category)}
+                        className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                        title="Sửa"
+                      >
+                        <Edit size={16} />
+                      </button>
+                    </PermissionGate>
+                    <PermissionGate permission="manage_product_categories">
+                      <button
+                        onClick={() => handleDeleteClick(category)}
+                        className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        title="Xóa"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </PermissionGate>
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  <PermissionGate permission="manage_product_categories">
-                    <button
-                      onClick={() => handleEdit(category)}
-                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"
-                      title="Sửa"
-                    >
-                      <Edit size={16} />
-                    </button>
-                  </PermissionGate>
-                  <PermissionGate permission="manage_product_categories">
-                    <button
-                      onClick={() => handleDeleteClick(category)}
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
-                      title="Xóa"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </PermissionGate>
-                </div>
+
+                {category.description && (
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 leading-relaxed">{category.description}</p>
+                )}
               </div>
 
-              {category.description && (
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{category.description}</p>
-              )}
-
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-500">
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-gray-50 dark:border-slate-700/50">
+                <span className="text-gray-500 dark:text-gray-400 font-medium">
                   {activeTab === 'product' && `${category.productCount || 0} sản phẩm`}
                   {activeTab === 'news' && `${category.newsCount || 0} tin tức`}
                   {activeTab === 'project' && `${category.projectCount || 0} dự án`}
                   {activeTab === 'document' && `${category.resourceCount || 0} tài liệu`}
                 </span>
-                <span className={`px-2 py-1 rounded-full font-medium ${
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
                   category.isActive !== false
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-600'
+                    ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700/50'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400'
                 }`}>
                   {category.isActive !== false ? 'Hoạt động' : 'Ẩn'}
                 </span>
@@ -360,19 +364,19 @@ const CategoryManagement: React.FC = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-gray-800">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg relative z-10 border border-transparent dark:border-slate-700 text-gray-800 dark:text-gray-100">
+            <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
                 {editingCategory ? 'Chỉnh sửa Danh mục' : 'Thêm Danh mục mới'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                   Tên danh mục <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -380,63 +384,63 @@ const CategoryManagement: React.FC = () => {
                   required
                   value={formData.name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   placeholder="VD: Tấm pin năng lượng mặt trời"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                   Slug (URL)
                 </label>
                 <input
                   type="text"
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-sm"
+                  className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-sm"
                   placeholder="tam-pin-nang-luong-mat-troi"
                 />
-                <p className="text-xs text-gray-500 mt-1">Tự động tạo nếu để trống</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Tự động tạo nếu để trống</p>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Mô tả</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
                   placeholder="Mô tả ngắn về danh mục..."
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Icon/Emoji</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Icon/Emoji</label>
                   <input
                     type="text"
                     value={formData.icon}
                     onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-center text-2xl"
+                    className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-center text-2xl"
                     placeholder="🔋"
                     maxLength={2}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Màu sắc</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Màu sắc</label>
                   <div className="flex gap-2">
                     <input
                       type="color"
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="w-16 h-11 border border-gray-300 rounded-xl cursor-pointer"
+                      className="w-16 h-11 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl cursor-pointer"
                     />
                     <input
                       type="text"
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-sm"
+                      className="flex-1 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-sm"
                     />
                   </div>
                 </div>
@@ -444,12 +448,12 @@ const CategoryManagement: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Thứ tự</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Thứ tự</label>
                   <input
                     type="number"
                     value={formData.order}
                     onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
                   />
                 </div>
 
@@ -459,24 +463,24 @@ const CategoryManagement: React.FC = () => {
                       type="checkbox"
                       checked={formData.isActive}
                       onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                      className="rounded"
+                      className="rounded text-primary focus:ring-primary"
                     />
-                    <span className="text-sm font-medium text-gray-700">Hiển thị</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Hiển thị</span>
                   </label>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t">
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-6 py-2 text-gray-600 hover:bg-gray-100 rounded-xl font-medium"
+                  className="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl font-medium transition-colors"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium"
+                  className="px-6 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium shadow-sm"
                 >
                   {editingCategory ? 'Cập nhật' : 'Thêm mới'}
                 </button>

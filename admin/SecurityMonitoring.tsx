@@ -409,9 +409,9 @@ const SecurityMonitoring: React.FC = () => {
   // Severity badge
   const SeverityBadge: React.FC<{ severity: 'low' | 'medium' | 'high' }> = ({ severity }) => {
     const colors = {
-      low: 'bg-green-100 text-green-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      high: 'bg-red-100 text-red-800',
+      low: 'bg-green-100 dark:bg-green-950/50 text-green-800 dark:text-green-300',
+      medium: 'bg-yellow-100 dark:bg-yellow-950/50 text-yellow-800 dark:text-yellow-300',
+      high: 'bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-300',
     };
     
     return (
@@ -424,9 +424,9 @@ const SecurityMonitoring: React.FC = () => {
   // Status badge
   const StatusBadge: React.FC<{ status: 'success' | 'failed' | 'unauthorized' }> = ({ status }) => {
     const colors = {
-      success: 'bg-green-100 text-green-800',
-      failed: 'bg-red-100 text-red-800',
-      unauthorized: 'bg-orange-100 text-orange-800',
+      success: 'bg-green-100 dark:bg-green-950/50 text-green-800 dark:text-green-300',
+      failed: 'bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-300',
+      unauthorized: 'bg-orange-100 dark:bg-orange-950/50 text-orange-800 dark:text-orange-300',
     };
     
     const icons = {
@@ -456,7 +456,7 @@ const SecurityMonitoring: React.FC = () => {
     };
     
     return (
-      <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+      <span className="px-2 py-1 bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium">
         {labels[type]}
       </span>
     );
@@ -474,26 +474,26 @@ const SecurityMonitoring: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 dark:bg-slate-900 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Shield className="w-8 h-8 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Giám sát Bảo mật</h1>
-            <p className="text-sm text-gray-500">Theo dõi và quản lý bảo mật hệ thống</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Giám sát Bảo mật</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Theo dõi và quản lý bảo mật hệ thống</p>
           </div>
         </div>
         
         <div className="flex items-center gap-4">
           {/* Auto Refresh Toggle */}
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border">
-            <Clock className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">Tự động làm mới:</span>
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700">
+            <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <span className="text-sm text-gray-600 dark:text-gray-300">Tự động làm mới:</span>
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
               className={`px-2 py-1 rounded text-xs font-medium ${
-                autoRefresh ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                autoRefresh ? 'bg-green-100 dark:bg-green-950/50 text-green-800 dark:text-green-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300'
               }`}
             >
               {autoRefresh ? 'Bật' : 'Tắt'}
@@ -502,7 +502,7 @@ const SecurityMonitoring: React.FC = () => {
               <select
                 value={refreshInterval}
                 onChange={(e) => setRefreshInterval(Number(e.target.value))}
-                className="text-xs border rounded px-1 py-0.5"
+                className="text-xs border border-gray-300 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
               >
                 <option value={10}>10s</option>
                 <option value={30}>30s</option>
@@ -525,7 +525,7 @@ const SecurityMonitoring: React.FC = () => {
       </div>
       
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6">
+      <div className="flex border-b border-gray-200 dark:border-slate-700 mb-6">
         {[
           { id: 'overview', label: 'Tổng quan', icon: PieChart },
           { id: 'events', label: 'Sự kiện bảo mật', icon: ShieldAlert },
@@ -538,7 +538,7 @@ const SecurityMonitoring: React.FC = () => {
             className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
               activeTab === tab.id
                 ? 'border-primary text-primary font-medium'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -591,9 +591,9 @@ const SecurityMonitoring: React.FC = () => {
           </div>
           
           {/* Security Features Status */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-green-600" />
+          <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-6">
+            <h3 className="text-lg font-semibold dark:text-gray-100 mb-4 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-green-600 dark:text-green-400" />
               Trạng thái tính năng bảo mật
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -607,16 +607,16 @@ const SecurityMonitoring: React.FC = () => {
                 { name: 'SQL Injection', status: true, desc: 'MongoDB Sanitize' },
                 { name: 'Security Headers', status: true, desc: 'X-Frame, X-XSS, etc.' },
               ].map((feature) => (
-                <div key={feature.name} className="p-3 bg-gray-50 rounded-lg">
+                <div key={feature.name} className="p-3 bg-gray-50 dark:bg-slate-900/60 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
                     {feature.status ? (
-                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                     ) : (
-                      <XCircle className="w-4 h-4 text-red-600" />
+                      <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
                     )}
-                    <span className="font-medium text-sm">{feature.name}</span>
+                    <span className="font-medium text-sm text-gray-800 dark:text-gray-200">{feature.name}</span>
                   </div>
-                  <p className="text-xs text-gray-500">{feature.desc}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{feature.desc}</p>
                 </div>
               ))}
             </div>
@@ -624,22 +624,22 @@ const SecurityMonitoring: React.FC = () => {
           
           {/* Recent Events Preview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-orange-600" />
+            <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-6">
+              <h3 className="text-lg font-semibold dark:text-gray-100 mb-4 flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 Sự kiện bảo mật gần đây
               </h3>
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {securityEvents.slice(0, 5).map((event, idx) => (
-                  <div key={event._id || `event-${idx}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={event._id || `event-${idx}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-900/60 rounded-lg">
                     <div className="flex items-center gap-3">
                       <SeverityBadge severity={event.severity} />
                       <div>
                         <EventTypeBadge type={event.type} />
-                        <p className="text-xs text-gray-500 mt-1">{event.ip}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{event.ip}</p>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 dark:text-gray-400">
                       {event.createdAt ? new Date(event.createdAt).toLocaleTimeString('vi-VN') : '-'}
                     </span>
                   </div>
@@ -653,22 +653,22 @@ const SecurityMonitoring: React.FC = () => {
               </button>
             </div>
             
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-blue-600" />
+            <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-6">
+              <h3 className="text-lg font-semibold dark:text-gray-100 mb-4 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 Hoạt động gần đây
               </h3>
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {auditLogs.slice(0, 5).map((log, idx) => (
-                  <div key={log._id || `log-${idx}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={log._id || `log-${idx}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-900/60 rounded-lg">
                     <div className="flex items-center gap-3">
                       <StatusBadge status={log.status} />
                       <div>
-                        <p className="text-sm font-medium">{log.action} - {log.resource}</p>
-                        <p className="text-xs text-gray-500">{log.userEmail || 'Anonymous'}</p>
+                        <p className="text-sm font-medium dark:text-gray-200">{log.action} - {log.resource}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{log.userEmail || 'Anonymous'}</p>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 dark:text-gray-400">
                       {log.createdAt ? new Date(log.createdAt).toLocaleTimeString('vi-VN') : '-'}
                     </span>
                   </div>
@@ -686,15 +686,15 @@ const SecurityMonitoring: React.FC = () => {
       )}
       
       {activeTab === 'events' && (
-        <div className="bg-white rounded-xl shadow-sm">
+        <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60">
           {/* Filters */}
-          <div className="p-4 border-b flex flex-wrap items-center gap-4">
+          <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
+              <Filter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <select
                 value={eventFilter}
                 onChange={(e) => setEventFilter(e.target.value)}
-                className="border rounded-lg px-3 py-2 text-sm"
+                className="border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="all">Tất cả loại</option>
                 <option value="suspicious_request">Yêu cầu đáng ngờ</option>
@@ -708,7 +708,7 @@ const SecurityMonitoring: React.FC = () => {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm"
+              className="border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm"
             >
               <option value="all">Tất cả mức độ</option>
               <option value="low">Thấp</option>
@@ -724,14 +724,14 @@ const SecurityMonitoring: React.FC = () => {
                   placeholder="Tìm theo IP hoặc nội dung..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg text-sm"
                 />
               </div>
             </div>
             
             <button 
               onClick={exportEventsCSV}
-              className="flex items-center gap-2 px-4 py-2 border rounded-lg text-sm hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700"
             >
               <Download className="w-4 h-4" />
               Xuất CSV
@@ -741,27 +741,27 @@ const SecurityMonitoring: React.FC = () => {
           {/* Events Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-slate-900/80 text-gray-500 dark:text-slate-300 border-b border-gray-200 dark:border-slate-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thời gian</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Loại</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Chi tiết</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mức độ</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Thời gian</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Loại</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">IP</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Chi tiết</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Mức độ</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Hành động</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                 {filteredEvents.map((event, idx) => (
-                  <tr key={event._id || `event-${idx}`} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                  <tr key={event._id || `event-${idx}`} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/60 transition-colors">
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                       {event.createdAt ? new Date(event.createdAt).toLocaleString('vi-VN') : '-'}
                     </td>
                     <td className="px-4 py-3">
                       <EventTypeBadge type={event.type} />
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono">{event.ip}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{event.details}</td>
+                    <td className="px-4 py-3 text-sm font-mono dark:text-gray-200">{event.ip}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate">{event.details}</td>
                     <td className="px-4 py-3">
                       <SeverityBadge severity={event.severity} />
                     </td>
@@ -769,7 +769,7 @@ const SecurityMonitoring: React.FC = () => {
                       <button
                         onClick={() => handleQuickBlockIP(event.ip, event.details)}
                         disabled={blacklist.some(b => b.ip === event.ip)}
-                        className="text-red-600 hover:text-red-800 text-sm disabled:text-gray-400"
+                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm disabled:text-gray-400 dark:disabled:text-gray-600"
                       >
                         {blacklist.some(b => b.ip === event.ip) ? 'Đã chặn' : 'Chặn IP'}
                       </button>
@@ -781,7 +781,7 @@ const SecurityMonitoring: React.FC = () => {
           </div>
           
           {filteredEvents.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               Không có sự kiện nào phù hợp với bộ lọc
             </div>
           )}
@@ -789,9 +789,9 @@ const SecurityMonitoring: React.FC = () => {
       )}
       
       {activeTab === 'audit' && (
-        <div className="bg-white rounded-xl shadow-sm">
+        <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60">
           {/* Search and Export */}
-          <div className="p-4 border-b flex flex-wrap items-center justify-between gap-4">
+          <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
@@ -799,12 +799,12 @@ const SecurityMonitoring: React.FC = () => {
                 placeholder="Tìm theo email hoặc IP..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg text-sm"
               />
             </div>
             <button 
               onClick={exportAuditLogsCSV}
-              className="flex items-center gap-2 px-4 py-2 border rounded-lg text-sm hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700"
             >
               <Download className="w-4 h-4" />
               Xuất CSV
@@ -814,34 +814,34 @@ const SecurityMonitoring: React.FC = () => {
           {/* Audit Logs Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-slate-900/80 text-gray-500 dark:text-slate-300 border-b border-gray-200 dark:border-slate-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thời gian</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Người dùng</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tài nguyên</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thời gian xử lý</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Thời gian</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Người dùng</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Hành động</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Tài nguyên</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">IP</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Trạng thái</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase">Thời gian xử lý</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                 {filteredAuditLogs.map((log, idx) => (
-                  <tr key={log._id || `log-${idx}`} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                  <tr key={log._id || `log-${idx}`} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/60 transition-colors">
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                       {log.createdAt ? new Date(log.createdAt).toLocaleString('vi-VN') : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm">{log.userEmail || 'Anonymous'}</td>
-                    <td className="px-4 py-3 text-sm font-medium capitalize">{log.action}</td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-3 text-sm dark:text-gray-200">{log.userEmail || 'Anonymous'}</td>
+                    <td className="px-4 py-3 text-sm font-medium capitalize dark:text-gray-100">{log.action}</td>
+                    <td className="px-4 py-3 text-sm dark:text-gray-200">
                       {log.resource}
-                      {log.resourceId && <span className="text-gray-400 ml-1">#{log.resourceId.slice(-6)}</span>}
+                      {log.resourceId && <span className="text-gray-400 dark:text-gray-500 ml-1">#{log.resourceId.slice(-6)}</span>}
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono">{log.ip}</td>
+                    <td className="px-4 py-3 text-sm font-mono dark:text-gray-200">{log.ip}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={log.status} />
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
+                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                       {log.duration ? `${log.duration}ms` : '-'}
                     </td>
                   </tr>
@@ -851,7 +851,7 @@ const SecurityMonitoring: React.FC = () => {
           </div>
           
           {filteredAuditLogs.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               Không có nhật ký nào phù hợp với bộ lọc
             </div>
           )}
@@ -861,8 +861,8 @@ const SecurityMonitoring: React.FC = () => {
       {activeTab === 'blacklist' && (
         <div className="space-y-6">
           {/* Add IP Form */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-6">
+            <h3 className="text-lg font-semibold dark:text-gray-100 mb-4 flex items-center gap-2">
               <Plus className="w-5 h-5" />
               Thêm IP vào danh sách chặn
             </h3>
@@ -872,14 +872,14 @@ const SecurityMonitoring: React.FC = () => {
                 placeholder="Nhập địa chỉ IP (ví dụ: 192.168.1.100)"
                 value={newIPToBlock}
                 onChange={(e) => setNewIPToBlock(e.target.value)}
-                className="flex-1 border rounded-lg px-4 py-2"
+                className="flex-1 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-4 py-2"
               />
               <input
                 type="text"
                 placeholder="Lý do chặn (không bắt buộc)"
                 value={blockReason}
                 onChange={(e) => setBlockReason(e.target.value)}
-                className="flex-1 border rounded-lg px-4 py-2"
+                className="flex-1 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-4 py-2"
                 onKeyPress={(e) => e.key === 'Enter' && handleBlockIP()}
               />
               <button
@@ -890,34 +890,34 @@ const SecurityMonitoring: React.FC = () => {
                 Chặn IP
               </button>
             </div>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               IP bị chặn sẽ không thể truy cập vào hệ thống. Hãy cẩn thận để không chặn nhầm.
             </p>
           </div>
           
           {/* Blacklisted IPs List */}
-          <div className="bg-white rounded-xl shadow-sm">
-            <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-red-600" />
+          <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60">
+            <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+              <h3 className="text-lg font-semibold dark:text-gray-100 flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400" />
                 Danh sách IP bị chặn ({blacklist.length})
               </h3>
             </div>
             
             {blacklist.length > 0 ? (
-              <div className="divide-y">
+              <div className="divide-y divide-gray-200 dark:divide-slate-700">
                 {blacklist.map((entry, index) => (
-                  <div key={entry._id || entry.ip} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                  <div key={entry._id || entry.ip} className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/60 transition-colors">
                     <div className="flex items-center gap-4">
-                      <span className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-medium">
+                      <span className="w-8 h-8 bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center text-sm font-medium">
                         {index + 1}
                       </span>
                       <div>
-                        <span className="font-mono text-lg">{entry.ip}</span>
-                        <p className="text-sm text-gray-500">
+                        <span className="font-mono text-lg text-gray-900 dark:text-gray-100">{entry.ip}</span>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           {entry.reason || 'Không có lý do'} • Bởi {entry.blockedByEmail || 'Admin'}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 dark:text-gray-400">
                           {entry.createdAt ? new Date(entry.createdAt).toLocaleString('vi-VN') : '-'}
                           {entry.permanent && ' • Vĩnh viễn'}
                         </p>
@@ -925,7 +925,7 @@ const SecurityMonitoring: React.FC = () => {
                     </div>
                     <button
                       onClick={() => handleUnblockIP(entry.ip)}
-                      className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40 rounded-lg transition-colors"
                     >
                       <Unlock className="w-4 h-4" />
                       Bỏ chặn
@@ -935,9 +935,9 @@ const SecurityMonitoring: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <ShieldCheck className="w-12 h-12 text-green-600 mx-auto mb-4" />
-                <p className="text-gray-500">Không có IP nào trong danh sách chặn</p>
-                <p className="text-sm text-gray-400">Hệ thống đang hoạt động bình thường</p>
+                <ShieldCheck className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">Không có IP nào trong danh sách chặn</p>
+                <p className="text-sm text-gray-400 dark:text-gray-400">Hệ thống đang hoạt động bình thường</p>
               </div>
             )}
           </div>

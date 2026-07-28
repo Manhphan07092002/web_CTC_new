@@ -279,7 +279,7 @@ const Hero: React.FC = () => {
             overflow: hidden;
             overflow-x: hidden;
             background-color: #060d1d; /* Deep professional navy */
-            font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
+            font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
             display: flex;
             align-items: center;
         }
@@ -414,7 +414,7 @@ const Hero: React.FC = () => {
 
         /* Clean Architectural Typography */
         .title-upper-outline {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
             font-size: clamp(0.95rem, 2.5vw, 1.35rem);
             font-weight: 600;
             letter-spacing: 7px;
@@ -428,7 +428,7 @@ const Hero: React.FC = () => {
         
         .title-main-bold {
             display: block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
             font-size: clamp(2rem, 4.8vw, 3.8rem);
             font-weight: 900;
             line-height: 1.15;
@@ -442,7 +442,7 @@ const Hero: React.FC = () => {
 
         .title-main-gradient {
             display: block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
             font-size: clamp(2rem, 4.8vw, 3.8rem);
             font-weight: 900;
             line-height: 1.15;

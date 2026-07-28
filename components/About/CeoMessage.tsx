@@ -81,7 +81,7 @@ const CeoMessage: React.FC = () => {
                 className="w-full h-[320px] lg:h-[350px] object-cover object-center hover:scale-105 transition-transform duration-700 ease-out"
               />
               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#060d1d] via-[#060d1d]/70 to-transparent p-6 pt-16 text-white">
-                <h3 className="text-xl font-bold tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                <h3 className="text-xl font-bold tracking-wide" style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}>
                   {t('about.ceo_title')}
                 </h3>
                 <p className="text-sky-400 font-semibold uppercase text-xs tracking-widest mt-1">
@@ -99,7 +99,7 @@ const CeoMessage: React.FC = () => {
               <div className="relative z-10">
                 {/* Header */}
                 <div className="flex items-center justify-between border-b pb-3.5 mb-4 border-slate-200/60 dark:border-white/10">
-                  <h4 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2.5" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2.5" style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}>
                     <div className="p-1.5 rounded-xl bg-sky-500/10 text-sky-500 border border-sky-500/20">
                       <Award size={18} />
                     </div>
@@ -227,7 +227,7 @@ const CeoMessage: React.FC = () => {
                   </span>
                   <h2 
                     className="text-3xl md:text-4xl font-extrabold tracking-tight"
-                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                    style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
                   >
                     <span className="bg-gradient-to-r from-sky-600 via-sky-500 to-blue-600 dark:from-sky-400 dark:via-sky-300 dark:to-blue-500 bg-clip-text text-transparent">
                       {t('about.letter_title')}
@@ -256,7 +256,7 @@ const CeoMessage: React.FC = () => {
                   <div className="about-glass-card border-l-4 border-l-sky-500 p-6 rounded-r-2xl flex items-start gap-4 my-6 hover:-translate-y-0.5 transition-all duration-300 shadow-md bg-white/40 dark:bg-[#0f172a]/20 border border-slate-200/50 dark:border-white/5">
                     <Award className="text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" size={26} />
                     <div>
-                      <h4 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                      <h4 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1" style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}>
                         {t('about.core_val_title')}
                       </h4>
                       <p className="text-sm text-slate-500 dark:text-slate-400 font-light leading-relaxed">
@@ -286,14 +286,14 @@ const CeoMessage: React.FC = () => {
                       className={`text-2xl text-sky-600 dark:text-sky-400 rotate-[-1deg] tracking-wider whitespace-nowrap font-bold ${
                         isInView ? 'signature-animated' : 'opacity-0'
                       }`}
-                      style={{ fontFamily: "'Montserrat', sans-serif" }}
+                      style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
                     >
                       CTC LEADERSHIP
                     </span>
                   </div>
                   <h4 
                     className="font-extrabold text-slate-800 dark:text-slate-200 border-t border-slate-200/60 dark:border-white/10 pt-2 text-sm"
-                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                    style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
                   >
                     {t('about.ceo_title')}
                   </h4>

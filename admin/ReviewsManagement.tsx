@@ -110,11 +110,11 @@ const ReviewsManagement: React.FC = () => {
             className={`${
               star <= rating 
                 ? 'text-yellow-400 fill-yellow-400' 
-                : 'text-gray-300'
+                : 'text-gray-300 dark:text-gray-600'
             }`}
           />
         ))}
-        <span className="ml-1 text-sm font-medium text-gray-600">({rating}/5)</span>
+        <span className="ml-1 text-sm font-medium text-gray-600 dark:text-gray-400">({rating}/5)</span>
       </div>
     );
   };
@@ -138,7 +138,7 @@ const ReviewsManagement: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <RefreshCw className="animate-spin text-primary" size={32} />
-        <span className="ml-2 text-gray-600">Đang tải đánh giá...</span>
+        <span className="ml-2 text-gray-600 dark:text-gray-400">Đang tải đánh giá...</span>
       </div>
     );
   }
@@ -148,11 +148,11 @@ const ReviewsManagement: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
             <Star className="text-yellow-500" size={28} />
             Quản Lý Đánh Giá Khách Hàng
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Quản lý và theo dõi đánh giá của khách hàng về sản phẩm
           </p>
         </div>
@@ -166,7 +166,7 @@ const ReviewsManagement: React.FC = () => {
           </Link>
           <button
             onClick={loadReviews}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors cursor-pointer"
           >
             <RefreshCw size={16} />
             Làm mới
@@ -176,21 +176,21 @@ const ReviewsManagement: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Tổng đánh giá</p>
-              <p className="text-2xl font-bold text-gray-800">{reviews.length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Tổng đánh giá</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{reviews.length}</p>
             </div>
-            <MessageSquare className="text-blue-500" size={24} />
+            <MessageSquare className="text-blue-500 dark:text-blue-400" size={24} />
           </div>
         </div>
         
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Đánh giá 5 sao</p>
-              <p className="text-2xl font-bold text-green-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá 5 sao</p>
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {reviews.filter(r => r.rating === 5).length}
               </p>
             </div>
@@ -198,36 +198,36 @@ const ReviewsManagement: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Đánh giá trung bình</p>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá trung bình</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {reviews.length > 0 
                   ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
                   : '0.0'
                 }
               </p>
             </div>
-            <Star className="text-blue-500" size={24} />
+            <Star className="text-blue-500 dark:text-blue-400" size={24} />
           </div>
         </div>
         
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Đánh giá thấp (≤3 sao)</p>
-              <p className="text-2xl font-bold text-red-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá thấp (≤3 sao)</p>
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {reviews.filter(r => r.rating <= 3).length}
               </p>
             </div>
-            <Star className="text-red-500" size={24} />
+            <Star className="text-red-500 dark:text-red-400" size={24} />
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border">
+      <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
@@ -235,7 +235,7 @@ const ReviewsManagement: React.FC = () => {
             <input
               type="text"
               placeholder="Tìm kiếm theo tên khách hàng, bình luận hoặc sản phẩm..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -243,9 +243,9 @@ const ReviewsManagement: React.FC = () => {
           
           {/* Rating Filter */}
           <div className="flex items-center gap-2">
-            <Filter size={18} className="text-gray-400" />
+            <Filter size={18} className="text-gray-400 dark:text-gray-400" />
             <select
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              className="px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 transition-all cursor-pointer"
               value={filterRating || ''}
               onChange={(e) => setFilterRating(e.target.value ? parseInt(e.target.value) : null)}
             >

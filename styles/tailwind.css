@@ -17,7 +17,7 @@
   --breakpoint-2xl: 1536px;
   --breakpoint-3xl: 1920px;
 
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Be Vietnam Pro', 'Inter', sans-serif;
 
   --animate-fade-in: fadeIn 1s ease-out forwards;
   --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
@@ -137,7 +137,7 @@
 
 /* Base Styles */
 body, html {
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'Be Vietnam Pro', 'Inter', sans-serif !important;
   overflow-x: hidden;
   max-width: 100vw;
   touch-action: manipulation;
@@ -159,7 +159,7 @@ body, html {
 }
 
 .nav > li > a {
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'Be Vietnam Pro', 'Inter', sans-serif !important;
   font-weight: 700 !important;
 }
 

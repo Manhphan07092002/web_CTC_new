@@ -300,7 +300,7 @@ const AreasOfOperation: React.FC = () => {
             </div>
             <h2
               className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-none"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
             >
               {headerTitle1}{' '}
               <span
@@ -401,7 +401,7 @@ const AreasOfOperation: React.FC = () => {
                 </p>
                 <h3
                   className="text-3xl md:text-4xl xl:text-[2.6rem] font-black text-slate-900 dark:text-white tracking-tight leading-tight whitespace-pre-line mb-4"
-                  style={{ fontFamily: "'Montserrat', sans-serif" }}
+                  style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
                 >
                   {s.title}
                 </h3>
@@ -428,7 +428,7 @@ const AreasOfOperation: React.FC = () => {
                       style={{
                         backgroundImage: `linear-gradient(135deg, ${s.accentColor}, ${s.gradTo})`,
                         fontSize: 'clamp(52px, 7vw, 80px)',
-                        fontFamily: "'Montserrat', sans-serif",
+                        fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif",
                         letterSpacing: '-3px',
                       }}
                     >

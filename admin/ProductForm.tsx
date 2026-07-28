@@ -445,9 +445,9 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
             {isEdit ? 'Chỉnh sửa Sản phẩm' : 'Thêm Sản phẩm mới'}
           </h1>
           <div className="flex items-center gap-3">
@@ -462,7 +462,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
             </button>
             <button
               onClick={handleExit}
-              className="text-gray-400 hover:text-gray-600 p-2 cursor-pointer"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-2 cursor-pointer"
             >
               <X size={24} />
             </button>
@@ -473,7 +473,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                 Tên sản phẩm <span className="text-red-500">*</span>
               </label>
               <input
@@ -481,20 +481,20 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="VD: Tấm pin năng lượng mặt trời 550W"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                 Danh mục <span className="text-red-500">*</span>
               </label>
               <select
                 required
                 value={formData.categoryId}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               >
                 <option value="">Chọn danh mục</option>
                 {categories.map((cat) => (
@@ -506,43 +506,43 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Mã sản phẩm</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Mã sản phẩm</label>
               <input
                 type="text"
                 value={formData.code}
                 onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="VD: TL-550W"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Giá khuyến mại (chưa VAT)</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Giá khuyến mại (chưa VAT)</label>
                 <input
                   type="text"
                   value={formData.price}
                   onChange={(e) => handlePriceChange('price', e.target.value)}
                   disabled={formData.contactPrice}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
+                  className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 dark:disabled:bg-slate-800 font-medium"
                   placeholder="VD: 17,900,000"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Giá niêm yết (chưa VAT - tùy chọn)</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Giá niêm yết (chưa VAT - tùy chọn)</label>
                 <input
                   type="text"
                   value={formData.originalPrice}
                   onChange={(e) => handlePriceChange('originalPrice', e.target.value)}
                   disabled={formData.contactPrice}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
+                  className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 dark:disabled:bg-slate-800 font-medium"
                   placeholder="VD: 22,990,000"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">VAT (%)</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">VAT (%)</label>
                 <input
                   type="number"
                   step="any"
@@ -561,10 +561,10 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     }
                   }}
                   disabled={formData.contactPrice}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 font-medium"
+                  className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none disabled:bg-gray-100 dark:disabled:bg-slate-800 font-medium"
                   placeholder="VD: 10, 8 hoặc 0"
                 />
-                <p className="text-xs text-gray-500 mt-1">Thuế VAT (0-100%, mặc định: 0)</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Thuế VAT (0-100%, mặc định: 0)</p>
               </div>
               
               <div className="md:col-span-3">
@@ -575,7 +575,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     onChange={(e) => setFormData({ ...formData, contactPrice: e.target.checked })}
                     className="rounded"
                   />
-                  <span className="text-sm text-gray-600">💬 Liên hệ để biết giá (ẩn giá, hiển thị "Liên hệ báo giá")</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">💬 Liên hệ để biết giá (ẩn giá, hiển thị "Liên hệ báo giá")</span>
                 </label>
               </div>
             </div>
@@ -583,7 +583,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
           {/* Main Image */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
               Hình ảnh chính <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-4">
@@ -591,15 +591,15 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                 <img
                   src={formData.image}
                   alt="Preview"
-                  className="w-32 h-32 object-cover rounded-lg border"
+                  className="w-32 h-32 object-cover rounded-lg border dark:border-slate-700"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
                   }}
                 />
               ) : (
-                <div className="w-32 h-32 bg-gray-100 rounded-lg border flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">No Image</span>
+                <div className="w-32 h-32 bg-gray-100 dark:bg-slate-900 rounded-lg border dark:border-slate-700 flex items-center justify-center">
+                  <span className="text-gray-400 dark:text-gray-500 text-sm">No Image</span>
                 </div>
               )}
               <button
@@ -608,16 +608,16 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                   setImagePickerTarget('main');
                   setShowImagePicker(true);
                 }}
-                className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
+                className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
               >
-                <ImageIcon size={32} className="text-gray-400" />
+                <ImageIcon size={32} className="text-gray-400 dark:text-gray-500" />
               </button>
             </div>
           </div>
 
           {/* Additional Images */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Hình ảnh bổ sung</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Hình ảnh bổ sung</label>
             <div className="grid grid-cols-4 gap-4">
               {formData.images.map((img, index) => (
                 <div key={index} className="relative">
@@ -625,7 +625,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     <img
                       src={img}
                       alt={`Image ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg border"
+                      className="w-full h-32 object-cover rounded-lg border dark:border-slate-700"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         const fallbacks = [
@@ -643,9 +643,9 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                         setImagePickerTarget(index);
                         setShowImagePicker(true);
                       }}
-                      className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
+                      className="w-full h-32 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
                     >
-                      <ImageIcon size={24} className="text-gray-400" />
+                      <ImageIcon size={24} className="text-gray-400 dark:text-gray-500" />
                     </button>
                   )}
                   <button
@@ -660,28 +660,28 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               <button
                 type="button"
                 onClick={handleAddImage}
-                className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
+                className="w-full h-32 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
               >
-                <Plus size={24} className="text-gray-400" />
+                <Plus size={24} className="text-gray-400 dark:text-gray-500" />
               </button>
             </div>
           </div>
 
           {/* Descriptions */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả ngắn</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Mô tả ngắn</label>
             <textarea
               value={formData.shortDescription}
               onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
               rows={2}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               placeholder="Mô tả ngắn gọn về sản phẩm..."
             />
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-bold text-gray-700">
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                 Mô tả chi tiết <span className="text-red-500">*</span>
               </label>
               <button
@@ -695,7 +695,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                 {isGeneratingAI ? 'Đang tạo mô tả bằng AI...' : 'Tạo mô tả bằng AI Gemini'}
               </button>
             </div>
-            <Suspense fallback={<div className="h-48 flex items-center justify-center bg-gray-50 border rounded-xl"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+            <Suspense fallback={<div className="h-48 flex items-center justify-center bg-gray-50 dark:bg-slate-900 border dark:border-slate-700 rounded-xl"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
               <RichTextEditor
                 content={formData.description}
                 onChange={(html) => setFormData({ ...formData, description: html })}
@@ -705,12 +705,12 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Thông số kỹ thuật</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Thông số kỹ thuật</label>
             <textarea
               value={formData.specifications}
               onChange={(e) => setFormData({ ...formData, specifications: e.target.value })}
               rows={4}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               placeholder="Chi tiết kỹ thuật..."
             />
           </div>
@@ -718,34 +718,34 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           {/* Technical Details */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Công suất (kW)</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Công suất (kW)</label>
               <input
                 type="number"
                 step="0.01"
                 value={formData.power}
                 onChange={(e) => setFormData({ ...formData, power: parseFloat(e.target.value) || 0 })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Hiệu suất (%)</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Hiệu suất (%)</label>
               <input
                 type="number"
                 step="0.1"
                 value={formData.efficiency}
                 onChange={(e) => setFormData({ ...formData, efficiency: parseFloat(e.target.value) || 0 })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Bảo hành</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Bảo hành</label>
               <input
                 type="text"
                 value={formData.warranty}
                 onChange={(e) => setFormData({ ...formData, warranty: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="VD: 25 năm"
               />
             </div>
@@ -754,21 +754,21 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           {/* Stock */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Số lượng tồn kho</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Số lượng tồn kho</label>
               <input
                 type="number"
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Trạng thái kho</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Trạng thái kho</label>
               <select
                 value={formData.stockStatus}
                 onChange={(e) => setFormData({ ...formData, stockStatus: e.target.value as any })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               >
                 <option value="in_stock">Còn hàng</option>
                 <option value="out_of_stock">Hết hàng</option>
@@ -779,7 +779,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
           {/* Features */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Tính năng nổi bật</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Tính năng nổi bật</label>
             <div className="space-y-2">
               {formData.features.map((feature, index) => (
                 <div key={index} className="flex gap-2">
@@ -787,13 +787,13 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                     type="text"
                     value={feature}
                     onChange={(e) => handleFeatureChange(index, e.target.value)}
-                    className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="flex-1 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     placeholder="Nhập tính năng..."
                   />
                   <button
                     type="button"
                     onClick={() => handleRemoveFeature(index)}
-                    className="px-3 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100"
+                    className="px-3 py-2 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/60"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -802,7 +802,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
               <button
                 type="button"
                 onClick={handleAddFeature}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium flex items-center gap-2"
+                className="px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 font-medium flex items-center gap-2"
               >
                 <Plus size={18} />
                 Thêm tính năng
@@ -812,16 +812,16 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
           {/* Technical Specs */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Thông số kỹ thuật chi tiết</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Thông số kỹ thuật chi tiết</label>
             <div className="space-y-2 mb-3">
               {Object.entries(formData.technicalSpecs).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                  <span className="font-medium text-gray-700">{key}:</span>
-                  <span className="text-gray-600">{value}</span>
+                <div key={key} className="flex items-center gap-2 bg-gray-50 dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/50 p-3 rounded-lg">
+                  <span className="font-medium text-gray-700 dark:text-gray-200">{key}:</span>
+                  <span className="text-gray-600 dark:text-gray-300">{value}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveTechSpec(key)}
-                    className="ml-auto text-red-600 hover:text-red-700"
+                    className="ml-auto text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                   >
                     <X size={16} />
                   </button>
@@ -833,14 +833,14 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                 type="text"
                 value={techSpecKey}
                 onChange={(e) => setTechSpecKey(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="flex-1 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="Tên thông số (VD: Kích thước)"
               />
               <input
                 type="text"
                 value={techSpecValue}
                 onChange={(e) => setTechSpecValue(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="flex-1 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="Giá trị (VD: 2278 x 1134 x 35mm)"
               />
               <button
@@ -854,7 +854,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           </div>
 
           {/* Featured */}
-          <div className="flex items-center gap-6 p-4 bg-yellow-50 rounded-xl">
+          <div className="flex items-center gap-6 p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200/60 dark:border-yellow-800/40 rounded-xl">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -862,25 +862,25 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
                 onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
                 className="rounded"
               />
-              <Star size={18} className="text-yellow-600" fill={formData.isFeatured ? 'currentColor' : 'none'} />
-              <span className="font-medium text-gray-700">Sản phẩm nổi bật</span>
+              <Star size={18} className="text-yellow-600 dark:text-yellow-400" fill={formData.isFeatured ? 'currentColor' : 'none'} />
+              <span className="font-medium text-gray-700 dark:text-gray-200">Sản phẩm nổi bật</span>
             </label>
             {formData.isFeatured && (
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">Thứ tự:</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Thứ tự:</label>
                 <input
                   type="number"
                   value={formData.featuredOrder}
                   onChange={(e) => setFormData({ ...formData, featuredOrder: parseInt(e.target.value) || 0 })}
-                  className="w-20 border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-20 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-1 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 />
               </div>
             )}
           </div>
 
           {/* SEO Analyzer - Yoast-style for Products */}
-          <div className="pt-4 border-t border-gray-100">
-            <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <div className="pt-4 border-t border-gray-100 dark:border-slate-700">
+            <h3 className="text-sm font-black text-gray-800 dark:text-gray-200 uppercase tracking-wider mb-3 flex items-center gap-2">
               <Sparkles size={16} className="text-primary" /> PHÂN TÍCH & CHẤM ĐIỂM SEO SẢN PHẨM (YOAST-STYLE)
             </h3>
             <SeoAnalyzer
@@ -894,11 +894,11 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-slate-700">
             <button
               type="button"
               onClick={handleExit}
-              className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors cursor-pointer"
+              className="px-6 py-2.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl font-medium transition-colors cursor-pointer"
             >
               Hủy
             </button>

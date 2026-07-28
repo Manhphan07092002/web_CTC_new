@@ -101,16 +101,16 @@ const EngagementManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-3">
             <TrendingUp className="text-primary" size={32} />
             Quản Lý Tương Tác
           </h1>
-          <p className="text-gray-500 mt-1">Theo dõi lượt xem, thích và chia sẻ sản phẩm</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Theo dõi lượt xem, thích và chia sẻ sản phẩm</p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={loadData}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
           >
             <RefreshCw size={18} />
             Làm mới
@@ -164,20 +164,20 @@ const EngagementManagement: React.FC = () => {
       {/* Top Products */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Viewed */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800/90 border border-gray-100 dark:border-slate-700/60 rounded-xl shadow-sm p-6">
+          <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
             <Eye size={20} className="text-blue-500" />
             Top 5 Xem Nhiều
           </h3>
           <div className="space-y-3">
             {stats.topViewed.map((product, index) => (
-              <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-900/60 border border-transparent dark:border-slate-700/40 rounded-lg">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   {index + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-800 truncate">{product.name}</p>
-                  <p className="text-xs text-gray-500">{product.views || 0} lượt xem</p>
+                  <p className="font-medium text-sm text-gray-800 dark:text-gray-100 truncate">{product.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{product.views || 0} lượt xem</p>
                 </div>
               </div>
             ))}
@@ -185,20 +185,20 @@ const EngagementManagement: React.FC = () => {
         </div>
 
         {/* Top Liked */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800/90 border border-gray-100 dark:border-slate-700/60 rounded-xl shadow-sm p-6">
+          <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
             <Heart size={20} className="text-red-500" />
             Top 5 Được Thích
           </h3>
           <div className="space-y-3">
             {stats.topLiked.map((product, index) => (
-              <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-900/60 border border-transparent dark:border-slate-700/40 rounded-lg">
                 <div className="flex-shrink-0 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   {index + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-800 truncate">{product.name}</p>
-                  <p className="text-xs text-gray-500">{product.likes || 0} lượt thích</p>
+                  <p className="font-medium text-sm text-gray-800 dark:text-gray-100 truncate">{product.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{product.likes || 0} lượt thích</p>
                 </div>
               </div>
             ))}
@@ -206,20 +206,20 @@ const EngagementManagement: React.FC = () => {
         </div>
 
         {/* Top Shared */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800/90 border border-gray-100 dark:border-slate-700/60 rounded-xl shadow-sm p-6">
+          <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
             <Share2 size={20} className="text-green-500" />
             Top 5 Chia Sẻ
           </h3>
           <div className="space-y-3">
             {stats.topShared.map((product, index) => (
-              <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-900/60 border border-transparent dark:border-slate-700/40 rounded-lg">
                 <div className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   {index + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-800 truncate">{product.name}</p>
-                  <p className="text-xs text-gray-500">{product.shares || 0} lượt chia sẻ</p>
+                  <p className="font-medium text-sm text-gray-800 dark:text-gray-100 truncate">{product.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{product.shares || 0} lượt chia sẻ</p>
                 </div>
               </div>
             ))}
@@ -228,9 +228,9 @@ const EngagementManagement: React.FC = () => {
       </div>
 
       {/* All Products Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800/90 border border-gray-100 dark:border-slate-700/60 rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+          <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100 flex items-center gap-2">
             <BarChart3 size={20} className="text-primary" />
             Tất Cả Sản Phẩm
           </h3>
@@ -238,7 +238,7 @@ const EngagementManagement: React.FC = () => {
             <button
               onClick={() => setSortBy('views')}
               className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                sortBy === 'views' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                sortBy === 'views' ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
               <Eye size={14} className="inline mr-1" />
@@ -247,7 +247,7 @@ const EngagementManagement: React.FC = () => {
             <button
               onClick={() => setSortBy('likes')}
               className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                sortBy === 'likes' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                sortBy === 'likes' ? 'bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
               <Heart size={14} className="inline mr-1" />
@@ -256,7 +256,7 @@ const EngagementManagement: React.FC = () => {
             <button
               onClick={() => setSortBy('shares')}
               className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                sortBy === 'shares' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                sortBy === 'shares' ? 'bg-green-100 dark:bg-green-950/60 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
               <Share2 size={14} className="inline mr-1" />
@@ -267,33 +267,33 @@ const EngagementManagement: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50 dark:bg-slate-900/80 border-b border-gray-200 dark:border-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Sản phẩm
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   <Eye size={14} className="inline mr-1" />
                   Lượt xem
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   <Heart size={14} className="inline mr-1" />
                   Lượt thích
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   <Share2 size={14} className="inline mr-1" />
                   Lượt chia sẻ
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Tổng tương tác
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {sortedProducts.map((product) => {
                 const totalEngagement = (product.views || 0) + (product.likes || 0) + (product.shares || 0);
                 return (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img
@@ -305,28 +305,28 @@ const EngagementManagement: React.FC = () => {
                           }}
                         />
                         <div>
-                          <p className="font-medium text-gray-800">{product.name}</p>
-                          <p className="text-xs text-gray-500">{product.category}</p>
+                          <p className="font-medium text-gray-800 dark:text-gray-100">{product.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{product.category}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/50 rounded-full text-sm font-medium">
                         {product.views || 0}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm font-medium">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200/50 dark:border-red-800/50 rounded-full text-sm font-medium">
                         {product.likes || 0}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-300 border border-green-200/50 dark:border-green-800/50 rounded-full text-sm font-medium">
                         {product.shares || 0}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="font-bold text-gray-800">{totalEngagement}</span>
+                      <span className="font-bold text-gray-800 dark:text-gray-100">{totalEngagement}</span>
                     </td>
                   </tr>
                 );

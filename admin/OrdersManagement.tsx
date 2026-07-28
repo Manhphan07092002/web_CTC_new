@@ -466,41 +466,41 @@ const OrdersManagement: React.FC = () => {
       {/* KPI Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-150/50 shadow-sm">
+          <div className="bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-gray-150/50 dark:border-slate-700/60 shadow-sm">
             <div className="flex justify-between items-center text-amber-500 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Chờ duyệt</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Chờ duyệt</span>
               <Clock size={18} />
             </div>
             <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400">{stats.pendingCount}</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-150/50 shadow-sm">
+          <div className="bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-gray-150/50 dark:border-slate-700/60 shadow-sm">
             <div className="flex justify-between items-center text-blue-500 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Đã duyệt</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Đã duyệt</span>
               <PackageCheck size={18} />
             </div>
             <p className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">{stats.confirmedCount + stats.processingCount}</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-150/50 shadow-sm">
+          <div className="bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-gray-150/50 dark:border-slate-700/60 shadow-sm">
             <div className="flex justify-between items-center text-purple-500 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Đang giao</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Đang giao</span>
               <Truck size={18} />
             </div>
             <p className="text-2xl font-extrabold text-purple-600 dark:text-purple-400">{stats.shippingCount}</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-150/50 shadow-sm">
+          <div className="bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-gray-150/50 dark:border-slate-700/60 shadow-sm">
             <div className="flex justify-between items-center text-green-500 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Hoàn thành</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Hoàn thành</span>
               <CheckCircle2 size={18} />
             </div>
             <p className="text-2xl font-extrabold text-green-600 dark:text-green-400">{stats.completedCount}</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-150/50 shadow-sm col-span-2 md:col-span-1">
+          <div className="bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-gray-150/50 dark:border-slate-700/60 shadow-sm col-span-2 md:col-span-1">
             <div className="flex justify-between items-center text-emerald-600 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Doanh thu</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Doanh thu</span>
               <DollarSign size={18} />
             </div>
             <p className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 truncate" title={`${stats.totalRevenue.toLocaleString('vi-VN')}đ`}>
@@ -511,15 +511,15 @@ const OrdersManagement: React.FC = () => {
       )}
 
       {/* Filter Tabs & Search Bar */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-150/50 space-y-4">
+      <div className="bg-white dark:bg-slate-800/90 p-4 rounded-2xl shadow-sm border border-gray-150/50 dark:border-slate-700/60 space-y-4">
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-gray-100 dark:border-slate-700">
           <button
             onClick={() => setSelectedStatus('')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
               selectedStatus === '' 
                 ? 'bg-primary text-white shadow-sm' 
-                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700'
             }`}
           >
             Tất cả ({stats?.totalOrders || 0})
@@ -534,12 +534,12 @@ const OrdersManagement: React.FC = () => {
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                   selectedStatus === opt.value
                     ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700'
                 }`}
               >
                 <span>{opt.label}</span>
                 {count > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200">
                     {count}
                   </span>
                 )}
@@ -557,7 +557,7 @@ const OrdersManagement: React.FC = () => {
               placeholder="Tìm theo mã đơn (CTC-ORD-...), tên khách, SĐT, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-250 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm dark:bg-gray-900 dark:text-white transition-all"
+              className="w-full pl-10 pr-4 py-2 border border-gray-250 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 transition-all"
             />
           </div>
           <button
@@ -573,21 +573,21 @@ const OrdersManagement: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
         {/* Left / Middle: Orders List Table */}
-        <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-150/50 overflow-hidden transition-colors">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm border border-gray-150/50 dark:border-slate-700/60 overflow-hidden transition-colors">
           {loading ? (
             <div className="py-20 flex justify-center">
               <Loading fullScreen={false} className="h-16" />
             </div>
           ) : orders.length === 0 ? (
-            <div className="py-20 text-center text-gray-500">
-              <AlertCircle className="mx-auto text-gray-300 mb-2" size={48} />
+            <div className="py-20 text-center text-gray-500 dark:text-gray-400">
+              <AlertCircle className="mx-auto text-gray-300 dark:text-gray-600 mb-2" size={48} />
               <p className="font-bold">Không tìm thấy đơn hàng nào</p>
-              <p className="text-sm text-gray-400">Hãy thử lại với tiêu chí tìm kiếm khác.</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">Hãy thử lại với tiêu chí tìm kiếm khác.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
-                <thead className="bg-gray-50 dark:bg-gray-750 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700">
+                <thead className="bg-gray-50 dark:bg-slate-900/80 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-slate-700">
                   <tr>
                     <th className="px-5 py-4">Mã đơn</th>
                     <th className="px-5 py-4">Khách hàng</th>
@@ -597,24 +597,24 @@ const OrdersManagement: React.FC = () => {
                     <th className="px-5 py-4 text-right">Thao tác</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                   {orders.map(order => (
                     <tr 
                       key={order._id} 
                       onClick={() => handleViewDetails(order._id)}
-                      className={`hover:bg-gray-50/80 dark:hover:bg-gray-750/50 transition-colors cursor-pointer ${selectedOrder?._id === order._id ? 'bg-primary/5 dark:bg-primary/10' : ''}`}
+                      className={`hover:bg-gray-50/80 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${selectedOrder?._id === order._id ? 'bg-primary/5 dark:bg-primary/20' : ''}`}
                     >
-                      <td className="px-5 py-4 font-mono font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                      <td className="px-5 py-4 font-mono font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">
                         <div className="text-primary font-bold">{order.orderCode}</div>
-                        <div className="text-[11px] text-gray-400 font-normal">{new Date(order.createdAt).toLocaleDateString('vi-VN')}</div>
+                        <div className="text-[11px] text-gray-400 dark:text-gray-400 font-normal">{new Date(order.createdAt).toLocaleDateString('vi-VN')}</div>
                       </td>
 
                       <td className="px-5 py-4">
-                        <div className="font-bold text-gray-800 dark:text-gray-200">{order.customerName}</div>
+                        <div className="font-bold text-gray-800 dark:text-gray-100">{order.customerName}</div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{order.phone}</div>
                       </td>
 
-                      <td className="px-5 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                      <td className="px-5 py-4 font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">
                         {order.totalAmount > 0 ? `${order.totalAmount.toLocaleString('vi-VN')}đ` : 'Liên hệ'}
                       </td>
 
@@ -640,7 +640,7 @@ const OrdersManagement: React.FC = () => {
                         {order.status === 'pending' && (
                           <button
                             onClick={(e) => handleQuickConfirm(order, e)}
-                            className="p-1.5 bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-950/30 dark:hover:bg-green-900/50 rounded-lg transition-colors inline-flex items-center gap-1 font-bold text-xs"
+                            className="p-1.5 bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-950/40 dark:text-green-400 dark:hover:bg-green-900/50 rounded-lg transition-colors inline-flex items-center gap-1 font-bold text-xs"
                             title="Duyệt đơn nhanh 1-click"
                           >
                             <Check size={14} /> Duyệt
@@ -650,7 +650,7 @@ const OrdersManagement: React.FC = () => {
                         {/* Open status & shipping modal */}
                         <button
                           onClick={() => handleOpenStatusModal(order)}
-                          className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg transition-colors inline-flex"
+                          className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors inline-flex"
                           title="Cập nhật trạng thái & giao hàng"
                         >
                           <Truck size={16} />
@@ -658,7 +658,7 @@ const OrdersManagement: React.FC = () => {
 
                         <button
                           onClick={() => handleViewDetails(order._id)}
-                          className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors inline-flex"
+                          className="p-2 text-primary dark:text-blue-400 hover:bg-primary/10 dark:hover:bg-blue-900/30 rounded-lg transition-colors inline-flex"
                           title="Xem chi tiết"
                         >
                           <Eye size={16} />
@@ -666,7 +666,7 @@ const OrdersManagement: React.FC = () => {
 
                         <button
                           onClick={() => handleDeleteOrderClick(order)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors inline-flex"
+                          className="p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors inline-flex"
                           title="Xóa đơn hàng"
                         >
                           <Trash2 size={16} />
@@ -681,29 +681,29 @@ const OrdersManagement: React.FC = () => {
         </div>
 
         {/* Right Sidebar: Order Details Panel */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-150/50 p-6 transition-colors sticky top-24">
+        <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm border border-gray-150/50 dark:border-slate-700/60 p-6 transition-colors sticky top-24">
           {detailLoading ? (
             <div className="py-20 flex justify-center">
               <Loading fullScreen={false} className="h-12" />
             </div>
           ) : selectedOrder ? (
             <div className="space-y-5 animate-fade-in">
-              <div className="flex justify-between items-start border-b border-gray-100 dark:border-gray-700 pb-4">
+              <div className="flex justify-between items-start border-b border-gray-100 dark:border-slate-700 pb-4">
                 <div>
-                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">Chi tiết đơn hàng</h3>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">Chi tiết đơn hàng</h3>
                   <span className="font-mono text-sm text-primary font-bold">{selectedOrder.orderCode}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setShowInvoiceModal(true)}
-                    className="text-gray-500 hover:text-gray-800 dark:hover:text-white p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
                     title="In hóa đơn"
                   >
                     <Printer size={18} />
                   </button>
                   <button 
                     onClick={() => setSelectedOrder(null)} 
-                    className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg"
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 rounded-lg"
                   >
                     <X size={18} />
                   </button>
@@ -711,9 +711,9 @@ const OrdersManagement: React.FC = () => {
               </div>
 
               {/* Status Action Card */}
-              <div className="bg-gray-50 dark:bg-gray-750 p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
+              <div className="bg-gray-50 dark:bg-slate-900/80 p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Trạng thái hiện tại:</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Trạng thái hiện tại:</span>
                   {getStatusBadge(selectedOrder.status)}
                 </div>
 
@@ -726,35 +726,35 @@ const OrdersManagement: React.FC = () => {
               </div>
 
               {/* Customer Info Card */}
-              <div className="space-y-3 bg-gray-50 dark:bg-gray-750 p-4 rounded-xl border border-gray-100 dark:border-gray-650 text-sm">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 flex items-center gap-1.5 mb-2">
+              <div className="space-y-3 bg-gray-50 dark:bg-slate-900/80 p-4 rounded-xl border border-gray-100 dark:border-slate-700 text-sm">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mb-2">
                   <User size={13} className="text-primary" /> Thông tin khách hàng
                 </h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Họ tên:</span>
-                    <span className="font-bold text-gray-800 dark:text-white">{selectedOrder.customerName}</span>
+                    <span className="font-bold text-gray-800 dark:text-gray-100">{selectedOrder.customerName}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Số điện thoại:</span>
-                    <span className="font-bold text-gray-800 dark:text-white">{selectedOrder.phone}</span>
+                    <span className="font-bold text-gray-800 dark:text-gray-100">{selectedOrder.phone}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Email:</span>
-                    <span className="font-bold text-gray-800 dark:text-white truncate max-w-[160px]" title={selectedOrder.email}>
+                    <span className="font-bold text-gray-800 dark:text-gray-100 truncate max-w-[160px]" title={selectedOrder.email}>
                       {selectedOrder.email}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Địa chỉ:</span>
-                    <span className="font-bold text-gray-800 dark:text-white text-right max-w-[160px]" title={selectedOrder.address}>
+                    <span className="font-bold text-gray-800 dark:text-gray-100 text-right max-w-[160px]" title={selectedOrder.address}>
                       {selectedOrder.address}
                     </span>
                   </div>
                   {selectedOrder.note && (
-                    <div className="pt-2 border-t border-gray-200 dark:border-gray-600 mt-2">
+                    <div className="pt-2 border-t border-gray-200 dark:border-slate-700 mt-2">
                       <span className="text-gray-400 block font-medium mb-1 text-xs">Ghi chú:</span>
-                      <p className="text-xs text-gray-600 dark:text-gray-300 italic bg-white dark:bg-gray-800 p-2 rounded border border-gray-100 dark:border-gray-700">
+                      <p className="text-xs text-gray-600 dark:text-gray-300 italic bg-white dark:bg-slate-800 p-2 rounded border border-gray-100 dark:border-slate-700">
                         {selectedOrder.note}
                       </p>
                     </div>
@@ -764,18 +764,18 @@ const OrdersManagement: React.FC = () => {
 
               {/* Shipping Info Card if shipping/completed */}
               {(selectedOrder.shippingProvider || selectedOrder.trackingCode) && (
-                <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-xl border border-purple-150 dark:border-purple-800 text-sm space-y-2">
+                <div className="bg-purple-50 dark:bg-purple-950/30 p-4 rounded-xl border border-purple-150 dark:border-purple-800/60 text-sm space-y-2">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
                     <Truck size={13} /> Thông tin vận chuyển
                   </h4>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Đơn vị:</span>
+                    <span className="text-gray-500 dark:text-gray-400">Đơn vị:</span>
                     <span className="font-bold text-gray-800 dark:text-gray-200">{selectedOrder.shippingProvider || 'N/A'}</span>
                   </div>
                   {selectedOrder.trackingCode && (
                     <div className="flex justify-between text-xs">
-                      <span className="text-gray-500">Mã vận đơn:</span>
-                      <span className="font-mono font-bold text-purple-700 dark:text-purple-300 bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
+                      <span className="text-gray-500 dark:text-gray-400">Mã vận đơn:</span>
+                      <span className="font-mono font-bold text-purple-700 dark:text-purple-300 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-700">
                         {selectedOrder.trackingCode}
                       </span>
                     </div>
@@ -785,21 +785,21 @@ const OrdersManagement: React.FC = () => {
 
               {/* Items Card */}
               <div className="space-y-2">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                   <ShoppingCart size={13} className="text-primary" /> Danh sách sản phẩm
                 </h4>
-                <div className="max-h-52 overflow-y-auto space-y-2 border border-gray-100 dark:border-gray-750 rounded-xl divide-y divide-gray-100 dark:divide-gray-700">
+                <div className="max-h-52 overflow-y-auto space-y-2 border border-gray-100 dark:border-slate-700 rounded-xl divide-y divide-gray-100 dark:divide-slate-700">
                   {selectedOrder.items && selectedOrder.items.map((item) => (
-                    <div key={item._id} className="p-2.5 text-sm flex justify-between gap-3 hover:bg-gray-50/50 transition-colors">
+                    <div key={item._id} className="p-2.5 text-sm flex justify-between gap-3 hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-gray-800 dark:text-white truncate" title={item.productName}>
+                        <p className="font-bold text-gray-800 dark:text-gray-100 truncate" title={item.productName}>
                           {item.productName}
                         </p>
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <p className="text-xs text-gray-400 dark:text-gray-400 mt-0.5">
                           {item.quantity} x {item.price > 0 ? `${item.price.toLocaleString('vi-VN')}đ` : 'Liên hệ'}
                         </p>
                       </div>
-                      <div className="text-right whitespace-nowrap self-center font-bold text-gray-800 dark:text-white text-xs">
+                      <div className="text-right whitespace-nowrap self-center font-bold text-gray-800 dark:text-gray-100 text-xs">
                         {item.price > 0 ? `${item.subtotal.toLocaleString('vi-VN')}đ` : 'Liên hệ'}
                       </div>
                     </div>
@@ -808,8 +808,8 @@ const OrdersManagement: React.FC = () => {
               </div>
 
               {/* Sum totals */}
-              <div className="border-t border-gray-100 dark:border-gray-700 pt-3 flex justify-between items-baseline">
-                <span className="font-bold text-sm text-gray-500">Tổng tiền:</span>
+              <div className="border-t border-gray-100 dark:border-slate-700 pt-3 flex justify-between items-baseline">
+                <span className="font-bold text-sm text-gray-500 dark:text-gray-400">Tổng tiền:</span>
                 <span className="text-xl font-extrabold text-primary">
                   {selectedOrder.totalAmount > 0 ? `${selectedOrder.totalAmount.toLocaleString('vi-VN')}đ` : 'Liên hệ'}
                 </span>
@@ -817,8 +817,8 @@ const OrdersManagement: React.FC = () => {
 
               {/* Status History */}
               {selectedOrder.statusHistory && selectedOrder.statusHistory.length > 0 && (
-                <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
-                  <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 mb-2">Lịch sử thay đổi</h4>
+                <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
+                  <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Lịch sử thay đổi</h4>
                   <div className="space-y-2 max-h-36 overflow-y-auto text-xs">
                     {selectedOrder.statusHistory.map((hist, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
@@ -826,7 +826,7 @@ const OrdersManagement: React.FC = () => {
                         <div>
                           <span className="font-bold text-gray-800 dark:text-gray-200">{hist.status}</span>
                           <span className="text-[10px] text-gray-400 ml-2">{new Date(hist.updatedAt).toLocaleString('vi-VN')}</span>
-                          {hist.note && <p className="italic text-gray-500">{hist.note}</p>}
+                          {hist.note && <p className="italic text-gray-500 dark:text-gray-400">{hist.note}</p>}
                         </div>
                       </div>
                     ))}
@@ -838,15 +838,15 @@ const OrdersManagement: React.FC = () => {
               <button
                 onClick={() => handleResendEmail(selectedOrder._id)}
                 disabled={resendingEmail}
-                className="mt-2 w-full flex items-center justify-center gap-2 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 font-semibold py-2 px-4 rounded-xl transition-all text-xs disabled:opacity-50 cursor-pointer"
+                className="mt-2 w-full flex items-center justify-center gap-2 border border-blue-200 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-semibold py-2 px-4 rounded-xl transition-all text-xs disabled:opacity-50 cursor-pointer"
               >
                 <Send size={13} className={resendingEmail ? 'animate-pulse' : ''} />
                 {resendingEmail ? 'Đang gửi...' : 'Gửi lại email thông báo cho khách'}
               </button>
             </div>
           ) : (
-            <div className="py-20 text-center text-gray-400">
-              <Eye size={36} className="mx-auto mb-2 text-gray-300" />
+            <div className="py-20 text-center text-gray-400 dark:text-gray-500">
+              <Eye size={36} className="mx-auto mb-2 text-gray-300 dark:text-gray-600" />
               <p className="text-sm font-semibold">Chọn một đơn hàng để xem chi tiết</p>
             </div>
           )}
@@ -859,25 +859,25 @@ const OrdersManagement: React.FC = () => {
       {/* ========================================================= */}
       {showStatusModal && modalOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-gray-150 dark:border-gray-700">
-            <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800/90 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-gray-150 dark:border-slate-700/60">
+            <div className="flex justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-3">
+              <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Truck className="text-primary" size={20} /> Cập Nhật Đơn {modalOrder.orderCode}
               </h3>
-              <button onClick={() => setShowStatusModal(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <button onClick={() => setShowStatusModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleSaveStatusModal} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                   Trạng thái đơn hàng
                 </label>
                 <select
                   value={modalNewStatus}
                   onChange={(e) => setModalNewStatus(e.target.value)}
-                  className="w-full border border-gray-250 dark:border-gray-700 rounded-xl py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm dark:bg-gray-900 dark:text-white cursor-pointer font-bold"
+                  className="w-full border border-gray-250 dark:border-slate-700 rounded-xl py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 cursor-pointer font-bold"
                 >
                   {STATUS_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -887,7 +887,7 @@ const OrdersManagement: React.FC = () => {
 
               {/* Dynamic inputs for SHIPPING status */}
               {modalNewStatus === 'shipping' && (
-                <div className="space-y-3 p-3.5 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-200 dark:border-purple-800 animate-fade-in">
+                <div className="space-y-3 p-3.5 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-200 dark:border-purple-800/60 animate-fade-in">
                   <h4 className="text-xs font-bold text-purple-800 dark:text-purple-300 flex items-center gap-1.5">
                     <Truck size={14} /> Thông tin vận chuyển
                   </h4>
@@ -897,7 +897,7 @@ const OrdersManagement: React.FC = () => {
                     <select
                       value={modalShippingProvider}
                       onChange={(e) => setModalShippingProvider(e.target.value)}
-                      className="w-full border border-purple-200 dark:border-purple-800 rounded-lg p-2 text-xs dark:bg-gray-900 dark:text-white"
+                      className="w-full border border-purple-200 dark:border-purple-700 rounded-lg p-2 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                     >
                       {SHIPPING_PROVIDERS.map(p => (
                         <option key={p} value={p}>{p}</option>
@@ -912,7 +912,7 @@ const OrdersManagement: React.FC = () => {
                       placeholder="VD: VTP123456789, GHN987654..."
                       value={modalTrackingCode}
                       onChange={(e) => setModalTrackingCode(e.target.value)}
-                      className="w-full border border-purple-200 dark:border-purple-800 rounded-lg p-2 text-xs font-mono dark:bg-gray-900 dark:text-white"
+                      className="w-full border border-purple-200 dark:border-purple-700 rounded-lg p-2 text-xs font-mono bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                     />
                   </div>
 
@@ -922,7 +922,7 @@ const OrdersManagement: React.FC = () => {
                       type="date"
                       value={modalEstimatedDate}
                       onChange={(e) => setModalEstimatedDate(e.target.value)}
-                      className="w-full border border-purple-200 dark:border-purple-800 rounded-lg p-2 text-xs dark:bg-gray-900 dark:text-white"
+                      className="w-full border border-purple-200 dark:border-purple-700 rounded-lg p-2 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                     />
                   </div>
                 </div>
@@ -930,34 +930,34 @@ const OrdersManagement: React.FC = () => {
 
               {/* Dynamic inputs for CANCELLED status */}
               {modalNewStatus === 'cancelled' && (
-                <div className="p-3.5 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800 animate-fade-in">
+                <div className="p-3.5 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800/60 animate-fade-in">
                   <label className="block text-xs font-bold text-red-700 dark:text-red-300 mb-1">Lý do hủy đơn</label>
                   <textarea
                     rows={2}
                     placeholder="Nhập lý do hủy (hết hàng, khách đổi ý, sai SĐT...)"
                     value={modalCancelledReason}
                     onChange={(e) => setModalCancelledReason(e.target.value)}
-                    className="w-full border border-red-200 dark:border-red-800 rounded-lg p-2 text-xs dark:bg-gray-900 dark:text-white"
+                    className="w-full border border-red-200 dark:border-red-700 rounded-lg p-2 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Ghi chú xử lý (Nội bộ / Email)</label>
+                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Ghi chú xử lý (Nội bộ / Email)</label>
                 <input
                   type="text"
                   placeholder="Ghi chú thêm..."
                   value={modalNote}
                   onChange={(e) => setModalNote(e.target.value)}
-                  className="w-full border border-gray-250 dark:border-gray-700 rounded-xl py-2 px-3 text-xs dark:bg-gray-900 dark:text-white"
+                  className="w-full border border-gray-250 dark:border-slate-700 rounded-xl py-2 px-3 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+              <div className="flex justify-end gap-2 pt-2 border-t border-gray-100 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setShowStatusModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
                 >
                   Hủy
                 </button>
@@ -979,12 +979,12 @@ const OrdersManagement: React.FC = () => {
       {/* ========================================================= */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-xl border border-gray-150 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800/90 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-xl border border-gray-150 dark:border-slate-700/60 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-3">
+              <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Plus className="text-primary" size={20} /> Tạo Đơn Hàng Mới (Admin)
               </h3>
-              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
                 <X size={18} />
               </button>
             </div>
@@ -999,7 +999,7 @@ const OrdersManagement: React.FC = () => {
                     placeholder="Nguyễn Văn A"
                     value={newCustomerName}
                     onChange={(e) => setNewCustomerName(e.target.value)}
-                    className="w-full border border-gray-250 dark:border-gray-700 rounded-xl p-2.5 text-xs dark:bg-gray-900 dark:text-white"
+                    className="w-full border border-gray-250 dark:border-slate-700 rounded-xl p-2.5 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                   />
                 </div>
                 <div>
@@ -1010,7 +1010,7 @@ const OrdersManagement: React.FC = () => {
                     placeholder="0905xxxxxx"
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
-                    className="w-full border border-gray-250 dark:border-gray-700 rounded-xl p-2.5 text-xs dark:bg-gray-900 dark:text-white"
+                    className="w-full border border-gray-250 dark:border-slate-700 rounded-xl p-2.5 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -1024,7 +1024,7 @@ const OrdersManagement: React.FC = () => {
                     placeholder="khachhang@gmail.com"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    className="w-full border border-gray-250 dark:border-gray-700 rounded-xl p-2.5 text-xs dark:bg-gray-900 dark:text-white"
+                    className="w-full border border-gray-250 dark:border-slate-700 rounded-xl p-2.5 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                   />
                 </div>
                 <div>
@@ -1035,31 +1035,31 @@ const OrdersManagement: React.FC = () => {
                     placeholder="Số nhà, Đường, Quận/Huyện, TP..."
                     value={newAddress}
                     onChange={(e) => setNewAddress(e.target.value)}
-                    className="w-full border border-gray-250 dark:border-gray-700 rounded-xl p-2.5 text-xs dark:bg-gray-900 dark:text-white"
+                    className="w-full border border-gray-250 dark:border-slate-700 rounded-xl p-2.5 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Ghi chú đơn hàng</label>
+                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Ghi chú đơn hàng</label>
                 <input
                   type="text"
                   placeholder="Khách đặt qua điện thoại / tư vấn trực tiếp..."
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
-                  className="w-full border border-gray-250 dark:border-gray-700 rounded-xl p-2 text-xs dark:bg-gray-900 dark:text-white"
+                  className="w-full border border-gray-250 dark:border-slate-700 rounded-xl p-2 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                 />
               </div>
 
               {/* Product Picker */}
-              <div className="border-t border-gray-100 dark:border-gray-700 pt-3 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">Danh sách sản phẩm chọn</h4>
+              <div className="border-t border-gray-100 dark:border-slate-700 pt-3 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Danh sách sản phẩm chọn</h4>
                 
                 <div className="flex gap-2">
                   <select
                     value={selectedProductId}
                     onChange={(e) => setSelectedProductId(e.target.value)}
-                    className="flex-1 border border-gray-250 dark:border-gray-700 rounded-xl p-2 text-xs dark:bg-gray-900 dark:text-white"
+                    className="flex-1 border border-gray-250 dark:border-slate-700 rounded-xl p-2 text-xs bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                   >
                     <option value="">-- Chọn sản phẩm --</option>
                     {availableProducts.map(p => (
@@ -1074,13 +1074,13 @@ const OrdersManagement: React.FC = () => {
                     min={1}
                     value={selectedProductQty}
                     onChange={(e) => setSelectedProductQty(parseInt(e.target.value, 10) || 1)}
-                    className="w-20 border border-gray-250 dark:border-gray-700 rounded-xl p-2 text-xs text-center dark:bg-gray-900 dark:text-white"
+                    className="w-20 border border-gray-250 dark:border-slate-700 rounded-xl p-2 text-xs text-center bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100"
                   />
 
                   <button
                     type="button"
                     onClick={handleAddItemToCreate}
-                    className="bg-gray-800 hover:bg-gray-900 text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer"
+                    className="bg-gray-800 dark:bg-slate-700 hover:bg-gray-900 dark:hover:bg-slate-600 text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer"
                   >
                     Thêm
                   </button>
@@ -1088,9 +1088,9 @@ const OrdersManagement: React.FC = () => {
 
                 {/* Item Table */}
                 {newOrderItems.length > 0 && (
-                  <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden text-xs">
+                  <div className="border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden text-xs">
                     <table className="w-full text-left">
-                      <thead className="bg-gray-50 dark:bg-gray-750 font-bold text-gray-500">
+                      <thead className="bg-gray-50 dark:bg-slate-900/80 font-bold text-gray-500 dark:text-gray-400">
                         <tr>
                           <th className="p-2">Sản phẩm</th>
                           <th className="p-2 text-center">SL</th>
@@ -1099,18 +1099,18 @@ const OrdersManagement: React.FC = () => {
                           <th className="p-2 text-center">Xóa</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                      <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                         {newOrderItems.map((item, idx) => (
                           <tr key={idx}>
-                            <td className="p-2 font-bold">{item.productName}</td>
-                            <td className="p-2 text-center">{item.quantity}</td>
-                            <td className="p-2 text-right">{item.price > 0 ? `${item.price.toLocaleString('vi-VN')}đ` : 'Liên hệ'}</td>
-                            <td className="p-2 text-right font-bold">{item.price > 0 ? `${(item.price * item.quantity).toLocaleString('vi-VN')}đ` : 'Liên hệ'}</td>
+                            <td className="p-2 font-bold text-gray-800 dark:text-gray-100">{item.productName}</td>
+                            <td className="p-2 text-center text-gray-800 dark:text-gray-200">{item.quantity}</td>
+                            <td className="p-2 text-right text-gray-800 dark:text-gray-200">{item.price > 0 ? `${item.price.toLocaleString('vi-VN')}đ` : 'Liên hệ'}</td>
+                            <td className="p-2 text-right font-bold text-gray-800 dark:text-gray-100">{item.price > 0 ? `${(item.price * item.quantity).toLocaleString('vi-VN')}đ` : 'Liên hệ'}</td>
                             <td className="p-2 text-center">
                               <button
                                 type="button"
                                 onClick={() => handleRemoveItemFromCreate(idx)}
-                                className="text-red-500 hover:text-red-700 p-1"
+                                className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-1"
                               >
                                 <X size={14} />
                               </button>
@@ -1123,11 +1123,11 @@ const OrdersManagement: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl"
+                  className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl"
                 >
                   Hủy
                 </button>

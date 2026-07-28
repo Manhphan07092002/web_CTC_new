@@ -14,7 +14,7 @@ const ProductsHero: React.FC = () => {
           align-items: center;
           padding-top: 140px;
           padding-bottom: 50px;
-          font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
+          font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
         }
 
         /* Blueprint grid */

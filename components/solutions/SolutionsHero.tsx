@@ -36,7 +36,7 @@ const SolutionsHero: React.FC = () => {
           display: flex;
           align-items: center;
           padding-top: 120px;
-          font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
+          font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif;
         }
 
         /* Blueprint grid */

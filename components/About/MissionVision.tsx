@@ -42,7 +42,7 @@ const MissionVision: React.FC = () => {
         }`}>
           <h2 
             className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight"
-            style={{ fontFamily: "'Montserrat', sans-serif" }}
+            style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
           >
             {t('about.vision_title')}
           </h2>
@@ -64,7 +64,7 @@ const MissionVision: React.FC = () => {
             </div>
             <h3 
               className="text-xl font-bold mb-4 text-slate-800 dark:text-white uppercase tracking-wide"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
             >
               {t('about.mission')}
             </h3>
@@ -85,7 +85,7 @@ const MissionVision: React.FC = () => {
             </div>
             <h3 
               className="text-xl font-bold mb-4 tracking-wide uppercase"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
             >
               {t('about.vision')}
             </h3>
@@ -103,7 +103,7 @@ const MissionVision: React.FC = () => {
             </div>
             <h3 
               className="text-xl font-bold mb-6 text-center text-slate-800 dark:text-white uppercase tracking-wide"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', 'Montserrat', sans-serif" }}
             >
               {t('about.core_values')}
             </h3>

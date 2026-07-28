@@ -319,19 +319,19 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  if(loading) return <div className="p-12 text-center"><div className="animate-spin inline-block w-8 h-8 border-2 border-primary rounded-full border-r-transparent"></div></div>
+  if(loading) return <div className="p-12 text-center"><div className="animate-spin inline-block w-8 h-8 border-2 border-primary rounded-full border-r-transparent"></div></div>;
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-end">
          <div>
-            <h2 className="text-2xl font-bold text-gray-800">Quản lý Tài khoản & Phân quyền</h2>
-            <p className="text-gray-500 text-sm mt-1">Quản lý người dùng, vai trò và phân quyền hệ thống</p>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Quản lý Tài khoản & Phân quyền</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Quản lý người dùng, vai trò và phân quyền hệ thống</p>
          </div>
          {activeTab === 'users' && (
            <button 
               onClick={handleAdd}
-              className="bg-corporate hover:bg-primary text-white px-5 py-2.5 rounded-xl shadow-lg transition-all flex items-center gap-2 font-bold transform hover:-translate-y-1"
+              className="bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 font-bold transform hover:-translate-y-0.5"
            >
               <Plus size={20} /> {t('common.add')} User
            </button>
@@ -339,7 +339,7 @@ const UserManagement: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 dark:border-slate-700">
         {[
           { id: 'users', label: 'Quản lý Người dùng', icon: Users },
           { id: 'roles', label: 'Quản lý Vai trò', icon: Crown },
@@ -348,10 +348,10 @@ const UserManagement: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors ${
+            className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors text-sm font-medium ${
               activeTab === tab.id
-                ? 'border-primary text-primary font-medium'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-primary text-primary dark:text-sky-400 dark:border-sky-400 font-bold'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -362,17 +362,21 @@ const UserManagement: React.FC = () => {
 
       {/* Tab Content */}
       {activeTab === 'users' && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/60 overflow-hidden">
          {/* Toolbar */}
-         <div className="p-4 border-b border-gray-100 flex items-center gap-4 bg-gray-50/50">
+         <div className="p-4 border-b border-gray-100 dark:border-slate-700/60 flex items-center gap-4 bg-gray-50/50 dark:bg-slate-900/50">
             <div className="relative flex-1 max-w-md">
-               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-               <input type="text" placeholder="Tìm kiếm người dùng..." className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"/>
+               <input 
+                 type="text" 
+                 placeholder="Tìm kiếm người dùng..." 
+                 className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm placeholder-gray-400 dark:placeholder-gray-500"
+               />
             </div>
          </div>
 
          <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50 text-gray-600 uppercase font-bold text-xs">
+          <thead className="bg-gray-50 dark:bg-slate-900/70 text-gray-600 dark:text-gray-300 uppercase font-bold text-xs border-b border-gray-200 dark:border-slate-700">
             <tr>
               <th className="px-6 py-4">User Info</th>
               <th className="px-6 py-4">Role</th>
@@ -380,25 +384,25 @@ const UserManagement: React.FC = () => {
               <th className="px-6 py-4 text-right">{t('common.action')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
             {users.map(u => (
-              <tr key={u.id} className="hover:bg-gray-50 transition-colors group">
+              <tr key={u.id} className="hover:bg-gray-50/80 dark:hover:bg-slate-700/40 transition-colors group">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     {(u as any).avatar ? (
                       <img 
                         src={(u as any).avatar} 
                         alt={u.name}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 dark:border-slate-700"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-xs">
                          {u.name.charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div>
-                       <div className="font-bold text-gray-800">{u.name}</div>
-                       <div className="text-xs text-gray-500">{u.email}</div>
+                       <div className="font-bold text-gray-800 dark:text-gray-100">{u.name}</div>
+                       <div className="text-xs text-gray-500 dark:text-gray-400">{u.email}</div>
                     </div>
                   </div>
                 </td>
@@ -410,9 +414,9 @@ const UserManagement: React.FC = () => {
                         <span 
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
                           style={{ 
-                            backgroundColor: roleDisplay.color + '15', 
+                            backgroundColor: roleDisplay.color + '20', 
                             color: roleDisplay.color,
-                            borderColor: roleDisplay.color + '30'
+                            borderColor: roleDisplay.color + '40'
                           }}
                         >
                           {roleDisplay.icon === 'Crown' && <Crown size={12}/>}
@@ -423,8 +427,9 @@ const UserManagement: React.FC = () => {
                     }
                     return (
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold capitalize border ${
-                        u.role === 'admin' ? 'bg-purple-50 text-purple-700 border-purple-100' : 
-                        u.role === 'editor' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-green-50 text-green-700 border-green-100'
+                        u.role === 'admin' ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-700/50' : 
+                        u.role === 'editor' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700/50' : 
+                        'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700/50'
                       }`}>
                         {u.role === 'admin' && <Shield size={12}/>}
                         {u.role}
@@ -433,33 +438,33 @@ const UserManagement: React.FC = () => {
                   })()}
                 </td>
                 <td className="px-6 py-4">
-                   <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span> Active
+                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700/50">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span> Active
                    </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-1">
                      <button 
                        onClick={() => handleOpenPermissionModal(u)} 
-                       className="p-2 hover:bg-orange-50 text-gray-500 hover:text-orange-600 rounded-lg transition-colors"
+                       className="p-2 hover:bg-amber-50 dark:hover:bg-amber-900/30 text-gray-500 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 rounded-lg transition-colors"
                        title="Phân quyền"
                      >
                        <Key size={18} />
                      </button>
                      <button 
                        onClick={() => handleEdit(u)} 
-                       className="p-2 hover:bg-blue-50 text-gray-500 hover:text-blue-600 rounded-lg transition-colors"
+                       className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
                        title="Sửa"
                      >
                        <Edit size={18} />
                      </button>
                       <button 
                         onClick={() => handleDeleteClick(u)} 
-                        className="p-2 hover:bg-red-50 text-gray-500 hover:text-red-500 rounded-lg transition-colors"
+                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg transition-colors"
                         title="Xóa"
                       >
                        <Trash2 size={18} />
-                     </button>
+                      </button>
                   </div>
                 </td>
               </tr>
@@ -483,24 +488,24 @@ const UserManagement: React.FC = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative z-10 flex flex-col animate-fade-in-up">
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
-                <h3 className="text-lg font-bold text-gray-800">
+           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md relative z-10 flex flex-col animate-fade-in-up border border-transparent dark:border-slate-700 text-gray-800 dark:text-gray-100">
+              <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-900/80 rounded-t-2xl">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
                   {editingUser ? `${t('common.edit')} User` : `${t('common.add')} User`}
                 </h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={20}/></button>
+                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><X size={20}/></button>
               </div>
               
               <form onSubmit={handleSubmit} className="p-6 space-y-5">
                  {/* Avatar */}
                  <div>
-                   <label className="block text-sm font-bold text-gray-700 mb-2">Avatar</label>
+                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Avatar</label>
                    <div className="flex items-center gap-4">
                      {formData.avatar ? (
                        <img 
                          src={formData.avatar} 
                          alt="Avatar"
-                         className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                         className="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-slate-700"
                        />
                      ) : (
                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-3xl">
@@ -511,7 +516,7 @@ const UserManagement: React.FC = () => {
                        <button
                          type="button"
                          onClick={() => setShowImagePicker(true)}
-                         className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-primary font-medium"
+                         className="w-full px-4 py-2 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300 hover:text-primary font-medium"
                        >
                          <ImageIcon size={18} />
                          {formData.avatar ? 'Thay đổi ảnh' : 'Chọn ảnh'}
@@ -530,30 +535,30 @@ const UserManagement: React.FC = () => {
                  </div>
 
                  <div>
-                   <label className="block text-sm font-bold text-gray-700 mb-2">{t('common.name')}</label>
+                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{t('common.name')}</label>
                    <div className="relative">
                      <input 
                        required
                        type="text" 
-                       className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                       className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                        value={formData.name}
                        onChange={e => setFormData({...formData, name: e.target.value})}
                      />
-                     <UserIcon size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
+                     <UserIcon size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"/>
                    </div>
                  </div>
 
                  <div>
-                   <label className="block text-sm font-bold text-gray-700 mb-2">{t('contact.email')}</label>
+                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{t('contact.email')}</label>
                    <div className="relative">
                      <input 
                        required
                        type="email" 
-                       className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                       className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                        value={formData.email}
                        onChange={e => setFormData({...formData, email: e.target.value})}
                      />
-                     <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
+                     <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"/>
                    </div>
                  </div>
 

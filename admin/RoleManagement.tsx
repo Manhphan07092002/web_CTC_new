@@ -282,12 +282,12 @@ const RoleManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Vai trò</h1>
-          <p className="text-gray-600">Quản lý vai trò và phân quyền trong hệ thống</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Quản lý Vai trò</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Quản lý vai trò và phân quyền trong hệ thống</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium shadow-sm"
         >
           <Plus className="w-4 h-4" />
           Thêm vai trò
@@ -295,22 +295,22 @@ const RoleManagement: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
+      <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-4">
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative flex-1 min-w-64">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Tìm kiếm vai trò..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 outline-none"
             />
           </div>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
+            className="border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer"
           >
             {categories.map(category => (
               <option key={category} value={category}>
@@ -323,13 +323,13 @@ const RoleManagement: React.FC = () => {
 
       {/* Roles Grid */}
       {roles.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-          <Shield className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Chưa có vai trò nào</h3>
-          <p className="text-gray-500 mb-4">Hãy tạo vai trò đầu tiên hoặc chạy seed script</p>
+        <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-12 text-center">
+          <Shield className="w-16 h-16 mx-auto text-gray-300 dark:text-slate-600 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Chưa có vai trò nào</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">Hãy tạo vai trò đầu tiên hoặc chạy seed script</p>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Thêm vai trò mới
@@ -338,7 +338,7 @@ const RoleManagement: React.FC = () => {
       ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {roles.map((role) => (
-          <div key={role._id} className="bg-white rounded-xl shadow-sm border hover:shadow-md transition-shadow">
+          <div key={role._id} className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 hover:shadow-md transition-shadow">
             <div className="p-6">
               {/* Role Header */}
               <div className="flex items-start justify-between mb-4">
@@ -350,19 +350,19 @@ const RoleManagement: React.FC = () => {
                     {getRoleIcon(role.icon)}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{role.displayName}</h3>
-                    <p className="text-sm text-gray-500">Level {role.level}</p>
+                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">{role.displayName}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Level {role.level}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
                   {role.isSystem && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                    <span className="px-2.5 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 text-[11px] font-bold rounded-full">
                       Hệ thống
                     </span>
                   )}
                   <button
                     onClick={() => setExpandedRole(expandedRole === role._id ? null : role._id)}
-                    className="p-1 hover:bg-gray-100 rounded"
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400 rounded transition-colors"
                   >
                     {expandedRole === role._id ? 
                       <ChevronUp className="w-4 h-4" /> : 
@@ -374,25 +374,27 @@ const RoleManagement: React.FC = () => {
 
               {/* Role Description */}
               {role.description && (
-                <p className="text-sm text-gray-600 mb-4">{role.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{role.description}</p>
               )}
 
               {/* Permissions Count */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-gray-500">
-                  {role.permissions.length} quyền
+              <div className="flex items-center justify-between mb-4 pt-2 border-t border-gray-50 dark:border-slate-700/50">
+                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                  {role.permissions.length} quyền được cấp
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleEdit(role)}
-                    className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+                    className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                    title="Chỉnh sửa"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   {!role.isSystem && (
                     <button
                       onClick={() => handleDeleteClick(role)}
-                      className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                      className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                      title="Xóa"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -402,13 +404,13 @@ const RoleManagement: React.FC = () => {
 
               {/* Expanded Permissions */}
               {expandedRole === role._id && (
-                <div className="border-t pt-4">
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Quyền được phép:</h4>
-                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                <div className="border-t border-gray-100 dark:border-slate-700 pt-4">
+                  <h4 className="text-xs font-bold text-gray-900 dark:text-gray-200 mb-2 uppercase tracking-wider">Quyền được phép:</h4>
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto">
                     {role.permissions.map((permission) => (
                       <div key={permission._id} className="flex items-center gap-2 text-xs">
-                        <Check className="w-3 h-3 text-green-600" />
-                        <span className="text-gray-600">{permission.description || permission.name}</span>
+                        <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                        <span className="text-gray-600 dark:text-gray-300">{permission.description || permission.name}</span>
                       </div>
                     ))}
                   </div>
@@ -422,15 +424,15 @@ const RoleManagement: React.FC = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-semibold">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-transparent dark:border-slate-700 text-gray-800 dark:text-gray-100">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/80">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                 {editingRole ? 'Chỉnh sửa vai trò' : 'Thêm vai trò mới'}
               </h2>
               <button
                 onClick={handleCloseModal}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

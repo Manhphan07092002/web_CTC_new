@@ -318,8 +318,8 @@ const UserPermissionManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Phân quyền Người dùng</h1>
-          <p className="text-gray-600">Quản lý vai trò và quyền truy cập của từng người dùng</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Phân quyền Người dùng</h1>
+          <p className="text-gray-600 dark:text-gray-400">Quản lý vai trò và quyền truy cập của từng người dùng</p>
         </div>
         <button
           onClick={() => fetchUserPermissions()}
@@ -331,22 +331,22 @@ const UserPermissionManagement: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
+      <div className="bg-white dark:bg-slate-800/90 border border-transparent dark:border-slate-700/60 rounded-xl shadow-sm p-4">
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative flex-1 min-w-64">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Tìm kiếm người dùng..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg text-sm"
             />
           </div>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
+            className="border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm"
           >
             <option value="all">Tất cả vai trò</option>
             {roles.map(role => (
@@ -359,24 +359,24 @@ const UserPermissionManagement: React.FC = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800/90 border border-transparent dark:border-slate-700/60 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-slate-900/80 border-b dark:border-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Người dùng</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vai trò</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quyền bổ sung</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phân quyền bởi</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ngày phân quyền</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Người dùng</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Vai trò</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Quyền bổ sung</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Phân quyền bởi</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Ngày phân quyền</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Hành động</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {filteredUsers.map((user) => {
                 const userPerm = userPermissions[getUserId(user)];
                 return (
-                  <tr key={getUserId(user)} className="hover:bg-gray-50">
+                  <tr key={getUserId(user)} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -385,8 +385,8 @@ const UserPermissionManagement: React.FC = () => {
                           </span>
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900">{user.name}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                          <div className="font-medium text-gray-900 dark:text-gray-100">{user.name}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
                         </div>
                       </div>
                     </td>
@@ -399,54 +399,54 @@ const UserPermissionManagement: React.FC = () => {
                           >
                             {getRoleIcon(userPerm.roleId.icon || 'User')}
                           </div>
-                          <span className="font-medium">{userPerm.roleId.displayName || 'Unknown'}</span>
-                          <span className="text-xs text-gray-500">
+                          <span className="font-medium text-gray-900 dark:text-gray-100">{userPerm.roleId.displayName || 'Unknown'}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             (Level {userPerm.roleId.level || 0})
                           </span>
                         </div>
                       ) : (
-                        <span className="text-gray-400 italic">Chưa phân quyền</span>
+                        <span className="text-gray-400 dark:text-gray-500 italic">Chưa phân quyền</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {userPerm ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-green-600">
+                          <span className="text-sm text-green-600 dark:text-green-400">
                             +{userPerm.additionalPermissions?.length || 0}
                           </span>
                           {(userPerm.deniedPermissions?.length || 0) > 0 && (
-                            <span className="text-sm text-red-600">
+                            <span className="text-sm text-red-600 dark:text-red-400">
                               -{userPerm.deniedPermissions.length}
                             </span>
                           )}
                         </div>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-gray-400 dark:text-gray-500">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {userPerm?.assignedBy ? (
                         <div className="text-sm">
-                          <div className="text-gray-900">{userPerm.assignedBy.name || 'N/A'}</div>
-                          <div className="text-gray-500">{userPerm.assignedBy.email || ''}</div>
+                          <div className="text-gray-900 dark:text-gray-100">{userPerm.assignedBy.name || 'N/A'}</div>
+                          <div className="text-gray-500 dark:text-gray-400">{userPerm.assignedBy.email || ''}</div>
                         </div>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-gray-400 dark:text-gray-500">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {userPerm ? (
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           {new Date(userPerm.assignedAt).toLocaleDateString('vi-VN')}
                         </div>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-gray-400 dark:text-gray-500">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleEditUser(user)}
-                        className="flex items-center gap-1 px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded"
+                        className="flex items-center gap-1 px-3 py-1 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded"
                       >
                         <Edit className="w-3 h-3" />
                         Chỉnh sửa
@@ -460,7 +460,7 @@ const UserPermissionManagement: React.FC = () => {
         </div>
 
         {filteredUsers.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
             Không tìm thấy người dùng nào phù hợp
           </div>
         )}
@@ -468,15 +468,15 @@ const UserPermissionManagement: React.FC = () => {
 
       {/* Modal */}
       {isModalOpen && selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-semibold">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Phân quyền cho {selectedUser.name}
               </h2>
               <button
                 onClick={handleCloseModal}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -486,13 +486,13 @@ const UserPermissionManagement: React.FC = () => {
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Role Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Vai trò chính *
                   </label>
                   <select
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2"
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2"
                     required
                   >
                     <option value="">Chọn vai trò...</option>
@@ -506,24 +506,24 @@ const UserPermissionManagement: React.FC = () => {
 
                 {/* Additional Permissions */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Quyền bổ sung</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Quyền bổ sung</h3>
                   <div className="space-y-2">
                     {Object.entries(permissionsByCategory).map(([category, categoryPermissions]) => (
-                      <div key={category} className="border rounded-lg">
+                      <div key={category} className="border border-gray-200 dark:border-slate-700 rounded-lg">
                         <button
                           type="button"
                           onClick={() => toggleCategory(category)}
-                          className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50"
+                          className="w-full flex items-center justify-between p-3 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-700/50"
                         >
                           <span className="font-medium capitalize">{category}</span>
                           {expandedCategories.has(category) ? 
-                            <ChevronUp className="w-4 h-4" /> : 
-                            <ChevronDown className="w-4 h-4" />
+                            <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" /> : 
+                            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                           }
                         </button>
                         
                         {expandedCategories.has(category) && (
-                          <div className="p-3 border-t bg-gray-50">
+                          <div className="p-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                               {(categoryPermissions as Permission[]).map((permission) => (
                                 <label key={permission._id} className="flex items-center gap-2 text-sm">
@@ -543,9 +543,9 @@ const UserPermissionManagement: React.FC = () => {
                                       }
                                       setAdditionalPermissions(newSelected);
                                     }}
-                                    className="rounded"
+                                    className="rounded border-gray-300 dark:border-slate-700 dark:bg-slate-900"
                                   />
-                                  <span className="text-gray-700">
+                                  <span className="text-gray-700 dark:text-gray-300">
                                     {permission.description || permission.name}
                                   </span>
                                 </label>
@@ -560,13 +560,13 @@ const UserPermissionManagement: React.FC = () => {
 
                 {/* Notes */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Ghi chú
                   </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2"
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2"
                     rows={3}
                     placeholder="Ghi chú về việc phân quyền..."
                   />
@@ -574,11 +574,11 @@ const UserPermissionManagement: React.FC = () => {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
+              <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/80">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-700 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
                 >
                   Hủy
                 </button>

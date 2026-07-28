@@ -142,7 +142,7 @@ const Overview: React.FC = () => {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-          <p className="text-gray-600">Đang tải dữ liệu...</p>
+          <p className="text-gray-600 dark:text-slate-400">Đang tải dữ liệu...</p>
         </div>
       </div>
     );
