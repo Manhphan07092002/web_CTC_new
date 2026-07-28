@@ -96,7 +96,10 @@ export const CartItemList: React.FC<CartItemListProps> = ({
                     src={item.image || placeholderImage}
                     alt={item.product_name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => { (e.target as HTMLImageElement).src = placeholderImage; }}
+                    onError={(e) => { 
+                      e.currentTarget.onerror = null; 
+                      e.currentTarget.src = placeholderImage; 
+                    }}
                   />
                   {item.quantity > 1 && (
                     <span className="absolute top-1 left-1 bg-primary text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shadow-sm">

@@ -13,8 +13,7 @@ import {
   CartSummary,
   OrderModal
 } from '../components/cart';
-
-const PLACEHOLDER_IMAGE = '/uploads/images/products/solarpane.png';
+import { PLACEHOLDER_IMAGE } from '../constants/images';
 
 const Cart: React.FC = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, totalAmount } = useCart();
