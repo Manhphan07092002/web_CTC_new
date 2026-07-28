@@ -3,7 +3,6 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import ChatBox from './components/ChatBox';
 import ScrollToTop from './components/ScrollToTop';
 import BackToTopButton from './components/BackToTopButton';
 import Loading from './components/Loading';
@@ -17,6 +16,9 @@ import { ToastProvider } from './contexts/ToastContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { CartProvider } from './contexts/CartContext';
 import ProtectedRoute from './components/ProtectedRoute';
+
+// Lazy load ChatBox so @google/genai is removed from initial bundle
+const ChatBox = lazy(() => import('./components/ChatBox'));
 
 // Core & Public Pages (Lazy Loaded for minimal initial bundle size)
 const Home = lazy(() => import('./pages/Home'));
@@ -59,7 +61,9 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         </Suspense>
       </main>
       <Footer />
-      <ChatBox />
+      <Suspense fallback={null}>
+        <ChatBox />
+      </Suspense>
       <BackToTopButton />
     </div>
   );
