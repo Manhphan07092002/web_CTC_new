@@ -270,98 +270,80 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
         `<div class="my-6 aspect-video rounded-2xl overflow-hidden shadow-lg"><iframe src="${v}" class="w-full h-full" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`
       ).join('\n');
 
-      const prompt = `Bạn là Chuyên gia Sản phẩm & SEO Yoast của Công ty CTC.
+      const wordTarget = targetLength === 'deep' ? '1000-1400 từ' : '700-900 từ';
+      const prompt = `Bạn là Chuyên gia Viết Nội Dung Sản Phẩm & SEO của Công ty CTC (Bưu Điện Miền Trung).
 
-NHIỆM VỤ: Viết bài mô tả sản phẩm CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
-NGUỒN: Dữ liệu cào từ "${urlToUse || 'tên sản phẩm'}" qua ${scrapedSource === 'server' ? 'server' : scrapedSource === 'client-cors' ? 'trình duyệt (CORS proxy)' : 'tên sản phẩm'}.
+⚠️ YÊU CẦU KHẮT KHE: Trường "description" PHẢI đạt TỐI THIỂU ${wordTarget}. Nội dung NGẮN là THẤT BẠI hoàn toàn.
 
-━━━ THÔNG TIN SẢN PHẨM ĐÃ CÀO ĐƯỢC ━━━
+━━━ THÔNG TIN SẢN PHẨM CÀO ĐƯỢC ━━━
 Tên/Model: "${scrapedTitle || nameToUse}"
 Danh mục: "${initialCategory || 'Thiết bị Công Nghệ'}"
 Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'So sánh ưu điểm'}
-Độ sâu: ${targetLength === 'deep' ? '900-1200 từ' : '600-800 từ'}
+Nguồn cào: ${scrapedSource === 'server' ? 'server (thành công)' : scrapedSource === 'client-cors' ? 'trình duyệt CORS proxy' : 'tên sản phẩm'}
 
-━━━ NỘI DUNG GỐC & THÔNG SỐ CÀO ĐƯỢC ━━━
+━━━ NỘI DUNG & THÔNG SỐ CÀO ĐƯỢC TỪ TRANG GỐC ━━━
 ${hasRealContent
   ? scrapedRawText.slice(0, 5000)
-  : '⚠️ Không có nội dung cào được. Chỉ được viết dựa trên tên sản phẩm. TUYỆT ĐỐI KHÔNG bịa thông số kỹ thuật cụ thể như số GHz, GB, W... nếu không chắc chắn.'}
+  : '⚠️ Không cào được nội dung. Hãy viết dựa trên tên sản phẩm, KHÔNG bịa thông số kỹ thuật cụ thể như GHz, GB, W nếu không chắc chắn.'}
 
-━━━ HÌNH ẢNH CÀO ĐƯỢC ━━━
+━━━ HÌNH ẢNH ━━━
 ${hasImages
   ? scrapedImages.map((img, i) => `Ảnh ${i + 1}: ${img}`).join('\n')
-  : '(Không cào được ảnh từ link)'}
+  : '(Không cào được ảnh)'}
 
-━━━ LUẬT BẮT BUỘC ━━━
+━━━ QUY TẮC VIẾT DESCRIPTION ━━━
+PHẢI viết ĐẦY ĐỦ 6 phần sau đây, mỗi phần ít nhất 2-3 đoạn văn thực sự:
 
-🔴 LUẬT 1 - TÊN SẢN PHẨM (name):
-- Bóc tách CHÍNH XÁC từ nội dung gốc, KHÔNG thêm từ marketing
+PHẦN 1 — Đoạn mở đầu:
+  Viết 2-3 câu giới thiệu sản phẩm hấp dẫn, đề cập tên model và lợi ích nổi bật nhất.
+  Đặt từ khóa focus trong 100 từ đầu tiên.
+  
+PHẦN 2 — <h2>Tổng Quan & Thiết Kế</h2>:
+  Mô tả chi tiết thiết kế, chất liệu, màu sắc, kích thước, cảm giác sử dụng. Ít nhất 80-100 từ.
 
-🔴 LUẬT 2 - HÌNH ẢNH:
+PHẦN 3 — <h2>Hiệu Năng & Trải Nghiệm Thực Tế</h2>:
+  Phân tích hiệu năng từ thông số cào được. Mô tả trải nghiệm thực tế người dùng. Ít nhất 100-120 từ.
+
+PHẦN 4 — <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2>:
+  Tạo bảng HTML với tất cả thông số từ nội dung cào (8-15 dòng):
+  <div class="overflow-x-auto my-6"><table class="w-full text-sm border-collapse border border-slate-200 rounded-xl overflow-hidden"><thead><tr class="bg-slate-800 text-white"><th class="p-3 border border-slate-700 text-left">Thông số</th><th class="p-3 border border-slate-700 text-left">Chi tiết</th></tr></thead><tbody>[CÁC HÀNG THÔNG SỐ THỰC TẾ]</tbody></table></div>
+
+PHẦN 5 — <h2>Tính Năng Nổi Bật</h2>:
+  <ul class="space-y-2 my-4"> với 5-8 <li class="flex items-start gap-2"><span class="text-emerald-500 font-bold mt-0.5">✓</span><span>MÔ TẢ CHI TIẾT tính năng từ nội dung gốc</span></li>
+
+PHẦN 6 — <h2>Lý Do Chọn Mua Tại CTC</h2>:
+  Ít nhất 80 từ về lý do mua tại CTC. Kết thúc bằng:
+  <p class="mt-4 pt-4 border-t border-slate-200">Xem thêm <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá Ngay</a>.</p>
+${videoEmbeds ? '\nChèn video embed này vào sau Phần 3:\n' + videoEmbeds : ''}
+
+━━━ QUY TẮC KHÁC ━━━
+- Câu tối đa 16 từ, đoạn ≤ 60 từ
+- Từ nối: Bên cạnh đó, Ngoài ra, Tuy nhiên, Do đó, Đặc biệt
+- Mật độ từ khóa: 1.2-2.0%
+
+━━━ HÌNH ẢNH BẮT BUỘC ━━━
 ${hasImages
-  ? `- image: PHẢI dùng đúng URL này: "${scrapedImages[0]}"
-- images: PHẢI dùng đúng các URL này: ${JSON.stringify(scrapedImages.slice(1, 4))}`
-  : `- image: Dùng ảnh Unsplash liên quan đến "${scrapedTitle || nameToUse}"
-- images: Dùng 2 ảnh Unsplash liên quan`}
+  ? `image (ảnh chính): "${scrapedImages[0]}"
+images (ảnh phụ): ${JSON.stringify(scrapedImages.slice(1, 4))}`
+  : `image: Unsplash liên quan đến "${scrapedTitle || nameToUse}"
+images: 2-3 ảnh Unsplash phù hợp`}
 
-🔴 LUẬT 3 - BẢNG THÔNG SỐ KỸ THUẬT HTML TRONG BÀI VIẾT (description):
-- BẮT BUỘC có 1 phần <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2> chứa bảng HTML định dạng đẹp:
-  <div class="overflow-x-auto my-6">
-    <table class="w-full text-sm border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-      <thead>
-        <tr class="bg-slate-800 text-white font-bold"><th class="p-3 border border-slate-700 text-left">Thông số</th><th class="p-3 border border-slate-700 text-left">Chi tiết kỹ thuật</th></tr>
-      </thead>
-      <tbody>
-        <tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3 font-semibold bg-slate-50">...</td><td class="p-3">...</td></tr>
-      </tbody>
-    </table>
-  </div>
-- Liệt kê ĐẦY ĐỦ 8-15 thông số (Vi xử lý CPU, RAM, Ổ cứng SSD, Màn hình, Card đồ họa GPU, Pin, Trọng lượng, Kích thước, Cổng kết nối, Hệ điều hành, Công nghệ làm mát, Chuẩn kết nối WiFi/Bluetooth, Bảo hành...).
-
-🔴 LUẬT 4 - NỘI DUNG BÀI VIẾT CHI TIẾT:
-- Cấu trúc:
-  1. <p>Đoạn mở đầu ấn tượng chứa từ khóa Focus trong 150 từ đầu</p>
-  2. <h2>Tổng Quan & Thiết Kế Nổi Bật</h2>
-  3. <h2>Hiệu Năng & Trải Nghiệm Thực Tế</h2>
-  4. <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2> (Bảng HTML trên)
-  5. <h2>Đặc Điểm & Tính Năng Nổi Bật</h2> (Liệt kê danh sách <ul><li>...</li></ul>)
-  6. <h2>Tổng Kết & Lý Do Nên Chọn Mua</h2>
-- Câu tối đa 16 từ, đoạn tối đa 60 từ.
-- BẮT BUỘC ≥ 2 danh sách <ul><li>...</li></ul>.
-- Mật độ từ khóa Focus: 1.2-2.0%.
-- Từ nối bắt buộc: Tuy nhiên, Bên cạnh đó, Ngoài ra, Do đó, Đặc biệt.${videoEmbeds ? '\n- Chèn video này vào giữa bài:\n' + videoEmbeds : ''}
-- Cuối bài: <p class="mt-4 pt-4 border-t">Xem thêm <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá</a>.</p>
-
-🔴 LUẬT 5 - ĐỊNH DẠNG JSON TRẢ VỀ:
-- technicalSpecs: Object chứa ĐẦY ĐỦ 8-15 cặp Key-Value thông số kỹ thuật (vd: {"CPU": "Intel Core Ultra 7 155H", "RAM": "16GB LPDDR5X", ...})
-- features: Array chứa 5-8 dòng đặc điểm nổi bật nhất (vd: ["Vi xử lý Intel Core Ultra 7 với NPU AI tích hợp", "Màn hình OLED 2.8K 120Hz chuẩn màu 100% DCI-P3", ...])
-
-Trả về JSON thuần không bọc markdown:
+━━━ FORMAT JSON TRẢ VỀ ━━━
+Trả về JSON thuần (KHÔNG bọc markdown, KHÔNG thêm ký tự ngoài JSON):
 {
-  "name": "Tên chính xác từ nội dung gốc",
+  "name": "[Tên chính xác từ nội dung cào]",
   "code": "${productCode2}",
-  "focusKeyword": "từ khóa SEO 2-4 từ",
-  "shortDescription": "Mô tả meta 120-160 ký tự, chứa từ khóa focus",
-  "image": "${scrapedImages[0] || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'}",
-  "images": ${JSON.stringify(scrapedImages.slice(1, 4).length > 0 ? scrapedImages.slice(1, 4) : ['https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'])},
-  "description": "<p>Mở đầu bám sát nội dung gốc, chứa từ khóa...</p><h2>...</h2>...",
-  "specifications": "Tóm tắt thông số kỹ thuật chính từ nội dung gốc",
-  "warranty": "24 tháng chính hãng",
-  "features": [
-    "Đặc điểm nổi bật 1 từ nội dung gốc",
-    "Đặc điểm nổi bật 2",
-    "Đặc điểm nổi bật 3",
-    "Đặc điểm nổi bật 4",
-    "Đặc điểm nổi bật 5"
-  ],
+  "focusKeyword": "[từ khóa 2-4 từ]",
+  "shortDescription": "[120-160 ký tự, có từ khóa focus]",
+  "image": "[URL ảnh chính]",
+  "images": ["[URL ảnh phụ 1]", "[URL ảnh phụ 2]"],
+  "description": "[TOÀN BỘ HTML đầy đủ 6 phần trên, tối thiểu ${wordTarget}]",
+  "specifications": "[Tóm tắt thông số 1 dòng]",
+  "warranty": "[Thời hạn bảo hành]",
+  "features": ["[tính năng 1]", "[tính năng 2]", "[tính năng 3]", "[tính năng 4]", "[tính năng 5]"],
   "technicalSpecs": {
-    "Vi xử lý (CPU)": "Giá trị từ nội dung gốc",
-    "Bộ nhớ RAM": "Giá trị",
-    "Ổ cứng": "Giá trị",
-    "Màn hình": "Giá trị",
-    "Card đồ họa (GPU)": "Giá trị",
-    "Pin & Sạc": "Giá trị",
-    "Trọng lượng": "Giá trị",
-    "Hệ điều hành": "Giá trị"
+    "[Thông số 1]": "[Giá trị thực từ nội dung cào]",
+    "[Thông số 2]": "[Giá trị]"
   }
 }`;
 
