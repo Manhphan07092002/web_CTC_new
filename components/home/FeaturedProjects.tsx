@@ -96,8 +96,8 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
       <div className="container max-w-[1440px] mx-auto px-6 relative z-10">
         
         {/* Header */}
-        <div className={`flex flex-col mb-14 transition-all duration-1000 ${
-          isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        <div className={`flex flex-col mb-14 transition-all duration-700 ${
+          isInView ? 'opacity-100' : 'opacity-0'
         }`}>
           <div className="inline-flex self-start items-center gap-2 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 dark:border-blue-500/30 px-3.5 py-1.5 rounded-full mb-4">
             <Zap size={14} className="text-blue-500 dark:text-blue-400" />
@@ -120,7 +120,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
 
         {/* Dynamic Expanding Accordion Grid */}
         {isLoading ? (
-          <div className="flex flex-col lg:flex-row gap-5 h-[650px] lg:h-[550px]">
+          <div className="flex flex-col lg:flex-row gap-4 h-[650px] lg:h-[550px]">
             {Array.from({ length: 4 }, (_, i) => (
               <div key={i} className="flex-1 rounded-3xl bg-slate-200 dark:bg-slate-800 animate-pulse border border-slate-200/50 dark:border-slate-800/50" />
             ))}
@@ -135,8 +135,8 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
         ) : (
           <div 
             onMouseLeave={() => setHoveredIndex(null)}
-            className={`flex flex-col lg:flex-row gap-4 h-[650px] lg:h-[550px] w-full transition-all duration-1000 delay-100 ${
-              isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            className={`flex flex-col lg:flex-row gap-4 h-[650px] lg:h-[550px] w-full transition-all duration-700 delay-100 ${
+              isInView ? 'opacity-100' : 'opacity-0'
             }`}
           >
             {projects.map((project, index) => {
@@ -159,7 +159,10 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
                   <Link 
                     to={`/projects/${project._id || project.id}`}
                     className="absolute inset-0 w-full h-full block z-35"
-                  />
+                    aria-label={project.title || "Chi tiết dự án"}
+                  >
+                    <span className="sr-only">{project.title || "Chi tiết dự án"}</span>
+                  </Link>
 
                   {/* Background Image with slow Ken Burns effect */}
                   <img
