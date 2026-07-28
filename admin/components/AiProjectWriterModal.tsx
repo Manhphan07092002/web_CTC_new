@@ -60,109 +60,104 @@ const AiProjectWriterModal: React.FC<AiProjectWriterModalProps> = ({
     setLoading(true);
     setStep(1);
 
-    const timer1 = setTimeout(() => setStep(2), 1200);
-    const timer2 = setTimeout(() => setStep(3), 2800);
+    const timer1 = setTimeout(() => setStep(2), 1500);
+    const timer2 = setTimeout(() => setStep(3), 3500);
 
     try {
       let parsed: any = null;
 
-      // 1. Try server-side scraping if URL is provided
+      // ── BƯỚC 1: Cào dữ liệu thực từ URL ──
+      let scrapedTitle = titleToUse;
+      let scrapedImages: string[] = [];
+      let scrapedVideos: string[] = [];
+      let scrapedRawText = '';
+
       if (urlToUse) {
         try {
-          const res = await api.ai.generateArticle({
-            title: titleToUse || 'Dự án công trình CTC',
-            focusKeyword: focusKeyword.trim(),
-            tone: style === 'storytelling' ? 'storytelling' : 'expert',
-            targetLength,
-            articleUrl: urlToUse,
-            structure: 'pas'
-          });
-
-          if (res && res.data) {
-            parsed = {
-              title: res.data.title || titleToUse || 'Dự án Xây Lắp Bưu Điện Miền Trung (CTC)',
-              location: location || 'Đà Nẵng & Các Tỉnh Miền Trung',
-              capacity: 'Công suất thiết kế tiêu chuẩn',
-              completionDate: '2026',
-              focusKeyword: res.data.focusKeyword || focusKeyword || 'dự án ctc',
-              excerpt: res.data.excerpt || '',
-              content: res.data.content || '',
-              image: res.data.image,
-              images: res.data.images || []
-            };
+          console.log('[AI Project Modal] Scraping URL:', urlToUse);
+          const scrapeRes = await api.ai.scrapeUrl(urlToUse);
+          if (scrapeRes?.data) {
+            if (scrapeRes.data.title && !titleToUse) scrapedTitle = scrapeRes.data.title;
+            if (scrapeRes.data.images?.length > 0) scrapedImages = scrapeRes.data.images;
+            if (scrapeRes.data.videos?.length > 0) scrapedVideos = scrapeRes.data.videos;
+            if (scrapeRes.data.rawText) scrapedRawText = scrapeRes.data.rawText;
           }
-        } catch (serverErr) {
-          console.warn('[AI Scraper API Fallback for Project]:', serverErr);
+        } catch (scrapeErr) {
+          console.warn('[AI Project Modal] Scrape failed:', scrapeErr);
         }
       }
 
-      // 2. Client-side Gemini fallback prompt if server scraper didn't return complete JSON
-      if (!parsed) {
-        const prompt = `Bạn là Giám đốc Dự án & Chuyên gia Kỹ thuật CTC (Công ty Cổ phần Xây lắp Bưu Điện Miền Trung), đồng thời là chuyên gia SEO Yoast Top 1 Google.
-Hãy tự động viết TOÀN BỘ hồ sơ năng lực / bài viết Case Study dự án CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
+      // ── BƯỚC 2: Gemini viết Case Study Dự án dựa trên nội dung đã cào ──
+      const videoEmbeds = scrapedVideos.slice(0, 2).map(v => 
+        `<div class="my-6 aspect-video rounded-2xl overflow-hidden shadow-lg"><iframe src="${v}" class="w-full h-full" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`
+      ).join('\n');
 
-Thông tin đầu vào:
-- Tên/Quy mô dự án: "${titleToUse || 'TỰ ĐỘNG BÓC TÁCH TỪ LINK'}"
-- Địa điểm: "${location || 'Tự động bóc tách'}"
-- Danh mục công trình: "${initialCategory || 'Năng Lượng Mặt Trời / Hạ Tầng Số'}"
-- Link bài viết/Case Study tham khảo: "${urlToUse || 'None'}"
-- Phong cách: ${style === 'technical' ? 'Báo cáo kỹ thuật B2B' : style === 'storytelling' ? 'Câu chuyện thực tế & Review dự án' : 'Phân tích hiệu quả đầu tư & Tiết kiệm chi phí'}
-- Độ sâu bài viết: ${targetLength === 'deep' ? 'Viết rất chi tiết 900-1200 từ' : 'Tiêu chuẩn 600-800 từ'}
+      const prompt = `Bạn là Giám đốc Dự án & Chuyên gia Kỹ thuật CTC (Công ty Cổ phần Xây lắp Bưu Điện Miền Trung), đồng thời là chuyên gia SEO Yoast Top 1 Google.
 
-YÊU CẦU SEO YOAST & DỄ ĐỌC BẮT BUỘC:
-1. title: Nếu tên dự án trống, BẮT BUỘC tự động sinh Tên dự án chuẩn SEO dựa theo thông tin cào từ Link.
-2. location: Địa điểm thi công dự án (VD: "Đà Nẵng", "KCN Quảng Ngãi").
-3. capacity: Quy mô/Công suất công trình (VD: "1.2 MWp" hoặc "Trạm biến áp 110kV").
-4. completionDate: Năm/Thời gian hoàn thành (VD: "2026").
-5. focusKeyword: Rút ra 1 từ khóa SEO chính 2-4 từ đại diện tốt nhất cho dự án.
-6. excerpt: Đoạn tóm tắt Meta CHÍNH XÁC từ 120 đến 160 ký tự, BẮT BUỘC CHỨA TỪ KHÓA FOCUS.
-7. image: BẮT BUỘC trả về URL Ảnh bìa chính công trình cào được từ link (${urlToUse}).
-8. images: BẮT BUỘC trả về MẢNG CHỨA 1 ĐẾN 3 URL Hình ảnh thực tế dự án cào được từ link.
-9. content (HTML): 
-   - Bài viết Case Study dự án hấp dẫn, đầy đủ cấu trúc H2 và H3.
-   - Từ khóa Focus xuất hiện ngay 150 từ đầu tiên.
-   - Mật độ từ khóa Focus 1.2% - 2.0%.
-   - CÂU VĂN NGẮN: Tất cả câu văn dưới 16 từ/câu.
-   - ĐOẠN VĂN NGẮN: Mỗi thẻ <p> chỉ 2-3 câu ngắn.
-   - CHÈN DANH SÁCH: BẮT BUỘC có ít nhất 2 danh sách <ul><li>...</li></ul> cho Hạng mục thi công & Kết quả nghiệm thu.
-   - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC có: <p class="mt-4 pt-4 border-t">Quý khách có thể xem thêm các dự án khác tại <a href="/projects" class="text-primary font-bold hover:underline">Danh mục Dự án CTC</a> hoặc liên hệ tư vấn tại <a href="/contact" class="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
+NHIỆM VỤ: Viết TOÀN BỘ hồ sơ năng lực / bài viết Case Study dự án CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
 
-Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
+═══ THÔNG TIN ĐẦU VÀO ═══
+- Tên/Quy mô dự án: "${scrapedTitle || titleToUse || 'Dự án CTC'}"
+- Địa điểm: "${location || 'Miền Trung & Toàn Quốc'}"
+- Danh mục công trình: "${initialCategory || 'Hạ Tầng Số & Năng Lượng'}"
+- Phong cách: ${style === 'technical' ? 'Báo cáo kỹ thuật B2B' : style === 'storytelling' ? 'Câu chuyện thực tế & Review' : 'Phân tích hiệu quả đầu tư'}
+- Độ sâu: ${targetLength === 'deep' ? '900-1200 từ chi tiết' : '600-800 từ tiêu chuẩn'}
+${urlToUse ? `- Link tham khảo: ${urlToUse}` : ''}
 
+═══ NỘI DUNG GỐC CÀO TỪ LINK (BẮT BUỘC BÁM SÁT) ═══
+${scrapedRawText ? scrapedRawText.slice(0, 3000) : '(Không có nội dung cào được — hãy tự suy luận từ tên dự án)'}
+
+═══ HÌNH ẢNH CÀO ĐƯỢC ═══
+${scrapedImages.length > 0 ? scrapedImages.map((img, i) => `Ảnh ${i+1}: ${img}`).join('\n') : '(Không cào được ảnh)'}
+
+═══ YÊU CẦU BẮT BUỘC ═══
+
+🔴 TÊN DỰ ÁN (title):
+- Tên dự án thực tế bóc tách từ nội dung gốc
+- KHÔNG thêm hậu tố marketing, KHÔNG thêm "– Tin Tức Cập Nhật 2026"
+
+🔴 ĐỊA ĐIỂM & QUY MÔ (location, capacity, completionDate):
+- Tự động bóc tách từ nội dung gốc (Ví dụ location: "Quảng Nam", capacity: "2.5 MWp", completionDate: "2026")
+
+🔴 NỘI DUNG CHI TIẾT (content - HTML):
+- BẮT BUỘC bám sát từ "NỘI DUNG GỐC CÀO TỪ LINK"
+- Cấu trúc H2/H3 (Tổng quan, Hạng mục thi công, Giải pháp kỹ thuật, Kết quả nghiệm thu)
+- Từ khóa Focus trong 150 từ đầu
+- Câu văn ngắn (<16 từ), đoạn văn ngắn (<60 từ)
+- Có ít nhất 2 danh sách <ul><li>...</li></ul>
+${videoEmbeds ? `- Chèn video embed này vào bài: ${videoEmbeds}` : ''}
+- Cuối bài chèn liên kết nội bộ trang /projects và /contact
+
+Trả về JSON thuần (KHÔNG bọc markdown):
 {
-  "title": "Hệ thống điện mặt trời áp mái 1.2MWp...",
-  "location": "Quảng Ngãi",
-  "capacity": "1.2 MWp",
+  "title": "Tên dự án chính xác từ nội dung gốc",
+  "location": "Địa điểm thi công",
+  "capacity": "Quy mô / Công suất",
   "completionDate": "2026",
-  "focusKeyword": "điện mặt trời áp mái",
-  "excerpt": "Đoạn mô tả ngắn Meta 120-160 ký tự...",
-  "image": "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800",
-  "images": [
-    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
-    "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800"
-  ],
-  "content": "<p>Đoạn mở đầu chứa từ khóa focus...</p><h2>...</h2>..."
-}
-`;
+  "focusKeyword": "từ khóa SEO dự án",
+  "excerpt": "Mô tả meta 120-160 ký tự...",
+  "image": "${scrapedImages[0] || 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'}",
+  "images": ${JSON.stringify(scrapedImages.slice(1, 4).length > 0 ? scrapedImages.slice(1, 4) : ['https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'])},
+  "content": "<p>Đoạn mở đầu bám sát nội dung gốc...</p><h2>...</h2>..."
+}`;
 
-        const response = await chatService.sendMessage(prompt);
-        clearTimeout(timer1);
-        clearTimeout(timer2);
+      const response = await chatService.sendMessage(prompt);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
 
-        try {
-          const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
-          const match = cleanResponse.match(/\{[\s\S]*\}/);
-          if (match) {
-            try {
-              parsed = JSON.parse(match[0]);
-            } catch (jsonErr) {
-              const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
-              parsed = JSON.parse(fixedJson);
-            }
+      try {
+        const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const match = cleanResponse.match(/\{[\s\S]*\}/);
+        if (match) {
+          try {
+            parsed = JSON.parse(match[0]);
+          } catch (jsonErr) {
+            const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+            parsed = JSON.parse(fixedJson);
           }
-        } catch (e) {
-          console.warn('JSON parse error, fallback to raw:', e);
         }
+      } catch (e) {
+        console.warn('JSON parse error, fallback to raw:', e);
       }
 
       clearTimeout(timer1);
@@ -170,21 +165,26 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
 
       if (parsed && (parsed.title || parsed.content)) {
         const kwToUse = parsed.focusKeyword || focusKeyword || parsed.title || 'dự án ctc';
+
+        const finalMainImg = scrapedImages[0] || parsed.image || '';
+        const finalExtraImgs = scrapedImages.length > 1 ? scrapedImages.slice(1, 4) : (parsed.images || []);
+
         const { cleanHtml, finalMainImage, finalExtraImages } = formatSeoProductHtml(
           parsed.content || '',
           kwToUse,
-          parsed.image,
-          parsed.images || []
+          finalMainImg,
+          finalExtraImgs
         );
 
         setResult({
           ...parsed,
+          title: parsed.title || scrapedTitle || titleToUse,
           focusKeyword: kwToUse,
           content: cleanHtml,
           image: finalMainImage,
           images: finalExtraImages
         });
-        showToast('✨ AI đã tự động cào dữ liệu & tạo hồ sơ Dự án chuẩn SEO thành công!', 'success');
+        showToast('✨ AI đã cào dữ liệu & viết hồ sơ Dự án chuẩn SEO thành công!', 'success');
       } else {
         throw new Error('Không thể đọc cấu trúc dữ liệu dự án từ AI');
       }

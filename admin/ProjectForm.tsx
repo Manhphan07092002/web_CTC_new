@@ -6,6 +6,7 @@ import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import UnsavedChangesModal from './components/UnsavedChangesModal';
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
+import AiProjectWriterModal from './components/AiProjectWriterModal';
 
 const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 import SeoAnalyzer from './components/SeoAnalyzer';
@@ -25,6 +26,7 @@ const ProjectForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<ProjectCategory[]>([]);
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
   
   const [focusKeyword, setFocusKeyword] = useState('');
 
@@ -158,12 +160,23 @@ const ProjectForm: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-800">
             {isEdit ? 'Chỉnh sửa Dự án' : 'Thêm Dự án mới'}
           </h1>
-          <button
-            onClick={handleExit}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer"
-          >
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowAiModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 via-primary to-secondary text-white rounded-xl text-sm font-black transition-all shadow-sm hover:shadow-md hover:scale-105 cursor-pointer"
+              title="Mở Trợ lý AI tự động tạo hồ sơ Dự án chuẩn SEO Yoast 100/100"
+            >
+              <Sparkles size={16} className="text-amber-200 animate-pulse" />
+              <span>✨ AI Tạo Dự Án</span>
+            </button>
+            <button
+              onClick={handleExit}
+              className="text-gray-400 hover:text-gray-600 p-2 cursor-pointer"
+            >
+              <X size={24} />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -348,6 +361,30 @@ const ProjectForm: React.FC = () => {
           }
         }}
         isSaving={loading}
+      />
+
+      {/* AI Project Generator Modal */}
+      <AiProjectWriterModal
+        isOpen={showAiModal}
+        onClose={() => setShowAiModal(false)}
+        initialTitle={formData.title}
+        initialLocation={formData.location}
+        initialCategory={formData.category}
+        onApply={(data) => {
+          setFormData(prev => ({
+            ...prev,
+            title: data.title || prev.title,
+            location: data.location || prev.location,
+            capacity: data.capacity || prev.capacity,
+            completionDate: data.completionDate || prev.completionDate,
+            image: data.image || prev.image,
+            description: data.content || prev.description,
+            focusKeyword: data.focusKeyword || prev.focusKeyword
+          }));
+          if (data.focusKeyword) {
+            handleFocusKeywordChange(data.focusKeyword);
+          }
+        }}
       />
     </div>
   );
