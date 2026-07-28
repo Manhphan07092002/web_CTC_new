@@ -316,10 +316,31 @@ const ContentManagement: React.FC = () => {
     }
   };
 
-  const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const productCategories = React.useMemo(() => {
+    const cats = new Set<string>();
+    products.forEach(p => {
+      const label = p.categoryLabel || p.category;
+      if (label && label.trim() !== '') cats.add(label.trim());
+    });
+    return Array.from(cats);
+  }, [products]);
+
+  const filteredProducts = products.filter(p => {
+    const matchSearch =
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.categoryLabel && p.categoryLabel.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.code && p.code.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchCat =
+      selectedCategory === 'all' ||
+      p.category === selectedCategory ||
+      p.categoryLabel === selectedCategory;
+
+    return matchSearch && matchCat;
+  });
 
   const filteredProjects = projects.filter(p =>
     p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -349,14 +370,14 @@ const ContentManagement: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
             {currentTab === 'products' && 'Quản lý Sản phẩm'}
             {currentTab === 'projects' && 'Quản lý Dự án'}
             {currentTab === 'news' && 'Quản lý Tin tức'}
             {currentTab === 'partners' && 'Quản lý Đối tác'}
             {currentTab === 'testimonials' && 'Quản lý Đánh giá'}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
             {currentTab === 'products' && `${filteredProducts.length} sản phẩm`}
             {currentTab === 'projects' && `${filteredProjects.length} dự án`}
             {currentTab === 'news' && `${filteredNews.length} tin tức`}
@@ -368,7 +389,7 @@ const ContentManagement: React.FC = () => {
           {currentTab === 'products' && (
             <button
               onClick={() => navigate('/admin/products/trash')}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium flex items-center gap-2"
+              className="px-4 py-2 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-transparent dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700 font-medium rounded-xl flex items-center gap-2 transition-colors"
             >
               <Archive size={18} />
               Thùng rác
@@ -387,7 +408,7 @@ const ContentManagement: React.FC = () => {
                 else if (currentTab === 'partners') handleAddPartner();
                 else if (currentTab === 'testimonials') handleAddTestimonial();
               }}
-              className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2"
+              className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 shadow-sm"
             >
               <Plus size={18} />
               Thêm mới
@@ -396,119 +417,167 @@ const ContentManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-        <input
-          type="text"
-          placeholder="Tìm kiếm..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-        />
+      {/* Search & Category Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
+          <input
+            type="text"
+            placeholder="Tìm kiếm sản phẩm theo tên, mã, danh mục..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-800/90 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-colors"
+          />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+
+        {currentTab === 'products' && (
+          <div className="sm:w-64">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800/90 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium cursor-pointer shadow-sm transition-colors"
+            >
+              <option value="all">Tất cả danh mục ({products.length})</option>
+              {productCategories.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Content */}
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500 mt-4">Đang tải...</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-4">Đang tải...</p>
         </div>
       ) : (
         <>
-          {/* Products */}
+          {/* Products - Compact 5 columns layout */}
           {currentTab === 'products' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {filteredProducts.map((product, idx) => (
-                <div key={`product-${idx}-${product.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="relative h-48 bg-gray-100">
-                    {product.image && product.image.trim() !== '' ? (
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                        <div className="text-center">
-                          <ImageIcon size={32} className="text-gray-400 mx-auto mb-2" />
-                          <span className="text-gray-400 text-sm">No Image</span>
+                <div 
+                  key={`product-${idx}-${product.id}`} 
+                  className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 overflow-hidden hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Image Header */}
+                    <div className="relative h-36 bg-gray-50 dark:bg-slate-900/60 flex items-center justify-center overflow-hidden border-b border-gray-100 dark:border-slate-700/60">
+                      {product.image && product.image.trim() !== '' ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-slate-900/40">
+                          <div className="text-center">
+                            <ImageIcon size={28} className="text-gray-300 dark:text-slate-600 mx-auto mb-1" />
+                            <span className="text-gray-400 dark:text-slate-500 text-xs font-medium">No Image</span>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {product.isFeatured && (
-                      <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
-                        <Star size={12} fill="white" />
-                        Nổi bật
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-bold text-gray-800 line-clamp-2 flex-1">{product.name}</h3>
+                      )}
+                      
+                      {/* Featured Badge */}
+                      {product.isFeatured && (
+                        <div className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-0.5 rounded-md text-[10px] font-bold shadow-sm flex items-center gap-1">
+                          <Star size={10} fill="white" />
+                          Nổi bật
+                        </div>
+                      )}
+
+                      {/* Stock Badge */}
                       {product.stock !== undefined && (
-                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                          product.stock > 0 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-red-100 text-red-700'
-                        }`}>
-                          {product.stock > 0 ? `${product.stock} có sẵn` : 'Hết hàng'}
-                        </span>
+                        <div className="absolute top-2 right-2">
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold shadow-sm ${
+                            product.stock > 0 
+                              ? 'bg-emerald-500 text-white' 
+                              : 'bg-rose-500 text-white'
+                          }`}>
+                            {product.stock > 0 ? `${product.stock} có sẵn` : 'Hết hàng'}
+                          </span>
+                        </div>
                       )}
                     </div>
-                    
-                    <p className="text-sm text-gray-500 mb-2">{product.categoryLabel || product.category}</p>
-                    {product.code && <p className="text-xs text-gray-400 mb-2">📦 Mã: {product.code}</p>}
-                    
-                    <div className="mb-3">
-                      <PriceDisplay 
-                        price={product.price || 0}
-                        originalPrice={product.originalPrice}
-                        contactPrice={product.contactPrice}
-                        size="md"
-                        layout="vertical"
-                      />
-                    </div>
-                    
-                    <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
-                      <span className="flex items-center gap-1">
-                        <Eye size={14} /> {product.views || 0} views
-                      </span>
-                      {product.createdAt && (
-                        <span className="flex items-center gap-1">
-                          📅 {new Date(product.createdAt).toLocaleDateString('vi-VN')}
-                        </span>
+
+                    {/* Content Info */}
+                    <div className="p-3">
+                      <p className="text-[11px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider mb-1 truncate">
+                        {product.categoryLabel || product.category || 'Sản phẩm'}
+                      </p>
+                      
+                      <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xs sm:text-sm leading-snug line-clamp-2 min-h-[32px] mb-1 group-hover:text-primary dark:group-hover:text-sky-400 transition-colors" title={product.name}>
+                        {product.name}
+                      </h3>
+                      
+                      {product.code && (
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-2 truncate">
+                          Mã: <span className="font-mono text-gray-700 dark:text-gray-300 font-medium">{product.code}</span>
+                        </p>
                       )}
+
+                      <div className="mb-2">
+                        <PriceDisplay 
+                          price={product.price || 0}
+                          originalPrice={product.originalPrice}
+                          contactPrice={product.contactPrice}
+                          size="sm"
+                          layout="vertical"
+                        />
+                      </div>
                     </div>
-                    <div className="flex gap-2">
+                  </div>
+
+                  {/* Actions Row */}
+                  <div className="px-3 pb-3 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between gap-1">
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                      <Eye size={12} /> {product.views || 0}
+                    </span>
+
+                    <div className="flex items-center gap-1">
                       <PermissionGate permission="edit_products">
                         <button
                           onClick={() => handleToggleFeatured(product.id, product.isFeatured || false)}
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          className={`p-1.5 rounded-lg text-xs font-medium transition-colors ${
                             product.isFeatured
-                              ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
-                              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                              ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50'
+                              : 'bg-gray-100 dark:bg-slate-700/70 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                           }`}
                           title={product.isFeatured ? 'Bỏ khỏi sản phẩm nổi bật' : 'Đánh dấu là sản phẩm nổi bật'}
                         >
-                          <Star size={14} className="inline mr-1" fill={product.isFeatured ? 'currentColor' : 'none'} />
-                          {product.isFeatured ? 'Nổi bật' : 'Đánh dấu'}
+                          <Star size={14} fill={product.isFeatured ? 'currentColor' : 'none'} />
                         </button>
                       </PermissionGate>
                       
                       <PermissionGate permission="edit_products">
                         <button
                           onClick={() => navigate(`/admin/products/edit/${product.id}`)}
-                          className="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                          className="p-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                           title="Chỉnh sửa sản phẩm"
                         >
-                          <Edit size={16} />
+                          <Edit size={14} />
                         </button>
                       </PermissionGate>
                       
                       <PermissionGate permission="delete_products">
                         <button
                           onClick={() => openDeleteModal(product, 'soft')}
-                          className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                          className="p-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
                           title="Chuyển vào thùng rác"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={14} />
                         </button>
                       </PermissionGate>
                     </div>

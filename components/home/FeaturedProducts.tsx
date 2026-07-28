@@ -7,6 +7,7 @@ import { useInView } from '../../hooks/useInView';
 import { Product } from '../../types';
 import { getProductUrl } from '../../utils/news-url-helper';
 import { stripHtmlAndJson } from '../../utils/priceUtils';
+import OptimizedImage from '../OptimizedImage';
 
 interface FeaturedProductsProps {
   featuredProducts: Product[];
@@ -113,11 +114,10 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, i
                 >
                   {/* Image Container */}
                   <div className="relative h-56 overflow-hidden bg-gray-50 dark:bg-slate-700 flex-shrink-0">
-                    <img
+                    <OptimizedImage
                       src={product.image}
                       alt={product.name}
                       loading="lazy"
-                      decoding="async"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
 

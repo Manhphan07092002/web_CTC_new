@@ -173,60 +173,65 @@ const ProductTrash: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden opacity-75 hover:opacity-100 transition-opacity">
-              <div className="relative h-48 bg-gray-100">
-                {product.image && product.image.trim() !== '' ? (
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                    <div className="text-center">
-                      <ImageIcon size={32} className="text-gray-400 mx-auto mb-2" />
-                      <span className="text-gray-400 text-sm">No Image</span>
+            <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden opacity-85 hover:opacity-100 transition-opacity flex flex-col justify-between">
+              <div>
+                <div className="relative h-36 bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-100">
+                  {product.image && product.image.trim() !== '' ? (
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <div className="text-center">
+                        <ImageIcon size={28} className="text-gray-400 mx-auto mb-1" />
+                        <span className="text-gray-400 text-xs">No Image</span>
+                      </div>
                     </div>
+                  )}
+                  <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">
+                    🗑️ ĐÃ XÓA
                   </div>
-                )}
-                <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
-                  🗑️ ĐÃ XÓA
+                </div>
+                <div className="p-3">
+                  <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1 truncate">
+                    {product.categoryLabel || product.category || 'Sản phẩm'}
+                  </p>
+                  <h3 className="font-bold text-gray-800 text-xs line-clamp-2 min-h-[32px] mb-1" title={product.name}>{product.name}</h3>
+                  {product.code && <p className="text-[10px] text-gray-400 mb-1.5 truncate">📦 Mã: {product.code}</p>}
+                  
+                  <div className="mb-2">
+                    <PriceDisplay 
+                      price={product.price || 0}
+                      originalPrice={product.originalPrice}
+                      contactPrice={product.contactPrice}
+                      size="sm"
+                      layout="vertical"
+                    />
+                  </div>
+                  
+                  {product.deletedAt && (
+                    <p className="text-[10px] text-red-500 mb-2 bg-red-50 px-2 py-0.5 rounded truncate">
+                      🗑️ Xóa: {new Date(product.deletedAt).toLocaleDateString('vi-VN')}
+                    </p>
+                  )}
                 </div>
               </div>
-              <div className="p-4">
-                <h3 className="font-bold text-gray-800 mb-1 line-clamp-2">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-2">{product.categoryLabel || product.category}</p>
-                {product.code && <p className="text-xs text-gray-400 mb-2">📦 Mã: {product.code}</p>}
-                
-                <div className="mb-3">
-                  <PriceDisplay 
-                    price={product.price || 0}
-                    originalPrice={product.originalPrice}
-                    contactPrice={product.contactPrice}
-                    size="sm"
-                    layout="vertical"
-                  />
-                </div>
-                
-                {product.deletedAt && (
-                  <p className="text-xs text-red-500 mb-3 bg-red-50 px-2 py-1 rounded">
-                    🗑️ Xóa lúc: {new Date(product.deletedAt).toLocaleString('vi-VN')}
-                  </p>
-                )}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => openDeleteModal(product, 'restore')}
-                    className="flex-1 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium flex items-center justify-center gap-1"
-                  >
-                    <RotateCcw size={16} />
-                    Khôi phục
-                  </button>
-                  <button
-                    onClick={() => openDeleteModal(product, 'permanent')}
-                    className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-                    title="Xóa vĩnh viễn"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
+
+              <div className="p-3 pt-0 flex gap-1.5">
+                <button
+                  onClick={() => openDeleteModal(product, 'restore')}
+                  className="flex-1 px-2 py-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 text-xs font-medium flex items-center justify-center gap-1"
+                >
+                  <RotateCcw size={14} />
+                  Khôi phục
+                </button>
+                <button
+                  onClick={() => openDeleteModal(product, 'permanent')}
+                  className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-xs"
+                  title="Xóa vĩnh viễn"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
           ))}

@@ -4,6 +4,7 @@ import { Zap, ArrowRight, MapPin, Calendar, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useInView } from '../../hooks/useInView';
 import { Project } from '../../types';
+import OptimizedImage from '../OptimizedImage';
 
 interface FeaturedProjectsProps {
   featuredProjects: Project[];
@@ -165,11 +166,10 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
                   </Link>
 
                   {/* Background Image with slow Ken Burns effect */}
-                  <img
+                  <OptimizedImage
                     src={project.image}
                     alt={project.title}
                     loading="lazy"
-                    decoding="async"
                     className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out
                       ${isActive 
                         ? 'scale-100 opacity-90' 
