@@ -200,36 +200,60 @@ function resolveAbsoluteUrl(rawUrl: string, baseUrl: string): string | null {
 export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[] }> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
+    const timeout = setTimeout(() => controller.abort(), 12000);
 
+    const parsedUrl = new URL(url);
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8',
-        'Referer': new URL(url).origin
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+        'Referer': parsedUrl.origin + '/',
+        'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'cross-site',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1'
       },
       signal: controller.signal
     });
     clearTimeout(timeout);
 
-    if (!res.ok) return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
-    const html = await res.text();
+    if (!res.ok) {
+      console.warn(`[Scraper] URL fetch non-200: ${res.status} ${res.statusText} for ${url}`);
+      return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
+    }
+    const rawHtml = await res.text();
+
+    // Clean HTML: strip scripts, styles, noscript, svg, comments
+    const html = rawHtml
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, '')
+      .replace(/<svg[^>]*>[\s\S]*?<\/svg>/gi, '')
+      .replace(/<!--[\s\S]*?-->/g, '');
 
     // Helper to add unique resolved images
+    const scrapedImages: string[] = [];
     const addImage = (raw: string) => {
       if (!raw || raw.startsWith('data:image') || raw.length < 5) return;
       if (/(?:logo|icon|avatar|pixel|spinner|loading|\.gif$|\.svg$|1x1|blank|placeholder)/i.test(raw)) return;
       const resolved = resolveAbsoluteUrl(raw, url);
-      if (resolved && !scrapedImages.includes(resolved)) {
+      if (resolved && !scrapedImages.includes(resolved) && scrapedImages.length < 12) {
         scrapedImages.push(resolved);
       }
     };
 
-    // 1. Extract Title - try og:title first, then <title>, then h1
+    // 1. Extract Title - og:title > twitter:title > <title> > h1
     let scrapedTitle = '';
     const ogTitleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
-                         html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
+                         html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i) ||
+                         html.match(/<meta[^>]+name=["']twitter:title["'][^>]+content=["']([^"']+)["']/i);
     if (ogTitleMatch) {
       scrapedTitle = ogTitleMatch[1].replace(/<[^>]+>/g, '').trim();
     } else {
@@ -238,17 +262,18 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
         scrapedTitle = titleMatch[1].replace(/<[^>]+>/g, '').trim();
       }
     }
-    // Clean common site name suffixes
-    scrapedTitle = scrapedTitle.replace(/\s*[|–—-]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV|Tiki|Shopee|Lazada|MSI|Dell|ASUS|HP|Lenovo|CTC|ctcdn\.vn).*$/i, '').trim();
+    scrapedTitle = scrapedTitle.replace(/\s*[|–—-]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV|Tiki|Shopee|Lazada|MSI|Dell|ASUS|HP|Lenovo|CTC|ctcdn\.vn|Thế Giới Di Động|TGDD|CellphoneS|FPT Shop).*$/i, '').trim();
 
-    // 2. Extract Body Paragraphs (<p> tags)
+    // 2. Extract Body Text - Multi-tag extraction (p, div, span, li, td, th, article, section)
     const scrapedParagraphs: string[] = [];
-    const pRegex = /<p[^>]*>(.*?)<\/p>/gis;
-    let pMatch;
-    while ((pMatch = pRegex.exec(html)) !== null && scrapedParagraphs.length < 25) {
-      const cleanP = pMatch[1].replace(/<[^>]+>/g, '').trim();
-      if (cleanP.length > 25 && !/(?:copyright|all rights reserved|lượt xem|chia sẻ|theo dõi|đăng ký|quảng cáo)/i.test(cleanP)) {
-        scrapedParagraphs.push(cleanP);
+    const blockRegex = /<(?:p|div|span|li|td|th|h2|h3|h4|article|section)[^>]*>(.*?)<\/(?:p|div|span|li|td|th|h2|h3|h4|article|section)>/gis;
+    let blockMatch;
+    while ((blockMatch = blockRegex.exec(html)) !== null && scrapedParagraphs.length < 40) {
+      const text = blockMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      if (text.length > 25 &&
+          !/(?:copyright|all rights reserved|lượt xem|chia sẻ|theo dõi|đăng ký|quảng cáo|bảo lưu mọi quyền|cookie|chính sách)/i.test(text) &&
+          !scrapedParagraphs.includes(text)) {
+        scrapedParagraphs.push(text);
       }
     }
 

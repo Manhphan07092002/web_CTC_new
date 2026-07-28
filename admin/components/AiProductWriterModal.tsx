@@ -59,17 +59,38 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
   }> => {
     const result = { title: '', images: [] as string[], videos: [] as string[], rawText: '' };
 
-    // Thử allorigins.win (CORS proxy miễn phí)
-    const corsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const corsRes = await fetch(corsUrl, { signal: AbortSignal.timeout(15000) });
-    const corsJson = await corsRes.json();
-    if (!corsJson.contents || corsJson.contents.length < 200) return result;
+    let html = '';
+    // Thử Proxy 1: allorigins.win
+    try {
+      const corsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const corsRes = await fetch(corsUrl, { signal: AbortSignal.timeout(10000) });
+      const corsJson = await corsRes.json();
+      if (corsJson.contents && corsJson.contents.length > 200) {
+        html = corsJson.contents;
+      }
+    } catch {}
 
-    const html = corsJson.contents as string;
+    // Thử Proxy 2 nếu proxy 1 rỗng: codetabs.com
+    if (!html) {
+      try {
+        const corsUrl2 = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
+        const corsRes2 = await fetch(corsUrl2, { signal: AbortSignal.timeout(10000) });
+        const text2 = await corsRes2.text();
+        if (text2 && text2.length > 200) {
+          html = text2;
+        }
+      } catch {}
+    }
+
+    if (!html || html.length < 200) return result;
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // Title: og:title > <title> > h1
+    // Clean scripts, styles, svg
+    doc.querySelectorAll('script, style, noscript, svg').forEach(el => el.remove());
+
+    // Title: og:title > twitter:title > <title> > h1
     const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content')
       || doc.querySelector('meta[name="twitter:title"]')?.getAttribute('content')
       || doc.title
@@ -85,7 +106,7 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
       } catch {}
     };
 
-    // JSON-LD Schema.org images (most reliable)
+    // JSON-LD Schema.org images
     doc.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
       try {
         const schema = JSON.parse(s.textContent || '');
@@ -108,7 +129,7 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
     addImage(doc.querySelector('meta[property="og:image:secure_url"]')?.getAttribute('content'));
     addImage(doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content'));
 
-    // <img> tags: data-zoom-image > data-original > data-src > src
+    // <img> tags
     doc.querySelectorAll('img').forEach(img => {
       addImage(
         img.getAttribute('data-zoom-image') ||
@@ -121,19 +142,21 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
 
     // Background-image CSS in style attributes
     doc.querySelectorAll('[style*="background-image"]').forEach(el => {
-      const m = (el as HTMLElement).style.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
+      const m = (el as HTMLElement).style.backgroundImage?.match(/url\(["']?([^"')]+)["']?\)/);
       addImage(m?.[1]);
     });
 
-    // Extract text content
+    // Extract text content from all blocks: p, div, span, li, td, th, h1-h4, section, article
     const texts: string[] = [];
-    doc.querySelectorAll('p, li, td, h2, h3').forEach(el => {
+    doc.querySelectorAll('p, div, span, li, td, th, h1, h2, h3, h4, section, article').forEach(el => {
       const text = el.textContent?.trim() || '';
-      if (text.length > 20 && !/copyright|cookie|đăng ký|quảng cáo|theo dõi/i.test(text)) {
+      if (text.length > 25 &&
+          !/(?:copyright|cookie|đăng ký|quảng cáo|theo dõi|bảo lưu mọi quyền|bản quyền)/i.test(text) &&
+          !texts.includes(text)) {
         texts.push(text);
       }
     });
-    result.rawText = texts.slice(0, 40).join('\n');
+    result.rawText = texts.slice(0, 50).join('\n');
 
     // YouTube / Vimeo video iframes
     doc.querySelectorAll('iframe').forEach(iframe => {
