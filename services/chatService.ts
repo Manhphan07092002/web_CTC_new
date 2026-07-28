@@ -341,34 +341,51 @@ export const chatService = {
             console.log(`[AI Key Rotation] Successfully failed over to key #${keyIndex + 1}/${keys.length}`);
           }
 
-          if (!responseText) {
-            const fallback = "Xin lỗi, hệ thống chưa nhận được phản hồi. Vui lòng thử lại sau.";
-            onChunk(fallback);
-            return fallback;
+          if (responseText && responseText.trim()) {
+            return responseText;
           }
-
-          return responseText;
         } catch (err: any) {
           lastError = err;
           const errMsg = err?.message || '';
           const errStatus = err?.status;
+          console.warn(`[AI Provider Warning] Provider '${provider}' Key #${keyIndex + 1}/${keys.length} error (${errStatus || '429'}: ${errMsg}).`);
 
-          if (keys.length > 1) {
-            console.warn(`[AI Key Pool Warning] Key #${keyIndex + 1}/${keys.length} hit error (${errMsg}). Auto-rotating to key #${((keyIndex + 1) % keys.length) + 1}...`);
-            if (isQuotaOrAuthError(errMsg, errStatus)) {
-              continue;
-            }
+          if (keys.length > 1 && isQuotaOrAuthError(errMsg, errStatus)) {
             continue;
-          } else {
-            throw err;
           }
         }
+      }
+
+      // ══════════════════════════════════════════════════════════════
+      // CROSS-PROVIDER FAILOVER (Khi nhà cung cấp chính Groq/OpenAI bị 429 Rate Limit)
+      // ══════════════════════════════════════════════════════════════
+      if (provider !== 'gemini' && envFallback) {
+        try {
+          console.warn(`[AI Failover] Primary provider '${provider}' rate-limited (${lastError?.message}). Auto-failing over to Google Gemini...`);
+          const geminiModel = 'gemini-2.5-flash';
+          const failoverText = await executeGeminiCallStream(envFallback, geminiModel, temperature, systemInstruction, text, onChunk);
+          if (failoverText && failoverText.trim()) {
+            console.log(`[AI Failover] Successfully completed request via Gemini fallback!`);
+            return failoverText;
+          }
+        } catch (geminiErr: any) {
+          console.error(`[AI Failover Error] Gemini fallback also failed:`, geminiErr);
+        }
+      }
+
+      const isJsonRequest = text.includes('JSON') || text.includes('NHIỆM VỤ:') || text.includes('MÔ TẢ SẢN PHẨM');
+      if (isJsonRequest) {
+        throw lastError || new Error(`AI API Rate Limit (${provider.toUpperCase()} 429): Quota hết hạn. Vui lòng đổi sang nhà cung cấp Gemini trong Cài Đặt.`);
       }
 
       throw lastError || new Error("Tất cả API Key trong danh sách đều hết Quota hoặc không khả dụng.");
 
     } catch (error: any) {
       console.error("AI Chat Final Error:", error);
+      const isJsonRequest = text.includes('JSON') || text.includes('NHIỆM VỤ:') || text.includes('MÔ TẢ SẢN PHẨM');
+      if (isJsonRequest) {
+        throw error;
+      }
       const errMsg = `Hiện tại kết nối AI gián đoạn (${error?.message || 'Hết Quota'}). Quý khách vui lòng gọi Hotline/Zalo: 0915 059 666 để được hỗ trợ ngay ạ.`;
       onChunk(errMsg);
       return errMsg;
