@@ -194,8 +194,13 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
                   <div className="absolute bottom-6 left-6 right-6 text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <p className="text-xs font-medium mb-2">{member.bio || getLangText(language, { vi: 'Chuyên gia năng lượng mặt trời', en: 'Solar Energy Expert', ko: '태양 에너지 전문가', ja: '太陽光エネルギー専門家', zh: '太阳能专家', de: 'Solarenergie-Experte' })}</p>
                     <div className="flex gap-2">
-                      <a href={`mailto:${member.email || 'info@ctcdn.vn'}`} className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-sky-500 transition-colors">
+                      <a 
+                        href={`mailto:${member.email || 'info@ctcdn.vn'}`} 
+                        className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-sky-500 transition-colors"
+                        aria-label={`Email ${member.name}`}
+                      >
                         <Mail size={14} className="text-white" />
+                        <span className="sr-only">Email {member.name}</span>
                       </a>
                     </div>
                   </div>
