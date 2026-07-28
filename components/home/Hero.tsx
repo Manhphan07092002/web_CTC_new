@@ -456,7 +456,8 @@ const Hero: React.FC = () => {
             margin-bottom: 35px;
             filter: drop-shadow(0 10px 20px rgba(14, 165, 233, 0.25));
             animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
-            white-space: nowrap; /* Keep central identity on a single line */
+            white-space: normal;
+            word-break: break-word;
         }
 
         /* Slogan Display */

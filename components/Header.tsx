@@ -421,11 +421,11 @@ const Header: React.FC = () => {
                 de: 'CTC – EPC-Generalunternehmer, Elektroinstallation & Erneuerbare Energien in Vietnam'
               })}
             </span>
-            <div className="flex items-center gap-4 justify-between w-full md:w-auto">
+            <div className="flex items-center gap-2 sm:gap-4 justify-between md:justify-end w-full md:w-auto text-[11px] sm:text-xs">
               <a href={`tel:${(settings.headerHotlinePhone || settings.phone).replace(/\s/g, '')}`} className="flex items-center hover:text-sky-400 transition-colors font-semibold">
-                <Phone size={13} className="mr-1" />
+                <Phone size={12} className="mr-1 flex-shrink-0" />
                 <span className="hidden sm:inline mr-1">{settings.headerHotlineLabel || t('header.hotline')}:</span>
-                {settings.headerHotlinePhone || settings.phone}
+                <span className="truncate">{settings.headerHotlinePhone || settings.phone}</span>
               </a>
 
               <div className="h-3 w-px bg-white/20"></div>
