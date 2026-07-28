@@ -323,79 +323,53 @@ export const chatService = {
       const startIndex = activeKeyIndexes[provider] || 0;
       let lastError: any = null;
 
-      // Danh sách model dự phòng nếu model chính bị quá tải 429 (Rate Limit / Quota Exceeded)
-      const groqFallbackModels = [
-        modelName,
-        'llama-3.1-8b-instant',
-        'gemma2-9b-it',
-        'mixtral-8x7b-32768'
-      ].filter((m, i, self) => self.indexOf(m) === i);
-
       for (let attempt = 0; attempt < keys.length; attempt++) {
         const keyIndex = (startIndex + attempt) % keys.length;
         const currentKey = keys[keyIndex];
 
-        // Thử model chính, nếu 429 thì tự động thử model dự phòng
-        const modelsToTry = provider === 'groq' ? groqFallbackModels : [modelName];
+        try {
+          let responseText = "";
 
-        for (const tryModel of modelsToTry) {
-          try {
-            let responseText = "";
+          if (provider === 'gemini') {
+            responseText = await executeGeminiCallStream(currentKey, modelName, temperature, systemInstruction, text, onChunk);
+          } else {
+            responseText = await executeOpenAICallStream(endpoint, currentKey, modelName, temperature, systemInstruction, text, onChunk);
+          }
 
-            if (provider === 'gemini') {
-              responseText = await executeGeminiCallStream(currentKey, tryModel, temperature, systemInstruction, text, onChunk);
-            } else {
-              responseText = await executeOpenAICallStream(endpoint, currentKey, tryModel, temperature, systemInstruction, text, onChunk);
-            }
+          activeKeyIndexes[provider] = keyIndex;
+          if (attempt > 0) {
+            console.log(`[AI Key Rotation] Successfully failed over to key #${keyIndex + 1}/${keys.length}`);
+          }
 
-            activeKeyIndexes[provider] = keyIndex;
-            if (tryModel !== modelName) {
-              console.log(`[AI Model Fallback] Model chính "${modelName}" bị 429 -> Đã tự chuyển sang model dự phòng "${tryModel}" thành công!`);
-            }
+          if (!responseText) {
+            const fallback = "Xin lỗi, hệ thống chưa nhận được phản hồi. Vui lòng thử lại sau.";
+            onChunk(fallback);
+            return fallback;
+          }
 
-            if (!responseText) {
-              const fallback = "Xin lỗi, hệ thống chưa nhận được phản hồi. Vui lòng thử lại sau.";
-              onChunk(fallback);
-              return fallback;
-            }
+          return responseText;
+        } catch (err: any) {
+          lastError = err;
+          const errMsg = err?.message || '';
+          const errStatus = err?.status;
 
-            return responseText;
-          } catch (err: any) {
-            lastError = err;
-            const errMsg = err?.message || '';
-            const errStatus = err?.status;
-
-            // Nếu bị 429 Rate Limit trên Groq, tiếp tục thử model dự phòng tiếp theo trong vòng lặp modelsToTry
-            if (provider === 'groq' && isQuotaOrAuthError(errMsg, errStatus)) {
-              console.warn(`[AI Groq 429] Model "${tryModel}" chạm giới hạn lượt dùng (${errMsg}). Đang thử model tiếp theo...`);
+          if (keys.length > 1) {
+            console.warn(`[AI Key Pool Warning] Key #${keyIndex + 1}/${keys.length} hit error (${errMsg}). Auto-rotating to key #${((keyIndex + 1) % keys.length) + 1}...`);
+            if (isQuotaOrAuthError(errMsg, errStatus)) {
               continue;
             }
-
-            if (keys.length > 1 && isQuotaOrAuthError(errMsg, errStatus)) {
-              console.warn(`[AI Key Pool Warning] Key #${keyIndex + 1}/${keys.length} hit error (${errMsg}). Auto-rotating to next key...`);
-              break; // Chuyển sang key tiếp theo
-            }
+            continue;
+          } else {
+            throw err;
           }
         }
       }
 
-      // Nếu tất cả Groq model/key đều 429, thử Gemini API nếu có key
-      const geminiFallbackKey = getEnvVar('VITE_GEMINI_API_KEY') || getEnvVar('GEMINI_API_KEY') || siteSettings?.geminiApiKey;
-      if (provider !== 'gemini' && geminiFallbackKey) {
-        try {
-          console.log(`[AI Failover] Tất cả key/model ${provider.toUpperCase()} đều hết Quota -> Đang tự động chuyển sang Gemini API...`);
-          const geminiText = await executeGeminiCallStream(geminiFallbackKey, 'gemini-2.5-flash', temperature, systemInstruction, text, onChunk);
-          if (geminiText) return geminiText;
-        } catch (geminiErr) {
-          console.warn('[AI Failover] Gemini fallback also failed:', geminiErr);
-        }
-      }
-
-      throw lastError || new Error("Tất cả API Key & Model AI đều bị quá giới hạn Quota (429 Rate Limit).");
+      throw lastError || new Error("Tất cả API Key trong danh sách đều hết Quota hoặc không khả dụng.");
 
     } catch (error: any) {
       console.error("AI Chat Final Error:", error);
-      const errMsg = `⚠️ Hệ thống AI hiện đang quá giới hạn Quota hôm nay (${error?.message || 'Rate Limit 429'}). Quý khách vui lòng đổi sang Gemini API hoặc gọi Hotline/Zalo: 0915 059 666 để được hỗ trợ.`;
+      const errMsg = `Hiện tại kết nối AI gián đoạn (${error?.message || 'Hết Quota'}). Quý khách vui lòng gọi Hotline/Zalo: 0915 059 666 để được hỗ trợ ngay ạ.`;
       onChunk(errMsg);
       return errMsg;
     }

@@ -197,7 +197,7 @@ function resolveAbsoluteUrl(rawUrl: string, baseUrl: string): string | null {
  * Automatically Scrape Article Content, Images & Videos from URL
  * Uses multi-source extraction: JSON-LD, og:image, twitter:image, all data-* attrs, srcset, background-image CSS
  */
-export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[]; scrapedPrice: number; scrapedPriceOld: number }> {
+export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[] }> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
@@ -226,7 +226,7 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
 
     if (!res.ok) {
       console.warn(`[Scraper] URL fetch non-200: ${res.status} ${res.statusText} for ${url}`);
-      return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [], scrapedPrice: 0, scrapedPriceOld: 0 };
+      return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
     }
     const rawHtml = await res.text();
 
@@ -427,102 +427,12 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
     const videoTagRegex = /<(?:video|source)[^>]+src=["']([^"'\s]+\.(?:mp4|webm|ogg))["'][^>]*>/gi;
     while ((vMatch = videoTagRegex.exec(html)) !== null && scrapedVideos.length < 3) addVideo(vMatch[1]);
 
-    // 5. Extract Price from JSON-LD offers, meta, or page text
-    let scrapedPrice = 0;
-    let scrapedPriceOld = 0;
-    // 5a. JSON-LD offers.price
-    const priceJsonLd = rawHtml.match(/"offers"\s*:\s*\{[^}]*"price"\s*:\s*["']?([\d.,]+)["']?/i);
-    if (priceJsonLd) {
-      scrapedPrice = parseFloat(priceJsonLd[1].replace(/[.,]/g, (m, o, s) => (o === s.lastIndexOf(',') ? '.' : '')).replace(/[^0-9.]/g, ''));
-    }
-    // 5b. Common price class selectors (attribute-based regex)
-    if (!scrapedPrice) {
-      const priceClassRegex = /class=["'][^"']*(?:price|gia|giaKM|priceOffer|price--current|product-price|box-price|span-price|sale-price)[^"']*["'][^>]*>\s*([\d.,]+\s*(?:đ|₫|VNĐ|VND)?)/gi;
-      const pm = priceClassRegex.exec(html);
-      if (pm) {
-        const raw = pm[1].replace(/[^0-9]/g, '');
-        if (raw.length >= 4) scrapedPrice = parseInt(raw);
-      }
-    }
-    // 5c. Crossed-out original price
-    if (!scrapedPriceOld) {
-      const oldPriceRegex = /class=["'][^"']*(?:price-old|old-price|original-price|price--del|del-price|giaGoc|price-through)[^"']*["'][^>]*>\s*([\d.,]+\s*(?:đ|₫|VNĐ|VND)?)/gi;
-      const op = oldPriceRegex.exec(html);
-      if (op) {
-        const raw = op[1].replace(/[^0-9]/g, '');
-        if (raw.length >= 4) scrapedPriceOld = parseInt(raw);
-      }
-    }
-    if (scrapedPrice > 0) {
-      scrapedParagraphs.push(`=== GIÁ SẢN PHẨM ===\nGiá bán: ${scrapedPrice.toLocaleString('vi-VN')}₫${scrapedPriceOld > scrapedPrice ? '\nGiá gốc niêm yết: ' + scrapedPriceOld.toLocaleString('vi-VN') + '₫' : ''}`);
-    }
+    console.log(`[Scraper] URL: ${url} → Title: "${scrapedTitle}" | Images: ${scrapedImages.length} | Videos: ${scrapedVideos.length} | Paragraphs: ${scrapedParagraphs.length}`);
 
-    console.log(`[Scraper] URL: ${url} → Title: "${scrapedTitle}" | Images: ${scrapedImages.length} | Videos: ${scrapedVideos.length} | Paragraphs: ${scrapedParagraphs.length} | Price: ${scrapedPrice}`);
-
-    return { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos, scrapedPrice, scrapedPriceOld };
+    return { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos };
   } catch (err) {
     console.error('[AI Scrape Article URL Error]:', err);
-    return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [], scrapedPrice: 0, scrapedPriceOld: 0 };
-  }
-}
-
-/**
- * Download a remote image URL and save it to /uploads/images/ai/
- * Returns the local relative URL e.g. /uploads/images/ai/abc123.jpg
- */
-export async function downloadImageToLocalStorage(imageUrl: string): Promise<string | null> {
-  try {
-    const path = await import('path');
-    const fs = await import('fs');
-
-    // Determine file extension from URL or default to jpg
-    const urlWithoutQuery = imageUrl.split('?')[0];
-    const extMatch = urlWithoutQuery.match(/\.(jpg|jpeg|png|webp|avif|gif)$/i);
-    const ext = extMatch ? extMatch[1].toLowerCase().replace('jpeg', 'jpg') : 'jpg';
-
-    // Create unique filename
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 10000);
-    const filename = `ai-${timestamp}-${random}.${ext}`;
-
-    // Ensure directory exists
-    const uploadDir = path.join(process.cwd(), 'uploads', 'images', 'ai');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const destPath = path.join(uploadDir, filename);
-
-    // Fetch the image with browser-like headers
-    const res = await fetch(imageUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
-        'Referer': new URL(imageUrl).origin + '/',
-      },
-      signal: AbortSignal.timeout(15000),
-    });
-
-    if (!res.ok) {
-      console.warn(`[Image Download] Non-200 for ${imageUrl}: ${res.status}`);
-      return null;
-    }
-
-    const contentType = res.headers.get('content-type') || '';
-    if (!contentType.startsWith('image/')) {
-      console.warn(`[Image Download] Not an image (${contentType}): ${imageUrl}`);
-      return null;
-    }
-
-    const buffer = Buffer.from(await res.arrayBuffer());
-    fs.writeFileSync(destPath, buffer);
-
-    const localUrl = `/uploads/images/ai/${filename}`;
-    console.log(`[Image Download] Saved: ${imageUrl} → ${localUrl}`);
-    return localUrl;
-  } catch (err) {
-    console.error('[Image Download Error]:', err);
-    return null;
+    return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
   }
 }
 
