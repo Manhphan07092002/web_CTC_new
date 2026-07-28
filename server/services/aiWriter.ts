@@ -226,7 +226,7 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
 
     if (!res.ok) {
       console.warn(`[Scraper] URL fetch non-200: ${res.status} ${res.statusText} for ${url}`);
-      return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
+      return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [], scrapedPrice: 0, scrapedPriceOld: 0 };
     }
     const rawHtml = await res.text();
 
