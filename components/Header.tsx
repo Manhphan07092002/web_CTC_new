@@ -597,14 +597,13 @@ const Header: React.FC = () => {
 
             <Link 
               to="/cart" 
-              className="relative p-2"
-              style={{ color: isScrolled ? undefined : 'white' }}
+              className="relative p-2 text-sky-400 hover:text-sky-300 transition-colors"
               aria-label="Giỏ hàng"
             >
-              <ShoppingCart size={24} />
+              <ShoppingCart size={22} />
               <span className="sr-only">Giỏ hàng</span>
               {totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold shadow-md">
+                <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-md">
                   {totalItems}
                 </span>
               )}

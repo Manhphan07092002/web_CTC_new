@@ -279,9 +279,11 @@ const Hero: React.FC = () => {
         .hero-corporate {
             position: relative;
             width: 100%;
+            max-width: 100%;
             height: 100vh;
             min-height: 700px;
             overflow: hidden;
+            overflow-x: hidden;
             background-color: #060d1d; /* Deep professional navy */
             font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif;
             display: flex;
@@ -353,13 +355,15 @@ const Hero: React.FC = () => {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 1400px;
+            max-width: min(1400px, 100%);
+            box-sizing: border-box;
             margin: 0 auto;
             padding: 0 32px;
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
             gap: 70px;
             align-items: center;
+            overflow-x: hidden;
         }
 
         /* LEFT PANEL: Typographic Core */
@@ -832,102 +836,184 @@ const Hero: React.FC = () => {
             }
         }
 
-        /* Small Phones (320px - 767px) */
+        /* ===== MOBILE HERO - FULL REWRITE (320px–767px) ===== */
         @media (max-width: 767px) {
+
+            /* Section container */
             .hero-corporate {
-                padding: 125px 0 40px;
-                overflow-x: hidden;
+                height: auto;
+                min-height: 100svh;
+                padding: 88px 0 48px;
+                overflow: hidden;
+                display: flex;
+                align-items: flex-start;
             }
+
+            /* Grid → single column, fully centered */
             .corporate-layout {
-                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
                 width: 100%;
-                padding: 0 16px;
-                gap: 32px;
+                padding: 0 20px;
+                gap: 24px;
                 text-align: center;
-                justify-items: center;
+                box-sizing: border-box;
             }
+
+            /* Left panel */
             .left-corporate-panel {
                 width: 100%;
                 align-items: center;
                 text-align: center;
             }
+
+            /* Badge - small pill, centered */
             .corporate-badge-capsule {
-                padding: 8px 18px;
-                margin-bottom: 20px;
-                max-width: 100%;
-                justify-content: center;
+                display: inline-flex;
+                padding: 6px 14px;
+                gap: 7px;
+                margin: 0 auto 14px;
+                max-width: 90%;
             }
             .badge-capsule-text {
-                font-size: 0.72rem;
-                letter-spacing: 1.5px;
-                white-space: normal;
-                text-align: center;
+                font-size: 0.6rem;
+                letter-spacing: 1.2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 200px;
             }
+
+            /* Sub-headline */
             .title-upper-outline {
-                letter-spacing: 2px;
-                font-size: 0.8rem;
+                font-size: 0.7rem;
+                letter-spacing: 3px;
                 text-align: center;
                 width: 100%;
+                margin-bottom: 6px;
             }
-            .title-main-bold, .title-main-gradient {
-                font-size: 1.65rem;
+
+            /* Main title */
+            .title-main-bold {
+                font-size: clamp(1.7rem, 8.5vw, 2.2rem);
                 letter-spacing: -0.5px;
+                line-height: 1.18;
                 text-align: center;
                 width: 100%;
-                line-height: 1.25;
+                word-break: keep-all;
+                overflow-wrap: break-word;
+                margin-bottom: 4px;
             }
             .title-main-gradient {
-                margin-bottom: 20px;
-                white-space: normal; /* Wrap text nicely on mobile */
-            }
-            .corporate-slogan-box {
-                margin-bottom: 24px;
+                font-size: clamp(1.7rem, 8.5vw, 2.2rem);
+                letter-spacing: -0.5px;
+                line-height: 1.18;
+                text-align: center;
                 width: 100%;
+                word-break: keep-all;
+                overflow-wrap: break-word;
+                margin-bottom: 18px;
+                white-space: normal;
+            }
+
+            /* Slogan box */
+            .corporate-slogan-box {
+                width: 100%;
+                min-height: 52px;
+                margin-bottom: 18px;
                 align-items: center;
                 text-align: center;
+                border-left: none;
+                border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+                padding-left: 0;
+                padding-bottom: 14px;
             }
+            .slogan-card-body { width: 100%; }
             .slogan-strong {
-                font-size: 1.15rem;
-            }
-            .slogan-desc {
-                font-size: 0.82rem;
+                font-size: clamp(0.85rem, 3.8vw, 1rem);
+                line-height: 1.45;
+                overflow-wrap: break-word;
+                word-break: break-word;
                 padding: 0 8px;
             }
+            .slogan-desc {
+                font-size: 0.75rem;
+                line-height: 1.45;
+                padding: 0 8px;
+                overflow-wrap: break-word;
+            }
+
+            /* CTA buttons - stacked, full width */
             .cta-corporate-group {
                 flex-direction: column;
                 align-items: center;
-                gap: 12px;
+                gap: 10px;
+                width: 100%;
             }
             .btn-corporate {
                 width: 100%;
-                max-width: 280px;
+                max-width: 310px;
                 padding: 14px 28px;
+                font-size: 0.82rem;
+                border-radius: 14px;
+                gap: 10px;
+            }
+
+            /* Right panel / Stats dashboard */
+            .right-corporate-panel {
+                width: 100%;
+                align-items: center;
             }
             .achievement-dashboard {
-                padding: 20px;
-                border-radius: 18px;
+                width: 100%;
+                max-width: 100%;
+                padding: 18px 16px;
+                border-radius: 20px;
             }
             .dashboard-header {
-                margin-bottom: 16px;
+                margin-bottom: 14px;
                 padding-bottom: 12px;
             }
+            .dashboard-header-text {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+            .corporate-stats-rows { gap: 10px; }
             .stat-card-row {
-                padding: 12px;
+                padding: 12px 14px;
                 gap: 12px;
+                border-radius: 14px;
             }
             .icon-circle {
                 width: 38px;
                 height: 38px;
+                min-width: 38px;
                 border-radius: 10px;
             }
-            .stat-card-val {
-                font-size: 1.1rem;
+            .stat-card-val { font-size: 1.1rem; }
+            .stat-card-title { font-size: 0.62rem; }
+            .stat-card-desc { font-size: 0.68rem; }
+            .partner-ticker-section { margin-top: 16px; padding-top: 14px; }
+            .scroll-indicator-corporate { display: none; }
+        }
+
+        /* ===== EXTRA SMALL PHONES (≤ 380px) ===== */
+        @media (max-width: 380px) {
+            .hero-corporate { padding: 84px 0 40px; }
+            .corporate-layout { padding: 0 14px; gap: 20px; }
+            .title-main-bold, .title-main-gradient {
+                font-size: clamp(1.5rem, 9vw, 1.9rem);
             }
-            .stat-card-title {
-                font-size: 0.7rem;
+            .badge-capsule-text {
+                font-size: 0.55rem;
+                letter-spacing: 0.8px;
+                max-width: 160px;
             }
-            .scroll-indicator-corporate {
-                display: none;
+            .btn-corporate {
+                max-width: 280px;
+                padding: 13px 20px;
+                font-size: 0.78rem;
             }
         }
       `}} />
