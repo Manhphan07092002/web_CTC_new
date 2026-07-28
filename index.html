@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark" style="background-color: #020617; color: #ffffff; overflow-x: hidden; width: 100%;">
+<html lang="vi" class="dark" style="background-color: #060d1d; color: #ffffff; overflow-x: hidden; width: 100%;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
@@ -15,34 +15,43 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="CTC Solar" />
     <meta name="format-detection" content="telephone=no" />
+
+    <!-- Critical CSS: eliminate flash of white / unstyled content -->
+    <style id="critical-css">
+      html,body{margin:0;padding:0;background:#060d1d;color:#fff;font-family:system-ui,sans-serif;overflow-x:hidden}
+      #root{min-height:100vh;background:#060d1d}
+      .skeleton{background:linear-gradient(90deg,#0c1a2e 25%,#162032 50%,#0c1a2e 75%);background-size:200% 100%;animation:sk 1.5s infinite}
+      @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    </style>
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
     <title>CTC</title>
+
+    <!-- DNS / connection hints -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+
+    <!-- Non-blocking Google Fonts load (print trick) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=optional" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=optional" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=optional" /></noscript>
   </head>
-  <body style="background-color: #020617; color: #ffffff; overflow-x: hidden; width: 100%;">
+  <body style="background-color: #060d1d; color: #ffffff; overflow-x: hidden; width: 100%;">
     <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
   <script>
-    // Placeholder image
+    // Placeholder image (inline SVG data-URI)
     const PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent('<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#F3F4F6"/><g transform="translate(110, 60)"><path d="M160 120L110 60L80 95L30 30L0 120H160Z" fill="#D1D5DB"/><circle cx="130" cy="35" r="20" fill="#D1D5DB"/></g><text x="200" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="500" fill="#9CA3AF">No Image</text></svg>');
-    
-    // Check and fix images on error
-    document.addEventListener('error', function(e) {
-      if (e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
-        e.target.dataset.fixed = 'true';
-        e.target.src = PLACEHOLDER;
-        e.target.alt = '';
-      }
-    // Event-driven image error fallback without main-thread polling
+
+    // Event-driven image error fallback (no polling)
     function fixBrokenImage(img) {
       if (!img || !img.dataset || img.dataset.fixed) return;
       img.dataset.fixed = 'true';
       img.src = PLACEHOLDER;
+      img.alt = '';
     }
 
     document.addEventListener('error', function(e) {
@@ -50,6 +59,7 @@
         fixBrokenImage(e.target);
       }
     }, true);
+
     // Register Service Worker for PWA asset caching & offline support
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

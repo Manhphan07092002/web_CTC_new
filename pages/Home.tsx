@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
+import React, { useEffect, useState, useRef, Suspense, lazy } from 'react';
 import { api } from '../services/api';
 import { Product, Project, NewsItem, Testimonial } from '../types';
 import SEO from '../components/SEO';
@@ -6,16 +6,16 @@ import { useLanguage } from '../contexts/LanguageContext';
 import analyticsTracking from '../services/analytics-tracking';
 import companyProfile from '../constants/company_profile.json';
 
-// Critical Above-the-fold components (Eager import for instant 0ms render)
+// ── Above-the-fold (eager) ────────────────────────────────────────────────────
 import Hero from '../components/home/Hero';
-import Stats from '../components/home/Stats';
-import About from '../components/home/About';
-import Features from '../components/home/Features';
-import FeaturedProjects from '../components/home/FeaturedProjects';
-import FeaturedProducts from '../components/home/FeaturedProducts';
-import WhyChooseUs from '../components/home/WhyChooseUs';
 
-// Below-the-fold components (Lazy Loaded for max performance & zero render delay)
+// ── Below-the-fold (lazy) – loaded on first intersection ─────────────────────
+const Stats = lazy(() => import('../components/home/Stats'));
+const About = lazy(() => import('../components/home/About'));
+const Features = lazy(() => import('../components/home/Features'));
+const FeaturedProjects = lazy(() => import('../components/home/FeaturedProjects'));
+const FeaturedProducts = lazy(() => import('../components/home/FeaturedProducts'));
+const WhyChooseUs = lazy(() => import('../components/home/WhyChooseUs'));
 const CalculatorWrapper = lazy(() => import('../components/home/CalculatorWrapper'));
 const Testimonials = lazy(() => import('../components/home/Testimonials'));
 const Team = lazy(() => import('../components/home/Team'));
@@ -24,6 +24,48 @@ const PartnerSlider = lazy(() => import('../components/PartnerSlider'));
 const FAQ = lazy(() => import('../components/home/FAQ'));
 const CTA = lazy(() => import('../components/home/CTA'));
 const DetailModal = lazy(() => import('../components/home/Modals').then(m => ({ default: m.DetailModal })));
+
+/** Skeleton placeholder shown while a lazy section is loading. */
+const SectionSkeleton: React.FC<{ height?: string }> = ({ height = 'h-48' }) => (
+  <div className={`skeleton ${height} rounded-lg mx-4 my-2`} />
+);
+
+/** Wraps a section so it only renders after it enters the viewport. */
+const LazySection: React.FC<{ children: React.ReactNode; fallbackHeight?: string }> = ({
+  children,
+  fallbackHeight = 'h-48',
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' } // start loading 200 px before entering viewport
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref}>
+      {visible ? (
+        <Suspense fallback={<SectionSkeleton height={fallbackHeight} />}>
+          {children}
+        </Suspense>
+      ) : (
+        <SectionSkeleton height={fallbackHeight} />
+      )}
+    </div>
+  );
+};
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -336,26 +378,68 @@ const Home: React.FC = () => {
         schema={homePageSchema}
       />
 
+      {/* Hero – always eager (above fold, must be instant) */}
       <Hero />
-      <Stats />
-      <About onOpenModal={openModal} />
-      <Features />
-      <FeaturedProjects featuredProjects={featuredProjects} isLoading={loadingSections.projects} />
-      <FeaturedProducts featuredProducts={featuredProducts} isLoading={loadingSections.products} />
-      <WhyChooseUs onOpenModal={openModal} />
-      <Suspense fallback={null}>
-        <CalculatorWrapper />
-        <Testimonials testimonials={testimonials} isLoading={loadingSections.testimonials} />
-        <Team teamMembers={teamMembers} isLoading={loadingSections.team} />
-        <News latestNews={latestNews} isLoading={loadingSections.news} />
-        <PartnerSlider />
-        <FAQ />
-        <CTA />
 
-        <DetailModal 
-          isOpen={modalOpen} 
-          content={modalContent} 
-          onClose={closeModal} 
+      {/* Below-fold sections – deferred via IntersectionObserver */}
+      <LazySection fallbackHeight="h-32">
+        <Stats />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-64">
+        <About onOpenModal={openModal} />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-64">
+        <Features />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-80">
+        <FeaturedProjects featuredProjects={featuredProjects} isLoading={loadingSections.projects} />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-80">
+        <FeaturedProducts featuredProducts={featuredProducts} isLoading={loadingSections.products} />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-64">
+        <WhyChooseUs onOpenModal={openModal} />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-48">
+        <CalculatorWrapper />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-64">
+        <Testimonials testimonials={testimonials} isLoading={loadingSections.testimonials} />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-64">
+        <Team teamMembers={teamMembers} isLoading={loadingSections.team} />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-48">
+        <News latestNews={latestNews} isLoading={loadingSections.news} />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-24">
+        <PartnerSlider />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-48">
+        <FAQ />
+      </LazySection>
+
+      <LazySection fallbackHeight="h-32">
+        <CTA />
+      </LazySection>
+
+      {/* Modal – rendered globally, not deferred */}
+      <Suspense fallback={null}>
+        <DetailModal
+          isOpen={modalOpen}
+          content={modalContent}
+          onClose={closeModal}
         />
       </Suspense>
     </div>

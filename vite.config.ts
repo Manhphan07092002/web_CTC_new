@@ -20,6 +20,7 @@ const spaFallbackPlugin = () => ({
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
+    const isProduction = mode === 'production';
     return {
       server: {
         port: 3000,
@@ -36,7 +37,9 @@ export default defineConfig(({ mode }) => {
       build: {
         cssCodeSplit: true,
         target: 'es2020',
-        // Split large vendor libraries into separate cacheable chunks
+        minify: 'esbuild',
+        sourcemap: false,
+        reportCompressedSize: false,
         rollupOptions: {
           output: {
             manualChunks: {
@@ -48,8 +51,8 @@ export default defineConfig(({ mode }) => {
             },
           },
         },
-        // Warn if a chunk exceeds 800KB
-        chunkSizeWarningLimit: 800,
+        // Warn if a chunk exceeds 1000KB
+        chunkSizeWarningLimit: 1000,
       },
       resolve: {
         alias: {
