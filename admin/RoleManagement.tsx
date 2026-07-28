@@ -1,6 +1,6 @@
-﻿/**
+/**
  * Role Management Component
- * Quáº£n lÃ½ vai trÃ² vÃ  phÃ¢n quyá»n
+ * Quản lý vai trò và phân quyền
  */
 
 import React, { useState, useEffect } from 'react';
@@ -151,13 +151,13 @@ const RoleManagement: React.FC = () => {
       if (data.success) {
         await fetchRoles();
         handleCloseModal();
-        showNotification('success', editingRole ? 'Cáº­p nháº­t vai trÃ² thÃ nh cÃ´ng!' : 'Táº¡o vai trÃ² thÃ nh cÃ´ng!');
+        showNotification('success', editingRole ? 'Cập nhật vai trò thành công!' : 'Tạo vai trò thành công!');
       } else {
-        showNotification('error', data.message || 'CÃ³ lá»—i xáº£y ra');
+        showNotification('error', data.message || 'Có lỗi xảy ra');
       }
     } catch (error) {
       console.error('Error saving role:', error);
-      showNotification('error', 'Lá»—i khi lÆ°u vai trÃ²');
+      showNotification('error', 'Lỗi khi lưu vai trò');
     }
   };
 
@@ -189,13 +189,13 @@ const RoleManagement: React.FC = () => {
       
       if (data.success) {
         await fetchRoles();
-        showNotification('success', 'XÃ³a vai trÃ² thÃ nh cÃ´ng!');
+        showNotification('success', 'Xóa vai trò thành công!');
       } else {
-        showNotification('error', data.message || 'KhÃ´ng thá»ƒ xÃ³a vai trÃ²');
+        showNotification('error', data.message || 'Không thể xóa vai trò');
       }
     } catch (error) {
       console.error('Error deleting role:', error);
-      showNotification('error', 'Lá»—i khi xÃ³a vai trÃ²');
+      showNotification('error', 'Lỗi khi xóa vai trò');
     } finally {
       setDeleteConfirm({ isOpen: false, role: null });
     }
@@ -282,15 +282,15 @@ const RoleManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Quáº£n lÃ½ Vai trÃ²</h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Quáº£n lÃ½ vai trÃ² vÃ  phÃ¢n quyá»n trong há»‡ thá»‘ng</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Quản lý Vai trò</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Quản lý vai trò và phân quyền trong hệ thống</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium shadow-sm"
         >
           <Plus className="w-4 h-4" />
-          ThÃªm vai trÃ²
+          Thêm vai trò
         </button>
       </div>
 
@@ -301,7 +301,7 @@ const RoleManagement: React.FC = () => {
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="TÃ¬m kiáº¿m vai trÃ²..."
+              placeholder="Tìm kiếm vai trò..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 outline-none"
@@ -314,7 +314,7 @@ const RoleManagement: React.FC = () => {
           >
             {categories.map(category => (
               <option key={category} value={category}>
-                {category === 'all' ? 'Táº¥t cáº£ danh má»¥c' : category}
+                {category === 'all' ? 'Tất cả danh mục' : category}
               </option>
             ))}
           </select>
@@ -325,14 +325,14 @@ const RoleManagement: React.FC = () => {
       {roles.length === 0 ? (
         <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-12 text-center">
           <Shield className="w-16 h-16 mx-auto text-gray-300 dark:text-slate-600 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">ChÆ°a cÃ³ vai trÃ² nÃ o</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">HÃ£y táº¡o vai trÃ² Ä‘áº§u tiÃªn hoáº·c cháº¡y seed script</p>
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Chưa có vai trò nào</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">Hãy tạo vai trò đầu tiên hoặc chạy seed script</p>
           <button
             onClick={() => setIsModalOpen(true)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            ThÃªm vai trÃ² má»›i
+            Thêm vai trò mới
           </button>
         </div>
       ) : (
@@ -357,7 +357,7 @@ const RoleManagement: React.FC = () => {
                 <div className="flex items-center gap-1">
                   {role.isSystem && (
                     <span className="px-2.5 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 text-[11px] font-bold rounded-full">
-                      Há»‡ thá»‘ng
+                      Hệ thống
                     </span>
                   )}
                   <button
@@ -380,13 +380,13 @@ const RoleManagement: React.FC = () => {
               {/* Permissions Count */}
               <div className="flex items-center justify-between mb-4 pt-2 border-t border-gray-50 dark:border-slate-700/50">
                 <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                  {role.permissions.length} quyá»n Ä‘Æ°á»£c cáº¥p
+                  {role.permissions.length} quyền được cấp
                 </span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleEdit(role)}
                     className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                    title="Chá»‰nh sá»­a"
+                    title="Chỉnh sửa"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
@@ -394,7 +394,7 @@ const RoleManagement: React.FC = () => {
                     <button
                       onClick={() => handleDeleteClick(role)}
                       className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                      title="XÃ³a"
+                      title="Xóa"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -405,7 +405,7 @@ const RoleManagement: React.FC = () => {
               {/* Expanded Permissions */}
               {expandedRole === role._id && (
                 <div className="border-t border-gray-100 dark:border-slate-700 pt-4">
-                  <h4 className="text-xs font-bold text-gray-900 dark:text-gray-200 mb-2 uppercase tracking-wider">Quyá»n Ä‘Æ°á»£c phÃ©p:</h4>
+                  <h4 className="text-xs font-bold text-gray-900 dark:text-gray-200 mb-2 uppercase tracking-wider">Quyền được phép:</h4>
                   <div className="space-y-1.5 max-h-48 overflow-y-auto">
                     {role.permissions.map((permission) => (
                       <div key={permission._id} className="flex items-center gap-2 text-xs">
@@ -428,7 +428,7 @@ const RoleManagement: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-transparent dark:border-slate-700 text-gray-800 dark:text-gray-100">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/80">
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                {editingRole ? 'Chá»‰nh sá»­a vai trÃ²' : 'ThÃªm vai trÃ² má»›i'}
+                {editingRole ? 'Chỉnh sửa vai trò' : 'Thêm vai trò mới'}
               </h2>
               <button
                 onClick={handleCloseModal}
@@ -444,7 +444,7 @@ const RoleManagement: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      TÃªn vai trÃ² *
+                      Tên vai trò *
                     </label>
                     <input
                       type="text"
@@ -456,12 +456,12 @@ const RoleManagement: React.FC = () => {
                         name: e.target.value.toLowerCase().replace(/\s+/g, '_')
                       }))}
                       className="w-full border rounded-lg px-3 py-2"
-                      placeholder="VÃ­ dá»¥: Content Manager"
+                      placeholder="Ví dụ: Content Manager"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Cáº¥p Ä‘á»™ (1-100) *
+                      Cấp độ (1-100) *
                     </label>
                     <input
                       type="number"
@@ -477,21 +477,21 @@ const RoleManagement: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    MÃ´ táº£
+                    Mô tả
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full border rounded-lg px-3 py-2"
                     rows={3}
-                    placeholder="MÃ´ táº£ vai trÃ² vÃ  trÃ¡ch nhiá»‡m..."
+                    placeholder="Mô tả vai trò và trách nhiệm..."
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      MÃ u sáº¯c
+                      Màu sắc
                     </label>
                     <input
                       type="color"
@@ -522,11 +522,11 @@ const RoleManagement: React.FC = () => {
 
                 {/* Permissions */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Quyá»n truy cáº­p</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Quyền truy cập</h3>
                   <div className="space-y-4">
                     {Object.entries(permissionsByCategory).map(([category, categoryPermissions]) => (
                       <div key={category} className="border rounded-lg p-4">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 capitalize">{category}</h4>
+                        <h4 className="font-medium text-gray-900 mb-3 capitalize">{category}</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                           {(categoryPermissions as Permission[]).map((permission) => (
                             <label key={permission._id} className="flex items-center gap-2 text-sm">
@@ -563,14 +563,14 @@ const RoleManagement: React.FC = () => {
                   onClick={handleCloseModal}
                   className="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50"
                 >
-                  Há»§y
+                  Hủy
                 </button>
                 <button
                   type="submit"
                   className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
                 >
                   <Save className="w-4 h-4" />
-                  {editingRole ? 'Cáº­p nháº­t' : 'Táº¡o vai trÃ²'}
+                  {editingRole ? 'Cập nhật' : 'Tạo vai trò'}
                 </button>
               </div>
             </form>
@@ -583,16 +583,15 @@ const RoleManagement: React.FC = () => {
         isOpen={deleteConfirm.isOpen}
         onClose={() => setDeleteConfirm({ isOpen: false, role: null })}
         onConfirm={handleConfirmDelete}
-        title="XÃ¡c nháº­n xÃ³a vai trÃ²"
+        title="Xác nhận xóa vai trò"
         itemName={deleteConfirm.role?.displayName}
         itemType="role"
-        description={`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a vai trÃ² "${deleteConfirm.role?.displayName}" (${deleteConfirm.role?.name})?`}
-        warningText="CÃ¡c ngÆ°á»i dÃ¹ng Ä‘ang gáº¯n vai trÃ² nÃ y sáº½ bá»‹ máº¥t vai trÃ² tÆ°Æ¡ng á»©ng."
-        confirmText="Äá»“ng Ã½ xÃ³a"
+        description={`Bạn có chắc chắn muốn xóa vai trò "${deleteConfirm.role?.displayName}" (${deleteConfirm.role?.name})?`}
+        warningText="Các người dùng đang gắn vai trò này sẽ bị mất vai trò tương ứng."
+        confirmText="Đồng ý xóa"
       />
     </div>
   );
 };
 
 export default RoleManagement;
-

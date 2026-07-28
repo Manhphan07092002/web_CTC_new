@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Folder, 
   FileImage, 
@@ -147,7 +147,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       setFiles(data);
       setCurrentPath(path);
     } catch (e) {
-      setError('KhÃ´ng táº£i Ä‘Æ°á»£c danh sÃ¡ch file.');
+      setError('Không tải được danh sách file.');
       console.error('Load files error:', e);
     } finally {
       setIsLoading(false);
@@ -194,7 +194,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
         onClose();
       }
     } catch (err) {
-      setError('Upload tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i.');
+      setError('Upload thất bại. Vui lòng thử lại.');
     } finally {
       setUploading(false);
     }
@@ -220,7 +220,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
   };
 
   const handleDelete = async (filename: string) => {
-    if (!confirm('XÃ³a file nÃ y?')) return;
+    if (!confirm('Xóa file này?')) return;
 
     try {
       setError(null);
@@ -228,17 +228,17 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       const res = await fetch(`${API_BASE}/images/${encodeURIComponent(fullPath)}`, {
         method: 'DELETE',
       });
-      // 204 = deleted OK, 404 = file vá»‘n Ä‘Ã£ khÃ´ng tá»“n táº¡i => coi nhÆ° thÃ nh cÃ´ng
+      // 204 = deleted OK, 404 = file vốn đã không tồn tại => coi như thành công
       if (!res.ok && res.status !== 204 && res.status !== 404) throw new Error('Delete failed');
       await loadFiles(currentPath);
     } catch (e) {
-      setError('XÃ³a file tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i.');
+      setError('Xóa file thất bại. Vui lòng thử lại.');
     }
   };
 
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) {
-      setError('Vui lÃ²ng nháº­p tÃªn folder');
+      setError('Vui lòng nhập tên folder');
       return;
     }
 
@@ -257,7 +257,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       setShowCreateFolder(false);
       await loadFiles(currentPath);
     } catch (e) {
-      setError('Táº¡o folder tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i.');
+      setError('Tạo folder thất bại. Vui lòng thử lại.');
     }
   };
 
@@ -266,15 +266,15 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-gray-800">Chá»n file</h3>
+            <h3 className="text-lg font-bold text-gray-800">Chọn file</h3>
             <p className="text-xs text-gray-500 mt-1">
-              Duyá»‡t folders vÃ  chá»n file cáº§n sá»­ dá»¥ng
+              Duyệt folders và chọn file cần sử dụng
               {currentPath && (
                 <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                  ðŸ“ {currentPath}
+                  📁 {currentPath}
                 </span>
               )}
             </p>
@@ -285,11 +285,11 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-bold shadow cursor-pointer hover:bg-green-700 transition-all"
             >
               <FolderPlus size={16} />
-              <span>Táº¡o folder</span>
+              <span>Tạo folder</span>
             </button>
             <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold shadow cursor-pointer hover:bg-secondary transition-all">
               <UploadIcon size={16} />
-              <span>{uploading ? 'Äang upload...' : 'Upload'}</span>
+              <span>{uploading ? 'Đang upload...' : 'Upload'}</span>
               <input 
                 type="file" 
                 multiple 
@@ -302,7 +302,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              title="ÄÃ³ng"
+              title="Đóng"
             >
               <X size={20} className="text-gray-600" />
             </button>
@@ -323,7 +323,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleCreateFolder()}
-                placeholder="Nháº­p tÃªn folder..."
+                placeholder="Nhập tên folder..."
                 className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 autoFocus
               />
@@ -331,7 +331,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                 onClick={handleCreateFolder}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
-                Táº¡o
+                Tạo
               </button>
               <button
                 onClick={() => {
@@ -340,7 +340,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                 }}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
               >
-                Há»§y
+                Hủy
               </button>
             </div>
           </div>
@@ -350,7 +350,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
         <div className="px-6 py-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 flex items-center gap-2 text-sm overflow-x-auto">
           <button
             onClick={() => handleBreadcrumbClick('')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-white transition-all font-medium"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-700 hover:text-primary hover:bg-white transition-all font-medium"
           >
             <Home size={16} />
             <span>Root</span>
@@ -365,8 +365,8 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                   onClick={() => handleBreadcrumbClick(path)}
                   className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                     isLast 
-                      ? 'text-primary dark:text-blue-400 bg-white dark:bg-slate-700 font-bold shadow-sm' 
-                      : 'text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-white dark:hover:bg-slate-700'
+                      ? 'text-primary bg-white font-bold shadow-sm' 
+                      : 'text-gray-600 hover:text-primary hover:bg-white'
                   }`}
                 >
                   {segment}
@@ -384,15 +384,15 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
           ) : files.length === 0 ? (
             <div className="text-center py-16">
               <Folder size={64} className="mx-auto mb-4 text-gray-300" />
-              <p className="text-gray-500 text-sm">ThÆ° má»¥c trá»‘ng</p>
-              <p className="text-gray-400 text-xs mt-1">Upload file Ä‘á»ƒ báº¯t Ä‘áº§u</p>
+              <p className="text-gray-500 text-sm">Thư mục trống</p>
+              <p className="text-gray-400 text-xs mt-1">Upload file để bắt đầu</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {files.map((f) => (
                 <div
                   key={f.filename}
-                  className="border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-800 flex flex-col hover:border-primary hover:shadow-md transition-all"
+                  className="border border-gray-200 rounded-lg overflow-hidden bg-white flex flex-col hover:border-primary hover:shadow-md transition-all"
                 >
                   <button
                     type="button"
@@ -418,7 +418,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                         <span className="text-xs mt-2 text-gray-600 font-medium">.{getFileExtension(f.filename).toUpperCase()}</span>
                       </div>
                     )}
-                    <span className="sr-only">{f.isDirectory ? 'Má»Ÿ folder' : 'Chá»n file'}</span>
+                    <span className="sr-only">{f.isDirectory ? 'Mở folder' : 'Chọn file'}</span>
                   </button>
                   <div className="p-2 text-xs text-gray-700 flex flex-col gap-1">
                     <div className="flex items-center gap-1 truncate" title={f.filename}>
@@ -440,7 +440,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                         className="text-[10px] text-red-500 hover:text-red-700 font-bold px-1"
                         onClick={() => handleDelete(f.filename)}
                       >
-                        XÃ³a
+                        Xóa
                       </button>
                     </div>
                   </div>
@@ -456,7 +456,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
             onClick={onClose}
             className="px-4 py-2 text-sm font-bold text-gray-600 rounded-xl hover:bg-gray-100"
           >
-            ÄÃ³ng
+            Đóng
           </button>
         </div>
       </div>
@@ -465,4 +465,3 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
 };
 
 export default FilePickerModal;
-

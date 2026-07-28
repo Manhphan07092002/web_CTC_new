@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RotateCcw, Trash2, ArrowLeft, Search, ImageIcon } from 'lucide-react';
 import { api } from '../services/api';
@@ -48,7 +48,7 @@ const ProductTrash: React.FC = () => {
       console.log('Loaded deleted products:', deletedProducts);
     } catch (error) {
       console.error('Error loading deleted products:', error);
-      showToast('Lá»—i khi táº£i dá»¯ liá»‡u', 'error');
+      showToast('Lỗi khi tải dữ liệu', 'error');
     }
     setLoading(false);
   };
@@ -77,15 +77,15 @@ const ProductTrash: React.FC = () => {
     try {
       if (type === 'restore') {
         await api.products.update(product.id, { isDeleted: false, deletedAt: null });
-        showToast(`ÄÃ£ khÃ´i phá»¥c ${product.name}`, 'success');
+        showToast(`Đã khôi phục ${product.name}`, 'success');
       } else if (type === 'permanent') {
         await api.products.permanentDelete(product.id);
-        showToast(`ÄÃ£ xÃ³a vÄ©nh viá»…n ${product.name}`, 'success');
+        showToast(`Đã xóa vĩnh viễn ${product.name}`, 'success');
       }
       loadDeletedProducts();
     } catch (error) {
       console.error('Error:', error);
-      showToast('Lá»—i khi thá»±c hiá»‡n', 'error');
+      showToast('Lỗi khi thực hiện', 'error');
     }
   };
 
@@ -93,7 +93,7 @@ const ProductTrash: React.FC = () => {
 
   const handleEmptyTrash = () => {
     if (products.length === 0) {
-      showToast('ThÃ¹ng rÃ¡c Ä‘Ã£ trá»‘ng', 'info');
+      showToast('Thùng rác đã trống', 'info');
       return;
     }
     setEmptyTrashConfirm(true);
@@ -102,11 +102,11 @@ const ProductTrash: React.FC = () => {
   const handleConfirmEmptyTrash = async () => {
     try {
       await Promise.all(products.map(p => api.products.permanentDelete ? api.products.permanentDelete(p.id) : api.products.delete(p.id)));
-      showToast('ÄÃ£ lÃ m trá»‘ng thÃ¹ng rÃ¡c thÃ nh cÃ´ng!', 'success');
+      showToast('Đã làm trống thùng rác thành công!', 'success');
       loadDeletedProducts();
     } catch (error) {
       console.error('Error emptying trash:', error);
-      showToast('Lá»—i khi lÃ m trá»‘ng thÃ¹ng rÃ¡c', 'error');
+      showToast('Lỗi khi làm trống thùng rác', 'error');
     } finally {
       setEmptyTrashConfirm(false);
     }
@@ -130,9 +130,9 @@ const ProductTrash: React.FC = () => {
             >
               <ArrowLeft size={24} />
             </button>
-            <h1 className="text-3xl font-bold text-gray-800">ThÃ¹ng rÃ¡c Sáº£n pháº©m</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Thùng rác Sản phẩm</h1>
           </div>
-          <p className="text-gray-500 ml-9">{filteredProducts.length} sáº£n pháº©m Ä‘Ã£ xÃ³a</p>
+          <p className="text-gray-500 ml-9">{filteredProducts.length} sản phẩm đã xóa</p>
         </div>
         <button
           onClick={handleEmptyTrash}
@@ -140,7 +140,7 @@ const ProductTrash: React.FC = () => {
           className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Trash2 size={18} />
-          LÃ m trá»‘ng thÃ¹ng rÃ¡c
+          Làm trống thùng rác
         </button>
       </div>
 
@@ -149,7 +149,7 @@ const ProductTrash: React.FC = () => {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
         <input
           type="text"
-          placeholder="TÃ¬m kiáº¿m sáº£n pháº©m Ä‘Ã£ xÃ³a..."
+          placeholder="Tìm kiếm sản phẩm đã xóa..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
@@ -160,16 +160,16 @@ const ProductTrash: React.FC = () => {
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500 mt-4">Äang táº£i...</p>
+          <p className="text-gray-500 mt-4">Đang tải...</p>
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-slate-800/90 rounded-xl border border-gray-100 dark:border-slate-700/60">
+        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
           <Trash2 size={48} className="mx-auto text-gray-300 mb-4" />
           <p className="text-gray-500 text-lg font-medium">
-            {searchTerm ? 'KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m' : 'ThÃ¹ng rÃ¡c trá»‘ng'}
+            {searchTerm ? 'Không tìm thấy sản phẩm' : 'Thùng rác trống'}
           </p>
           <p className="text-gray-400 text-sm mt-2">
-            {searchTerm ? 'Thá»­ tÃ¬m kiáº¿m vá»›i tá»« khÃ³a khÃ¡c' : 'CÃ¡c sáº£n pháº©m Ä‘Ã£ xÃ³a sáº½ xuáº¥t hiá»‡n á»Ÿ Ä‘Ã¢y'}
+            {searchTerm ? 'Thử tìm kiếm với từ khóa khác' : 'Các sản phẩm đã xóa sẽ xuất hiện ở đây'}
           </p>
         </div>
       ) : (
@@ -189,15 +189,15 @@ const ProductTrash: React.FC = () => {
                     </div>
                   )}
                   <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">
-                    ðŸ—‘ï¸ ÄÃƒ XÃ“A
+                    🗑️ ĐÃ XÓA
                   </div>
                 </div>
                 <div className="p-3">
                   <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1 truncate">
-                    {product.categoryLabel || product.category || 'Sáº£n pháº©m'}
+                    {product.categoryLabel || product.category || 'Sản phẩm'}
                   </p>
-                  <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xs line-clamp-2 min-h-[32px] mb-1" title={product.name}>{product.name}</h3>
-                  {product.code && <p className="text-[10px] text-gray-400 mb-1.5 truncate">ðŸ“¦ MÃ£: {product.code}</p>}
+                  <h3 className="font-bold text-gray-800 text-xs line-clamp-2 min-h-[32px] mb-1" title={product.name}>{product.name}</h3>
+                  {product.code && <p className="text-[10px] text-gray-400 mb-1.5 truncate">📦 Mã: {product.code}</p>}
                   
                   <div className="mb-2">
                     <PriceDisplay 
@@ -211,7 +211,7 @@ const ProductTrash: React.FC = () => {
                   
                   {product.deletedAt && (
                     <p className="text-[10px] text-red-500 mb-2 bg-red-50 px-2 py-0.5 rounded truncate">
-                      ðŸ—‘ï¸ XÃ³a: {new Date(product.deletedAt).toLocaleDateString('vi-VN')}
+                      🗑️ Xóa: {new Date(product.deletedAt).toLocaleDateString('vi-VN')}
                     </p>
                   )}
                 </div>
@@ -223,12 +223,12 @@ const ProductTrash: React.FC = () => {
                   className="flex-1 px-2 py-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 text-xs font-medium flex items-center justify-center gap-1"
                 >
                   <RotateCcw size={14} />
-                  KhÃ´i phá»¥c
+                  Khôi phục
                 </button>
                 <button
                   onClick={() => openDeleteModal(product, 'permanent')}
                   className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-xs"
-                  title="XÃ³a vÄ©nh viá»…n"
+                  title="Xóa vĩnh viễn"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -243,7 +243,7 @@ const ProductTrash: React.FC = () => {
         isOpen={deleteModal.isOpen}
         onClose={closeDeleteModal}
         onConfirm={handleConfirmAction}
-        title={deleteModal.type === 'restore' ? 'KhÃ´i phá»¥c sáº£n pháº©m' : 'XÃ³a vÄ©nh viá»…n'}
+        title={deleteModal.type === 'restore' ? 'Khôi phục sản phẩm' : 'Xóa vĩnh viễn'}
         productName={deleteModal.product?.name || ''}
         type={deleteModal.type}
         productImage={deleteModal.product?.image}
@@ -256,16 +256,15 @@ const ProductTrash: React.FC = () => {
         isOpen={emptyTrashConfirm}
         onClose={() => setEmptyTrashConfirm(false)}
         onConfirm={handleConfirmEmptyTrash}
-        title="LÃ m trá»‘ng thÃ¹ng rÃ¡c"
+        title="Làm trống thùng rác"
         type="permanent"
-        itemName={`Táº¥t cáº£ ${products.length} sáº£n pháº©m`}
-        description={`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a vÄ©nh viá»…n toÃ n bá»™ ${products.length} sáº£n pháº©m trong thÃ¹ng rÃ¡c?`}
-        warningText="Táº¤T Cáº¢ sáº£n pháº©m trong thÃ¹ng rÃ¡c sáº½ bá»‹ xÃ³a vÄ©nh viá»…n vÃ  khÃ´ng thá»ƒ khÃ´i phá»¥c!"
-        confirmText="XÃ³a sáº¡ch thÃ¹ng rÃ¡c"
+        itemName={`Tất cả ${products.length} sản phẩm`}
+        description={`Bạn có chắc chắn muốn xóa vĩnh viễn toàn bộ ${products.length} sản phẩm trong thùng rác?`}
+        warningText="TẤT CẢ sản phẩm trong thùng rác sẽ bị xóa vĩnh viễn và không thể khôi phục!"
+        confirmText="Xóa sạch thùng rác"
       />
     </div>
   );
 };
 
 export default ProductTrash;
-

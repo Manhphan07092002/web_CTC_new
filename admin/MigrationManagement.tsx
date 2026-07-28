@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { UploadCloud, CheckCircle, AlertTriangle, FileText, Download, Clock } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { usePermission } from '../contexts/PermissionContext';
@@ -54,12 +54,12 @@ const MigrationManagement: React.FC = () => {
 
   const handleUpload = async () => {
     if (!file) {
-      showToast('Vui lÃ²ng chá»n file ZIP', 'error');
+      showToast('Vui lòng chọn file ZIP', 'error');
       return;
     }
 
     if (!file.name.endsWith('.zip')) {
-      showToast('Chá»‰ há»— trá»£ Ä‘á»‹nh dáº¡ng file .zip', 'error');
+      showToast('Chỉ hỗ trợ định dạng file .zip', 'error');
       return;
     }
 
@@ -71,38 +71,47 @@ const MigrationManagement: React.FC = () => {
     if (!file) return;
 
     setLoading(true);
-    setLogs(['Äang táº£i file lÃªn mÃ¡y chá»§...']);
+    setLogs(['Đang tải file lên máy chủ...']);
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
       // Direct fetch to avoid api wrapper parsing issues with FormData
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/migration/upload', {
+      const response = await fetch('/api/migration/import', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
+        body: formData,
       });
 
-      const data = await response.json();
-      
-      if (data.success) {
-        showToast('Nháº­p dá»¯ liá»‡u thÃ nh cÃ´ng! Tá»± Ä‘á»™ng lÃ m má»›i trang sau 2 giÃ¢y...', 'success');
-        setLogs(data.logs || ['HoÃ n táº¥t.']);
-        fetchHistory();
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      } else {
-        showToast(data.error || 'Nháº­p dá»¯ liá»‡u tháº¥t báº¡i', 'error');
-        setLogs(prev => [...prev, `Lá»—i: ${data.error}`]);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (error: any) {
-      showToast('ÄÃ£ xáº£y ra lá»—i khi táº£i lÃªn', 'error');
-      setLogs(prev => [...prev, `Lá»—i há»‡ thá»‘ng: ${error.message}`]);
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) throw new Error('No reader available');
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n').filter(l => l.trim());
+        for (const line of lines) {
+          try {
+            const parsed = JSON.parse(line);
+            if (parsed.log) setLogs(prev => [...prev, parsed.log]);
+          } catch {
+            if (line.trim()) setLogs(prev => [...prev, line]);
+          }
+        }
+      }
+
+      showToast('Nhập dữ liệu thành công!', 'success');
+      fetchHistory();
+    } catch (error) {
+      setLogs(prev => [...prev, `Lỗi: ${error}`]);
+      showToast('Có lỗi xảy ra khi nhập dữ liệu', 'error');
     } finally {
       setLoading(false);
     }
@@ -111,11 +120,8 @@ const MigrationManagement: React.FC = () => {
   const handleExport = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await fetch('/api/migration/export', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        method: 'POST',
       });
       
       if (!response.ok) {
@@ -133,10 +139,10 @@ const MigrationManagement: React.FC = () => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
       
-      showToast('Xuáº¥t dá»¯ liá»‡u thÃ nh cÃ´ng', 'success');
+      showToast('Xuất dữ liệu thành công', 'success');
       fetchHistory();
     } catch (error) {
-      showToast('CÃ³ lá»—i xáº£y ra khi xuáº¥t dá»¯ liá»‡u', 'error');
+      showToast('Có lỗi xảy ra khi xuất dữ liệu', 'error');
     } finally {
       setLoading(false);
     }
@@ -145,13 +151,13 @@ const MigrationManagement: React.FC = () => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-12">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Quáº£n LÃ½ Dá»¯ Liá»‡u (Import/Export)</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Quản Lý Dữ Liệu (Import/Export)</h1>
         <button 
           onClick={handleExport}
           className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-sm"
         >
           <Download size={18} />
-          Xuáº¥t Dá»¯ Liá»‡u (Backup)
+          Xuất Dữ Liệu (Backup)
         </button>
       </div>
 
@@ -162,9 +168,9 @@ const MigrationManagement: React.FC = () => {
               <UploadCloud size={24} />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Táº£i LÃªn File Dá»¯ Liá»‡u</h2>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Tải Lên File Dữ Liệu</h2>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                Há»‡ thá»‘ng há»— trá»£ táº£i lÃªn 1 file <b>.zip</b> chá»©a cÃ¡c báº£ng dá»¯ liá»‡u (vd: Categories.json, Products.json, Blog.json, Users.json) Ä‘Ã£ Ä‘Æ°á»£c xuáº¥t tá»« há»‡ thá»‘ng SQL cÅ©.
+                Hệ thống hỗ trợ tải lên 1 file <b>.zip</b> chứa các bảng dữ liệu (vd: Categories.json, Products.json, Blog.json, Users.json) đã được xuất từ hệ thống SQL cũ.
               </p>
             </div>
           </div>
@@ -200,7 +206,7 @@ const MigrationManagement: React.FC = () => {
                     disabled={loading}
                     className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 disabled:opacity-50"
                   >
-                    Há»§y bá»
+                    Hủy bỏ
                   </button>
                   <button 
                     onClick={handleUpload}
@@ -210,12 +216,12 @@ const MigrationManagement: React.FC = () => {
                     {loading ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        Äang xá»­ lÃ½...
+                        Đang xử lý...
                       </>
                     ) : (
                       <>
                         <CheckCircle size={16} />
-                        Báº¯t Ä‘áº§u Import
+                        Bắt đầu Import
                       </>
                     )}
                   </button>
@@ -223,13 +229,13 @@ const MigrationManagement: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <UploadCloud size={48} className="text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-800">KÃ©o tháº£ file ZIP vÃ o Ä‘Ã¢y</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4">hoáº·c click Ä‘á»ƒ chá»n file tá»« mÃ¡y tÃ­nh</p>
+                <UploadCloud size={48} className="text-gray-400 dark:text-slate-500 mb-4" />
+                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">Kéo thả file ZIP vào đây</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4">hoặc click để chọn file từ máy tính</p>
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-lg">
-                  Chá»n File ZIP
+                  className="px-4 py-2 text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+                  Chọn File ZIP
                 </button>
               </div>
             )}
@@ -242,18 +248,18 @@ const MigrationManagement: React.FC = () => {
           <div className="p-4 border-b border-gray-800 flex justify-between items-center">
             <h3 className="text-white font-medium flex items-center gap-2">
               <AlertTriangle size={16} className="text-yellow-500" />
-              Tiáº¿n TrÃ¬nh Chuyá»ƒn Äá»•i (Logs)
+              Tiến Trình Chuyển Đổi (Logs)
             </h3>
           </div>
           <div className="p-4 h-64 overflow-y-auto font-mono text-sm text-green-400 space-y-1">
             {logs.map((log, index) => (
-              <div key={index} className={`${log.startsWith('Lá»—i') || log.includes('Error') ? 'text-red-400' : ''}`}>
+              <div key={index} className={`${log.startsWith('Lỗi') || log.includes('Error') ? 'text-red-400' : ''}`}>
                 <span className="text-gray-500 mr-2">[{new Date().toLocaleTimeString()}]</span>
                 {log}
               </div>
             ))}
             {loading && (
-              <div className="animate-pulse">_ Äang xá»­ lÃ½ dá»¯ liá»‡u...</div>
+              <div className="animate-pulse">_ Đang xử lý dữ liệu...</div>
             )}
           </div>
         </div>
@@ -262,17 +268,17 @@ const MigrationManagement: React.FC = () => {
       {/* Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 border border-transparent dark:border-slate-700">
-            <div className="bg-red-50 p-6 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-red-50 dark:bg-red-900/20 p-6 flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-4">
                 <AlertTriangle size={32} />
               </div>
-              <h3 className="text-xl font-bold text-red-800 mb-2">Cáº£nh bÃ¡o ghi Ä‘Ã¨ dá»¯ liá»‡u!</h3>
-              <p className="text-red-600/80 text-sm mb-4">
-                QuÃ¡ trÃ¬nh nÃ y sáº½ <strong>XÃ“A Sáº CH</strong> danh má»¥c, sáº£n pháº©m, vÃ  bÃ i viáº¿t cÅ© trong há»‡ thá»‘ng vÃ  thay tháº¿ báº±ng dá»¯ liá»‡u tá»« file ZIP nÃ y. 
+              <h3 className="text-xl font-bold text-red-800 dark:text-red-300 mb-2">Cảnh báo ghi đè dữ liệu!</h3>
+              <p className="text-red-600/80 dark:text-red-400/80 text-sm mb-4">
+                Quá trình này sẽ <strong>XÓA SẠCH</strong> danh mục, sản phẩm, và bài viết cũ trong hệ thống và thay thế bằng dữ liệu từ file ZIP này. 
               </p>
-              <p className="text-gray-600 text-sm">
-                Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n tiáº¿p tá»¥c khÃ´ng?
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                Bạn có chắc chắn muốn tiếp tục không?
               </p>
             </div>
             <div className="p-4 bg-gray-50 dark:bg-slate-900/50 border-t border-gray-100 dark:border-slate-700 flex justify-end gap-3">
@@ -280,13 +286,13 @@ const MigrationManagement: React.FC = () => {
                 onClick={() => setShowConfirm(false)}
                 className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors"
               >
-                Há»§y bá»
+                Hủy bỏ
               </button>
               <button 
                 onClick={proceedUpload}
                 className="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 shadow-sm transition-colors"
               >
-                VÃ¢ng, Cháº¯c cháº¯n nháº­p!
+                Vâng, Chắc chắn nhập!
               </button>
             </div>
           </div>
@@ -297,18 +303,18 @@ const MigrationManagement: React.FC = () => {
       <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden mt-6">
         <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-900/60">
           <h3 className="text-gray-800 dark:text-gray-100 font-medium flex items-center gap-2">
-            <Clock size={16} className="text-gray-500" />
-            Lá»‹ch sá»­ Thao tÃ¡c
+            <Clock size={16} className="text-gray-500 dark:text-gray-400" />
+            Lịch sử Thao tác
           </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-900/80 border-b border-gray-200 dark:border-slate-700">
               <tr>
-                <th scope="col" className="px-6 py-3">Thá»i gian</th>
-                <th scope="col" className="px-6 py-3">HÃ nh Ä‘á»™ng</th>
-                <th scope="col" className="px-6 py-3">Tráº¡ng thÃ¡i</th>
-                <th scope="col" className="px-6 py-3">Chi tiáº¿t</th>
+                <th scope="col" className="px-6 py-3">Thời gian</th>
+                <th scope="col" className="px-6 py-3">Hành động</th>
+                <th scope="col" className="px-6 py-3">Trạng thái</th>
+                <th scope="col" className="px-6 py-3">Chi tiết</th>
               </tr>
             </thead>
             <tbody>
@@ -319,16 +325,16 @@ const MigrationManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      item.action === 'import' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                      item.action === 'import' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300'
                     }`}>
-                      {item.action === 'import' ? 'Nháº­p' : 'Xuáº¥t'}
+                      {item.action === 'import' ? 'Nhập' : 'Xuất'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      item.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      item.status === 'success' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
                     }`}>
-                      {item.status === 'success' ? 'ThÃ nh cÃ´ng' : 'Lá»—i'}
+                      {item.status === 'success' ? 'Thành công' : 'Lỗi'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
@@ -338,7 +344,7 @@ const MigrationManagement: React.FC = () => {
               )) : (
                 <tr>
                   <td colSpan={4} className="px-6 py-8 text-center text-gray-400 dark:text-slate-500">
-                    ChÆ°a cÃ³ lá»‹ch sá»­ xuáº¥t nháº­p nÃ o.
+                    Chưa có lịch sử xuất nhập nào.
                   </td>
                 </tr>
               )}
@@ -352,5 +358,3 @@ const MigrationManagement: React.FC = () => {
 };
 
 export default MigrationManagement;
-
-

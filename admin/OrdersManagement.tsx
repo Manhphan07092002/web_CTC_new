@@ -1149,31 +1149,31 @@ const OrdersManagement: React.FC = () => {
       {/* ========================================================= */}
       {showInvoiceModal && selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl max-w-2xl w-full p-8 space-y-6 shadow-2xl text-gray-800 dark:text-gray-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-start border-b border-gray-200 dark:border-slate-700 pb-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-8 space-y-6 shadow-2xl text-gray-800 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start border-b border-gray-200 pb-4">
               <div>
                 <h2 className="text-2xl font-black text-primary">CÔNG TY CP XÂY LẮP BƯU ĐIỆN MIỀN TRUNG (CTC)</h2>
                 <p className="text-xs text-gray-500">Địa chỉ: 50B Nguyễn Du, Phường Thạch Thang, Q. Hải Châu, TP Đà Nẵng</p>
                 <p className="text-xs text-gray-500">Hotline: 0915 059 666 | Email: info@ctcdn.vn</p>
               </div>
               <div className="text-right">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase">Hóa Đơn / Phiếu Giao Hàng</h3>
+                <h3 className="text-lg font-bold text-gray-900 uppercase">Hóa Đơn / Phiếu Giao Hàng</h3>
                 <p className="font-mono font-bold text-primary text-sm">{selectedOrder.orderCode}</p>
                 <p className="text-xs text-gray-400">{new Date(selectedOrder.createdAt).toLocaleDateString('vi-VN')}</p>
               </div>
             </div>
 
             {/* Customer & Shipping info */}
-            <div className="grid grid-cols-2 gap-4 text-xs bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl border border-gray-200 dark:border-slate-700">
+            <div className="grid grid-cols-2 gap-4 text-xs bg-gray-50 p-4 rounded-xl border border-gray-200">
               <div>
-                <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Khách Hàng (Người Nhận):</h4>
+                <h4 className="font-bold text-gray-700 uppercase mb-1">Khách Hàng (Người Nhận):</h4>
                 <p className="font-bold text-sm">{selectedOrder.customerName}</p>
                 <p>SĐT: {selectedOrder.phone}</p>
                 <p>Email: {selectedOrder.email}</p>
                 <p>Địa chỉ: {selectedOrder.address}</p>
               </div>
               <div>
-                <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Vận Chuyển:</h4>
+                <h4 className="font-bold text-gray-700 uppercase mb-1">Vận Chuyển:</h4>
                 <p>Đơn vị VC: <strong>{selectedOrder.shippingProvider || 'Xe công ty CTC'}</strong></p>
                 {selectedOrder.trackingCode && <p>Mã vận đơn: <strong className="font-mono">{selectedOrder.trackingCode}</strong></p>}
                 {selectedOrder.note && <p className="italic text-gray-500 mt-1">Ghi chú: {selectedOrder.note}</p>}
@@ -1181,8 +1181,8 @@ const OrdersManagement: React.FC = () => {
             </div>
 
             {/* Product Table */}
-            <table className="w-full text-left text-xs border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
-              <thead className="bg-gray-100 dark:bg-slate-900/80 font-bold text-gray-700 dark:text-gray-300">
+            <table className="w-full text-left text-xs border border-gray-200 rounded-lg overflow-hidden">
+              <thead className="bg-gray-100 font-bold text-gray-700">
                 <tr>
                   <th className="p-3">#</th>
                   <th className="p-3">Tên Sản Phẩm</th>
@@ -1191,10 +1191,10 @@ const OrdersManagement: React.FC = () => {
                   <th className="p-3 text-right">Thành Tiền</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
+              <tbody className="divide-y divide-gray-200">
                 {selectedOrder.items && selectedOrder.items.map((item, idx) => (
                   <tr key={idx}>
-                    <td className="p-3 text-gray-400 dark:text-slate-500">{idx + 1}</td>
+                    <td className="p-3 text-gray-400">{idx + 1}</td>
                     <td className="p-3 font-bold">{item.productName}</td>
                     <td className="p-3 text-center">{item.quantity}</td>
                     <td className="p-3 text-right">{item.price > 0 ? `${item.price.toLocaleString('vi-VN')}đ` : 'Liên hệ'}</td>
@@ -1204,12 +1204,12 @@ const OrdersManagement: React.FC = () => {
               </tbody>
             </table>
 
-            <div className="flex justify-between items-center border-t border-gray-200 dark:border-slate-700 pt-4">
-              <div className="text-xs text-gray-400 dark:text-slate-500">
+            <div className="flex justify-between items-center border-t border-gray-200 pt-4">
+              <div className="text-xs text-gray-400">
                 * Phiếu giao hàng kiêm xác nhận bảo hành sản phẩm chính hãng CTC.
               </div>
               <div className="text-right">
-                <span className="text-xs font-bold text-gray-500 dark:text-gray-400">TỔNG THÀNH TIỀN: </span>
+                <span className="text-xs font-bold text-gray-500">TỔNG THÀNH TIỀN: </span>
                 <span className="text-xl font-black text-primary">
                   {selectedOrder.totalAmount > 0 ? `${selectedOrder.totalAmount.toLocaleString('vi-VN')}đ` : 'Liên hệ'}
                 </span>
@@ -1229,10 +1229,10 @@ const OrdersManagement: React.FC = () => {
             </div>
 
             {/* Modal Controls */}
-            <div className="flex justify-end gap-2 border-t border-gray-200 dark:border-slate-700 pt-4 print:hidden">
+            <div className="flex justify-end gap-2 border-t border-gray-200 pt-4 print:hidden">
               <button
                 onClick={() => setShowInvoiceModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl"
+                className="px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl"
               >
                 Đóng
               </button>

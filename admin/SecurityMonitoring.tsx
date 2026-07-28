@@ -976,7 +976,7 @@ const StatCard: React.FC<{
   };
   
   return (
-    <div className="bg-white dark:bg-slate-800/90 border border-gray-100 dark:border-slate-700/60 rounded-xl shadow-sm p-4">
+    <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex items-center gap-3 mb-2">
         <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
           {icon}

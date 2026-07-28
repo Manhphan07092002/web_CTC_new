@@ -833,9 +833,9 @@ const ContentManagement: React.FC = () => {
       {/* Partner Modal */}
       {partnerModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
-            <div className="flex items-start justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800">
                 {editingPartner ? 'Sửa đối tác' : 'Thêm đối tác mới'}
               </h2>
               <button onClick={() => setPartnerModal(false)} className="text-gray-400 hover:text-gray-600">
@@ -845,22 +845,22 @@ const ContentManagement: React.FC = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên đối tác *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tên đối tác *</label>
                 <input
                   type="text"
                   value={partnerForm.name}
                   onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   placeholder="Nhập tên đối tác"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loại đối tác *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Loại đối tác *</label>
                 <select
                   value={partnerForm.type}
                   onChange={(e) => setPartnerForm({ ...partnerForm, type: e.target.value as 'supplier' | 'financial' })}
-                  className="w-full px-4 py-2 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 >
                   <option value="supplier">Nhà cung cấp</option>
                   <option value="financial">Tài chính</option>
@@ -868,19 +868,19 @@ const ContentManagement: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Logo *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Logo *</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={partnerForm.logo}
                     onChange={(e) => setPartnerForm({ ...partnerForm, logo: e.target.value })}
-                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     placeholder="URL logo"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPartnerImagePicker(true)}
-                    className="px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
                   >
                     <ImageIcon size={20} />
                   </button>
@@ -891,12 +891,12 @@ const ContentManagement: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
                 <input
                   type="text"
                   value={partnerForm.website}
                   onChange={(e) => setPartnerForm({ ...partnerForm, website: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   placeholder="https://..."
                 />
               </div>
@@ -905,7 +905,7 @@ const ContentManagement: React.FC = () => {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setPartnerModal(false)}
-                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 font-medium"
+                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium"
               >
                 Hủy
               </button>
@@ -923,9 +923,9 @@ const ContentManagement: React.FC = () => {
       {/* Testimonial Modal */}
       {testimonialModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
-            <div className="flex items-start justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800">
                 {editingTestimonial ? 'Sửa đánh giá' : 'Thêm đánh giá mới'}
               </h2>
               <button onClick={() => setTestimonialModal(false)} className="text-gray-400 hover:text-gray-600">

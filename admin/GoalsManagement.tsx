@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, Plus, Edit2, Trash2, Calendar, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface Goal {
@@ -702,5 +702,4 @@ const GoalsManagement: React.FC = () => {
 };
 
 export default GoalsManagement;
-
 

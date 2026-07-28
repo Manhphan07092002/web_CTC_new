@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, Eye, Trash2, Search, Filter, Calendar, User, MessageSquare, Package, RefreshCw, TrendingUp, Heart, Share2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
@@ -42,7 +42,7 @@ const ReviewsManagement: React.FC = () => {
       setReviews(data);
     } catch (error) {
       console.error('Error loading reviews:', error);
-      showToast('Lá»—i khi táº£i danh sÃ¡ch Ä‘Ã¡nh giÃ¡', 'error');
+      showToast('Lỗi khi tải danh sách đánh giá', 'error');
     } finally {
       setLoading(false);
     }
@@ -78,7 +78,7 @@ const ReviewsManagement: React.FC = () => {
       setDeleting(true);
       
       if (!reviewToDelete.productId || reviewToDelete.reviewIndex === undefined) {
-        showToast('KhÃ´ng thá»ƒ xÃ³a Ä‘Ã¡nh giÃ¡: thiáº¿u thÃ´ng tin cáº§n thiáº¿t', 'error');
+        showToast('Không thể xóa đánh giá: thiếu thông tin cần thiết', 'error');
         return;
       }
 
@@ -86,14 +86,14 @@ const ReviewsManagement: React.FC = () => {
       
       // Reload reviews after successful deletion
       await loadReviews();
-      showToast('XÃ³a Ä‘Ã¡nh giÃ¡ thÃ nh cÃ´ng!', 'success');
+      showToast('Xóa đánh giá thành công!', 'success');
       
       // Close modal
       setShowDeleteModal(false);
       setReviewToDelete(null);
     } catch (error) {
       console.error('Error deleting review:', error);
-      showToast('Lá»—i khi xÃ³a Ä‘Ã¡nh giÃ¡', 'error');
+      showToast('Lỗi khi xóa đánh giá', 'error');
     } finally {
       setDeleting(false);
     }
@@ -138,7 +138,7 @@ const ReviewsManagement: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <RefreshCw className="animate-spin text-primary" size={32} />
-        <span className="ml-2 text-gray-600 dark:text-gray-400">Äang táº£i Ä‘Ã¡nh giÃ¡...</span>
+        <span className="ml-2 text-gray-600 dark:text-gray-400">Đang tải đánh giá...</span>
       </div>
     );
   }
@@ -150,10 +150,10 @@ const ReviewsManagement: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
             <Star className="text-yellow-500" size={28} />
-            Quáº£n LÃ½ ÄÃ¡nh GiÃ¡ KhÃ¡ch HÃ ng
+            Quản Lý Đánh Giá Khách Hàng
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Quáº£n lÃ½ vÃ  theo dÃµi Ä‘Ã¡nh giÃ¡ cá»§a khÃ¡ch hÃ ng vá» sáº£n pháº©m
+            Quản lý và theo dõi đánh giá của khách hàng về sản phẩm
           </p>
         </div>
         <div className="flex gap-3">
@@ -162,14 +162,14 @@ const ReviewsManagement: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
           >
             <TrendingUp size={16} />
-            Xem TÆ°Æ¡ng TÃ¡c
+            Xem Tương Tác
           </Link>
           <button
             onClick={loadReviews}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors cursor-pointer"
           >
             <RefreshCw size={16} />
-            LÃ m má»›i
+            Làm mới
           </button>
         </div>
       </div>
@@ -179,7 +179,7 @@ const ReviewsManagement: React.FC = () => {
         <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Tá»•ng Ä‘Ã¡nh giÃ¡</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Tổng đánh giá</p>
               <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{reviews.length}</p>
             </div>
             <MessageSquare className="text-blue-500 dark:text-blue-400" size={24} />
@@ -189,7 +189,7 @@ const ReviewsManagement: React.FC = () => {
         <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">ÄÃ¡nh giÃ¡ 5 sao</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá 5 sao</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {reviews.filter(r => r.rating === 5).length}
               </p>
@@ -201,7 +201,7 @@ const ReviewsManagement: React.FC = () => {
         <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">ÄÃ¡nh giÃ¡ trung bÃ¬nh</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá trung bình</p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {reviews.length > 0 
                   ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
@@ -216,7 +216,7 @@ const ReviewsManagement: React.FC = () => {
         <div className="bg-white dark:bg-slate-800/90 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">ÄÃ¡nh giÃ¡ tháº¥p (â‰¤3 sao)</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Đánh giá thấp (≤3 sao)</p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {reviews.filter(r => r.rating <= 3).length}
               </p>
@@ -234,7 +234,7 @@ const ReviewsManagement: React.FC = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="TÃ¬m kiáº¿m theo tÃªn khÃ¡ch hÃ ng, bÃ¬nh luáº­n hoáº·c sáº£n pháº©m..."
+              placeholder="Tìm kiếm theo tên khách hàng, bình luận hoặc sản phẩm..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -249,7 +249,7 @@ const ReviewsManagement: React.FC = () => {
               value={filterRating || ''}
               onChange={(e) => setFilterRating(e.target.value ? parseInt(e.target.value) : null)}
             >
-              <option value="">Táº¥t cáº£ Ä‘Ã¡nh giÃ¡</option>
+              <option value="">Tất cả đánh giá</option>
               <option value="5">5 sao</option>
               <option value="4">4 sao</option>
               <option value="3">3 sao</option>
@@ -261,46 +261,46 @@ const ReviewsManagement: React.FC = () => {
       </div>
 
       {/* Reviews List */}
-      <div className="bg-white dark:bg-slate-800/90 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
         {filteredReviews.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <MessageSquare size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium">KhÃ´ng cÃ³ Ä‘Ã¡nh giÃ¡ nÃ o</p>
+            <p className="text-lg font-medium">Không có đánh giá nào</p>
             <p className="text-sm">
               {searchTerm || filterRating 
-                ? 'KhÃ´ng tÃ¬m tháº¥y Ä‘Ã¡nh giÃ¡ phÃ¹ há»£p vá»›i bá»™ lá»c'
-                : 'ChÆ°a cÃ³ Ä‘Ã¡nh giÃ¡ nÃ o tá»« khÃ¡ch hÃ ng'
+                ? 'Không tìm thấy đánh giá phù hợp với bộ lọc'
+                : 'Chưa có đánh giá nào từ khách hàng'
               }
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-slate-900/80 border-b border-gray-200 dark:border-slate-700">
+              <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    KhÃ¡ch hÃ ng
+                    Khách hàng
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Sáº£n pháº©m
+                    Sản phẩm
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ÄÃ¡nh giÃ¡
+                    Đánh giá
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    BÃ¬nh luáº­n
+                    Bình luận
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    NgÃ y
+                    Ngày
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Thao tÃ¡c
+                    Thao tác
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {filteredReviews.map((review, index) => (
-                  <tr key={review.id || `review-${index}`} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                  <tr key={review.id || `review-${index}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
@@ -309,8 +309,8 @@ const ReviewsManagement: React.FC = () => {
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {review.userName || 'KhÃ¡ch hÃ ng'}
+                          <div className="text-sm font-medium text-gray-900">
+                            {review.userName || 'Khách hàng'}
                           </div>
                           {review.userRole && (
                             <div className="text-sm text-gray-500">
@@ -326,16 +326,16 @@ const ReviewsManagement: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                        {review.productTitle || 'Sáº£n pháº©m khÃ´ng xÃ¡c Ä‘á»‹nh'}
+                      <div className="text-sm text-gray-900 font-medium">
+                        {review.productTitle || 'Sản phẩm không xác định'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {renderStars(review.rating || 0)}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate">
-                        {review.comment || 'KhÃ´ng cÃ³ bÃ¬nh luáº­n'}
+                      <div className="text-sm text-gray-900 max-w-xs truncate">
+                        {review.comment || 'Không có bình luận'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -349,14 +349,14 @@ const ReviewsManagement: React.FC = () => {
                             setShowDetailModal(true);
                           }}
                           className="text-blue-600 hover:text-blue-900 p-1 rounded"
-                          title="Xem chi tiáº¿t"
+                          title="Xem chi tiết"
                         >
                           <Eye size={16} />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(review)}
                           className="text-red-600 hover:text-red-900 p-1 rounded"
-                          title="XÃ³a Ä‘Ã¡nh giÃ¡"
+                          title="Xóa đánh giá"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -374,77 +374,77 @@ const ReviewsManagement: React.FC = () => {
       {showDetailModal && selectedReview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowDetailModal(false)}></div>
-          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 animate-fade-in-up max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 animate-fade-in-up max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                 <Star className="text-yellow-500" size={24} />
-                Chi tiáº¿t Ä‘Ã¡nh giÃ¡
+                Chi tiết đánh giá
               </h3>
               <button 
                 onClick={() => setShowDetailModal(false)} 
                 className="text-gray-400 hover:text-gray-600 p-1 rounded"
               >
-                âœ•
+                ✕
               </button>
             </div>
             
             <div className="p-6 space-y-6">
               {/* Customer Info */}
-              <div className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-3 flex items-center gap-2">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <User size={18} />
-                  ThÃ´ng tin khÃ¡ch hÃ ng
+                  Thông tin khách hàng
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">TÃªn khÃ¡ch hÃ ng</label>
-                    <p className="text-gray-800 dark:text-gray-100 font-medium">{selectedReview.userName || 'KhÃ¡ch hÃ ng'}</p>
+                    <label className="text-sm font-medium text-gray-600">Tên khách hàng</label>
+                    <p className="text-gray-800 font-medium">{selectedReview.userName || 'Khách hàng'}</p>
                   </div>
                   {selectedReview.userRole && (
                     <div>
-                      <label className="text-sm font-medium text-gray-600">Vai trÃ²</label>
-                      <p className="text-gray-800 dark:text-gray-100">{selectedReview.userRole}</p>
+                      <label className="text-sm font-medium text-gray-600">Vai trò</label>
+                      <p className="text-gray-800">{selectedReview.userRole}</p>
                     </div>
                   )}
                   {selectedReview.userPhone && (
                     <div>
-                      <label className="text-sm font-medium text-gray-600">Sá»‘ Ä‘iá»‡n thoáº¡i</label>
-                      <p className="text-gray-800 dark:text-gray-100">{selectedReview.userPhone}</p>
+                      <label className="text-sm font-medium text-gray-600">Số điện thoại</label>
+                      <p className="text-gray-800">{selectedReview.userPhone}</p>
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-medium text-gray-600">NgÃ y Ä‘Ã¡nh giÃ¡</label>
-                    <p className="text-gray-800 dark:text-gray-100">{formatDate(selectedReview.date || selectedReview.createdAt || new Date().toISOString())}</p>
+                    <label className="text-sm font-medium text-gray-600">Ngày đánh giá</label>
+                    <p className="text-gray-800">{formatDate(selectedReview.date || selectedReview.createdAt || new Date().toISOString())}</p>
                   </div>
                 </div>
               </div>
 
               {/* Product Info */}
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-3 flex items-center gap-2">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <Package size={18} />
-                  Sáº£n pháº©m Ä‘Æ°á»£c Ä‘Ã¡nh giÃ¡
+                  Sản phẩm được đánh giá
                 </h4>
-                <p className="text-gray-800 dark:text-gray-100 font-medium">{selectedReview.productTitle || 'Sáº£n pháº©m khÃ´ng xÃ¡c Ä‘á»‹nh'}</p>
+                <p className="text-gray-800 font-medium">{selectedReview.productTitle || 'Sản phẩm không xác định'}</p>
               </div>
 
               {/* Rating */}
               <div className="bg-yellow-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-3 flex items-center gap-2">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <Star size={18} />
-                  ÄÃ¡nh giÃ¡
+                  Đánh giá
                 </h4>
                 {renderStars(selectedReview.rating || 0, 24)}
               </div>
 
               {/* Comment */}
               <div className="bg-green-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-3 flex items-center gap-2">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <MessageSquare size={18} />
-                  BÃ¬nh luáº­n
+                  Bình luận
                 </h4>
-                <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-                  {selectedReview.comment || 'KhÃ´ng cÃ³ bÃ¬nh luáº­n'}
+                <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {selectedReview.comment || 'Không có bình luận'}
                 </p>
               </div>
             </div>
@@ -456,18 +456,18 @@ const ReviewsManagement: React.FC = () => {
       {showDeleteModal && reviewToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !deleting && setShowDeleteModal(false)}></div>
-          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md relative z-10 animate-fade-in-up">
-            <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative z-10 animate-fade-in-up">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
               <h3 className="text-lg font-bold text-red-600 flex items-center gap-2">
                 <Trash2 size={20} />
-                XÃ¡c nháº­n xÃ³a Ä‘Ã¡nh giÃ¡
+                Xác nhận xóa đánh giá
               </h3>
               {!deleting && (
                 <button 
                   onClick={() => setShowDeleteModal(false)} 
                   className="text-gray-400 hover:text-gray-600 p-1 rounded"
                 >
-                  âœ•
+                  ✕
                 </button>
               )}
             </div>
@@ -477,30 +477,30 @@ const ReviewsManagement: React.FC = () => {
                 <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
                   <Trash2 size={32} className="text-red-600" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                  Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a Ä‘Ã¡nh giÃ¡ nÃ y?
+                <h4 className="text-lg font-semibold text-gray-800 mb-2">
+                  Bạn có chắc chắn muốn xóa đánh giá này?
                 </h4>
                 <p className="text-gray-600 text-sm">
-                  HÃ nh Ä‘á»™ng nÃ y khÃ´ng thá»ƒ hoÃ n tÃ¡c.
+                  Hành động này không thể hoàn tác.
                 </p>
               </div>
 
               {/* Review Info */}
-              <div className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-lg mb-6 border border-gray-200 dark:border-slate-700">
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs">
                     {(reviewToDelete.userName || 'K').charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800 dark:text-gray-100">{reviewToDelete.userName || 'KhÃ¡ch hÃ ng'}</p>
-                    <p className="text-xs text-gray-500">{reviewToDelete.productTitle || 'Sáº£n pháº©m khÃ´ng xÃ¡c Ä‘á»‹nh'}</p>
+                    <p className="font-medium text-gray-800">{reviewToDelete.userName || 'Khách hàng'}</p>
+                    <p className="text-xs text-gray-500">{reviewToDelete.productTitle || 'Sản phẩm không xác định'}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   {renderStars(reviewToDelete.rating || 0, 14)}
                 </div>
                 <p className="text-sm text-gray-600 line-clamp-2">
-                  {reviewToDelete.comment || 'KhÃ´ng cÃ³ bÃ¬nh luáº­n'}
+                  {reviewToDelete.comment || 'Không có bình luận'}
                 </p>
               </div>
 
@@ -511,7 +511,7 @@ const ReviewsManagement: React.FC = () => {
                   disabled={deleting}
                   className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
-                  Há»§y
+                  Hủy
                 </button>
                 <button 
                   type="button" 
@@ -522,12 +522,12 @@ const ReviewsManagement: React.FC = () => {
                   {deleting ? (
                     <>
                       <RefreshCw size={16} className="animate-spin" />
-                      Äang xÃ³a...
+                      Đang xóa...
                     </>
                   ) : (
                     <>
                       <Trash2 size={16} />
-                      XÃ³a Ä‘Ã¡nh giÃ¡
+                      Xóa đánh giá
                     </>
                   )}
                 </button>
@@ -541,4 +541,3 @@ const ReviewsManagement: React.FC = () => {
 };
 
 export default ReviewsManagement;
-
