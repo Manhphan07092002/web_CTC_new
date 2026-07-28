@@ -199,28 +199,55 @@ body, html {
 .delay-300 { animation-delay: 300ms; }
 .delay-500 { animation-delay: 500ms; }
 
-/* Dark mode styles */
+/* === RICH PREMIUM CORPORATE DARK MODE === */
 .dark { 
   color-scheme: dark; 
 }
-.dark body, .dark #root { 
-  background-color: #0f172a !important; 
-  color: #e2e8f0 !important; 
+
+/* Smooth color transitions when toggling theme */
+html.switching *, html.switching *::before, html.switching *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease !important;
 }
 
+/* Deep Space Midnight Background */
+.dark body { 
+  background-color: #060d1d !important; 
+  color: #f1f5f9 !important;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(2, 132, 199, 0.05) 0%, transparent 45%);
+  background-attachment: fixed;
+}
+
+.dark #root {
+  background-color: transparent !important;
+}
+
+/* High Contrast Headings in Dark Mode */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #ffffff !important;
+}
+
+.dark p, .dark li {
+  color: #cbd5e1;
+}
+
+/* Form Controls in Dark Mode */
 .dark input, .dark textarea, .dark select { 
-  background-color: #1e293b !important; 
-  border-color: #475569 !important; 
-  color: #e2e8f0 !important; 
+  background-color: rgba(15, 23, 42, 0.9) !important; 
+  border-color: rgba(255, 255, 255, 0.12) !important; 
+  color: #f8fafc !important; 
 }
 
 .dark input:focus, .dark textarea:focus, .dark select:focus { 
-  border-color: #007CB9 !important; 
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
 }
 
-.bg-white input, .bg-white select, .bg-white textarea, input.bg-white, select.bg-white, textarea.bg-white {
-  color: #0f172a !important;
-}
+/* Custom Scrollbar in Dark Mode */
+.dark ::-webkit-scrollbar-track { background: #060d1d; }
+.dark ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #0284c7; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

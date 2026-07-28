@@ -87,7 +87,7 @@ const Header: React.FC = () => {
     }
   };
   const { language, setLanguage, t } = useLanguage();
-  const { theme, themeMode, toggleTheme } = useTheme();
+  const { theme, themeMode, toggleTheme, setThemeMode } = useTheme();
   const { settings } = useSettings();
   const { totalItems } = useCart();
 
@@ -711,6 +711,48 @@ const Header: React.FC = () => {
                         <span>{lang.label}</span>
                       </button>
                     ))}
+                  </div>
+                </div>
+
+                {/* Mobile Theme Mode Selector */}
+                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2.5 text-center">
+                    Giao diện / Theme Mode
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => setThemeMode('light')}
+                      className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
+                        themeMode === 'light'
+                          ? 'bg-amber-500 text-white border-amber-500 shadow-md'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
+                      }`}
+                    >
+                      <Sun size={14} />
+                      <span>{t('common.light')}</span>
+                    </button>
+                    <button
+                      onClick={() => setThemeMode('dark')}
+                      className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
+                        themeMode === 'dark'
+                          ? 'bg-sky-600 text-white border-sky-600 shadow-md'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
+                      }`}
+                    >
+                      <Moon size={14} />
+                      <span>{t('common.dark')}</span>
+                    </button>
+                    <button
+                      onClick={() => setThemeMode('system')}
+                      className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
+                        themeMode === 'system'
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
+                      }`}
+                    >
+                      <Monitor size={14} />
+                      <span>Auto</span>
+                    </button>
                   </div>
                 </div>
 
