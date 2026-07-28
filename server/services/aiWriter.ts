@@ -264,11 +264,29 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
     }
     scrapedTitle = scrapedTitle.replace(/\s*[|–—-]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV|Tiki|Shopee|Lazada|MSI|Dell|ASUS|HP|Lenovo|CTC|ctcdn\.vn|Thế Giới Di Động|TGDD|CellphoneS|FPT Shop).*$/i, '').trim();
 
-    // 2. Extract Body Text - Multi-tag extraction (p, div, span, li, td, th, article, section)
+    // 2. Extract Body Text & Technical Spec Tables
     const scrapedParagraphs: string[] = [];
+    const scrapedSpecs: string[] = [];
+
+    // 2a. Extract HTML Table Rows (specifications key: value)
+    const trRegex = /<tr[^>]*>\s*<t[dh][^>]*>(.*?)<\/t[dh]>\s*<t[dh][^>]*>(.*?)<\/t[dh]>\s*<\/tr>/gis;
+    let trMatch;
+    while ((trMatch = trRegex.exec(html)) !== null && scrapedSpecs.length < 30) {
+      const key = trMatch[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      const val = trMatch[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      if (key.length >= 2 && val.length >= 2 && key.length < 60 && val.length < 250 && !/chọn|mua|xem|giá|giảm/i.test(key)) {
+        scrapedSpecs.push(`• ${key}: ${val}`);
+      }
+    }
+
+    if (scrapedSpecs.length > 0) {
+      scrapedParagraphs.push(`=== BẢNG THÔNG SỐ KỸ THUẬT CHI TIẾT TỪ TRANG NGUỒN ===\n` + scrapedSpecs.join('\n'));
+    }
+
+    // 2b. Extract text blocks (p, div, span, li, td, th, article, section)
     const blockRegex = /<(?:p|div|span|li|td|th|h2|h3|h4|article|section)[^>]*>(.*?)<\/(?:p|div|span|li|td|th|h2|h3|h4|article|section)>/gis;
     let blockMatch;
-    while ((blockMatch = blockRegex.exec(html)) !== null && scrapedParagraphs.length < 40) {
+    while ((blockMatch = blockRegex.exec(html)) !== null && scrapedParagraphs.length < 50) {
       const text = blockMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       if (text.length > 25 &&
           !/(?:copyright|all rights reserved|lượt xem|chia sẻ|theo dõi|đăng ký|quảng cáo|bảo lưu mọi quyền|cookie|chính sách)/i.test(text) &&

@@ -274,12 +274,12 @@ Danh mục: "${initialCategory || 'Thiết bị Công Nghệ'}"
 Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'So sánh ưu điểm'}
 Độ sâu: ${targetLength === 'deep' ? '900-1200 từ' : '600-800 từ'}
 
-━━━ NỘI DUNG GỐC CÀO ĐƯỢC - BÁM SÁT HOÀN TOÀN ━━━
+━━━ NỘI DUNG GỐC & THÔNG SỐ CÀO ĐƯỢC ━━━
 ${hasRealContent
-  ? scrapedRawText.slice(0, 4500)
+  ? scrapedRawText.slice(0, 5000)
   : '⚠️ Không có nội dung cào được. Chỉ được viết dựa trên tên sản phẩm. TUYỆT ĐỐI KHÔNG bịa thông số kỹ thuật cụ thể như số GHz, GB, W... nếu không chắc chắn.'}
 
-━━━ HÌNH ẢNH CÀO ĐƯỢC (PHẢI DÙNG ĐÚNG CÁC URL NÀY) ━━━
+━━━ HÌNH ẢNH CÀO ĐƯỢC ━━━
 ${hasImages
   ? scrapedImages.map((img, i) => `Ảnh ${i + 1}: ${img}`).join('\n')
   : '(Không cào được ảnh từ link)'}
@@ -288,8 +288,6 @@ ${hasImages
 
 🔴 LUẬT 1 - TÊN SẢN PHẨM (name):
 - Bóc tách CHÍNH XÁC từ nội dung gốc, KHÔNG thêm từ marketing
-- ĐÚNG: "Laptop Gaming OMEN 14-fb0135TX AY8V1PA"
-- SAI: "Laptop Gaming OMEN 14 – Hiệu Suất Đỉnh Cao"
 
 🔴 LUẬT 2 - HÌNH ẢNH:
 ${hasImages
@@ -298,16 +296,37 @@ ${hasImages
   : `- image: Dùng ảnh Unsplash liên quan đến "${scrapedTitle || nameToUse}"
 - images: Dùng 2 ảnh Unsplash liên quan`}
 
-🔴 LUẬT 3 - NỘI DUNG CHI TIẾT (description - HTML):
-${hasRealContent
-  ? '- BÁM SÁT nội dung gốc, cấu trúc lại thành H2/H3 nhưng không thêm thông số bịa'
-  : '- Viết tổng quan dựa trên tên, KHÔNG bịa thông số kỹ thuật cụ thể'}
-- Cấu trúc: H2 Tổng quan → H2 Tính năng nổi bật → H2 Thông số → H2 Ứng dụng
-- Câu tối đa 16 từ, đoạn tối đa 60 từ
-- BẮT BUỘC ≥ 2 danh sách <ul><li>...</li></ul>
-- Từ khóa Focus trong 150 từ đầu, mật độ 1.2-2.0%
-- Dùng từ nối: Tuy nhiên, Bên cạnh đó, Ngoài ra, Do đó, Đặc biệt${videoEmbeds ? '\n- Chèn video vào giữa bài:\n' + videoEmbeds : ''}
+🔴 LUẬT 3 - BẢNG THÔNG SỐ KỸ THUẬT HTML TRONG BÀI VIẾT (description):
+- BẮT BUỘC có 1 phần <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2> chứa bảng HTML định dạng đẹp:
+  <div class="overflow-x-auto my-6">
+    <table class="w-full text-sm border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+      <thead>
+        <tr class="bg-slate-800 text-white font-bold"><th class="p-3 border border-slate-700 text-left">Thông số</th><th class="p-3 border border-slate-700 text-left">Chi tiết kỹ thuật</th></tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3 font-semibold bg-slate-50">...</td><td class="p-3">...</td></tr>
+      </tbody>
+    </table>
+  </div>
+- Liệt kê ĐẦY ĐỦ 8-15 thông số (Vi xử lý CPU, RAM, Ổ cứng SSD, Màn hình, Card đồ họa GPU, Pin, Trọng lượng, Kích thước, Cổng kết nối, Hệ điều hành, Công nghệ làm mát, Chuẩn kết nối WiFi/Bluetooth, Bảo hành...).
+
+🔴 LUẬT 4 - NỘI DUNG BÀI VIẾT CHI TIẾT:
+- Cấu trúc:
+  1. <p>Đoạn mở đầu ấn tượng chứa từ khóa Focus trong 150 từ đầu</p>
+  2. <h2>Tổng Quan & Thiết Kế Nổi Bật</h2>
+  3. <h2>Hiệu Năng & Trải Nghiệm Thực Tế</h2>
+  4. <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2> (Bảng HTML trên)
+  5. <h2>Đặc Điểm & Tính Năng Nổi Bật</h2> (Liệt kê danh sách <ul><li>...</li></ul>)
+  6. <h2>Tổng Kết & Lý Do Nên Chọn Mua</h2>
+- Câu tối đa 16 từ, đoạn tối đa 60 từ.
+- BẮT BUỘC ≥ 2 danh sách <ul><li>...</li></ul>.
+- Mật độ từ khóa Focus: 1.2-2.0%.
+- Từ nối bắt buộc: Tuy nhiên, Bên cạnh đó, Ngoài ra, Do đó, Đặc biệt.${videoEmbeds ? '\n- Chèn video này vào giữa bài:\n' + videoEmbeds : ''}
 - Cuối bài: <p class="mt-4 pt-4 border-t">Xem thêm <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá</a>.</p>
+
+🔴 LUẬT 5 - ĐỊNH DẠNG JSON TRẢ VỀ:
+- technicalSpecs: Object chứa ĐẦY ĐỦ 8-15 cặp Key-Value thông số kỹ thuật (vd: {"CPU": "Intel Core Ultra 7 155H", "RAM": "16GB LPDDR5X", ...})
+- features: Array chứa 5-8 dòng đặc điểm nổi bật nhất (vd: ["Vi xử lý Intel Core Ultra 7 với NPU AI tích hợp", "Màn hình OLED 2.8K 120Hz chuẩn màu 100% DCI-P3", ...])
 
 Trả về JSON thuần không bọc markdown:
 {
@@ -317,11 +336,26 @@ Trả về JSON thuần không bọc markdown:
   "shortDescription": "Mô tả meta 120-160 ký tự, chứa từ khóa focus",
   "image": "${scrapedImages[0] || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'}",
   "images": ${JSON.stringify(scrapedImages.slice(1, 4).length > 0 ? scrapedImages.slice(1, 4) : ['https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'])},
-  "description": "<p>Mở đầu bám sát nội dung gốc, chứa từ khóa...</p><h2>Tổng Quan</h2>...",
-  "specifications": "Thông số kỹ thuật ngắn gọn từ nội dung gốc",
-  "warranty": "Theo nhà sản xuất",
-  "features": ["Tính năng 1 từ nội dung gốc", "Tính năng 2", "Tính năng 3", "Tính năng 4"],
-  "technicalSpecs": { "Thông số 1": "Giá trị từ nội dung gốc", "Thông số 2": "Giá trị" }
+  "description": "<p>Mở đầu bám sát nội dung gốc, chứa từ khóa...</p><h2>...</h2>...",
+  "specifications": "Tóm tắt thông số kỹ thuật chính từ nội dung gốc",
+  "warranty": "24 tháng chính hãng",
+  "features": [
+    "Đặc điểm nổi bật 1 từ nội dung gốc",
+    "Đặc điểm nổi bật 2",
+    "Đặc điểm nổi bật 3",
+    "Đặc điểm nổi bật 4",
+    "Đặc điểm nổi bật 5"
+  ],
+  "technicalSpecs": {
+    "Vi xử lý (CPU)": "Giá trị từ nội dung gốc",
+    "Bộ nhớ RAM": "Giá trị",
+    "Ổ cứng": "Giá trị",
+    "Màn hình": "Giá trị",
+    "Card đồ họa (GPU)": "Giá trị",
+    "Pin & Sạc": "Giá trị",
+    "Trọng lượng": "Giá trị",
+    "Hệ điều hành": "Giá trị"
+  }
 }`;
 
       const response = await chatService.sendMessage(prompt);
