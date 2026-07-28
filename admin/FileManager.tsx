@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Folder, FileImage } from 'lucide-react';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
@@ -34,7 +34,7 @@ const FileManager: React.FC = () => {
       const data = await res.json();
       setFiles(data);
     } catch (e) {
-      setError('Không tải được danh sách file.');
+      setError('KhÃ´ng táº£i Ä‘Æ°á»£c danh sÃ¡ch file.');
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +66,7 @@ const FileManager: React.FC = () => {
       await loadFiles();
       e.target.value = '';
     } catch (err) {
-      setError('Upload thất bại. Vui lòng thử lại.');
+      setError('Upload tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i.');
     } finally {
       setUploading(false);
     }
@@ -75,7 +75,7 @@ const FileManager: React.FC = () => {
   const handleCopy = (url: string) => {
     const fullUrl = `${window.location.origin}${url}`;
     navigator.clipboard.writeText(fullUrl).catch(() => {});
-    alert(`Đã copy: ${fullUrl}`);
+    alert(`ÄÃ£ copy: ${fullUrl}`);
   };
 
   const [deleteConfirm, setDeleteConfirm] = useState<{
@@ -107,7 +107,7 @@ const FileManager: React.FC = () => {
       }
       await loadFiles();
     } catch (e) {
-      setError('Xóa file thất bại. Vui lòng thử lại.');
+      setError('XÃ³a file tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i.');
     } finally {
       setDeleteConfirm({ isOpen: false, file: null });
     }
@@ -117,25 +117,25 @@ const FileManager: React.FC = () => {
     <div className="h-full flex flex-col animate-fade-in">
       <div className="mb-6 flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Quản lý file</h2>
-          <p className="text-gray-500 text-sm mt-1">Xem và tải lên file vào hệ thống (uploads/images) - Tối đa 5 file, 10MB/file</p>
+          <h2 className="text-2xl font-bold text-gray-800">Quáº£n lÃ½ file</h2>
+          <p className="text-gray-500 text-sm mt-1">Xem vÃ  táº£i lÃªn file vÃ o há»‡ thá»‘ng (uploads/images) - Tá»‘i Ä‘a 5 file, 10MB/file</p>
         </div>
         <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold shadow-md cursor-pointer hover:bg-secondary transition-all">
-          <span>{uploading ? 'Đang upload...' : 'Upload file (1-5)'}</span>
+          <span>{uploading ? 'Äang upload...' : 'Upload file (1-5)'}</span>
           <input type="file" multiple className="hidden" disabled={uploading} onChange={handleUpload} />
         </label>
       </div>
 
       {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 px-4 py-2 rounded-lg">{error}</div>}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 overflow-hidden p-4">
+      <div className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 flex-1 overflow-hidden p-4">
         {isLoading ? (
           <div className="h-full flex items-center justify-center">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
           </div>
         ) : files.length === 0 ? (
           <div className="text-center text-gray-500 text-sm py-12">
-            Chưa có file nào. Hãy upload một hình ảnh mới.
+            ChÆ°a cÃ³ file nÃ o. HÃ£y upload má»™t hÃ¬nh áº£nh má»›i.
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -154,9 +154,9 @@ const FileManager: React.FC = () => {
                     type="button"
                     onClick={() => handleDeleteClick(f)}
                     className="absolute top-1 right-1 bg-white/80 hover:bg-red-500 hover:text-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow"
-                    title={f.isDirectory ? "Xóa folder" : "Xóa file"}
+                    title={f.isDirectory ? "XÃ³a folder" : "XÃ³a file"}
                   >
-                    ×
+                    Ã—
                   </button>
                 </div>
                 <div className="p-2 flex flex-col gap-1">
@@ -189,15 +189,16 @@ const FileManager: React.FC = () => {
         isOpen={deleteConfirm.isOpen}
         onClose={() => setDeleteConfirm({ isOpen: false, file: null })}
         onConfirm={handleConfirmDelete}
-        title="Xác nhận xóa tệp"
+        title="XÃ¡c nháº­n xÃ³a tá»‡p"
         itemName={deleteConfirm.file?.filename}
         itemImage={deleteConfirm.file?.url}
-        description={`Bạn có chắc chắn muốn xóa tệp "${deleteConfirm.file?.filename}"?`}
-        warningText="Tệp tin sẽ bị xóa vĩnh viễn khỏi thư mục uploads."
-        confirmText="Đồng ý xóa"
+        description={`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a tá»‡p "${deleteConfirm.file?.filename}"?`}
+        warningText="Tá»‡p tin sáº½ bá»‹ xÃ³a vÄ©nh viá»…n khá»i thÆ° má»¥c uploads."
+        confirmText="Äá»“ng Ã½ xÃ³a"
       />
     </div>
   );
 };
 
 export default FileManager;
+

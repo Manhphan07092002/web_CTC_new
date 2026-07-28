@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X, User as UserIcon, Mail, Shield, Search, MoreVertical, Lock, Phone, Eye, EyeOff, Image as ImageIcon, Crown, UserCheck, Users, Key, Check } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
@@ -101,7 +101,7 @@ const UserManagement: React.FC = () => {
 
   const handleAssignPermission = async () => {
     if (!selectedUserForPermission || !selectedRoleId) {
-      showToast('Vui lòng chọn vai trò', 'error');
+      showToast('Vui lÃ²ng chá»n vai trÃ²', 'error');
       return;
     }
 
@@ -117,15 +117,15 @@ const UserManagement: React.FC = () => {
 
       const data = await response.json();
       if (data.success) {
-        showToast('Phân quyền thành công!', 'success');
+        showToast('PhÃ¢n quyá»n thÃ nh cÃ´ng!', 'success');
         setIsPermissionModalOpen(false);
         loadUserPermissions();
       } else {
-        showToast(data.message || 'Lỗi khi phân quyền', 'error');
+        showToast(data.message || 'Lá»—i khi phÃ¢n quyá»n', 'error');
       }
     } catch (error) {
       console.error('Error assigning permission:', error);
-      showToast('Lỗi khi phân quyền', 'error');
+      showToast('Lá»—i khi phÃ¢n quyá»n', 'error');
     }
   };
 
@@ -143,7 +143,7 @@ const UserManagement: React.FC = () => {
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
-    // Lấy vai trò RBAC hiện tại của user
+    // Láº¥y vai trÃ² RBAC hiá»‡n táº¡i cá»§a user
     const userPerm = userPermissions[user.id];
     const currentRole = userPerm?.roleId?.name || user.role;
     
@@ -162,7 +162,7 @@ const UserManagement: React.FC = () => {
 
   const handleAdd = () => {
     setEditingUser(null);
-    // Set default role từ danh sách roles (viewer nếu có, hoặc role đầu tiên)
+    // Set default role tá»« danh sÃ¡ch roles (viewer náº¿u cÃ³, hoáº·c role Ä‘áº§u tiÃªn)
     const defaultRole = roles.find(r => r.name === 'viewer')?.name || roles[0]?.name || 'viewer';
     setFormData({ name: '', email: '', role: defaultRole, password: '', phone: '', avatar: '' });
     setPasswordError(null);
@@ -195,11 +195,11 @@ const UserManagement: React.FC = () => {
     if (!user) return;
     try {
       await api.users.delete(user.id);
-      showToast(`✓ Đã xóa người dùng ${user.name}`, 'success');
+      showToast(`âœ“ ÄÃ£ xÃ³a ngÆ°á»i dÃ¹ng ${user.name}`, 'success');
       loadUsers();
     } catch (e) {
       console.error('Error deleting user:', e);
-      showToast('✗ Không thể xóa người dùng', 'error');
+      showToast('âœ— KhÃ´ng thá»ƒ xÃ³a ngÆ°á»i dÃ¹ng', 'error');
     } finally {
       setDeleteConfirm({ isOpen: false, user: null });
     }
@@ -207,10 +207,10 @@ const UserManagement: React.FC = () => {
 
   const validatePassword = (password: string): string | null => {
     if (!password) return null;
-    if (password.length < 6) return 'Mật khẩu phải có ít nhất 6 ký tự';
-    if (!/[A-Z]/.test(password)) return 'Mật khẩu phải có ít nhất 1 chữ hoa';
-    if (!/[a-z]/.test(password)) return 'Mật khẩu phải có ít nhất 1 chữ thường';
-    if (!/[0-9]/.test(password)) return 'Mật khẩu phải có ít nhất 1 số';
+    if (password.length < 6) return 'Máº­t kháº©u pháº£i cÃ³ Ã­t nháº¥t 6 kÃ½ tá»±';
+    if (!/[A-Z]/.test(password)) return 'Máº­t kháº©u pháº£i cÃ³ Ã­t nháº¥t 1 chá»¯ hoa';
+    if (!/[a-z]/.test(password)) return 'Máº­t kháº©u pháº£i cÃ³ Ã­t nháº¥t 1 chá»¯ thÆ°á»ng';
+    if (!/[0-9]/.test(password)) return 'Máº­t kháº©u pháº£i cÃ³ Ã­t nháº¥t 1 sá»‘';
     return null;
   };
 
@@ -218,7 +218,7 @@ const UserManagement: React.FC = () => {
     if (!phone) return null;
     const phoneRegex = /^(0|\+84)[0-9]{9,10}$/;
     if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-      return 'Số điện thoại không hợp lệ (VD: 0123456789 hoặc +84123456789)';
+      return 'Sá»‘ Ä‘iá»‡n thoáº¡i khÃ´ng há»£p lá»‡ (VD: 0123456789 hoáº·c +84123456789)';
     }
     return null;
   };
@@ -277,15 +277,15 @@ const UserManagement: React.FC = () => {
             console.log('Updating user:', editingUser.id, submitData);
             await api.users.update(editingUser.id, submitData);
             userId = editingUser.id;
-            showToast(`✓ Đã cập nhật ${formData.name}`, 'success');
+            showToast(`âœ“ ÄÃ£ cáº­p nháº­t ${formData.name}`, 'success');
         } else {
             console.log('Creating user:', submitData);
             const newUser = await api.users.add(submitData);
             userId = newUser.id || newUser._id;
-            showToast(`✓ Đã thêm ${formData.name}`, 'success');
+            showToast(`âœ“ ÄÃ£ thÃªm ${formData.name}`, 'success');
         }
         
-        // Gán vai trò RBAC cho user
+        // GÃ¡n vai trÃ² RBAC cho user
         if (formData.role && userId) {
           const selectedRole = roles.find(r => r.name === formData.role);
           if (selectedRole) {
@@ -295,7 +295,7 @@ const UserManagement: React.FC = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   roleId: selectedRole._id,
-                  notes: editingUser ? 'Cập nhật vai trò qua form chỉnh sửa' : 'Gán vai trò khi tạo user mới'
+                  notes: editingUser ? 'Cáº­p nháº­t vai trÃ² qua form chá»‰nh sá»­a' : 'GÃ¡n vai trÃ² khi táº¡o user má»›i'
                 }),
               });
               const data = await response.json();
@@ -314,8 +314,8 @@ const UserManagement: React.FC = () => {
         loadUsers();
     } catch (e) {
         console.error('Error saving user:', e);
-        const errorMsg = (e as Error).message || 'Có lỗi xảy ra';
-        showToast(`✗ ${errorMsg}`, 'error');
+        const errorMsg = (e as Error).message || 'CÃ³ lá»—i xáº£y ra';
+        showToast(`âœ— ${errorMsg}`, 'error');
     }
   };
 
@@ -325,8 +325,8 @@ const UserManagement: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-end">
          <div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Quản lý Tài khoản & Phân quyền</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Quản lý người dùng, vai trò và phân quyền hệ thống</p>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Quáº£n lÃ½ TÃ i khoáº£n & PhÃ¢n quyá»n</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Quáº£n lÃ½ ngÆ°á»i dÃ¹ng, vai trÃ² vÃ  phÃ¢n quyá»n há»‡ thá»‘ng</p>
          </div>
          {activeTab === 'users' && (
            <button 
@@ -341,9 +341,9 @@ const UserManagement: React.FC = () => {
       {/* Tabs */}
       <div className="flex border-b border-gray-200 dark:border-slate-700">
         {[
-          { id: 'users', label: 'Quản lý Người dùng', icon: Users },
-          { id: 'roles', label: 'Quản lý Vai trò', icon: Crown },
-          { id: 'permissions', label: 'Phân quyền Người dùng', icon: UserCheck },
+          { id: 'users', label: 'Quáº£n lÃ½ NgÆ°á»i dÃ¹ng', icon: Users },
+          { id: 'roles', label: 'Quáº£n lÃ½ Vai trÃ²', icon: Crown },
+          { id: 'permissions', label: 'PhÃ¢n quyá»n NgÆ°á»i dÃ¹ng', icon: UserCheck },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -369,7 +369,7 @@ const UserManagement: React.FC = () => {
                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"/>
                <input 
                  type="text" 
-                 placeholder="Tìm kiếm người dùng..." 
+                 placeholder="TÃ¬m kiáº¿m ngÆ°á»i dÃ¹ng..." 
                  className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm placeholder-gray-400 dark:placeholder-gray-500"
                />
             </div>
@@ -447,21 +447,21 @@ const UserManagement: React.FC = () => {
                      <button 
                        onClick={() => handleOpenPermissionModal(u)} 
                        className="p-2 hover:bg-amber-50 dark:hover:bg-amber-900/30 text-gray-500 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 rounded-lg transition-colors"
-                       title="Phân quyền"
+                       title="PhÃ¢n quyá»n"
                      >
                        <Key size={18} />
                      </button>
                      <button 
                        onClick={() => handleEdit(u)} 
                        className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
-                       title="Sửa"
+                       title="Sá»­a"
                      >
                        <Edit size={18} />
                      </button>
                       <button 
                         onClick={() => handleDeleteClick(u)} 
                         className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg transition-colors"
-                        title="Xóa"
+                        title="XÃ³a"
                       >
                        <Trash2 size={18} />
                       </button>
@@ -519,7 +519,7 @@ const UserManagement: React.FC = () => {
                          className="w-full px-4 py-2 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300 hover:text-primary font-medium"
                        >
                          <ImageIcon size={18} />
-                         {formData.avatar ? 'Thay đổi ảnh' : 'Chọn ảnh'}
+                         {formData.avatar ? 'Thay Ä‘á»•i áº£nh' : 'Chá»n áº£nh'}
                        </button>
                        {formData.avatar && (
                          <button
@@ -527,7 +527,7 @@ const UserManagement: React.FC = () => {
                            onClick={() => setFormData({ ...formData, avatar: '' })}
                            className="w-full mt-2 text-xs text-red-500 hover:text-red-700 font-medium"
                          >
-                           Xóa ảnh
+                           XÃ³a áº£nh
                          </button>
                        )}
                      </div>
@@ -564,7 +564,7 @@ const UserManagement: React.FC = () => {
 
                  <div>
                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                     Mật khẩu {editingUser && <span className="text-xs text-gray-500 font-normal">(Để trống nếu không đổi)</span>}
+                     Máº­t kháº©u {editingUser && <span className="text-xs text-gray-500 font-normal">(Äá»ƒ trá»‘ng náº¿u khÃ´ng Ä‘á»•i)</span>}
                    </label>
                    <div className="relative">
                      <input 
@@ -583,7 +583,7 @@ const UserManagement: React.FC = () => {
                            setPasswordError(null);
                          }
                        }}
-                       placeholder={editingUser ? 'Nhập mật khẩu mới...' : 'Nhập mật khẩu...'}
+                       placeholder={editingUser ? 'Nháº­p máº­t kháº©u má»›i...' : 'Nháº­p máº­t kháº©u...'}
                        minLength={editingUser ? 0 : 6}
                      />
                      <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
@@ -591,43 +591,43 @@ const UserManagement: React.FC = () => {
                        type="button"
                        onClick={() => setShowPassword(!showPassword)}
                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                       title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                       title={showPassword ? 'áº¨n máº­t kháº©u' : 'Hiá»‡n máº­t kháº©u'}
                      >
                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                      </button>
                    </div>
                    {passwordError ? (
                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                       <span className="font-bold">✗</span> {passwordError}
+                       <span className="font-bold">âœ—</span> {passwordError}
                      </p>
                    ) : !editingUser ? (
                      <div className="text-xs text-gray-600 mt-1 space-y-0.5">
                        <p className="flex items-center gap-1">
                          <span className={formData.password.length >= 6 ? 'text-green-600 font-bold' : 'text-gray-400'}>
-                           {formData.password.length >= 6 ? '✓' : '○'}
-                         </span> Tối thiểu 6 ký tự
+                           {formData.password.length >= 6 ? 'âœ“' : 'â—‹'}
+                         </span> Tá»‘i thiá»ƒu 6 kÃ½ tá»±
                        </p>
                        <p className="flex items-center gap-1">
                          <span className={/[A-Z]/.test(formData.password) ? 'text-green-600 font-bold' : 'text-gray-400'}>
-                           {/[A-Z]/.test(formData.password) ? '✓' : '○'}
-                         </span> Có chữ hoa
+                           {/[A-Z]/.test(formData.password) ? 'âœ“' : 'â—‹'}
+                         </span> CÃ³ chá»¯ hoa
                        </p>
                        <p className="flex items-center gap-1">
                          <span className={/[a-z]/.test(formData.password) ? 'text-green-600 font-bold' : 'text-gray-400'}>
-                           {/[a-z]/.test(formData.password) ? '✓' : '○'}
-                         </span> Có chữ thường
+                           {/[a-z]/.test(formData.password) ? 'âœ“' : 'â—‹'}
+                         </span> CÃ³ chá»¯ thÆ°á»ng
                        </p>
                        <p className="flex items-center gap-1">
                          <span className={/[0-9]/.test(formData.password) ? 'text-green-600 font-bold' : 'text-gray-400'}>
-                           {/[0-9]/.test(formData.password) ? '✓' : '○'}
-                         </span> Có số
+                           {/[0-9]/.test(formData.password) ? 'âœ“' : 'â—‹'}
+                         </span> CÃ³ sá»‘
                        </p>
                      </div>
                    ) : null}
                  </div>
 
                  <div>
-                   <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại</label>
+                   <label className="block text-sm font-bold text-gray-700 mb-2">Sá»‘ Ä‘iá»‡n thoáº¡i</label>
                    <div className="relative">
                      <input 
                        type="tel" 
@@ -644,26 +644,26 @@ const UserManagement: React.FC = () => {
                            setPhoneError(null);
                          }
                        }}
-                       placeholder="0123456789 hoặc +84123456789"
+                       placeholder="0123456789 hoáº·c +84123456789"
                      />
                      <Phone size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
                    </div>
                    {phoneError ? (
                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                       <span className="font-bold">✗</span> {phoneError}
+                       <span className="font-bold">âœ—</span> {phoneError}
                      </p>
                    ) : formData.phone && !phoneError ? (
                      <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                       <span className="font-bold">✓</span> Số điện thoại hợp lệ
+                       <span className="font-bold">âœ“</span> Sá»‘ Ä‘iá»‡n thoáº¡i há»£p lá»‡
                      </p>
                    ) : (
-                     <p className="text-xs text-gray-500 mt-1">VD: 0123456789 hoặc +84123456789</p>
+                     <p className="text-xs text-gray-500 mt-1">VD: 0123456789 hoáº·c +84123456789</p>
                    )}
                  </div>
 
                  <div>
                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                     Vai trò (RBAC) <span className="text-red-500">*</span>
+                     Vai trÃ² (RBAC) <span className="text-red-500">*</span>
                    </label>
                    <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-3">
                      {roles.length > 0 ? roles.map(role => (
@@ -694,7 +694,7 @@ const UserManagement: React.FC = () => {
                            {!['Crown', 'Shield', 'Edit', 'Eye'].includes(role.icon) && <UserIcon size={16} />}
                          </div>
                          <div className="flex-1">
-                           <div className="font-medium text-sm text-gray-800">{role.displayName}</div>
+                           <div className="font-medium text-sm text-gray-800 dark:text-gray-100">{role.displayName}</div>
                            <div className="text-xs text-gray-500">Level {role.level}</div>
                          </div>
                          {formData.role === role.name && (
@@ -704,12 +704,12 @@ const UserManagement: React.FC = () => {
                      )) : (
                        <div className="text-center py-4 text-gray-500 text-sm">
                          <Shield className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                         <p>Chưa có vai trò. Vui lòng tạo vai trò trước.</p>
+                         <p>ChÆ°a cÃ³ vai trÃ². Vui lÃ²ng táº¡o vai trÃ² trÆ°á»›c.</p>
                        </div>
                      )}
                    </div>
                    {roles.length > 0 && !formData.role && (
-                     <p className="text-xs text-orange-600 mt-1">Vui lòng chọn vai trò cho người dùng</p>
+                     <p className="text-xs text-orange-600 mt-1">Vui lÃ²ng chá»n vai trÃ² cho ngÆ°á»i dÃ¹ng</p>
                    )}
                  </div>
 
@@ -733,7 +733,7 @@ const UserManagement: React.FC = () => {
       {isPermissionModalOpen && selectedUserForPermission && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsPermissionModalOpen(false)}></div>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 animate-fade-in-up">
+          <div className="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg relative z-10 animate-fade-in-up">
             <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-orange-500 to-amber-500 rounded-t-2xl">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
@@ -741,7 +741,7 @@ const UserManagement: React.FC = () => {
                     <Key className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white">Phân quyền người dùng</h3>
+                    <h3 className="text-lg font-bold text-white">PhÃ¢n quyá»n ngÆ°á»i dÃ¹ng</h3>
                     <p className="text-white/80 text-sm">{selectedUserForPermission.name}</p>
                   </div>
                 </div>
@@ -758,10 +758,10 @@ const UserManagement: React.FC = () => {
                   {selectedUserForPermission.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div className="font-bold text-gray-800">{selectedUserForPermission.name}</div>
+                  <div className="font-bold text-gray-800 dark:text-gray-100">{selectedUserForPermission.name}</div>
                   <div className="text-sm text-gray-500">{selectedUserForPermission.email}</div>
                   <div className="text-xs text-gray-400 mt-1">
-                    Role hiện tại: <span className="font-medium text-gray-600">{selectedUserForPermission.role}</span>
+                    Role hiá»‡n táº¡i: <span className="font-medium text-gray-600">{selectedUserForPermission.role}</span>
                   </div>
                 </div>
               </div>
@@ -769,7 +769,7 @@ const UserManagement: React.FC = () => {
               {/* Role Selection */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-3">
-                  Chọn vai trò <span className="text-red-500">*</span>
+                  Chá»n vai trÃ² <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
                   {roles.map(role => (
@@ -800,7 +800,7 @@ const UserManagement: React.FC = () => {
                         {!['Crown', 'Shield', 'Edit', 'Eye'].includes(role.icon) && <UserIcon size={20} />}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-800">{role.displayName}</div>
+                        <div className="font-medium text-gray-800 dark:text-gray-100">{role.displayName}</div>
                         <div className="text-xs text-gray-500">Level {role.level}</div>
                       </div>
                       {selectedRoleId === role._id && (
@@ -814,19 +814,19 @@ const UserManagement: React.FC = () => {
                 {roles.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     <Shield className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p>Chưa có vai trò nào</p>
-                    <p className="text-sm">Vui lòng tạo vai trò trong tab "Quản lý Vai trò"</p>
+                    <p>ChÆ°a cÃ³ vai trÃ² nÃ o</p>
+                    <p className="text-sm">Vui lÃ²ng táº¡o vai trÃ² trong tab "Quáº£n lÃ½ Vai trÃ²"</p>
                   </div>
                 )}
               </div>
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Ghi chú</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Ghi chÃº</label>
                 <textarea
                   value={permissionNotes}
                   onChange={(e) => setPermissionNotes(e.target.value)}
-                  placeholder="Ghi chú về việc phân quyền (không bắt buộc)..."
+                  placeholder="Ghi chÃº vá» viá»‡c phÃ¢n quyá»n (khÃ´ng báº¯t buá»™c)..."
                   rows={3}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none resize-none"
                 />
@@ -839,7 +839,7 @@ const UserManagement: React.FC = () => {
                   onClick={() => setIsPermissionModalOpen(false)}
                   className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-bold transition-colors"
                 >
-                  Hủy
+                  Há»§y
                 </button>
                 <button
                   type="button"
@@ -848,7 +848,7 @@ const UserManagement: React.FC = () => {
                   className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:from-orange-600 hover:to-amber-600 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   <Check size={18} />
-                  Xác nhận phân quyền
+                  XÃ¡c nháº­n phÃ¢n quyá»n
                 </button>
               </div>
             </div>
@@ -861,15 +861,16 @@ const UserManagement: React.FC = () => {
         isOpen={deleteConfirm.isOpen}
         onClose={() => setDeleteConfirm({ isOpen: false, user: null })}
         onConfirm={handleConfirmDelete}
-        title="Xác nhận xóa tài khoản"
+        title="XÃ¡c nháº­n xÃ³a tÃ i khoáº£n"
         itemName={deleteConfirm.user?.name}
         itemType="user"
-        description={`Bạn có chắc chắn muốn xóa tài khoản "${deleteConfirm.user?.name}" (${deleteConfirm.user?.email})?`}
-        warningText="Tài khoản này sẽ bị xóa khỏi hệ thống và không thể khôi phục."
-        confirmText="Đồng ý xóa"
+        description={`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a tÃ i khoáº£n "${deleteConfirm.user?.name}" (${deleteConfirm.user?.email})?`}
+        warningText="TÃ i khoáº£n nÃ y sáº½ bá»‹ xÃ³a khá»i há»‡ thá»‘ng vÃ  khÃ´ng thá»ƒ khÃ´i phá»¥c."
+        confirmText="Äá»“ng Ã½ xÃ³a"
       />
     </div>
   );
 };
 
 export default UserManagement;
+

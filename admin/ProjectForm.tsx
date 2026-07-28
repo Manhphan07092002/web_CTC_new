@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+﻿import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X, Image as ImageIcon, Sparkles } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
@@ -86,7 +86,7 @@ const ProjectForm: React.FC = () => {
       setBaseline(initialProjectData);
     } catch (error) {
       console.error('Error loading project:', error);
-      showToast('Lỗi khi tải dự án', 'error');
+      showToast('Lá»—i khi táº£i dá»± Ã¡n', 'error');
     }
     setLoading(false);
   };
@@ -111,7 +111,7 @@ const ProjectForm: React.FC = () => {
 
   const saveProjectInternal = async (): Promise<boolean> => {
     if (!formData.title || !formData.location || !formData.capacity || !formData.completionDate || !formData.image || !formData.description) {
-      showToast('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
+      showToast('Vui lÃ²ng Ä‘iá»n Ä‘áº§y Ä‘á»§ thÃ´ng tin báº¯t buá»™c', 'error');
       return false;
     }
 
@@ -119,17 +119,17 @@ const ProjectForm: React.FC = () => {
     try {
       if (isEdit && id) {
         await api.projects.update(id, formData);
-        showToast('Cập nhật dự án thành công!', 'success');
+        showToast('Cáº­p nháº­t dá»± Ã¡n thÃ nh cÃ´ng!', 'success');
       } else {
         await api.projects.create(formData);
-        showToast('Thêm dự án thành công!', 'success');
+        showToast('ThÃªm dá»± Ã¡n thÃ nh cÃ´ng!', 'success');
       }
       setBaseline(formData);
       setLoading(false);
       return true;
     } catch (error) {
       console.error('Error saving project:', error);
-      showToast('Lỗi khi lưu dự án', 'error');
+      showToast('Lá»—i khi lÆ°u dá»± Ã¡n', 'error');
       setLoading(false);
       return false;
     }
@@ -153,14 +153,14 @@ const ProjectForm: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
-            {isEdit ? 'Chỉnh sửa Dự án' : 'Thêm Dự án mới'}
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+            {isEdit ? 'Chá»‰nh sá»­a Dá»± Ã¡n' : 'ThÃªm Dá»± Ã¡n má»›i'}
           </h1>
           <button
             onClick={handleExit}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
           >
             <X size={24} />
           </button>
@@ -169,8 +169,8 @@ const ProjectForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Tên dự án <span className="text-red-500">*</span>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+              TÃªn dá»± Ã¡n <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -178,14 +178,14 @@ const ProjectForm: React.FC = () => {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-              placeholder="VD: Hệ thống điện mặt trời áp mái nhà máy ABC"
+              placeholder="VD: Há»‡ thá»‘ng Ä‘iá»‡n máº·t trá»i Ã¡p mÃ¡i nhÃ  mÃ¡y ABC"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Địa điểm <span className="text-red-500">*</span>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                Äá»‹a Ä‘iá»ƒm <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -193,13 +193,13 @@ const ProjectForm: React.FC = () => {
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                placeholder="VD: Đà Nẵng"
+                placeholder="VD: ÄÃ  Náºµng"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Công suất <span className="text-red-500">*</span>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                CÃ´ng suáº¥t <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -214,8 +214,8 @@ const ProjectForm: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Ngày hoàn thành <span className="text-red-500">*</span>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                NgÃ y hoÃ n thÃ nh <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -223,18 +223,18 @@ const ProjectForm: React.FC = () => {
                 value={formData.completionDate}
                 onChange={(e) => setFormData({ ...formData, completionDate: e.target.value })}
                 className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                placeholder="VD: Tháng 12/2023"
+                placeholder="VD: ThÃ¡ng 12/2023"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Danh mục</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Danh má»¥c</label>
               <select
                 value={formData.categoryId}
                 onChange={(e) => handleCategoryChange(e.target.value)}
                 className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               >
-                <option value="">Chọn danh mục</option>
+                <option value="">Chá»n danh má»¥c</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
@@ -246,8 +246,8 @@ const ProjectForm: React.FC = () => {
 
           {/* Image */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Hình ảnh <span className="text-red-500">*</span>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+              HÃ¬nh áº£nh <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-4">
               {formData.image && (
@@ -256,11 +256,11 @@ const ProjectForm: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowImagePicker(true)}
-                className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
+                className="w-48 h-32 border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
               >
                 <div className="text-center">
                   <ImageIcon size={32} className="text-gray-400 mx-auto mb-2" />
-                  <span className="text-sm text-gray-500">Chọn hình ảnh</span>
+                  <span className="text-sm text-gray-500">Chá»n hÃ¬nh áº£nh</span>
                 </div>
               </button>
             </div>
@@ -268,26 +268,26 @@ const ProjectForm: React.FC = () => {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Mô tả chi tiết dự án <span className="text-red-500">*</span>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+              MÃ´ táº£ chi tiáº¿t dá»± Ã¡n <span className="text-red-500">*</span>
             </label>
-            <Suspense fallback={<div className="h-48 flex items-center justify-center bg-gray-50 border rounded-xl"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+            <Suspense fallback={<div className="h-48 flex items-center justify-center bg-gray-50 dark:bg-slate-900 border rounded-xl"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
               <RichTextEditor
                 content={formData.description}
                 onChange={(html) => setFormData({ ...formData, description: html })}
-                placeholder="Mô tả chi tiết về dự án, công nghệ, giải pháp thi công áp dụng..."
+                placeholder="MÃ´ táº£ chi tiáº¿t vá» dá»± Ã¡n, cÃ´ng nghá»‡, giáº£i phÃ¡p thi cÃ´ng Ã¡p dá»¥ng..."
               />
             </Suspense>
           </div>
 
           {/* SEO Analyzer - Yoast-style for Projects */}
-          <div className="pt-4 border-t border-gray-100">
-            <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Sparkles size={16} className="text-primary" /> PHÂN TÍCH & CHẤM ĐIỂM SEO DỰ ÁN (YOAST-STYLE)
+          <div className="pt-4 border-t border-gray-100 dark:border-slate-700">
+            <h3 className="text-sm font-black text-gray-800 dark:text-gray-100 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" /> PHÃ‚N TÃCH & CHáº¤M ÄIá»‚M SEO Dá»° ÃN (YOAST-STYLE)
             </h3>
             <SeoAnalyzer
               title={formData.title}
-              excerpt={`Dự án ${formData.title} tại ${formData.location} với công suất ${formData.capacity}.`}
+              excerpt={`Dá»± Ã¡n ${formData.title} táº¡i ${formData.location} vá»›i cÃ´ng suáº¥t ${formData.capacity}.`}
               content={formData.description}
               image={formData.image}
               focusKeyword={focusKeyword}
@@ -300,9 +300,9 @@ const ProjectForm: React.FC = () => {
             <button
               type="button"
               onClick={handleExit}
-              className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors cursor-pointer"
+              className="px-6 py-2.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl font-medium transition-colors cursor-pointer"
             >
-              Hủy
+              Há»§y
             </button>
             <button
               type="submit"
@@ -312,12 +312,12 @@ const ProjectForm: React.FC = () => {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Đang lưu...
+                  Äang lÆ°u...
                 </>
               ) : (
                 <>
                   <Save size={18} />
-                  {isEdit ? 'Cập nhật' : 'Thêm mới'}
+                  {isEdit ? 'Cáº­p nháº­t' : 'ThÃªm má»›i'}
                 </>
               )}
             </button>
@@ -354,3 +354,4 @@ const ProjectForm: React.FC = () => {
 };
 
 export default ProjectForm;
+

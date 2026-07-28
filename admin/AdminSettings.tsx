@@ -185,7 +185,7 @@ const Settings: React.FC = () => {
                 required
                 value={formData.siteName}
                 onChange={(e) => setFormData({ ...formData, siteName: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
 
@@ -198,7 +198,7 @@ const Settings: React.FC = () => {
                 value={formData.siteDescription}
                 onChange={(e) => setFormData({ ...formData, siteDescription: e.target.value })}
                 rows={3}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
           </div>
@@ -342,7 +342,7 @@ const Settings: React.FC = () => {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
 
@@ -356,7 +356,7 @@ const Settings: React.FC = () => {
                 required
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
           </div>
@@ -371,7 +371,7 @@ const Settings: React.FC = () => {
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               rows={2}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
             />
           </div>
         </div>
@@ -390,7 +390,7 @@ const Settings: React.FC = () => {
                 type="url"
                 value={formData.facebook}
                 onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="https://facebook.com/..."
               />
             </div>
@@ -404,7 +404,7 @@ const Settings: React.FC = () => {
                 type="url"
                 value={formData.instagram}
                 onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="https://instagram.com/..."
               />
             </div>
@@ -418,7 +418,7 @@ const Settings: React.FC = () => {
                 type="url"
                 value={formData.youtube}
                 onChange={(e) => setFormData({ ...formData, youtube: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="https://youtube.com/..."
               />
             </div>
@@ -432,7 +432,7 @@ const Settings: React.FC = () => {
                 type="url"
                 value={formData.linkedin}
                 onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="https://linkedin.com/..."
               />
             </div>
@@ -446,7 +446,7 @@ const Settings: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-900/60 rounded-xl">
               <div>
-                <h3 className="font-bold text-gray-800">Cháº¿ Ä‘á»™ báº£o trÃ¬</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-100">Cháº¿ Ä‘á»™ báº£o trÃ¬</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Táº¡m thá»i Ä‘Ã³ng website Ä‘á»ƒ báº£o trÃ¬</p>
               </div>
               <button
@@ -466,7 +466,7 @@ const Settings: React.FC = () => {
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-900/60 rounded-xl">
               <div>
-                <h3 className="font-bold text-gray-800">ThÃ´ng bÃ¡o Email</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-100">ThÃ´ng bÃ¡o Email</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Nháº­n thÃ´ng bÃ¡o qua email khi cÃ³ liÃªn há»‡ má»›i</p>
               </div>
               <button
@@ -486,7 +486,7 @@ const Settings: React.FC = () => {
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-900/60 rounded-xl">
               <div>
-                <h3 className="font-bold text-gray-800">XÃ¡c thá»±c 2 yáº¿u tá»‘</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-100">XÃ¡c thá»±c 2 yáº¿u tá»‘</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">TÄƒng cÆ°á»ng báº£o máº­t tÃ i khoáº£n admin</p>
               </div>
               <button
@@ -510,7 +510,7 @@ const Settings: React.FC = () => {
                 <select
                   value={formData.currency}
                   onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 >
                   <option value="VND">VND (â‚«)</option>
                   <option value="USD">USD ($)</option>
@@ -527,7 +527,7 @@ const Settings: React.FC = () => {
                   step="0.1"
                   value={formData.taxRate}
                   onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 />
               </div>
             </div>
@@ -594,7 +594,7 @@ const Settings: React.FC = () => {
                       aiModel: defaultModels[provider] || 'gemini-2.5-flash'
                     });
                   }}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 font-bold text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+                  className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 font-bold text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
                 >
                   <option value="gemini">âœ¨ Google Gemini AI (Miá»…n phÃ­ & Pháº£n há»“i nhanh)</option>
                   <option value="groq">âš¡ Groq Cloud AI (SiÃªu tá»‘c Ä‘á»™ - Llama 3.3 / DeepSeek R1)</option>
@@ -613,7 +613,7 @@ const Settings: React.FC = () => {
                   <select
                     value={formData.aiModel || 'gemini-2.5-flash'}
                     onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                    className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
                   >
                     <option value="gemini-2.5-flash">gemini-2.5-flash (KhuyÃªn dÃ¹ng - Nhanh & ThÃ´ng minh)</option>
                     <option value="gemini-2.5-pro">gemini-2.5-pro (TÆ° váº¥n chuyÃªn sÃ¢u)</option>
@@ -626,7 +626,7 @@ const Settings: React.FC = () => {
                   <select
                     value={formData.aiModel || 'llama-3.3-70b-versatile'}
                     onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                    className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
                   >
                     <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (SiÃªu tá»‘c & ThÃ´ng minh)</option>
                     <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Pháº£n há»“i tá»©c thÃ¬)</option>
@@ -639,7 +639,7 @@ const Settings: React.FC = () => {
                   <select
                     value={formData.aiModel || 'gpt-4o-mini'}
                     onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                    className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
                   >
                     <option value="gpt-4o-mini">gpt-4o-mini (Nhanh & Ráº»)</option>
                     <option value="gpt-4o">gpt-4o (ThÃ´ng minh nháº¥t)</option>
@@ -651,7 +651,7 @@ const Settings: React.FC = () => {
                   <select
                     value={formData.aiModel || 'deepseek-chat'}
                     onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
+                    className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white text-sm"
                   >
                     <option value="deepseek-chat">deepseek-chat (V3 - Chuáº©n tÆ° váº¥n)</option>
                     <option value="deepseek-reasoner">deepseek-reasoner (R1 - Suy luáº­n)</option>
@@ -822,4 +822,5 @@ const Settings: React.FC = () => {
 };
 
 export default Settings;
+
 
