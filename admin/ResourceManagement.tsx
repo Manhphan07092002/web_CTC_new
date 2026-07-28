@@ -202,8 +202,8 @@ const ResourceManagement: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Quản lý Tài liệu</h1>
-          <p className="text-gray-500 mt-1">Quản lý các tài liệu và file tài liệu kỹ thuật của hệ thống</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Quản lý Tài liệu</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Quản lý các tài liệu và file tài liệu kỹ thuật của hệ thống</p>
         </div>
         {!isEditing && (
           <button
@@ -214,7 +214,7 @@ const ResourceManagement: React.FC = () => {
               });
               setIsEditing(true);
             }}
-            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm"
           >
             <Plus size={20} />
             <span>Thêm mới</span>
@@ -223,40 +223,40 @@ const ResourceManagement: React.FC = () => {
       </div>
 
       {isEditing ? (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex justify-between items-center mb-6 border-b pb-4">
-            <h3 className="text-xl font-bold">{currentResource._id ? 'Chỉnh sửa Tài liệu' : 'Thêm Tài liệu mới'}</h3>
-            <button onClick={() => setIsEditing(false)} className="text-gray-500 hover:text-gray-700">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100">
+          <div className="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">{currentResource._id ? 'Chỉnh sửa Tài liệu' : 'Thêm Tài liệu mới'}</h3>
+            <button onClick={() => setIsEditing(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
               <X size={24} />
             </button>
           </div>
 
           <div className="space-y-4 max-w-2xl">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tiêu đề *</label>
               <input
                 type="text"
                 value={currentResource.title || ''}
                 onChange={e => setCurrentResource(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                className="w-full p-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="VD: Catalogue 2024 - Vol 1"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả ngắn</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mô tả ngắn</label>
               <input
                 type="text"
                 value={currentResource.description || ''}
                 onChange={e => setCurrentResource(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                className="w-full p-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 placeholder="Mô tả về tài liệu này..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Thể loại tài liệu *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thể loại tài liệu *</label>
                 <select
                   value={
                     typeof currentResource.categoryId === 'object' && currentResource.categoryId
@@ -264,7 +264,7 @@ const ResourceManagement: React.FC = () => {
                       : String(currentResource.categoryId || '')
                   }
                   onChange={e => setCurrentResource(prev => ({ ...prev, categoryId: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                  className="w-full p-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 >
                   <option value="" disabled>-- Chọn thể loại --</option>
                   {categories.map(cat => (
@@ -273,28 +273,28 @@ const ResourceManagement: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Kích thước file (Tùy chọn)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kích thước file (Tùy chọn)</label>
                 <input
                   type="text"
                   value={currentResource.size || ''}
                   onChange={e => setCurrentResource(prev => ({ ...prev, size: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                  className="w-full p-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   placeholder="VD: 5MB"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">File Tài liệu (Link URL hoặc Upload) *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">File Tài liệu (Link URL hoặc Upload) *</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={currentResource.fileUrl || ''}
                   onChange={e => setCurrentResource(prev => ({ ...prev, fileUrl: e.target.value }))}
-                  className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                  className="flex-1 p-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   placeholder="https://..."
                 />
-                <label className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 border border-gray-300">
+                <label className="bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 border border-gray-300 dark:border-slate-600 transition-colors">
                   <Upload size={18} />
                   <span>{uploadingFile ? 'Đang tải...' : 'Upload'}</span>
                   <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleFileUpload} disabled={uploadingFile} />
@@ -310,19 +310,19 @@ const ResourceManagement: React.FC = () => {
                 onChange={e => setCurrentResource(prev => ({ ...prev, isActive: e.target.checked }))}
                 className="rounded text-primary focus:ring-primary"
               />
-              <label htmlFor="isActive" className="text-sm text-gray-700">Hiển thị tài liệu này</label>
+              <label htmlFor="isActive" className="text-sm text-gray-700 dark:text-gray-300">Hiển thị tài liệu này</label>
             </div>
 
-            <div className="pt-4 border-t flex justify-end gap-3 mt-6">
+            <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               >
                 Hủy
               </button>
               <button
                 onClick={handleSave}
-                className="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg flex items-center gap-2"
+                className="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg flex items-center gap-2 shadow-sm"
               >
                 <Save size={18} />
                 <span>Lưu lại</span>
@@ -331,25 +331,25 @@ const ResourceManagement: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-            <div className="flex gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700/60 overflow-hidden">
+          <div className="p-4 border-b border-gray-200 dark:border-slate-700/60 flex justify-between items-center bg-gray-50 dark:bg-slate-900/50">
+            <div className="flex gap-4 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                 <input
                   type="text"
                   placeholder="Tìm kiếm tài liệu..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary w-64"
+                  className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
                 />
               </div>
               <select
                 value={filterType}
                 onChange={e => setFilterType(e.target.value)}
-                className="p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                className="px-3 py-2 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium cursor-pointer"
               >
-                <option value="all">Tất cả loại</option>
+                <option value="all">Tất cả loại ({resources.length})</option>
                 {categories.map(cat => (
                   <option key={cat._id} value={cat._id}>{cat.name}</option>
                 ))}
@@ -358,42 +358,41 @@ const ResourceManagement: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Đang tải dữ liệu...</div>
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">Đang tải dữ liệu...</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="p-4 font-semibold text-gray-600">Tiêu đề</th>
-                    <th className="p-4 font-semibold text-gray-600">Loại</th>
-                    <th className="p-4 font-semibold text-gray-600">Dung lượng</th>
-                    <th className="p-4 font-semibold text-gray-600">Trạng thái</th>
-                    <th className="p-4 font-semibold text-gray-600 text-right">Thao tác</th>
+                  <tr className="bg-gray-50 dark:bg-slate-900/60 border-b border-gray-200 dark:border-slate-700">
+                    <th className="p-4 font-semibold text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">Tiêu đề</th>
+                    <th className="p-4 font-semibold text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">Loại</th>
+                    <th className="p-4 font-semibold text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">Dung lượng</th>
+                    <th className="p-4 font-semibold text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">Trạng thái</th>
+                    <th className="p-4 font-semibold text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider text-right">Thao tác</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
                   {filteredResources.map(resource => (
-                    <tr key={resource._id} className="hover:bg-gray-50 border-b border-gray-100">
+                    <tr key={resource._id} className="hover:bg-gray-50/80 dark:hover:bg-slate-700/40 border-b border-gray-100 dark:border-slate-700/40 transition-colors">
                       <td className="p-4">
-                        <div className="font-medium text-gray-800">{resource.title}</div>
-                        {resource.description && <div className="text-sm text-gray-500 truncate max-w-xs">{resource.description}</div>}
+                        <div className="font-medium text-gray-800 dark:text-gray-100">{resource.title}</div>
+                        {resource.description && <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs">{resource.description}</div>}
                       </td>
                       <td className="p-4">
-                        <span className="flex items-center gap-1 text-sm bg-gray-100 px-2 py-1 rounded-full w-fit">
-                          <FileText size={16} className="text-primary" />
+                        <span className="flex items-center gap-1.5 text-xs font-semibold bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-2.5 py-1 rounded-full w-fit">
+                          <FileText size={14} className="text-primary dark:text-sky-400" />
                           {getCategoryName(resource)}
                         </span>
                       </td>
-                      <td className="p-4 text-sm text-gray-500">{resource.size || '-'}</td>
+                      <td className="p-4 text-xs text-gray-500 dark:text-gray-400 font-mono">{resource.size || '-'}</td>
                       <td className="p-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${resource.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${resource.isActive ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700/50' : 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-700/50'}`}>
                           {resource.isActive ? 'Hiển thị' : 'Đã ẩn'}
                         </span>
                       </td>
-                      <td className="p-4 text-right space-x-2">
+                      <td className="p-4 text-right space-x-1">
                         <button
                           onClick={() => {
-                            // Chuyển categoryId sang dạng ID string khi đưa vào form edit
                             const catId = typeof resource.categoryId === 'object' && resource.categoryId
                               ? resource.categoryId._id
                               : resource.categoryId;
@@ -403,24 +402,24 @@ const ResourceManagement: React.FC = () => {
                             });
                             setIsEditing(true);
                           }}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                          className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                           title="Sửa"
                         >
-                          <Edit2 size={18} />
+                          <Edit2 size={16} />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(resource)}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                          className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                           title="Xóa"
                         >
-                          <Trash2 size={18} />
+                          <Trash2 size={16} />
                         </button>
                       </td>
                     </tr>
                   ))}
                   {filteredResources.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-gray-500">
+                      <td colSpan={5} className="p-8 text-center text-gray-500 dark:text-gray-400">
                         Không tìm thấy tài liệu nào
                       </td>
                     </tr>

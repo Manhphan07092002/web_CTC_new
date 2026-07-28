@@ -587,38 +587,57 @@ const ContentManagement: React.FC = () => {
             </div>
           )}
 
-          {/* Projects */}
+          {/* Projects - Compact 5 columns layout */}
           {currentTab === 'projects' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {filteredProjects.map((project, idx) => (
-                <div key={`project-${idx}-${project.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-48">
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-800 mb-2">{project.title}</h3>
-                    <p className="text-sm text-gray-500 mb-1">📍 {project.location}</p>
-                    <p className="text-sm text-gray-500 mb-1">⚡ {project.capacity}</p>
-                    <p className="text-sm text-gray-500 mb-3">📅 {project.completionDate}</p>
-                    <div className="flex gap-2">
-                      <PermissionGate permission="edit_projects">
-                        <button
-                          onClick={() => navigate(`/admin/projects/edit/${project.id}`)}
-                          className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium"
-                        >
-                          <Edit size={16} className="inline mr-1" />
-                          Sửa
-                        </button>
-                      </PermissionGate>
-                      <PermissionGate permission="delete_projects">
-                        <button
-                          onClick={() => handleOtherDelete(project.id, 'project', project.title)}
-                          className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </PermissionGate>
+                <div 
+                  key={`project-${idx}-${project.id}`} 
+                  className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 overflow-hidden hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="relative h-36 bg-gray-50 dark:bg-slate-900/60 overflow-hidden border-b border-gray-100 dark:border-slate-700/60">
+                      {project.image && project.image.trim() !== '' ? (
+                        <img 
+                          src={project.image} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-slate-900/40">
+                          <ImageIcon size={28} className="text-gray-300 dark:text-slate-600" />
+                        </div>
+                      )}
                     </div>
+                    <div className="p-3">
+                      <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xs sm:text-sm leading-snug line-clamp-2 min-h-[32px] mb-2 group-hover:text-primary dark:group-hover:text-sky-400 transition-colors" title={project.title}>
+                        {project.title}
+                      </h3>
+                      <p className="text-[11px] text-gray-600 dark:text-gray-300 truncate mb-1">📍 {project.location}</p>
+                      <p className="text-[11px] text-gray-600 dark:text-gray-300 truncate mb-1">⚡ {project.capacity}</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">📅 {project.completionDate}</p>
+                    </div>
+                  </div>
+
+                  <div className="px-3 pb-3 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-end gap-1.5">
+                    <PermissionGate permission="edit_projects">
+                      <button
+                        onClick={() => navigate(`/admin/projects/edit/${project.id}`)}
+                        className="p-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                        title="Chỉnh sửa dự án"
+                      >
+                        <Edit size={14} />
+                      </button>
+                    </PermissionGate>
+                    <PermissionGate permission="delete_projects">
+                      <button
+                        onClick={() => handleOtherDelete(project.id, 'project', project.title)}
+                        className="p-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                        title="Xóa dự án"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </PermissionGate>
                   </div>
                 </div>
               ))}
@@ -627,32 +646,42 @@ const ContentManagement: React.FC = () => {
 
           {/* News */}
           {currentTab === 'news' && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {filteredNews.map((item, idx) => (
-                <div key={`news-${idx}-${item.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow flex gap-4">
-                  <img src={item.image} alt={item.title} className="w-32 h-32 object-cover rounded-lg flex-shrink-0" />
-                  <div className="flex-1">
+                <div 
+                  key={`news-${idx}-${item.id}`} 
+                  className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-4 hover:shadow-md transition-all flex flex-col sm:flex-row gap-4 items-start"
+                >
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    className="w-full sm:w-36 h-28 object-cover rounded-lg flex-shrink-0 border border-gray-100 dark:border-slate-700/50" 
+                  />
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${
                         (item as any).status === 'pending'
-                          ? 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse'
+                          ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50 animate-pulse'
                           : (item as any).status === 'draft'
-                          ? 'bg-slate-100 text-slate-700 border border-slate-200'
-                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          ? 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600'
+                          : 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/50'
                       }`}>
                         {(item as any).status === 'pending' ? '🟡 Chờ duyệt (Pending)' :
                          (item as any).status === 'draft' ? '📝 Bản nháp' : '🟢 Đã xuất bản'}
                       </span>
                     </div>
-                    <h3 className="font-bold text-gray-800 mb-2">{item.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{item.excerpt}</p>
-                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                    <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base mb-1 line-clamp-1 hover:text-primary dark:hover:text-sky-400 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">{item.excerpt}</p>
+                    <div className="flex items-center gap-4 text-[11px] text-gray-500 dark:text-gray-400">
                       <span>📅 {item.date}</span>
                       {item.author && <span>✍️ {item.author}</span>}
                       {item.category && <span>🏷️ {item.category}</span>}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2 justify-center">
+
+                  <div className="flex sm:flex-col gap-2 justify-center w-full sm:w-auto">
                     {(item as any).status !== 'published' && (
                       <button
                         onClick={async () => {
@@ -664,7 +693,7 @@ const ContentManagement: React.FC = () => {
                             showToast('Lỗi khi duyệt bài viết', 'error');
                           }
                         }}
-                        className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-xs flex items-center gap-1"
+                        className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-xs flex items-center justify-center gap-1"
                         title="Duyệt bài viết này ngay lập tức"
                       >
                         ✅ Duyệt bài
@@ -673,7 +702,7 @@ const ContentManagement: React.FC = () => {
                     <PermissionGate permission="edit_news">
                       <button
                         onClick={() => navigate(`/admin/news/edit/${item.id}`)}
-                        className="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 flex items-center justify-center"
+                        className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 flex items-center justify-center transition-colors"
                         title="Chỉnh sửa bài viết"
                       >
                         <Edit size={16} />
@@ -682,7 +711,7 @@ const ContentManagement: React.FC = () => {
                     <PermissionGate permission="delete_news">
                       <button
                         onClick={() => openOtherDeleteModal(item, 'news')}
-                        className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 flex items-center justify-center"
+                        className="p-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 flex items-center justify-center transition-colors"
                         title="Xóa bài viết"
                       >
                         <Trash2 size={16} />
@@ -694,25 +723,33 @@ const ContentManagement: React.FC = () => {
             </div>
           )}
 
-          {/* Partners */}
+          {/* Partners - Compact 6 columns layout */}
           {currentTab === 'partners' && (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {filteredPartners.map((partner, idx) => (
-                <div key={`partner-${idx}-${partner.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition-shadow">
-                  <img src={partner.logo} alt={partner.name} className="w-full h-24 object-contain mb-3" />
-                  <h3 className="font-bold text-sm text-gray-800 mb-1">{partner.name}</h3>
-                  <p className="text-xs text-gray-500 mb-3">{partner.type === 'supplier' ? 'Nhà cung cấp' : 'Tài chính'}</p>
-                  <div className="flex gap-2">
+                <div 
+                  key={`partner-${idx}-${partner.id}`} 
+                  className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-3 text-center hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="bg-gray-50 dark:bg-slate-900/50 p-2 rounded-lg h-20 flex items-center justify-center mb-2 border border-gray-100 dark:border-slate-700/40">
+                      <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain" />
+                    </div>
+                    <h3 className="font-bold text-xs text-gray-800 dark:text-gray-100 mb-0.5 truncate" title={partner.name}>{partner.name}</h3>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-2">{partner.type === 'supplier' ? 'Nhà cung cấp' : 'Tài chính'}</p>
+                  </div>
+
+                  <div className="flex gap-1.5">
                     <button
                       onClick={() => handleEditPartner(partner)}
-                      className="flex-1 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-xs"
+                      className="flex-1 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/50 text-[11px] font-medium transition-colors"
                     >
                       <Edit size={12} className="inline mr-1" />
                       Sửa
                     </button>
                     <button
                       onClick={() => handleOtherDelete(partner.id, 'partner', partner.name)}
-                      className="flex-1 px-2 py-1 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-xs"
+                      className="flex-1 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50 text-[11px] font-medium transition-colors"
                     >
                       <Trash2 size={12} className="inline mr-1" />
                       Xóa
@@ -723,33 +760,40 @@ const ContentManagement: React.FC = () => {
             </div>
           )}
 
-          {/* Testimonials */}
+          {/* Testimonials - 3 columns layout */}
           {currentTab === 'testimonials' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTestimonials.map((testimonial, idx) => (
-                <div key={`testimonial-${idx}-${testimonial.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-4 mb-4">
-                    <img src={testimonial.image} alt={testimonial.name} className="w-16 h-16 rounded-full object-cover" />
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-800">{testimonial.name}</h3>
-                      <p className="text-sm text-gray-500">{testimonial.role}</p>
+                <div 
+                  key={`testimonial-${idx}-${testimonial.id}`} 
+                  className="bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-4 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-start gap-3 mb-3">
+                      <img src={testimonial.image} alt={testimonial.name} className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-slate-700" />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-800 dark:text-gray-100 text-sm truncate">{testimonial.name}</h3>
+                        <p className="text-xs text-sky-600 dark:text-sky-400 font-medium truncate">{testimonial.role}</p>
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleEditTestimonial(testimonial)}
+                          className="p-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                          title="Sửa đánh giá"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleOtherDelete(testimonial.id, 'testimonial', testimonial.name)}
+                          className="p-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                          title="Xóa đánh giá"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEditTestimonial(testimonial)}
-                        className="px-2 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleOtherDelete(testimonial.id, 'testimonial', testimonial.name)}
-                        className="px-2 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs italic leading-relaxed line-clamp-3">"{testimonial.content}"</p>
                   </div>
-                  <p className="text-gray-600 text-sm italic">"{testimonial.content}"</p>
                 </div>
               ))}
             </div>
