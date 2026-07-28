@@ -342,7 +342,8 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className={getHeaderContainerClass()}>
+    <>
+      <header className={getHeaderContainerClass()}>
       <style dangerouslySetInnerHTML={{ __html: `
         /* Premium Header Contact Button Effects */
         .btn-header-contact {
@@ -624,149 +625,6 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown Panel & Backdrop */}
-      {isMenuOpen && (
-        <>
-          {/* Backdrop overlay */}
-          <div 
-            className="fixed inset-0 top-0 bg-slate-950/60 backdrop-blur-xs z-[55] lg:hidden transition-opacity duration-300" 
-            onClick={() => setIsMenuOpen(false)}
-          />
-          
-          <div className="lg:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 absolute top-full left-0 w-full shadow-2xl z-[60] max-h-[85vh] overflow-y-auto animate-in slide-in-from-top duration-300">
-            <nav className="flex flex-col p-5 gap-1.5">
-              {navLinks.map((link) => (
-                <div key={link.path} className="border-b border-gray-50 dark:border-slate-800/50 last:border-none">
-                  <div className="flex justify-between items-center">
-                    <Link
-                      to={link.path}
-                      onClick={() => !link.submenu && setIsMenuOpen(false)}
-                      className={`flex-1 py-3.5 text-sm font-bold uppercase tracking-wider ${
-                        isActive(link.path) ? 'text-sky-500' : 'text-slate-800 dark:text-slate-200'
-                      }`}
-                    >
-                      {t(`nav.${link.key}`)}
-                    </Link>
-                    {link.submenu && (
-                      <button 
-                        onClick={() => toggleMobileSubmenu(link.key)}
-                        className="p-3 text-slate-400 min-w-[44px] min-h-[44px] flex items-center justify-center"
-                        aria-label="Toggle submenu"
-                      >
-                        {expandedMobileMenu === link.key ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Mobile Dropdown Sublinks */}
-                  {link.submenu && expandedMobileMenu === link.key && (
-                    <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800">
-                      {link.submenu.map((sub, subIdx) => (
-                        <Link
-                          key={subIdx}
-                          to={sub.path}
-                          onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-3.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 dark:hover:text-sky-400 border-b border-gray-100/30 dark:border-slate-800 last:border-0 uppercase tracking-wide"
-                        >
-                          <span className="w-1 h-3.5 rounded-full bg-sky-400/40 flex-shrink-0" />
-                          {getSubmenuDisplayName(sub, language)}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {/* Mobile Contact Action Button */}
-              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
-                <a 
-                  href="https://zalo.me/0915059666"
-                  className="btn-header-contact flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 rounded-full shadow-lg min-h-[44px]"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="btn-header-contact-shimmer"></span>
-                  <Phone size={14} className="phone-vibe-icon" />
-                  <span>{getLangText(language, { vi: 'Liên hệ Zalo', en: 'Zalo Support', ko: 'Zalo 문의', ja: 'Zaloサポート', zh: 'Zalo客服', de: 'Zalo Support' })}</span>
-                </a>
-                {/* Mobile Language Selector */}
-                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
-                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2.5 text-center">
-                    Ngôn ngữ / Language
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {languages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => {
-                          handleLanguageChange(lang.code);
-                          setIsMenuOpen(false);
-                        }}
-                        className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
-                          language === lang.code
-                            ? 'bg-sky-500 text-white border-sky-500 shadow-md'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent hover:border-sky-400'
-                        }`}
-                      >
-                        <span>{lang.flag}</span>
-                        <span>{lang.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mobile Theme Mode Selector */}
-                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
-                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2.5 text-center">
-                    Giao diện / Theme Mode
-                  </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      onClick={() => setThemeMode('light')}
-                      className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
-                        themeMode === 'light'
-                          ? 'bg-amber-500 text-white border-amber-500 shadow-md'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
-                      }`}
-                    >
-                      <Sun size={14} />
-                      <span>{t('common.light')}</span>
-                    </button>
-                    <button
-                      onClick={() => setThemeMode('dark')}
-                      className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
-                        themeMode === 'dark'
-                          ? 'bg-sky-600 text-white border-sky-600 shadow-md'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
-                      }`}
-                    >
-                      <Moon size={14} />
-                      <span>{t('common.dark')}</span>
-                    </button>
-                    <button
-                      onClick={() => setThemeMode('system')}
-                      className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
-                        themeMode === 'system'
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
-                      }`}
-                    >
-                      <Monitor size={14} />
-                      <span>Auto</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex justify-center gap-6 text-xs text-slate-400 mt-2 pb-2">
-                  <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-sky-500 font-semibold uppercase tracking-wider p-2">
-                    {t('header.admin')}
-                  </Link>
-                </div>
-              </div>
-            </nav>
-          </div>
-        </>
-      )}
-
       {/* Live Search Panel Dropdown */}
       {isSearchOpen && (
         <div className="absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-150 dark:border-slate-800 shadow-xl z-50 animate-slide-down select-none">
@@ -936,6 +794,150 @@ const Header: React.FC = () => {
         </div>
       )}
     </header>
+
+    {/* Mobile Menu Dropdown Panel & Backdrop (Rendered outside header to escape backdrop-filter containing block) */}
+    {isMenuOpen && (
+      <>
+        {/* Backdrop overlay */}
+        <div 
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[99] lg:hidden transition-opacity duration-300" 
+          onClick={() => setIsMenuOpen(false)}
+        />
+        
+        <div className="lg:hidden fixed inset-x-0 top-[56px] sm:top-[68px] bottom-0 bg-white dark:bg-slate-950 border-t border-gray-200/60 dark:border-slate-800 shadow-2xl z-[100] overflow-y-auto animate-in slide-in-from-top duration-300">
+          <nav className="flex flex-col p-5 gap-1.5 pb-24">
+            {navLinks.map((link) => (
+              <div key={link.path} className="border-b border-gray-100 dark:border-slate-800/60 last:border-none">
+                <div className="flex justify-between items-center">
+                  <Link
+                    to={link.path}
+                    onClick={() => !link.submenu && setIsMenuOpen(false)}
+                    className={`flex-1 py-3.5 text-sm font-bold uppercase tracking-wider ${
+                      isActive(link.path) ? 'text-sky-500 dark:text-sky-400' : 'text-slate-900 dark:text-white'
+                    }`}
+                  >
+                    {(link as any).displayName || link.name}
+                  </Link>
+                  {link.submenu && (
+                    <button 
+                      onClick={() => toggleMobileSubmenu(link.key)}
+                      className="p-3 text-slate-400 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      aria-label="Toggle submenu"
+                    >
+                      {expandedMobileMenu === link.key ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </button>
+                  )}
+                </div>
+
+                {/* Mobile Dropdown Sublinks */}
+                {link.submenu && expandedMobileMenu === link.key && (
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800">
+                    {link.submenu.map((sub, subIdx) => (
+                      <Link
+                        key={subIdx}
+                        to={sub.path}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center gap-3 px-5 py-3.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-sky-500 dark:hover:text-sky-400 border-b border-gray-100/30 dark:border-slate-800 last:border-0 uppercase tracking-wide"
+                      >
+                        <span className="w-1 h-3.5 rounded-full bg-sky-400/40 flex-shrink-0" />
+                        {getSubmenuDisplayName(sub, language)}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            {/* Mobile Contact Action Button */}
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
+              <a 
+                href="https://zalo.me/0915059666"
+                className="btn-header-contact flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 hover:from-sky-700 hover:to-blue-900 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 rounded-full shadow-lg min-h-[44px]"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="btn-header-contact-shimmer"></span>
+                <Phone size={14} className="phone-vibe-icon" />
+                <span>{getLangText(language, { vi: 'Liên hệ Zalo', en: 'Zalo Support', ko: 'Zalo 문의', ja: 'Zaloサポート', zh: 'Zalo客服', de: 'Zalo Support' })}</span>
+              </a>
+              {/* Mobile Language Selector */}
+              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2.5 text-center">
+                  Ngôn ngữ / Language
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        handleLanguageChange(lang.code);
+                        setIsMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
+                        language === lang.code
+                          ? 'bg-sky-500 text-white border-sky-500 shadow-md'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent hover:border-sky-400'
+                      }`}
+                    >
+                      <span>{lang.flag}</span>
+                      <span>{lang.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mobile Theme Mode Selector */}
+              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2.5 text-center">
+                  Giao diện / Theme Mode
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => setThemeMode('light')}
+                    className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
+                      themeMode === 'light'
+                        ? 'bg-amber-500 text-white border-amber-500 shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
+                    }`}
+                  >
+                    <Sun size={14} />
+                    <span>{t('common.light')}</span>
+                  </button>
+                  <button
+                    onClick={() => setThemeMode('dark')}
+                    className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
+                      themeMode === 'dark'
+                        ? 'bg-sky-600 text-white border-sky-600 shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
+                    }`}
+                  >
+                    <Moon size={14} />
+                    <span>{t('common.dark')}</span>
+                  </button>
+                  <button
+                    onClick={() => setThemeMode('system')}
+                    className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition-all border ${
+                      themeMode === 'system'
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
+                    }`}
+                  >
+                    <Monitor size={14} />
+                    <span>Auto</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-center gap-6 text-xs text-slate-400 mt-2 pb-2">
+                <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-sky-500 font-semibold uppercase tracking-wider p-2">
+                  {t('header.admin')}
+                </Link>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </>
+    )}
+  </>
   );
 };
 
