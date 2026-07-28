@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Search, CheckCircle2, X, ArrowRight, Wand2, RefreshCw, FileText, Target, Tag, Edit3, MessageSquare, BookOpen, Layers, Code, Copy, Link2, LayoutGrid, Package, ShieldCheck, Zap } from 'lucide-react';
+import { Sparkles, CheckCircle2, X, Wand2, RefreshCw, Target, Edit3, Link2, Code, Package, ShieldCheck } from 'lucide-react';
 import { chatService } from '../../services/chatService';
 import { useToast } from '../../contexts/ToastContext';
 import { api } from '../../services/api';
@@ -46,10 +46,112 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<number>(0);
+  const [stepLabel, setStepLabel] = useState('');
   const [result, setResult] = useState<any | null>(null);
 
   if (!isOpen) return null;
 
+  // ─────────────────────────────────────────────────────────────
+  // Client-side CORS proxy scraper (fallback khi server bị block)
+  // ─────────────────────────────────────────────────────────────
+  const clientSideScrape = async (url: string): Promise<{
+    title: string; images: string[]; videos: string[]; rawText: string;
+  }> => {
+    const result = { title: '', images: [] as string[], videos: [] as string[], rawText: '' };
+
+    // Thử allorigins.win (CORS proxy miễn phí)
+    const corsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const corsRes = await fetch(corsUrl, { signal: AbortSignal.timeout(15000) });
+    const corsJson = await corsRes.json();
+    if (!corsJson.contents || corsJson.contents.length < 200) return result;
+
+    const html = corsJson.contents as string;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Title: og:title > <title> > h1
+    const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content')
+      || doc.querySelector('meta[name="twitter:title"]')?.getAttribute('content')
+      || doc.title
+      || doc.querySelector('h1')?.textContent || '';
+    result.title = ogTitle.replace(/\s*[|–—-]\s*.{0,60}$/, '').trim();
+
+    const addImage = (src: string | null | undefined) => {
+      if (!src || src.startsWith('data:') || src.length < 10) return;
+      if (/logo|icon|avatar|spinner|pixel|1x1|blank|placeholder|\.gif$|\.svg$/i.test(src)) return;
+      try {
+        const abs = new URL(src, url).href;
+        if (!result.images.includes(abs) && result.images.length < 12) result.images.push(abs);
+      } catch {}
+    };
+
+    // JSON-LD Schema.org images (most reliable)
+    doc.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
+      try {
+        const schema = JSON.parse(s.textContent || '');
+        const extractImgs = (obj: any) => {
+          if (!obj || typeof obj !== 'object') return;
+          if (Array.isArray(obj)) { obj.forEach(extractImgs); return; }
+          const imgs = obj.image ? (Array.isArray(obj.image) ? obj.image : [obj.image]) : [];
+          imgs.forEach((img: any) => {
+            const u = typeof img === 'string' ? img : (img?.url || img?.contentUrl);
+            addImage(u);
+          });
+          Object.values(obj).forEach(v => typeof v === 'object' && extractImgs(v));
+        };
+        extractImgs(schema);
+      } catch {}
+    });
+
+    // og:image / twitter:image
+    addImage(doc.querySelector('meta[property="og:image"]')?.getAttribute('content'));
+    addImage(doc.querySelector('meta[property="og:image:secure_url"]')?.getAttribute('content'));
+    addImage(doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content'));
+
+    // <img> tags: data-zoom-image > data-original > data-src > src
+    doc.querySelectorAll('img').forEach(img => {
+      addImage(
+        img.getAttribute('data-zoom-image') ||
+        img.getAttribute('data-original') ||
+        img.getAttribute('data-lazy-src') ||
+        img.getAttribute('data-src') ||
+        img.getAttribute('src')
+      );
+    });
+
+    // Background-image CSS in style attributes
+    doc.querySelectorAll('[style*="background-image"]').forEach(el => {
+      const m = (el as HTMLElement).style.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
+      addImage(m?.[1]);
+    });
+
+    // Extract text content
+    const texts: string[] = [];
+    doc.querySelectorAll('p, li, td, h2, h3').forEach(el => {
+      const text = el.textContent?.trim() || '';
+      if (text.length > 20 && !/copyright|cookie|đăng ký|quảng cáo|theo dõi/i.test(text)) {
+        texts.push(text);
+      }
+    });
+    result.rawText = texts.slice(0, 40).join('\n');
+
+    // YouTube / Vimeo video iframes
+    doc.querySelectorAll('iframe').forEach(iframe => {
+      const src = iframe.getAttribute('src') || iframe.getAttribute('data-src') || '';
+      if (/youtube|youtu\.be|vimeo/i.test(src)) {
+        let v = src.startsWith('//') ? 'https:' + src : src;
+        v = v.replace(/youtu\.be\/([a-zA-Z0-9_-]+)/, 'youtube.com/embed/$1');
+        v = v.replace(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/, 'youtube.com/embed/$1');
+        if (!result.videos.includes(v)) result.videos.push(v);
+      }
+    });
+
+    return result;
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // Main Generate Handler
+  // ─────────────────────────────────────────────────────────────
   const handleGenerate = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
@@ -57,137 +159,167 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
     const urlToUse = referenceUrl.trim();
 
     if (!nameToUse && !urlToUse) {
-      showToast('Vui lòng nhập Tên sản phẩm hoặc dán Đường dẫn Link sản phẩm', 'error');
+      showToast('Vui lòng nhập Tên sản phẩm hoặc dán Link sản phẩm mẫu', 'error');
       return;
     }
 
     setLoading(true);
     setStep(1);
-
-    const timer1 = setTimeout(() => setStep(2), 1500);
-    const timer2 = setTimeout(() => setStep(3), 3500);
+    setStepLabel('🔍 Đang cào dữ liệu từ link sản phẩm...');
+    const timer1 = setTimeout(() => { setStep(2); setStepLabel('🎯 Đang phân tích hình ảnh & nội dung gốc...'); }, 2000);
+    const timer2 = setTimeout(() => { setStep(3); setStepLabel('✍️ Gemini đang viết mô tả sản phẩm chuẩn SEO...'); }, 5000);
 
     try {
       let parsed: any = null;
 
-      // ── BƯỚC 1: Cào dữ liệu thực từ URL (title, ảnh, nội dung gốc) ──
+      // ══ TẦNG 1: Thu thập dữ liệu thực từ URL ══════════════════
       let scrapedTitle = nameToUse;
       let scrapedImages: string[] = [];
       let scrapedVideos: string[] = [];
       let scrapedRawText = '';
+      let scrapedSource = 'none';
 
       if (urlToUse) {
+        // 1a: Server-side scrape (Node.js server — nhanh nhưng có thể bị block IP datacenter)
         try {
-          console.log('[AI Modal] Scraping URL via dedicated endpoint:', urlToUse);
+          console.log('[AI Modal] 1a: Server scrape ->', urlToUse);
           const scrapeRes = await api.ai.scrapeUrl(urlToUse);
-          if (scrapeRes?.data) {
-            if (scrapeRes.data.title && !nameToUse) scrapedTitle = scrapeRes.data.title;
-            if (scrapeRes.data.images?.length > 0) scrapedImages = scrapeRes.data.images;
-            if (scrapeRes.data.videos?.length > 0) scrapedVideos = scrapeRes.data.videos;
-            if (scrapeRes.data.rawText) scrapedRawText = scrapeRes.data.rawText;
-            console.log(`[AI Modal] Scraped: title="${scrapeRes.data.title}" images=${scrapedImages.length} videos=${scrapedVideos.length} text=${scrapedRawText.length}chars`);
+          const d = scrapeRes?.data;
+          if (d && (d.rawText?.length > 80 || d.images?.length > 0)) {
+            if (d.title && !nameToUse) scrapedTitle = d.title;
+            scrapedImages = d.images || [];
+            scrapedVideos = d.videos || [];
+            scrapedRawText = d.rawText || '';
+            scrapedSource = 'server';
+            console.log(`[AI Modal] Server OK: text=${scrapedRawText.length}ch, img=${scrapedImages.length}, vid=${scrapedVideos.length}`);
+          } else {
+            console.warn('[AI Modal] Server returned empty → trying client CORS proxy...');
           }
-        } catch (scrapeErr) {
-          console.warn('[AI Modal] Scrape failed, proceeding with Gemini only:', scrapeErr);
+        } catch (e) {
+          console.warn('[AI Modal] Server scrape error:', e);
+        }
+
+        // 1b: Client-side CORS proxy (trình duyệt dùng IP dân dụng → qua được firewall trang TMĐT)
+        if (!scrapedRawText && scrapedImages.length === 0) {
+          try {
+            console.log('[AI Modal] 1b: Client CORS proxy ->', urlToUse);
+            setStepLabel('🌐 Server bị block, đang dùng trình duyệt cào trực tiếp...');
+            const clientData = await clientSideScrape(urlToUse);
+            if (clientData.rawText.length > 80 || clientData.images.length > 0) {
+              if (clientData.title && !nameToUse) scrapedTitle = clientData.title;
+              scrapedImages = clientData.images;
+              scrapedVideos = clientData.videos;
+              scrapedRawText = clientData.rawText;
+              scrapedSource = 'client-cors';
+              console.log(`[AI Modal] CORS proxy OK: text=${scrapedRawText.length}ch, img=${scrapedImages.length}`);
+            }
+          } catch (e) {
+            console.warn('[AI Modal] CORS proxy failed:', e);
+          }
+        }
+
+        // Kiểm tra: nếu vẫn không cào được gì VÀ không có tên sản phẩm → dừng, không đoán mò
+        if (!scrapedRawText && scrapedImages.length === 0 && !nameToUse) {
+          clearTimeout(timer1); clearTimeout(timer2);
+          setLoading(false); setStep(0);
+          showToast(
+            '⚠️ Không thể cào nội dung từ link này (trang chặn robot). Hãy nhập Tên sản phẩm hoặc copy nội dung vào ô tên sản phẩm.',
+            'error'
+          );
+          return;
         }
       }
 
-      // ── BƯỚC 2: Gemini viết MÔ TẢ SẢN PHẨM dựa trên nội dung đã cào ──
+      // ══ TẦNG 2: Gemini viết dựa 100% trên dữ liệu cào được ═══
+      setStepLabel('✍️ Gemini đang viết bài mô tả sản phẩm chuẩn SEO 100/100...');
       const productCode2 = productCode || ('CTC-' + Math.floor(1000 + Math.random() * 9000));
+      const hasRealContent = scrapedRawText.length > 80;
+      const hasImages = scrapedImages.length > 0;
 
-      // Embed video YouTube nếu có
-      const videoEmbeds = scrapedVideos.slice(0, 2).map(v => 
+      const videoEmbeds = scrapedVideos.slice(0, 2).map(v =>
         `<div class="my-6 aspect-video rounded-2xl overflow-hidden shadow-lg"><iframe src="${v}" class="w-full h-full" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`
       ).join('\n');
 
-      const prompt = `Bạn là Chuyên gia Sản phẩm & SEO Yoast Top 1 Google của Công ty CTC.
+      const prompt = `Bạn là Chuyên gia Sản phẩm & SEO Yoast của Công ty CTC.
 
-NHIỆM VỤ: Viết TOÀN BỘ thông tin sản phẩm và bài mô tả kỹ thuật CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
+NHIỆM VỤ: Viết bài mô tả sản phẩm CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
+NGUỒN: Dữ liệu cào từ "${urlToUse || 'tên sản phẩm'}" qua ${scrapedSource === 'server' ? 'server' : scrapedSource === 'client-cors' ? 'trình duyệt (CORS proxy)' : 'tên sản phẩm'}.
 
-═══ THÔNG TIN ĐẦU VÀO ═══
-- Tên/Model sản phẩm: "${scrapedTitle || nameToUse || 'Sản phẩm CTC'}"
-- Mã sản phẩm: "${productCode2}"
-- Danh mục: "${initialCategory || 'Thiết bị Công Nghệ'}"
-- Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'Phân tích so sánh ưu điểm'}
-- Độ sâu: ${targetLength === 'deep' ? '900-1200 từ rất chi tiết' : '600-800 từ tiêu chuẩn'}
-${urlToUse ? `- Link nguồn: ${urlToUse}` : ''}
+━━━ THÔNG TIN SẢN PHẨM ĐÃ CÀO ĐƯỢC ━━━
+Tên/Model: "${scrapedTitle || nameToUse}"
+Danh mục: "${initialCategory || 'Thiết bị Công Nghệ'}"
+Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'So sánh ưu điểm'}
+Độ sâu: ${targetLength === 'deep' ? '900-1200 từ' : '600-800 từ'}
 
-═══ NỘI DUNG GỐC CÀO TỪ LINK (BẮT BUỘC BÁM SÁT) ═══
-${scrapedRawText ? scrapedRawText.slice(0, 3000) : '(Không có nội dung cào được — hãy tự suy luận từ tên sản phẩm)'}
+━━━ NỘI DUNG GỐC CÀO ĐƯỢC - BÁM SÁT HOÀN TOÀN ━━━
+${hasRealContent
+  ? scrapedRawText.slice(0, 4500)
+  : '⚠️ Không có nội dung cào được. Chỉ được viết dựa trên tên sản phẩm. TUYỆT ĐỐI KHÔNG bịa thông số kỹ thuật cụ thể như số GHz, GB, W... nếu không chắc chắn.'}
 
-═══ HÌNH ẢNH ĐÃ CÀO ĐƯỢC TỪ LINK ═══
-${scrapedImages.length > 0 ? scrapedImages.map((img, i) => `Ảnh ${i+1}: ${img}`).join('\n') : '(Không cào được ảnh)'}
+━━━ HÌNH ẢNH CÀO ĐƯỢC (PHẢI DÙNG ĐÚNG CÁC URL NÀY) ━━━
+${hasImages
+  ? scrapedImages.map((img, i) => `Ảnh ${i + 1}: ${img}`).join('\n')
+  : '(Không cào được ảnh từ link)'}
 
-═══ YÊU CẦU BẮT BUỘC ═══
+━━━ LUẬT BẮT BUỘC ━━━
 
-🔴 TÊN SẢN PHẨM (name):
-- PHẢI là tên thực tế bóc tách từ nội dung gốc bên trên
-- KHÔNG thêm hậu tố marketing, KHÔNG thêm "– Tin Tức Cập Nhật 2026"
-- Ví dụ đúng: "Laptop MSI Modern 14 F1MG-432VN", "Tấm pin Jinko Solar N-Type 580W"
+🔴 LUẬT 1 - TÊN SẢN PHẨM (name):
+- Bóc tách CHÍNH XÁC từ nội dung gốc, KHÔNG thêm từ marketing
+- ĐÚNG: "Laptop Gaming OMEN 14-fb0135TX AY8V1PA"
+- SAI: "Laptop Gaming OMEN 14 – Hiệu Suất Đỉnh Cao"
 
-🔴 HÌNH ẢNH (image, images):
-${scrapedImages.length > 0 
-  ? `- image: Dùng URL ảnh đầu tiên trong danh sách hình ảnh đã cào: "${scrapedImages[0]}"
-- images: Dùng các URL ảnh còn lại: ${JSON.stringify(scrapedImages.slice(1, 4))}`
-  : `- image: Chọn 1 ảnh Unsplash phù hợp nhất với sản phẩm
-- images: Chọn 2-3 ảnh Unsplash phù hợp`}
+🔴 LUẬT 2 - HÌNH ẢNH:
+${hasImages
+  ? `- image: PHẢI dùng đúng URL này: "${scrapedImages[0]}"
+- images: PHẢI dùng đúng các URL này: ${JSON.stringify(scrapedImages.slice(1, 4))}`
+  : `- image: Dùng ảnh Unsplash liên quan đến "${scrapedTitle || nameToUse}"
+- images: Dùng 2 ảnh Unsplash liên quan`}
 
-🔴 MÔ TẢ NGẮN META (shortDescription): 120-160 ký tự, chứa từ khóa focus
+🔴 LUẬT 3 - NỘI DUNG CHI TIẾT (description - HTML):
+${hasRealContent
+  ? '- BÁM SÁT nội dung gốc, cấu trúc lại thành H2/H3 nhưng không thêm thông số bịa'
+  : '- Viết tổng quan dựa trên tên, KHÔNG bịa thông số kỹ thuật cụ thể'}
+- Cấu trúc: H2 Tổng quan → H2 Tính năng nổi bật → H2 Thông số → H2 Ứng dụng
+- Câu tối đa 16 từ, đoạn tối đa 60 từ
+- BẮT BUỘC ≥ 2 danh sách <ul><li>...</li></ul>
+- Từ khóa Focus trong 150 từ đầu, mật độ 1.2-2.0%
+- Dùng từ nối: Tuy nhiên, Bên cạnh đó, Ngoài ra, Do đó, Đặc biệt${videoEmbeds ? '\n- Chèn video vào giữa bài:\n' + videoEmbeds : ''}
+- Cuối bài: <p class="mt-4 pt-4 border-t">Xem thêm <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá</a>.</p>
 
-🔴 MÔ TẢ CHI TIẾT (description - HTML):
-- BẮT BUỘC bám sát và tóm tắt từ "NỘI DUNG GỐC CÀO TỪ LINK" ở trên
-- KHÔNG bịa đặt thông số nếu không có trong nội dung gốc
-- Cấu trúc: H2 + H3 cho từng phần (Tổng quan, Tính năng, Thông số, Ứng dụng, Mua hàng)
-- Từ khóa Focus phải xuất hiện trong 150 từ đầu tiên
-- Mật độ từ khóa: 1.2% - 2.0%
-- Câu văn: tối đa 16 từ/câu
-- Đoạn văn: mỗi <p> tối đa 60 từ
-- BẮT BUỘC có ít nhất 2 <ul><li> danh sách (tính năng, ứng dụng)
-- Dùng 4-6 từ nối: "Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra"
-${videoEmbeds ? `- Chèn video embed này vào giữa bài: ${videoEmbeds}` : ''}
-- Cuối bài: <p class="mt-4 pt-4 border-t">Quý khách tham khảo thêm tại <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá</a>.</p>
-
-Trả về JSON thuần (KHÔNG bọc markdown):
+Trả về JSON thuần không bọc markdown:
 {
-  "name": "Tên sản phẩm chính xác từ nội dung gốc",
+  "name": "Tên chính xác từ nội dung gốc",
   "code": "${productCode2}",
   "focusKeyword": "từ khóa SEO 2-4 từ",
-  "shortDescription": "Mô tả meta 120-160 ký tự...",
+  "shortDescription": "Mô tả meta 120-160 ký tự, chứa từ khóa focus",
   "image": "${scrapedImages[0] || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'}",
   "images": ${JSON.stringify(scrapedImages.slice(1, 4).length > 0 ? scrapedImages.slice(1, 4) : ['https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'])},
-  "description": "<p>Đoạn mở đầu bám sát nội dung gốc, chứa từ khóa focus...</p><h2>Tổng Quan Sản Phẩm</h2>...",
-  "specifications": "Thông số kỹ thuật rút gọn từ nội dung gốc...",
+  "description": "<p>Mở đầu bám sát nội dung gốc, chứa từ khóa...</p><h2>Tổng Quan</h2>...",
+  "specifications": "Thông số kỹ thuật ngắn gọn từ nội dung gốc",
   "warranty": "Theo nhà sản xuất",
-  "features": ["Tính năng 1 từ nội dung gốc", "Tính năng 2", "Tính năng 3"],
-  "technicalSpecs": { "Thông số 1": "Giá trị từ nội dung gốc" }
+  "features": ["Tính năng 1 từ nội dung gốc", "Tính năng 2", "Tính năng 3", "Tính năng 4"],
+  "technicalSpecs": { "Thông số 1": "Giá trị từ nội dung gốc", "Thông số 2": "Giá trị" }
 }`;
 
       const response = await chatService.sendMessage(prompt);
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      clearTimeout(timer1); clearTimeout(timer2);
 
       try {
         const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
         const match = cleanResponse.match(/\{[\s\S]*\}/);
         if (match) {
-          try {
-            parsed = JSON.parse(match[0]);
-          } catch (jsonErr) {
-            const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
-            parsed = JSON.parse(fixedJson);
-          }
+          try { parsed = JSON.parse(match[0]); }
+          catch { parsed = JSON.parse(match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r')); }
         }
       } catch (e) {
-        console.warn('JSON parse error, fallback to raw:', e);
+        console.warn('JSON parse error:', e);
       }
 
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      clearTimeout(timer1); clearTimeout(timer2);
 
       if (parsed && (parsed.name || parsed.description)) {
         const kwToUse = parsed.focusKeyword || focusKeyword || parsed.name || 'sản phẩm';
-
-        // Merge scraped images với images từ Gemini (ưu tiên scraped)
+        // Ưu tiên tuyệt đối ảnh cào được thực tế — không dùng ảnh Gemini bịa
         const finalMainImg = scrapedImages[0] || parsed.image || '';
         const finalExtraImgs = scrapedImages.length > 1
           ? scrapedImages.slice(1, 4)
@@ -207,22 +339,26 @@ Trả về JSON thuần (KHÔNG bọc markdown):
           description: cleanHtml,
           image: finalMainImage,
           images: finalExtraImages,
-          _scrapedVideos: scrapedVideos // Store for reference
+          _scrapedVideos: scrapedVideos,
+          _scrapedSource: scrapedSource
         });
-        showToast('✨ AI đã cào dữ liệu thực từ link và viết mô tả sản phẩm thành công!', 'success');
+
+        const sourceLabel = scrapedSource === 'server' ? 'server' : scrapedSource === 'client-cors' ? 'trình duyệt CORS proxy' : 'tên sản phẩm';
+        const imgCount = finalExtraImages.length + (finalMainImage ? 1 : 0);
+        showToast(`✨ Cào được ${imgCount} ảnh, ${scrapedVideos.length} video từ ${sourceLabel}. Gemini đã viết mô tả chuẩn SEO!`, 'success');
       } else {
-        throw new Error('Không thể đọc cấu trúc dữ liệu sản phẩm từ AI');
+        throw new Error('Không thể đọc JSON từ Gemini. Vui lòng thử lại.');
       }
     } catch (err: any) {
+      clearTimeout(timer1); clearTimeout(timer2);
       console.error('AI Product Generator Error:', err);
       showToast(err.message || 'Lỗi khi kết nối AI Gemini', 'error');
     } finally {
       setLoading(false);
       setStep(0);
+      setStepLabel('');
     }
   };
-
-
 
   const handleApplyResult = () => {
     if (!result) return;
@@ -241,7 +377,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
       image: result.image || '',
       images: Array.isArray(result.images) ? result.images : []
     });
-    showToast('🎉 Đã áp dụng Tên sản phẩm, Ảnh chính, 1-3 Ảnh phụ & Bài viết AI vào Form thành công!', 'success');
+    showToast('🎉 Đã áp dụng Tên, Ảnh chính, Ảnh phụ & Bài viết AI vào Form sản phẩm!', 'success');
     onClose();
   };
 
@@ -271,7 +407,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
             </div>
           </div>
           <p className="text-xs text-slate-200 ml-12 font-medium">
-            Tự động viết tên, mã model, mô tả chuẩn SEO, từ khóa Focus, thông số kỹ thuật & tính năng sản phẩm chỉ trong vài giây.
+            Tự động cào nội dung thực từ link → Gemini viết mô tả chuẩn SEO, không đoán mò.
           </p>
         </div>
 
@@ -279,32 +415,26 @@ Trả về JSON thuần (KHÔNG bọc markdown):
         <div className="p-6 md:p-8 overflow-y-auto flex-1 space-y-6">
           {/* Step animation bar */}
           {loading && (
-            <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-700 animate-pulse space-y-4">
+            <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-700 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
                   <Wand2 size={16} className="animate-spin text-amber-300" />
-                  Đang tạo sản phẩm AI...
+                  Đang xử lý... Bước {step}/3
                 </span>
-                <span className="text-xs text-slate-400 font-bold">Bước {step}/3</span>
+                <ShieldCheck size={16} className="text-emerald-400" />
               </div>
-
-              <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+              <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
                 <div
-                  className="bg-gradient-to-r from-amber-400 via-primary to-emerald-400 h-full transition-all duration-500 rounded-full"
+                  className="bg-gradient-to-r from-amber-400 via-primary to-emerald-400 h-full transition-all duration-700 rounded-full"
                   style={{ width: `${(step / 3) * 100}%` }}
                 />
               </div>
-
-              <p className="text-sm font-semibold text-slate-200">
-                {step === 1 && '🔍 Đang phân tích mã model & tra cứu thông tin sản phẩm...'}
-                {step === 2 && '🎯 Đang bóc tách từ khóa Focus & lập cấu trúc H2/H3 chuẩn Yoast...'}
-                {step === 3 && '✍️ Đang viết bài mô tả chi tiết, bảng thông số kỹ thuật & tối ưu độ dễ đọc 90-100...'}
-              </p>
+              <p className="text-sm font-semibold text-slate-200">{stepLabel}</p>
             </div>
           )}
 
           {!result ? (
-            /* Input Form */
+            /* ── Input Form ── */
             <form onSubmit={handleGenerate} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -315,7 +445,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     type="text"
                     value={productName}
                     onChange={e => setProductName(e.target.value)}
-                    placeholder="VD: Laptop ASUS Vivobook (hoặc để trống nếu đã dán Link)"
+                    placeholder="VD: Laptop OMEN 14-fb0135TX (hoặc để trống)"
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
@@ -328,7 +458,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     type="text"
                     value={productCode}
                     onChange={e => setProductCode(e.target.value)}
-                    placeholder="VD: S3407VA-LY146W"
+                    placeholder="VD: AY8V1PA"
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
@@ -343,24 +473,24 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     type="text"
                     value={focusKeyword}
                     onChange={e => setFocusKeyword(e.target.value)}
-                    placeholder="VD: laptop asus vivobook"
+                    placeholder="VD: laptop gaming omen"
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <Link2 size={13} className="text-primary" /> Link tham khảo / Mã Datasheet (Tùy chọn)
+                    <Link2 size={13} className="text-primary" /> Link sản phẩm mẫu cần cào
                   </label>
                   <input
                     type="url"
                     value={referenceUrl}
                     onChange={e => setReferenceUrl(e.target.value)}
-                    placeholder="https://..."
+                    placeholder="https://www.thegioididong.com/tin-tuc/..."
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
-                  <p className="text-[11px] text-emerald-600 font-bold mt-1 flex items-center gap-1">
-                    <span>🌐 AI sẽ tự động cào dữ liệu, trích xuất hình ảnh thực tế & nhúng video YouTube/Vimeo từ link này!</span>
+                  <p className="text-[11px] text-emerald-600 font-bold mt-1">
+                    🌐 AI cào hình ảnh, video, nội dung thực từ link → Gemini viết bài (không đoán mò)
                   </p>
                 </div>
               </div>
@@ -371,33 +501,16 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     Phong cách bài viết
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setStyle('technical')}
-                      className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'technical' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      ⚙️ Kỹ thuật B2B
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStyle('sales')}
-                      className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'sales' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      🔥 Bán hàng B2C
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStyle('comparison')}
-                      className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'comparison' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      📊 So sánh ưu điểm
-                    </button>
+                    {([['technical', '⚙️ Kỹ thuật B2B'], ['sales', '🔥 Bán hàng B2C'], ['comparison', '📊 So sánh']] as const).map(([val, label]) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setStyle(val)}
+                        className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${style === val ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -406,34 +519,22 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     Độ sâu nội dung
                   </label>
                   <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setTargetLength('standard')}
-                      className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        targetLength === 'standard' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      📝 Tiêu chuẩn (600-800 từ)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTargetLength('deep')}
-                      className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        targetLength === 'deep' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      🚀 Chuyên sâu (900-1200 từ)
-                    </button>
+                    {([['standard', '📝 Tiêu chuẩn (600-800 từ)'], ['deep', '🚀 Chuyên sâu (900-1200 từ)']] as const).map(([val, label]) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setTargetLength(val)}
+                        className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all cursor-pointer ${targetLength === val ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-                >
+                <button type="button" onClick={onClose} className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer">
                   Hủy
                 </button>
                 <button
@@ -442,18 +543,23 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                   className="px-6 py-2.5 bg-gradient-to-r from-amber-500 via-primary to-secondary text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Sparkles size={16} className="text-amber-200 animate-pulse" />
-                  Bắt Đầu Tạo Sản Phẩm AI
+                  Bắt Đầu Cào & Tạo Sản Phẩm AI
                 </button>
               </div>
             </form>
           ) : (
-            /* Result Generated - Editable Preview */
+            /* ── Result Editable Preview ── */
             <div className="space-y-5">
               <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 text-emerald-800">
                   <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
                   <span className="text-xs font-black">
                     🎉 AI tạo xong! Chỉnh sửa bên dưới nếu cần, rồi nhấn Áp dụng.
+                    {result._scrapedSource && result._scrapedSource !== 'none' && (
+                      <span className="ml-2 text-emerald-600 font-bold">
+                        (Nguồn: {result._scrapedSource === 'server' ? 'Server scraper' : 'CORS proxy'})
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -471,57 +577,40 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     onClick={() => setResult(null)}
                     className="text-xs font-bold text-slate-600 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-1 cursor-pointer transition-colors"
                   >
-                    <Edit3 size={12} /> Nhập lại yêu cầu
+                    <Edit3 size={12} /> Nhập lại
                   </button>
                 </div>
               </div>
 
-              {/* Editable summary fields */}
+              {/* Editable fields */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">Tên sản phẩm</label>
-                  <input
-                    type="text"
-                    value={result.name || ''}
-                    onChange={e => setResult({ ...result, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  />
+                  <input type="text" value={result.name || ''} onChange={e => setResult({ ...result, name: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">Mã Model / SKU</label>
-                  <input
-                    type="text"
-                    value={result.code || ''}
-                    onChange={e => setResult({ ...result, code: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  />
+                  <input type="text" value={result.code || ''} onChange={e => setResult({ ...result, code: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">🔑 Từ khóa Focus</label>
-                  <input
-                    type="text"
-                    value={result.focusKeyword || ''}
-                    onChange={e => setResult({ ...result, focusKeyword: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-primary/40 rounded-xl text-xs font-black text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  />
+                  <input type="text" value={result.focusKeyword || ''} onChange={e => setResult({ ...result, focusKeyword: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-primary/40 rounded-xl text-xs font-black text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
                 </div>
               </div>
 
-              {/* Editable Meta Description */}
               <div>
                 <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">
                   📝 Mô tả ngắn Meta ({result.shortDescription?.length || 0}/160 ký tự)
                 </label>
-                <textarea
-                  value={result.shortDescription || ''}
-                  onChange={e => setResult({ ...result, shortDescription: e.target.value })}
-                  rows={2}
-                  maxLength={160}
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 italic focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
-                />
+                <textarea value={result.shortDescription || ''} onChange={e => setResult({ ...result, shortDescription: e.target.value })}
+                  rows={2} maxLength={160}
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 italic focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none" />
               </div>
 
-              {/* Scraped Images - editable with delete & URL edit */}
+              {/* Scraped Images - editable */}
               {(result.image || (Array.isArray(result.images) && result.images.length > 0)) && (
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                   <span className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
@@ -531,112 +620,69 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     {result.image && (
                       <div className="flex flex-col items-center gap-1 flex-shrink-0">
                         <div className="relative">
-                          <img
-                            src={result.image}
-                            alt="Main"
-                            className="w-20 h-20 object-cover rounded-xl border-2 border-primary shadow-xs"
-                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'; }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setResult({ ...result, image: '' })}
-                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 cursor-pointer"
-                          ><X size={10} /></button>
+                          <img src={result.image} alt="Main" className="w-20 h-20 object-cover rounded-xl border-2 border-primary shadow-xs"
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'; }} />
+                          <button type="button" onClick={() => setResult({ ...result, image: '' })}
+                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 cursor-pointer">
+                            <X size={10} />
+                          </button>
                           <span className="absolute bottom-1 left-1 bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded">Ảnh chính</span>
                         </div>
-                        <input
-                          type="text"
-                          value={result.image || ''}
-                          onChange={e => setResult({ ...result, image: e.target.value })}
-                          className="w-20 text-[9px] text-slate-500 border border-slate-200 rounded px-1 py-0.5 outline-none truncate bg-white"
-                          placeholder="URL ảnh..."
-                        />
+                        <input type="text" value={result.image || ''} onChange={e => setResult({ ...result, image: e.target.value })}
+                          className="w-20 text-[9px] text-slate-500 border border-slate-200 rounded px-1 py-0.5 outline-none truncate bg-white" placeholder="URL ảnh..." />
                       </div>
                     )}
                     {Array.isArray(result.images) && result.images.map((imgUrl: string, idx: number) => (
                       <div key={idx} className="flex flex-col items-center gap-1 flex-shrink-0">
                         <div className="relative">
-                          <img
-                            src={imgUrl}
-                            alt={`Extra ${idx + 1}`}
-                            className="w-20 h-20 object-cover rounded-xl border border-slate-300 shadow-xs"
-                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'; }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => { const ni = [...result.images]; ni.splice(idx,1); setResult({ ...result, images: ni }); }}
-                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 cursor-pointer"
-                          ><X size={10} /></button>
-                          <span className="absolute bottom-1 left-1 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Ảnh phụ {idx+1}</span>
+                          <img src={imgUrl} alt={`Extra ${idx + 1}`} className="w-20 h-20 object-cover rounded-xl border border-slate-300 shadow-xs"
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'; }} />
+                          <button type="button" onClick={() => { const ni = [...result.images]; ni.splice(idx, 1); setResult({ ...result, images: ni }); }}
+                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 cursor-pointer">
+                            <X size={10} />
+                          </button>
+                          <span className="absolute bottom-1 left-1 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Ảnh phụ {idx + 1}</span>
                         </div>
-                        <input
-                          type="text"
-                          value={imgUrl}
-                          onChange={e => { const ni = [...result.images]; ni[idx] = e.target.value; setResult({ ...result, images: ni }); }}
-                          className="w-20 text-[9px] text-slate-500 border border-slate-200 rounded px-1 py-0.5 outline-none truncate bg-white"
-                          placeholder="URL ảnh..."
-                        />
+                        <input type="text" value={imgUrl} onChange={e => { const ni = [...result.images]; ni[idx] = e.target.value; setResult({ ...result, images: ni }); }}
+                          className="w-20 text-[9px] text-slate-500 border border-slate-200 rounded px-1 py-0.5 outline-none truncate bg-white" placeholder="URL ảnh..." />
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Tabs for preview vs editable HTML */}
+              {/* Tabs: Preview / HTML Editor */}
               <div className="flex border-b border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setShowCodeEditor(false)}
-                  className={`py-2 px-4 text-xs font-black border-b-2 cursor-pointer ${
-                    !showCodeEditor ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-800'
-                  }`}
-                >
+                <button type="button" onClick={() => setShowCodeEditor(false)}
+                  className={`py-2 px-4 text-xs font-black border-b-2 cursor-pointer ${!showCodeEditor ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
                   👁️ Xem trước hiển thị
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setShowCodeEditor(true)}
-                  className={`py-2 px-4 text-xs font-black border-b-2 cursor-pointer ${
-                    showCodeEditor ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  ✏️ Chỉnh sửa HTML
+                <button type="button" onClick={() => setShowCodeEditor(true)}
+                  className={`py-2 px-4 text-xs font-black border-b-2 cursor-pointer ${showCodeEditor ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
+                  <Code size={12} className="inline mr-1" />✏️ Chỉnh sửa HTML
                 </button>
               </div>
 
               {!showCodeEditor ? (
                 <div className="border border-slate-200 rounded-2xl p-6 bg-white max-h-80 overflow-y-auto">
-                  <div
-                    className="prose prose-sm max-w-none text-slate-800"
-                    dangerouslySetInnerHTML={{ __html: result.description || '' }}
-                  />
+                  <div className="prose prose-sm max-w-none text-slate-800" dangerouslySetInnerHTML={{ __html: result.description || '' }} />
                 </div>
               ) : (
-                <textarea
-                  value={result.description || ''}
-                  onChange={e => setResult({ ...result, description: e.target.value })}
+                <textarea value={result.description || ''} onChange={e => setResult({ ...result, description: e.target.value })}
                   rows={12}
                   className="w-full p-4 font-mono text-xs bg-slate-900 text-emerald-400 rounded-2xl border border-slate-800 outline-none resize-y"
-                  placeholder="Chỉnh sửa mã HTML bài viết tại đây..."
-                />
+                  placeholder="Chỉnh sửa mã HTML tại đây..." />
               )}
 
               {/* Actions */}
               <div className="pt-3 border-t border-slate-100 flex justify-between items-center gap-3 flex-wrap">
-                <button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={loading}
-                  className="px-5 py-2.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
+                <button type="button" onClick={handleGenerate} disabled={loading}
+                  className="px-5 py-2.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
                   <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
                   ✨ AI Tạo Lại Nội Dung Mới
                 </button>
-                <button
-                  type="button"
-                  onClick={handleApplyResult}
-                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
-                >
+                <button type="button" onClick={handleApplyResult}
+                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer">
                   <CheckCircle2 size={16} />
                   ✅ Áp Dụng Tất Cả Vào Form Sản Phẩm
                 </button>
