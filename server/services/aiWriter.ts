@@ -278,8 +278,6 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
     }
 
     // 3. Extract Images - multi-source strategy
-    const scrapedImages: string[] = [];
-
     // 3a. JSON-LD Schema.org (most reliable for product pages)
     const jsonLdRegex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
     let jsonLdMatch;
