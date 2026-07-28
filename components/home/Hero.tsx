@@ -225,52 +225,46 @@ const Hero: React.FC = () => {
     }
   };
 
-  // Video performance adjustments
+  // Detect if mobile to skip heavy video
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [showVideo, setShowVideo] = useState(!isMobile);
+
+  // Video performance adjustments - desktop only
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || isMobile) return;
 
-    let isLowPowerMode = false;
-    let videoLoaded = false;
-
-    if (window.innerWidth < 768 || ('connection' in navigator && ((navigator as any).connection?.saveData || (navigator as any).connection?.effectiveType === 'slow-2g' || (navigator as any).connection?.effectiveType === '2g'))) {
-      isLowPowerMode = true;
-      video.preload = 'none';
-    }
-
+    // Check connection speed
     const nav = navigator as any;
+    const conn = nav.connection;
+    const slowConnection = conn?.saveData || conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g';
+    if (slowConnection) { setShowVideo(false); return; }
+
+    // Check battery
     if (nav.getBattery) {
       nav.getBattery().then((battery: any) => {
-        if (battery.level < 0.2) {
-          isLowPowerMode = true;
-          video.pause();
-        }
+        if (battery.level < 0.15) { video.pause(); return; }
       });
     }
 
+    // Intersection observer: only play when visible
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting && !isLowPowerMode) {
-              if (!videoLoaded && video.readyState === 0) {
-                video.load();
-                videoLoaded = true;
-              }
+            if (entry.isIntersecting) {
               video.play().catch(() => {});
             } else {
               video.pause();
             }
           });
         },
-        { threshold: 0.1, rootMargin: '50px' }
+        { threshold: 0.1 }
       );
       observer.observe(video);
       return () => observer.disconnect();
-    } else {
-      video.load();
     }
-  }, []);
+  }, [isMobile]);
 
   return (
     <>
@@ -1019,20 +1013,27 @@ const Hero: React.FC = () => {
       `}} />
 
       <section className="hero-corporate">
-        {/* Core Corporate Video Background */}
-        <video 
-          ref={videoRef}
-          className="hero-video-render" 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
-          preload="metadata"
-          style={{ pointerEvents: 'none' }}
-        >
-          <source src="/Videos/video_bgr.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {/* Video Background - Desktop only, skip on mobile to save bandwidth */}
+        {showVideo ? (
+          <video 
+            ref={videoRef}
+            className="hero-video-render" 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            preload="none"
+            style={{ pointerEvents: 'none' }}
+          >
+            <source src="/Videos/video_bgr.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          // Mobile: Static gradient background (zero bandwidth cost)
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 1,
+            background: 'linear-gradient(160deg, #0a1628 0%, #060d1d 40%, #0c1e3a 70%, #060d1d 100%)'
+          }} />
+        )}
 
         {/* Dynamic Dark Masks */}
         <div className="dark-grad-mask"></div>
