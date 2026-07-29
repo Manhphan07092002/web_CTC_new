@@ -130,3 +130,52 @@ export function getCategoryParentChain(categoryId: string, categories: Category[
   search(tree);
   return chain;
 }
+
+/**
+ * Get all descendant IDs of a category (excluding itself)
+ */
+export function getCategoryDescendantIdsOnly(categoryId: string, categories: Category[]): string[] {
+  const tree = buildCategoryTree(categories);
+  const result: string[] = [];
+
+  function findAndCollect(nodes: CategoryNode[]) {
+    nodes.forEach(node => {
+      if (node.id === categoryId) {
+        collectChildren(node.children);
+      } else if (node.children.length > 0) {
+        findAndCollect(node.children);
+      }
+    });
+  }
+
+  function collectChildren(nodes: CategoryNode[]) {
+    nodes.forEach(node => {
+      result.push(node.id);
+      if (node.children.length > 0) {
+        collectChildren(node.children);
+      }
+    });
+  }
+
+  findAndCollect(tree);
+  return result;
+}
+
+/**
+ * Get IDs of all sibling categories sharing the same parent
+ */
+export function getCategorySiblingIds(categoryId: string, categories: Category[]): string[] {
+  const target = categories.find(c => c.id === categoryId);
+  if (!target) return [];
+  return categories
+    .filter(c => c.parentId === target.parentId && c.id !== categoryId)
+    .map(c => c.id);
+}
+
+/**
+ * Get ancestor IDs leading to a category
+ */
+export function getCategoryAncestorIds(categoryId: string, categories: Category[]): string[] {
+  const chain = getCategoryParentChain(categoryId, categories);
+  return chain.filter(c => c.id !== categoryId).map(c => c.id);
+}

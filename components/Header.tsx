@@ -9,7 +9,7 @@ import { useCart } from '../contexts/CartContext';
 import { api } from '../services/api';
 import { Category } from '../types';
 import { getLangText } from '../utils/translation-helper';
-import { buildCategoryTree, CategoryNode } from '../utils/categoryTreeHelper';
+import { buildCategoryTree, CategoryNode, getCategoryDescendantIdsOnly, getCategorySiblingIds } from '../utils/categoryTreeHelper';
 
 interface RecursiveFlyoutProps {
   nodes: CategoryNode[];
@@ -51,28 +51,80 @@ const RecursiveCategoryFlyout: React.FC<RecursiveFlyoutProps> = ({ nodes, langua
   );
 };
 
-const RecursiveMobileCategoryMenu: React.FC<{ nodes: CategoryNode[]; onNavigate: () => void }> = ({ nodes, onNavigate }) => {
+interface RecursiveMobileMenuProps {
+  nodes: CategoryNode[];
+  allCategories: Category[];
+  openMobileCatIds: string[];
+  toggleMobileCat: (id: string, e: React.MouseEvent) => void;
+  onNavigate: () => void;
+}
+
+const RecursiveMobileCategoryMenu: React.FC<RecursiveMobileMenuProps> = ({
+  nodes,
+  allCategories,
+  openMobileCatIds,
+  toggleMobileCat,
+  onNavigate
+}) => {
   return (
     <div className="space-y-1">
       {nodes.map((node) => {
         const hasChildren = node.children && node.children.length > 0;
+        const isOpen = openMobileCatIds.includes(node.id);
+
+        const levelPadding = 
+          node.level === 1 ? 'pl-2' :
+          node.level === 2 ? 'pl-5' :
+          node.level === 3 ? 'pl-8' : 'pl-11';
+
         return (
           <div key={node.id} className="border-b border-gray-200/40 dark:border-slate-800/60 last:border-none pb-1">
-            <Link
-              to={`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`}
-              onClick={onNavigate}
-              className="flex items-center justify-between py-2 px-3 text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-sky-500 uppercase tracking-wide"
-            >
-              <span className="truncate">{node.level === 1 ? '📂 ' : '└ '}{node.name}</span>
-              {hasChildren && (
-                <span className="text-[10px] text-sky-500 font-semibold bg-sky-100 dark:bg-sky-900/40 px-1.5 py-0.5 rounded flex-shrink-0 ml-1">
-                  {node.children.length}
-                </span>
-              )}
-            </Link>
-            {hasChildren && (
-              <div className="pl-3 pr-1 pb-1">
-                <RecursiveMobileCategoryMenu nodes={node.children} onNavigate={onNavigate} />
+            <div className={`flex items-center justify-between py-2 px-2.5 ${levelPadding}`}>
+              {/* Tên danh mục -> Chuyển trang */}
+              <Link
+                to={`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`}
+                onClick={onNavigate}
+                className="flex-1 min-w-0 text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-sky-500 uppercase tracking-wide truncate flex items-center gap-1.5"
+              >
+                {node.level > 1 && <span className="opacity-40 font-mono text-[10px]">└</span>}
+                <span className="truncate">{node.name}</span>
+              </Link>
+
+              <div className="flex items-center gap-1.5 flex-shrink-0 ml-1">
+                {/* Badge số lượng danh mục con */}
+                {hasChildren && (
+                  <span className="text-[10px] text-sky-500 font-semibold bg-sky-100 dark:bg-sky-900/40 px-1.5 py-0.5 rounded">
+                    {node.children.length}
+                  </span>
+                )}
+
+                {/* Icon mũi tên -> Tách vùng bấm riêng mở/đóng submenu từng cấp */}
+                {hasChildren && (
+                  <button
+                    onClick={(e) => toggleMobileCat(node.id, e)}
+                    aria-expanded={isOpen}
+                    aria-label={`Mở/đóng danh mục con của ${node.name}`}
+                    className="p-1 rounded text-slate-400 hover:text-sky-500 transition-colors cursor-pointer"
+                  >
+                    <ChevronRight 
+                      size={15} 
+                      className={`transition-transform duration-200 ${isOpen ? 'rotate-90 text-sky-500' : 'text-slate-400'}`} 
+                    />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Submenu chỉ hiển thị khi mở cấp này (Mở theo từng cấp) */}
+            {hasChildren && isOpen && (
+              <div className="pt-0.5 pb-1 transition-all duration-200">
+                <RecursiveMobileCategoryMenu 
+                  nodes={node.children} 
+                  allCategories={allCategories}
+                  openMobileCatIds={openMobileCatIds}
+                  toggleMobileCat={toggleMobileCat}
+                  onNavigate={onNavigate} 
+                />
               </div>
             )}
           </div>
@@ -220,6 +272,26 @@ const Header: React.FC = () => {
   const handleLanguageChange = (code: Language) => {
     setLanguage(code);
     setIsLangMenuOpen(false);
+  };
+
+  const [openMobileCatIds, setOpenMobileCatIds] = useState<string[]>([]);
+
+  const toggleMobileCat = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setOpenMobileCatIds((prev) => {
+      if (prev.includes(id)) {
+        const descendants = getCategoryDescendantIdsOnly(id, categories);
+        const toRemove = new Set([id, ...descendants]);
+        return prev.filter((item) => !toRemove.has(item));
+      } else {
+        const siblings = getCategorySiblingIds(id, categories);
+        const siblingDescendants = siblings.flatMap((sId) => [sId, ...getCategoryDescendantIdsOnly(sId, categories)]);
+        const toRemove = new Set(siblingDescendants);
+        return [...prev.filter((item) => !toRemove.has(item)), id];
+      }
+    });
   };
 
   const toggleMobileSubmenu = (key: string) => {
@@ -912,7 +984,13 @@ const Header: React.FC = () => {
                 {link.submenu && expandedMobileMenu === link.key && (
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800 p-2 space-y-1">
                     {link.key === 'products' && categoryTree.length > 0 ? (
-                      <RecursiveMobileCategoryMenu nodes={categoryTree} onNavigate={() => setIsMenuOpen(false)} />
+                      <RecursiveMobileCategoryMenu 
+                        nodes={categoryTree} 
+                        allCategories={categories}
+                        openMobileCatIds={openMobileCatIds}
+                        toggleMobileCat={toggleMobileCat}
+                        onNavigate={() => setIsMenuOpen(false)} 
+                      />
                     ) : (
                       link.submenu.map((sub, subIdx) => (
                         <Link

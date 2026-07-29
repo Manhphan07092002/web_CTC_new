@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { List, ChevronRight, SlidersHorizontal, Zap, Activity, DollarSign, Tag } from 'lucide-react';
 import { Category } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLangText } from '../../utils/translation-helper';
+import { 
+  buildCategoryTree, 
+  CategoryNode, 
+  getCategoryDescendantIdsOnly, 
+  getCategorySiblingIds, 
+  getCategoryAncestorIds 
+} from '../../utils/categoryTreeHelper';
 
 interface FilterSidebarProps {
   activeCategoryKey: string;
@@ -32,6 +39,99 @@ interface FilterSidebarProps {
   t: (key: string) => any;
 }
 
+const RecursiveSidebarCategoryItem: React.FC<{
+  node: CategoryNode;
+  activeCategoryKey: string;
+  openMenuIds: string[];
+  toggleMenu: (id: string, e: React.MouseEvent) => void;
+  handleCategoryChange: (key: string) => void;
+}> = ({
+  node,
+  activeCategoryKey,
+  openMenuIds,
+  toggleMenu,
+  handleCategoryChange
+}) => {
+  const categoryKey = node.slug || node.name.toLowerCase();
+  const isActive = activeCategoryKey === categoryKey;
+  const isOpen = openMenuIds.includes(node.id);
+  const hasChildren = node.children && node.children.length > 0;
+
+  // Level-based indentation padding
+  const levelPaddingClass = 
+    node.level === 1 ? 'pl-3' :
+    node.level === 2 ? 'pl-6' :
+    node.level === 3 ? 'pl-9' : 'pl-12';
+
+  const fontSizeClass =
+    node.level === 1 ? 'text-sm font-bold text-gray-800 dark:text-gray-100' :
+    node.level === 2 ? 'text-xs font-semibold text-gray-700 dark:text-gray-200' :
+    'text-[11px] font-medium text-gray-600 dark:text-gray-300';
+
+  return (
+    <div className="space-y-0.5">
+      <div 
+        className={`w-full text-left py-2 pr-2.5 rounded-lg transition-all flex items-center justify-between group border-l-4 ${levelPaddingClass} ${
+          isActive
+            ? 'border-primary bg-sky-50 dark:bg-sky-900/30 text-primary dark:text-sky-400 font-bold'
+            : 'border-transparent hover:bg-gray-50/80 dark:hover:bg-gray-700/30 hover:text-primary'
+        }`}
+      >
+        {/* Tên danh mục -> Lọc sản phẩm */}
+        <button
+          onClick={() => handleCategoryChange(categoryKey)}
+          className={`flex-1 min-w-0 text-left truncate flex items-center gap-1.5 cursor-pointer ${fontSizeClass}`}
+        >
+          {node.level > 1 && <span className="opacity-40 font-mono text-[10px]">└</span>}
+          <span className="truncate">{node.name}</span>
+        </button>
+
+        <div className="flex items-center gap-1.5 flex-shrink-0 ml-1">
+          {/* Badge số lượng sản phẩm */}
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium transition-colors ${
+            isActive
+              ? 'bg-primary/20 text-primary dark:text-sky-300 font-bold'
+              : 'bg-gray-100 dark:bg-gray-750 text-gray-400 dark:text-gray-400 group-hover:bg-primary/10 group-hover:text-primary'
+          }`}>
+            {node.productCount || 0}
+          </span>
+
+          {/* Icon mũi tên -> Tách vùng bấm riêng mở/đóng submenu từng cấp */}
+          {hasChildren && (
+            <button
+              onClick={(e) => toggleMenu(node.id, e)}
+              aria-expanded={isOpen}
+              aria-label={`Mở/đóng danh mục con của ${node.name}`}
+              className="p-1 rounded-md hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-400 hover:text-primary transition-all cursor-pointer"
+            >
+              <ChevronRight 
+                size={14} 
+                className={`transition-transform duration-200 ${isOpen ? 'rotate-90 text-primary' : 'text-gray-400'}`} 
+              />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Hiển thị danh mục con chỉ khi danh mục hiện tại đang MỞ (Mở từng cấp) */}
+      {hasChildren && isOpen && (
+        <div className="space-y-0.5 transition-all duration-200 animate-fade-in">
+          {node.children.map(child => (
+            <RecursiveSidebarCategoryItem
+              key={child.id}
+              node={child}
+              activeCategoryKey={activeCategoryKey}
+              openMenuIds={openMenuIds}
+              toggleMenu={toggleMenu}
+              handleCategoryChange={handleCategoryChange}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const FilterSidebar: React.FC<FilterSidebarProps> = ({
   activeCategoryKey,
   handleCategoryChange,
@@ -47,6 +147,44 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const { language } = useLanguage();
   const isFilterActive = techFilters.minPrice || techFilters.maxPrice || techFilters.minPower || techFilters.maxPower || techFilters.minEff || techFilters.maxEff;
 
+  const allCats = getActiveCategories();
+  const categoryTree = buildCategoryTree(allCats);
+
+  // State lưu danh sách ID các danh mục đang mở
+  const [openMenuIds, setOpenMenuIds] = useState<string[]>([]);
+
+  // Tự động mở đúng nhánh chứa danh mục đang active khi tải trang hoặc chuyển danh mục
+  useEffect(() => {
+    if (activeCategoryKey && activeCategoryKey !== 'all' && allCats.length > 0) {
+      const activeCat = allCats.find(c => (c.slug || c.name.toLowerCase()) === activeCategoryKey.toLowerCase());
+      if (activeCat) {
+        const ancestorIds = getCategoryAncestorIds(activeCat.id, allCats);
+        setOpenMenuIds(prev => Array.from(new Set([...prev, ...ancestorIds])));
+      }
+    }
+  }, [activeCategoryKey, allCats.length]);
+
+  // Logic Mở/Đóng submenu từng cấp dạng Accordion
+  const toggleMenu = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setOpenMenuIds((prev) => {
+      if (prev.includes(id)) {
+        // Đóng: Xóa ID này VÀ toàn bộ ID danh mục con/cháu bên trong
+        const descendants = getCategoryDescendantIdsOnly(id, allCats);
+        const toRemove = new Set([id, ...descendants]);
+        return prev.filter((item) => !toRemove.has(item));
+      } else {
+        // Mở: Thêm ID này, đóng các danh mục cùng cấp (Accordion)
+        const siblings = getCategorySiblingIds(id, allCats);
+        const siblingDescendants = siblings.flatMap((sId) => [sId, ...getCategoryDescendantIdsOnly(sId, allCats)]);
+        const toRemove = new Set(siblingDescendants);
+        return [...prev.filter((item) => !toRemove.has(item)), id];
+      }
+    });
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sticky top-[160px] md:top-[170px]">
       {/* Categories */}
@@ -54,7 +192,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         <List size={20} className="text-primary" /> {t('products.category_list')}
       </h3>
       <nav className="space-y-1 mb-8">
-        {/* All categories button */}
+        {/* Tất cả danh mục */}
         <button
           onClick={() => handleCategoryChange('all')}
           className={`w-full text-left py-2.5 rounded-r-lg text-sm font-bold transition-all flex items-center justify-between group border-l-4 ${
@@ -74,7 +212,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </span>
         </button>
 
-        {/* Categories from database */}
+        {/* Categories từ database (Mở đệ quy từng cấp) */}
         {categoriesLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="w-full pl-3 pr-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-750 animate-pulse">
@@ -82,71 +220,16 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             </div>
           ))
         ) : (
-          (() => {
-            const allCats = getActiveCategories();
-            const parentCats = allCats.filter(c => !c.parentId);
-            const getSubCats = (pId: string) => allCats.filter(c => c.parentId === pId);
-
-            return parentCats.map((parentCategory) => {
-              const parentKey = parentCategory.slug || parentCategory.name.toLowerCase();
-              const isParentActive = activeCategoryKey === parentKey;
-              const subCats = getSubCats(parentCategory.id);
-
-              return (
-                <div key={parentCategory.id} className="space-y-0.5 mb-1">
-                  <button
-                    onClick={() => handleCategoryChange(parentKey)}
-                    className={`w-full text-left py-2.5 rounded-r-lg text-sm font-bold transition-all flex items-center justify-between group border-l-4 ${
-                      isParentActive
-                        ? 'border-primary bg-gradient-to-r from-primary/10 to-transparent text-primary dark:text-sky-400'
-                        : 'border-transparent text-gray-700 dark:text-gray-200 hover:border-primary/30 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:text-primary'
-                    }`}
-                    style={{ paddingLeft: '12px', paddingRight: '12px' }}
-                  >
-                    <span className="truncate pr-2">{parentCategory.name}</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition-colors ${
-                      isParentActive
-                        ? 'bg-primary/15 text-primary'
-                        : 'bg-gray-100 dark:bg-gray-750 text-gray-400 dark:text-gray-400 group-hover:bg-primary/10 group-hover:text-primary'
-                    }`}>
-                      {parentCategory.productCount || 0}
-                    </span>
-                  </button>
-
-                  {/* Sub-categories tree list */}
-                  {subCats.length > 0 && (
-                    <div className="pl-3 pr-1 py-1 space-y-1 border-l-2 border-slate-200 dark:border-slate-700/60 ml-4 my-1">
-                      {subCats.map((subCat) => {
-                        const subKey = subCat.slug || subCat.name.toLowerCase();
-                        const isSubActive = activeCategoryKey === subKey;
-                        return (
-                          <button
-                            key={subCat.id}
-                            onClick={() => handleCategoryChange(subKey)}
-                            className={`w-full text-left py-1.5 px-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-between group ${
-                              isSubActive
-                                ? 'bg-primary text-white shadow-xs font-bold'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-300'
-                            }`}
-                          >
-                            <span className="truncate flex items-center gap-1">
-                              <span className="opacity-60 font-mono text-[10px]">└</span>
-                              <span>{subCat.name}</span>
-                            </span>
-                            <span className={`text-[9px] px-1.5 py-0.2 rounded font-medium ${
-                              isSubActive ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-750 text-gray-400'
-                            }`}>
-                              {subCat.productCount || 0}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            });
-          })()
+          categoryTree.map((rootNode) => (
+            <RecursiveSidebarCategoryItem
+              key={rootNode.id}
+              node={rootNode}
+              activeCategoryKey={activeCategoryKey}
+              openMenuIds={openMenuIds}
+              toggleMenu={toggleMenu}
+              handleCategoryChange={handleCategoryChange}
+            />
+          ))
         )}
       </nav>
 
