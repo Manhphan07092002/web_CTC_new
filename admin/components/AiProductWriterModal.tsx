@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, CheckCircle2, X, Wand2, RefreshCw, Target, Edit3, Link2, Code, Package, ShieldCheck } from 'lucide-react';
+import { Sparkles, CheckCircle2, X, Wand2, RefreshCw, Target, Edit3, Link2, Code, Package, ShieldCheck, FileText } from 'lucide-react';
 import { chatService } from '../../services/chatService';
 import { useToast } from '../../contexts/ToastContext';
 import { api } from '../../services/api';
@@ -42,6 +42,7 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
   const [productCode, setProductCode] = useState(initialCode);
   const [focusKeyword, setFocusKeyword] = useState('');
   const [referenceUrl, setReferenceUrl] = useState('');
+  const [sampleText, setSampleText] = useState('');
   const [style, setStyle] = useState<'technical' | 'sales' | 'comparison'>('technical');
   const [targetLength, setTargetLength] = useState<'standard' | 'deep'>('deep');
   const [showCodeEditor, setShowCodeEditor] = useState(false);
@@ -181,27 +182,28 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
 
     const nameToUse = productName.trim();
     const urlToUse = referenceUrl.trim();
+    const sampleTextToUse = sampleText.trim();
 
-    if (!nameToUse && !urlToUse) {
-      showToast('Vui lòng nhập Tên sản phẩm hoặc dán Link sản phẩm mẫu', 'error');
+    if (!nameToUse && !urlToUse && !sampleTextToUse) {
+      showToast('Vui lòng nhập Tên sản phẩm, dán Link hoặc dán Văn bản sản phẩm mẫu', 'error');
       return;
     }
 
     setLoading(true);
     setStep(1);
-    setStepLabel('🔍 Đang cào dữ liệu từ link sản phẩm...');
-    const timer1 = setTimeout(() => { setStep(2); setStepLabel('🎯 Đang phân tích hình ảnh & nội dung gốc...'); }, 2000);
-    const timer2 = setTimeout(() => { setStep(3); setStepLabel('✍️ Gemini đang viết mô tả sản phẩm chuẩn SEO...'); }, 5000);
+    setStepLabel('🔍 Đang cào dữ liệu & xử lý văn bản mẫu...');
+    const timer1 = setTimeout(() => { setStep(2); setStepLabel('🎯 Đang phân tích thông số & nội dung gốc...'); }, 2000);
+    const timer2 = setTimeout(() => { setStep(3); setStepLabel('✍️ Gemini đang viết bài mô tả sản phẩm chuẩn SEO...'); }, 5000);
 
     try {
       let parsed: any = null;
 
-      // ══ TẦNG 1: Thu thập dữ liệu thực từ URL ══════════════════
+      // ══ TẦNG 1: Thu thập dữ liệu thực từ URL & Văn bản dán mẫu ══
       let scrapedTitle = nameToUse;
       let scrapedImages: string[] = [];
       let scrapedVideos: string[] = [];
       let scrapedRawText = '';
-      let scrapedSource = 'none';
+      let scrapedSource = sampleTextToUse ? 'sample-text' : 'none';
 
       if (urlToUse) {
         // 1a: Server-side scrape (Node.js server — nhanh nhưng có thể bị block IP datacenter)
@@ -214,7 +216,7 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
             scrapedImages = d.images || [];
             scrapedVideos = d.videos || [];
             scrapedRawText = d.rawText || '';
-            scrapedSource = 'server';
+            scrapedSource = sampleTextToUse ? 'server+sample' : 'server';
             console.log(`[AI Modal] Server OK: text=${scrapedRawText.length}ch, img=${scrapedImages.length}, vid=${scrapedVideos.length}`);
           } else {
             console.warn('[AI Modal] Server returned empty → trying client CORS proxy...');
@@ -234,7 +236,7 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
               scrapedImages = clientData.images;
               scrapedVideos = clientData.videos;
               scrapedRawText = clientData.rawText;
-              scrapedSource = 'client-cors';
+              scrapedSource = sampleTextToUse ? 'client-cors+sample' : 'client-cors';
               console.log(`[AI Modal] CORS proxy OK: text=${scrapedRawText.length}ch, img=${scrapedImages.length}`);
             }
           } catch (e) {
@@ -242,22 +244,28 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
           }
         }
 
-        // Kiểm tra: nếu vẫn không cào được gì VÀ không có tên sản phẩm → dừng, không đoán mò
-        if (!scrapedRawText && scrapedImages.length === 0 && !nameToUse) {
+        // Kiểm tra: nếu không cào được gì VÀ không có tên sản phẩm VÀ không có văn bản mẫu → dừng
+        if (!scrapedRawText && scrapedImages.length === 0 && !nameToUse && !sampleTextToUse) {
           clearTimeout(timer1); clearTimeout(timer2);
           setLoading(false); setStep(0);
           showToast(
-            '⚠️ Không thể cào nội dung từ link này (trang chặn robot). Hãy nhập Tên sản phẩm hoặc copy nội dung vào ô tên sản phẩm.',
+            '⚠️ Không thể cào nội dung từ link này. Hãy nhập Tên sản phẩm hoặc dán Nội dung/Thông số vào ô văn bản mẫu.',
             'error'
           );
           return;
         }
       }
 
-      // ══ TẦNG 2: Gemini viết dựa 100% trên dữ liệu cào được ═══
-      setStepLabel('✍️ Gemini đang viết bài mô tả sản phẩm chuẩn SEO 100/100...');
+      // ══ TẦNG 2: Gemini tổng hợp bài viết 1000-1500 từ ═══
+      setStepLabel('✍️ Gemini đang đọc nội dung mẫu & tổng hợp bài viết chuẩn SEO 100/100...');
       const productCode2 = productCode || ('CTC-' + Math.floor(1000 + Math.random() * 9000));
-      const hasRealContent = scrapedRawText.length > 80;
+      
+      const combinedRawText = [
+        sampleTextToUse ? `--- VĂN BẢN / THÔNG SỐ SẢN PHẨM MẪU DO NGUỜI DÙNG CUNG CẤP ---\n${sampleTextToUse}` : '',
+        scrapedRawText ? `--- NỘI DUNG CÀO TỪ LINK SẢN PHẨM ---\n${scrapedRawText}` : ''
+      ].filter(Boolean).join('\n\n');
+
+      const hasRealContent = combinedRawText.length > 20;
       const hasImages = scrapedImages.length > 0;
 
       const videoEmbeds = scrapedVideos.slice(0, 2).map(v =>
@@ -266,19 +274,18 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
 
       const prompt = `Bạn là Chuyên gia Sản phẩm & SEO Yoast của Công ty CTC.
 
-NHIỆM VỤ: Viết bài mô tả sản phẩm CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
-NGUỒN: Dữ liệu cào từ "${urlToUse || 'tên sản phẩm'}" qua ${scrapedSource === 'server' ? 'server' : scrapedSource === 'client-cors' ? 'trình duyệt (CORS proxy)' : 'tên sản phẩm'}.
+NHIỆM VỤ: Đọc hiểu toàn bộ văn bản/thông số mẫu dưới đây và viết bài mô tả sản phẩm CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
 
-━━━ THÔNG TIN SẢN PHẨM ĐÃ CÀO ĐƯỢC ━━━
-Tên/Model: "${scrapedTitle || nameToUse}"
-Danh mục: "${initialCategory || 'Thiết bị Công Nghệ'}"
+━━━ THÔNG TIN SẢN PHẨM ĐẦU VÀO ━━━
+Tên/Model: "${scrapedTitle || nameToUse || 'Tự động rút ra từ văn bản mẫu'}"
+Danh mục: "${initialCategory || 'Thiết bị Công Nghệ & Năng Lượng'}"
 Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style === 'sales' ? 'Thúc đẩy mua hàng B2C' : 'So sánh ưu điểm'}
-Độ sâu: ${targetLength === 'deep' ? '900-1200 từ' : '600-800 từ'}
+Độ sâu: ${targetLength === 'deep' ? '1000-1500 từ' : '600-800 từ'}
 
-━━━ NỘI DUNG GỐC & THÔNG SỐ CÀO ĐƯỢC ━━━
+━━━ NỘI DUNG GỐC & THÔNG SỐ SẢN PHẨM MẪU ━━━
 ${hasRealContent
-  ? scrapedRawText.slice(0, 2500)
-  : '⚠️ Không có nội dung cào được. Chỉ được viết dựa trên tên sản phẩm. TUYỆT ĐỐI KHÔNG bịa thông số kỹ thuật cụ thể như số GHz, GB, W... nếu không chắc chắn.'}
+  ? combinedRawText.slice(0, 3000)
+  : '⚠️ Không có nội dung cào/dán. Viết dựa trên tên sản phẩm.'}
 
 ━━━ HÌNH ẢNH CÀO ĐƯỢC ━━━
 ${hasImages
@@ -544,9 +551,26 @@ Trả về JSON thuần không bọc markdown:
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                   <p className="text-[11px] text-emerald-600 font-bold mt-1">
-                    🌐 AI cào hình ảnh, video, nội dung thực từ link → Gemini viết bài (không đoán mò)
+                    🌐 AI cào hình ảnh, video, nội dung thực từ link
                   </p>
                 </div>
+              </div>
+
+              {/* Ô Dán Văn Bản Sản Phẩm Mẫu */}
+              <div>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <FileText size={14} className="text-amber-500" /> Văn bản / Thông số sản phẩm mẫu (Dán từ Word, PDF, website...)
+                </label>
+                <textarea
+                  value={sampleText}
+                  onChange={e => setSampleText(e.target.value)}
+                  rows={3}
+                  placeholder="Dán bài viết mẫu, danh sách thông số kỹ thuật hoặc tài liệu giới thiệu sản phẩm vào đây... AI Gemini sẽ tự động đọc nội dung này để tạo sản phẩm mới hoàn chỉnh chuẩn SEO!"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-y"
+                />
+                <p className="text-[11px] text-amber-600 font-bold mt-1">
+                  📝 AI Gemini tự đọc văn bản mẫu này → Rút ra Tên, Mã SKU, Bảng thông số kỹ thuật & Tổng hợp bài viết chi tiết
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
