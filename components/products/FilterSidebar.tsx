@@ -103,10 +103,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     }`}
                     style={{ paddingLeft: '12px', paddingRight: '12px' }}
                   >
-                    <span className="truncate pr-2 flex items-center gap-1.5">
-                      <span>{parentCategory.icon || '📂'}</span>
-                      <span>{parentCategory.name}</span>
-                    </span>
+                    <span className="truncate pr-2">{parentCategory.name}</span>
                     <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition-colors ${
                       isParentActive
                         ? 'bg-primary/15 text-primary'
