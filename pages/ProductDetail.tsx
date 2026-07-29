@@ -19,6 +19,7 @@ import {
 import Loading from '../components/Loading';
 import { useCart } from '../contexts/CartContext';
 import { getProductUrl } from '../utils/news-url-helper';
+import { useProductCategories } from '../hooks/useCategories';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -329,6 +330,16 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
     ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1) 
     : 0;
 
+  const { categories: productCategories } = useProductCategories();
+
+  const currentCategory = productCategories.find(c => 
+    c.id === product?.categoryId || 
+    c.name.toLowerCase() === product?.category?.toLowerCase()
+  );
+  const parentCategory = currentCategory?.parentId 
+    ? productCategories.find(c => c.id === currentCategory.parentId)
+    : null;
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pt-28 md:pt-36 pb-20 animate-fade-in relative">
       <SEO 
@@ -341,14 +352,41 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
       {/* Breadcrumb */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4">
         <div className="container mx-auto px-4">
-          <div className="flex items-center text-sm text-gray-500">
+          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 flex-wrap gap-y-1">
             <Link to="/" className="hover:text-primary flex items-center gap-1">
               <Home size={14}/> {t('nav.home')}
             </Link>
-            <ChevronRight size={14} className="mx-2"/>
+            <ChevronRight size={14} className="mx-2 flex-shrink-0"/>
             <Link to="/products" className="hover:text-primary">{t('nav.products')}</Link>
-            <ChevronRight size={14} className="mx-2"/>
-            <span className="text-corporate font-semibold truncate">{product.name}</span>
+            
+            {/* Parent Category Link */}
+            {parentCategory && (
+              <>
+                <ChevronRight size={14} className="mx-2 flex-shrink-0"/>
+                <Link 
+                  to={`/products?cat=${encodeURIComponent(parentCategory.name.toLowerCase())}`} 
+                  className="hover:text-primary font-medium"
+                >
+                  {parentCategory.name}
+                </Link>
+              </>
+            )}
+
+            {/* Current Category (Sub-category or Main Category) */}
+            {currentCategory && (
+              <>
+                <ChevronRight size={14} className="mx-2 flex-shrink-0"/>
+                <Link 
+                  to={`/products?cat=${encodeURIComponent((parentCategory || currentCategory).name.toLowerCase())}${currentCategory.parentId ? `&subcat=${encodeURIComponent(currentCategory.id)}` : ''}`} 
+                  className="hover:text-primary font-medium"
+                >
+                  {currentCategory.name}
+                </Link>
+              </>
+            )}
+
+            <ChevronRight size={14} className="mx-2 flex-shrink-0"/>
+            <span className="text-corporate dark:text-sky-400 font-bold truncate max-w-xs sm:max-w-md">{product.name}</span>
           </div>
         </div>
       </div>

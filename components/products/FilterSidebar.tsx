@@ -82,31 +82,74 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             </div>
           ))
         ) : (
-          getActiveCategories().map((category) => {
-            const categoryKey = category.slug || category.name.toLowerCase();
-            const isActive = activeCategoryKey === categoryKey;
-            return (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryChange(categoryKey)}
-                className={`w-full text-left py-2.5 rounded-r-lg text-sm font-bold transition-all flex items-center justify-between group border-l-4 ${
-                  isActive
-                    ? 'border-primary bg-gradient-to-r from-primary/8 to-transparent text-primary'
-                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:border-primary/30 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:text-primary'
-                }`}
-                style={{ paddingLeft: '12px', paddingRight: '12px' }}
-              >
-                <span className="truncate pr-2">{category.name}</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition-colors ${
-                  isActive
-                    ? 'bg-primary/15 text-primary'
-                    : 'bg-gray-100 dark:bg-gray-750 text-gray-400 dark:text-gray-400 group-hover:bg-primary/10 group-hover:text-primary'
-                }`}>
-                  {category.productCount || 0}
-                </span>
-              </button>
-            );
-          })
+          (() => {
+            const allCats = getActiveCategories();
+            const parentCats = allCats.filter(c => !c.parentId);
+            const getSubCats = (pId: string) => allCats.filter(c => c.parentId === pId);
+
+            return parentCats.map((parentCategory) => {
+              const parentKey = parentCategory.slug || parentCategory.name.toLowerCase();
+              const isParentActive = activeCategoryKey === parentKey;
+              const subCats = getSubCats(parentCategory.id);
+
+              return (
+                <div key={parentCategory.id} className="space-y-0.5 mb-1">
+                  <button
+                    onClick={() => handleCategoryChange(parentKey)}
+                    className={`w-full text-left py-2.5 rounded-r-lg text-sm font-bold transition-all flex items-center justify-between group border-l-4 ${
+                      isParentActive
+                        ? 'border-primary bg-gradient-to-r from-primary/10 to-transparent text-primary dark:text-sky-400'
+                        : 'border-transparent text-gray-700 dark:text-gray-200 hover:border-primary/30 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:text-primary'
+                    }`}
+                    style={{ paddingLeft: '12px', paddingRight: '12px' }}
+                  >
+                    <span className="truncate pr-2 flex items-center gap-1.5">
+                      <span>{parentCategory.icon || '📂'}</span>
+                      <span>{parentCategory.name}</span>
+                    </span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition-colors ${
+                      isParentActive
+                        ? 'bg-primary/15 text-primary'
+                        : 'bg-gray-100 dark:bg-gray-750 text-gray-400 dark:text-gray-400 group-hover:bg-primary/10 group-hover:text-primary'
+                    }`}>
+                      {parentCategory.productCount || 0}
+                    </span>
+                  </button>
+
+                  {/* Sub-categories tree list */}
+                  {subCats.length > 0 && (
+                    <div className="pl-3 pr-1 py-1 space-y-1 border-l-2 border-slate-200 dark:border-slate-700/60 ml-4 my-1">
+                      {subCats.map((subCat) => {
+                        const subKey = subCat.slug || subCat.name.toLowerCase();
+                        const isSubActive = activeCategoryKey === subKey;
+                        return (
+                          <button
+                            key={subCat.id}
+                            onClick={() => handleCategoryChange(subKey)}
+                            className={`w-full text-left py-1.5 px-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-between group ${
+                              isSubActive
+                                ? 'bg-primary text-white shadow-xs font-bold'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-300'
+                            }`}
+                          >
+                            <span className="truncate flex items-center gap-1">
+                              <span className="opacity-60 font-mono text-[10px]">└</span>
+                              <span>{subCat.name}</span>
+                            </span>
+                            <span className={`text-[9px] px-1.5 py-0.2 rounded font-medium ${
+                              isSubActive ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-750 text-gray-400'
+                            }`}>
+                              {subCat.productCount || 0}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            });
+          })()
         )}
       </nav>
 

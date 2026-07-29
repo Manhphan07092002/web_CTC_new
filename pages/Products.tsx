@@ -84,15 +84,51 @@ const Products: React.FC = () => {
   const getFilteredProducts = () => {
     let filtered = [...products];
 
-    // Filter by New Category System (priority)
+    // Filter by Category System (Parent + Sub-category aware)
     if (selectedCategoryId) {
-      filtered = filtered.filter(p => p.categoryId === selectedCategoryId);
+      const selectedCat = productCategories.find(c => c.id === selectedCategoryId);
+      if (selectedCat) {
+        if (!selectedCat.parentId) {
+          // It's a parent category: include products in parent AND all its sub-categories
+          const subCatIds = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.id);
+          const subCatNames = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.name.toLowerCase());
+          
+          filtered = filtered.filter(p => 
+            p.categoryId === selectedCat.id || 
+            (p.categoryId && subCatIds.includes(p.categoryId)) ||
+            p.category?.toLowerCase() === selectedCat.name.toLowerCase() ||
+            (p.category && subCatNames.includes(p.category.toLowerCase()))
+          );
+        } else {
+          // It's a specific sub-category
+          filtered = filtered.filter(p => 
+            p.categoryId === selectedCat.id || 
+            p.category?.toLowerCase() === selectedCat.name.toLowerCase()
+          );
+        }
+      }
     }
-    // Fallback to old category system
+    // Fallback via activeCategoryKey
     else if (activeCategoryKey !== 'all') {
-      const selectedCategory = productCategories.find(c => c.name.toLowerCase() === activeCategoryKey.toLowerCase());
-      if (selectedCategory) {
-        filtered = filtered.filter(p => p.category.toLowerCase() === selectedCategory.name.toLowerCase());
+      const selectedCat = productCategories.find(c => 
+        (c.slug || c.name.toLowerCase()) === activeCategoryKey.toLowerCase()
+      );
+      if (selectedCat) {
+        if (!selectedCat.parentId) {
+          const subCatIds = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.id);
+          const subCatNames = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.name.toLowerCase());
+          filtered = filtered.filter(p => 
+            p.categoryId === selectedCat.id || 
+            (p.categoryId && subCatIds.includes(p.categoryId)) ||
+            p.category?.toLowerCase() === selectedCat.name.toLowerCase() ||
+            (p.category && subCatNames.includes(p.category.toLowerCase()))
+          );
+        } else {
+          filtered = filtered.filter(p => 
+            p.categoryId === selectedCat.id || 
+            p.category?.toLowerCase() === selectedCat.name.toLowerCase()
+          );
+        }
       }
     }
 
