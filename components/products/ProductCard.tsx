@@ -88,25 +88,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Price & Action Footer */}
-        <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+        <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2 min-w-0">
           <PriceDisplay
             price={product.price || 0}
             originalPrice={product.originalPrice}
             vat={product.vat}
             contactPrice={product.contactPrice}
-            size="lg"
+            size="md"
             layout="vertical"
-            className="flex-1"
+            className="flex-1 min-w-0"
           />
           <button 
             onClick={(e) => {
               e.stopPropagation();
               onAddToCart();
             }}
-            className="text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-all ml-2"
+            className="text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-all flex-shrink-0"
             title="Thêm vào báo giá"
           >
-            <ShoppingCart size={20} />
+            <ShoppingCart size={18} />
           </button>
         </div>
       </div>

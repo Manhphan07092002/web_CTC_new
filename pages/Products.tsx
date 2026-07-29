@@ -377,7 +377,7 @@ const Products: React.FC = () => {
           </aside>
 
           {/* RIGHT CONTENT - PRODUCT LIST */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {/* Horizontal Category Tabs Filter - Hidden on Desktop to avoid duplicate filters */}
             <div className="mb-6 lg:hidden">
               <CategoryFilter

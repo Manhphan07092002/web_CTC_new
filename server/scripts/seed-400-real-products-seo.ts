@@ -16,7 +16,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { Product, ProductCategory } from '../../models';
+import { Product, ProductCategory } from '../../models/index.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();

@@ -30,10 +30,10 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
   // If contact price, show contact message
   if (contactPrice) {
     return (
-      <div className={`flex flex-wrap items-center gap-2 ${className}`}>
-        <span className="flex items-center gap-1.5 font-bold text-primary text-sm hover:text-secondary transition-colors">
-          <MessageSquare size={16} className="text-primary animate-pulse" />
-          <span>{t('products.contact_price') || 'Liên hệ báo giá'}</span>
+      <div className={`flex flex-wrap items-center gap-1.5 min-w-0 ${className}`}>
+        <span className="flex items-center gap-1 font-bold text-primary text-xs sm:text-sm hover:text-secondary transition-colors truncate">
+          <MessageSquare size={14} className="text-primary flex-shrink-0 animate-pulse" />
+          <span className="truncate">{t('products.contact_price') || 'Liên hệ báo giá'}</span>
         </span>
         <button 
           onClick={(e) => {
@@ -41,7 +41,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
             e.preventDefault();
             window.location.href = "tel:0915059666";
           }}
-          className="flex items-center gap-1 px-3 py-1 bg-primary/10 hover:bg-primary/25 text-primary text-[10px] rounded-full font-bold border border-primary/20 transition-all active:scale-95"
+          className="flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 hover:bg-primary/25 text-primary text-[10px] rounded-full font-bold border border-primary/20 transition-all active:scale-95 flex-shrink-0"
         >
           <Phone size={10} />
           <span>{t('header.hotline') || 'Hotline'}</span>
