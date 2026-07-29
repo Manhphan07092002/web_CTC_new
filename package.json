@@ -27,6 +27,7 @@
     "seed:news": "npx tsx server/scripts/seed-30-news.ts",
     "seed:resources": "npx tsx server/scripts/seed-100-resources.ts",
     "seed:categories": "npx tsx server/scripts/seed-categories.ts",
+    "clear:products": "npx tsx server/scripts/clear-all-products.ts",
     "seed:sql": "npx tsx scripts/import-sql-data.ts"
   },
   "dependencies": {
