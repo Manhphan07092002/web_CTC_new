@@ -29,6 +29,7 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
   const { addToCart, openCartModal } = useCart();
+  const { categories: productCategories } = useProductCategories();
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'reviews'>('desc');
   
   // AI States
@@ -329,8 +330,6 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
   const averageRating = reviews.length > 0 
     ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1) 
     : 0;
-
-  const { categories: productCategories } = useProductCategories();
 
   const currentCategory = productCategories.find(c => 
     c.id === product?.categoryId || 
