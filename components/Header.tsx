@@ -9,6 +9,78 @@ import { useCart } from '../contexts/CartContext';
 import { api } from '../services/api';
 import { Category } from '../types';
 import { getLangText } from '../utils/translation-helper';
+import { buildCategoryTree, CategoryNode } from '../utils/categoryTreeHelper';
+
+interface RecursiveFlyoutProps {
+  nodes: CategoryNode[];
+  language: Language;
+  onNavigate: () => void;
+}
+
+const RecursiveCategoryFlyout: React.FC<RecursiveFlyoutProps> = ({ nodes, language, onNavigate }) => {
+  return (
+    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl py-2 min-w-[260px] max-w-[320px]">
+      {nodes.map((node) => {
+        const hasChildren = node.children && node.children.length > 0;
+        return (
+          <div key={node.id} className="relative group/sub">
+            <Link
+              to={`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`}
+              onClick={onNavigate}
+              className="flex items-center justify-between px-4 py-2.5 text-[11px] font-bold text-gray-700 dark:text-gray-200 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-200 border-b border-gray-50 dark:border-slate-800/70 last:border-0 uppercase tracking-wide cursor-pointer"
+            >
+              <div className="flex items-center gap-2 min-w-0 pr-1">
+                <span className="w-1.5 h-4 rounded-full bg-sky-500/30 group-hover/sub:bg-sky-500 flex-shrink-0 transition-colors duration-200" />
+                <span className="truncate">{node.name}</span>
+              </div>
+              {hasChildren && (
+                <ChevronRight size={14} className="text-gray-400 dark:text-gray-500 group-hover/sub:text-sky-500 transition-transform group-hover/sub:translate-x-0.5 flex-shrink-0" />
+              )}
+            </Link>
+
+            {/* Submenu Level 2, 3, 4 Flyout to the Right */}
+            {hasChildren && (
+              <div className="absolute left-full top-0 -ml-1 pl-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 transform translate-x-2 group-hover/sub:translate-x-0 z-50">
+                <RecursiveCategoryFlyout nodes={node.children} language={language} onNavigate={onNavigate} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const RecursiveMobileCategoryMenu: React.FC<{ nodes: CategoryNode[]; onNavigate: () => void }> = ({ nodes, onNavigate }) => {
+  return (
+    <div className="space-y-1">
+      {nodes.map((node) => {
+        const hasChildren = node.children && node.children.length > 0;
+        return (
+          <div key={node.id} className="border-b border-gray-200/40 dark:border-slate-800/60 last:border-none pb-1">
+            <Link
+              to={`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`}
+              onClick={onNavigate}
+              className="flex items-center justify-between py-2 px-3 text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-sky-500 uppercase tracking-wide"
+            >
+              <span className="truncate">{node.level === 1 ? '📂 ' : '└ '}{node.name}</span>
+              {hasChildren && (
+                <span className="text-[10px] text-sky-500 font-semibold bg-sky-100 dark:bg-sky-900/40 px-1.5 py-0.5 rounded flex-shrink-0 ml-1">
+                  {node.children.length}
+                </span>
+              )}
+            </Link>
+            {hasChildren && (
+              <div className="pl-3 pr-1 pb-1">
+                <RecursiveMobileCategoryMenu nodes={node.children} onNavigate={onNavigate} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -125,6 +197,7 @@ const Header: React.FC = () => {
     loadCategories();
   }, [language]);
 
+  const categoryTree = buildCategoryTree(categories);
   const parentCategories = categories.filter(c => !c.parentId);
   const getSubCategories = (parentId: string) => categories.filter(c => c.parentId === parentId);
 
@@ -517,60 +590,12 @@ const Header: React.FC = () => {
 
                 {/* Submenu Dropdown */}
                 {link.submenu && (
-                  <div className="absolute left-0 top-full pt-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 z-50">
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl py-2">
-                      {link.key === 'products' && parentCategories.length > 0 ? (
-                        parentCategories.map((parentCat) => {
-                          const subs = getSubCategories(parentCat.id);
-                          return (
-                            <div key={parentCat.id} className="relative group/sub">
-                              <Link
-                                to={`/products?cat=${encodeURIComponent(parentCat.name.toLowerCase())}`}
-                                className="flex items-center justify-between px-5 py-2.5 text-[11px] font-bold text-gray-700 dark:text-gray-200 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-200 border-b border-gray-50 dark:border-slate-800/70 last:border-0 uppercase tracking-wide cursor-pointer"
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                                  <span className="w-1.5 h-4 rounded-full bg-sky-500/30 group-hover/sub:bg-sky-500 flex-shrink-0 transition-colors duration-200" />
-                                  <span className="truncate">{parentCat.name}</span>
-                                </div>
-                                {subs.length > 0 && (
-                                  <ChevronRight size={14} className="text-gray-400 dark:text-gray-500 group-hover/sub:text-sky-500 transition-transform group-hover/sub:translate-x-0.5 flex-shrink-0" />
-                                )}
-                              </Link>
-
-                              {/* Flyout Sub-menu (Sổ ra bên Phải khi rơ chuột vào) */}
-                              {subs.length > 0 && (
-                                <div className="absolute left-full top-0 -ml-1 pl-2.5 w-72 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 transform translate-x-2 group-hover/sub:translate-x-0 z-50">
-                                  <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl overflow-hidden py-2">
-                                    <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/60 border-b border-gray-100 dark:border-slate-800 text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-widest flex items-center justify-between">
-                                      <span className="truncate">{parentCat.name}</span>
-                                      <span className="bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 px-1.5 py-0.5 rounded text-[9px] font-bold flex-shrink-0 ml-1">
-                                        {subs.length} danh mục con
-                                      </span>
-                                    </div>
-                                    {subs.map((sub) => (
-                                      <Link
-                                        key={sub.id}
-                                        to={`/products?cat=${encodeURIComponent(parentCat.name.toLowerCase())}&subcat=${encodeURIComponent(sub.id)}`}
-                                        className="flex items-center gap-2.5 px-4 py-2.5 text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-400 transition-all border-b border-gray-50 dark:border-slate-800/50 last:border-0 uppercase tracking-wide"
-                                      >
-                                        <span className="text-sky-400 font-mono text-[10px] flex-shrink-0">└</span>
-                                        <span className="truncate">{sub.name}</span>
-                                      </Link>
-                                    ))}
-                                    <Link
-                                      to={`/products?cat=${encodeURIComponent(parentCat.name.toLowerCase())}`}
-                                      className="flex items-center justify-center py-2 bg-sky-50/50 dark:bg-slate-800/30 text-[10px] font-bold text-sky-600 dark:text-sky-400 hover:underline uppercase tracking-wider"
-                                    >
-                                      Xem tất cả trong {parentCat.name} →
-                                    </Link>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        link.submenu.map((sub, index) => (
+                  <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 z-50">
+                    {link.key === 'products' && categoryTree.length > 0 ? (
+                      <RecursiveCategoryFlyout nodes={categoryTree} language={language} onNavigate={() => {}} />
+                    ) : (
+                      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl py-2 w-72">
+                        {link.submenu.map((sub, index) => (
                           <Link 
                             key={index}
                             to={sub.path}
@@ -579,9 +604,9 @@ const Header: React.FC = () => {
                             <span className="w-1 h-4 rounded-full bg-sky-500/30 group-hover/sub:bg-sky-500 flex-shrink-0 transition-colors duration-200" />
                             {getSubmenuDisplayName(sub, language)}
                           </Link>
-                        ))
-                      )}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -886,41 +911,8 @@ const Header: React.FC = () => {
                 {/* Mobile Dropdown Sublinks */}
                 {link.submenu && expandedMobileMenu === link.key && (
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800 p-2 space-y-1">
-                    {link.key === 'products' && parentCategories.length > 0 ? (
-                      parentCategories.map((parentCat) => {
-                        const subs = getSubCategories(parentCat.id);
-                        return (
-                          <div key={parentCat.id} className="border-b border-gray-200/40 dark:border-slate-800/60 last:border-none pb-1">
-                            <Link
-                              to={`/products?cat=${encodeURIComponent(parentCat.name.toLowerCase())}`}
-                              onClick={() => setIsMenuOpen(false)}
-                              className="flex items-center justify-between py-2 px-3 text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-sky-500 uppercase tracking-wide"
-                            >
-                              <span>📂 {parentCat.name}</span>
-                              {subs.length > 0 && (
-                                <span className="text-[10px] text-sky-500 font-semibold bg-sky-100 dark:bg-sky-900/40 px-1.5 py-0.5 rounded">
-                                  {subs.length} danh mục con
-                                </span>
-                              )}
-                            </Link>
-                            {subs.length > 0 && (
-                              <div className="pl-4 pr-2 pb-1 space-y-1">
-                                {subs.map((sub) => (
-                                  <Link
-                                    key={sub.id}
-                                    to={`/products?cat=${encodeURIComponent(parentCat.name.toLowerCase())}&subcat=${encodeURIComponent(sub.id)}`}
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-2 py-1.5 px-3 rounded-lg text-[11px] font-semibold text-slate-600 dark:text-slate-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-500 uppercase"
-                                  >
-                                    <span className="text-sky-500 font-mono text-xs">└</span>
-                                    <span>{sub.name}</span>
-                                  </Link>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })
+                    {link.key === 'products' && categoryTree.length > 0 ? (
+                      <RecursiveMobileCategoryMenu nodes={categoryTree} onNavigate={() => setIsMenuOpen(false)} />
                     ) : (
                       link.submenu.map((sub, subIdx) => (
                         <Link

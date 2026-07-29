@@ -4,23 +4,98 @@ import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { PermissionGate } from '../contexts/PermissionContext';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import { flattenCategoryTreeForSelect, buildCategoryTree, CategoryNode } from '../utils/categoryTreeHelper';
+import { Category } from '../types';
 
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  icon?: string;
-  color?: string;
-  order?: number;
-  isActive?: boolean;
-  parentId?: string;
-  productCount?: number;
-  newsCount?: number;
-  projectCount?: number;
-  resourceCount?: number;
-  createdAt: string;
+interface CategoryTreeItemProps {
+  node: CategoryNode;
+  onAddSub: (parentId: string) => void;
+  onEdit: (cat: Category) => void;
+  onDelete: (cat: Category) => void;
+  getItemCountLabel: (cat: Category) => string;
 }
+
+const RecursiveCategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
+  node,
+  onAddSub,
+  onEdit,
+  onDelete,
+  getItemCountLabel
+}) => {
+  const hasChildren = node.children && node.children.length > 0;
+
+  return (
+    <div className="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-3 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-xs font-bold text-sky-500 font-mono">
+            {node.level === 2 ? '↳' : node.level === 3 ? '└ ↳' : '└ └ ↳'}
+          </span>
+          <span className="text-sm flex-shrink-0">{node.icon || '📁'}</span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4 className="font-bold text-xs text-gray-800 dark:text-gray-100 truncate">{node.name}</h4>
+              <span className={`text-[9px] px-1.5 py-0.2 rounded font-black uppercase ${
+                node.level === 2 ? 'bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300' :
+                node.level === 3 ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' :
+                'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
+              }`}>
+                Cấp {node.level}
+              </span>
+            </div>
+            <span className="text-[10px] text-gray-400 font-mono block truncate">{node.slug}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+            {getItemCountLabel(node)}
+          </span>
+          <PermissionGate permission="manage_product_categories">
+            <button
+              onClick={() => onAddSub(node.id)}
+              className="p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded transition-colors text-[11px] font-bold flex items-center gap-0.5 cursor-pointer"
+              title={`Thêm danh mục con cấp ${node.level + 1}`}
+            >
+              <FolderPlus size={13} />
+              <span className="text-[10px] hidden sm:inline">+ Cấp {node.level + 1}</span>
+            </button>
+            <button
+              onClick={() => onEdit(node)}
+              className="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+              title="Sửa"
+            >
+              <Edit size={13} />
+            </button>
+            <button
+              onClick={() => onDelete(node)}
+              className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
+              title="Xóa"
+            >
+              <Trash2 size={13} />
+            </button>
+          </PermissionGate>
+        </div>
+      </div>
+
+      {/* Recursive children rendering for Level 3, 4 */}
+      {hasChildren && (
+        <div className="pl-3 sm:pl-4 pt-1 space-y-2 border-l-2 border-slate-200/80 dark:border-slate-700/50">
+          {node.children.map(childNode => (
+            <RecursiveCategoryTreeItem
+              key={childNode.id}
+              node={childNode}
+              onAddSub={onAddSub}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              getItemCountLabel={getItemCountLabel}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 type CategoryType = 'product' | 'news' | 'project' | 'document';
 
@@ -313,8 +388,7 @@ const CategoryManagement: React.FC = () => {
         <div className="space-y-6">
           {/* Parent Categories Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {parentCategories.map((parentCategory) => {
-              const subs = getSubCategories(parentCategory.id);
+            {buildCategoryTree(categories).map((parentCategory) => {
               return (
                 <div
                   key={parentCategory.id}
@@ -382,60 +456,36 @@ const CategoryManagement: React.FC = () => {
                       </p>
                     )}
 
-                    {/* Sub categories list */}
+                    {/* Sub categories recursive tree list */}
                     <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2">
                       <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">
                         <span className="flex items-center gap-1">
                           <CornerDownRight size={13} className="text-primary" />
-                          Danh mục con ({subs.length})
+                          Danh mục con ({parentCategory.children?.length || 0})
                         </span>
                         <button
                           onClick={() => handleAdd(parentCategory.id)}
-                          className="text-primary hover:underline text-[11px] font-bold"
+                          className="text-primary hover:underline text-[11px] font-bold cursor-pointer"
                         >
                           + Thêm mới
                         </button>
                       </div>
 
-                      {subs.length === 0 ? (
+                      {(!parentCategory.children || parentCategory.children.length === 0) ? (
                         <p className="text-xs italic text-gray-400 dark:text-gray-500 py-1">
-                          Chưa có danh mục con. Bấm "+ Thêm danh mục con" để chia nhỏ danh mục này.
+                          Chưa có danh mục con. Bấm "+ Danh mục con" để chia nhỏ danh mục này.
                         </p>
                       ) : (
                         <div className="space-y-2">
-                          {subs.map((subCat) => (
-                            <div
-                              key={subCat.id}
-                              className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-700/50 hover:border-primary/50 transition-all group"
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className="text-sm flex-shrink-0">{subCat.icon || '📁'}</span>
-                                <div className="min-w-0">
-                                  <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200 truncate">{subCat.name}</h4>
-                                  <span className="text-[10px] text-gray-400 font-mono block truncate">{subCat.slug}</span>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
-                                  {getItemCountLabel(subCat)}
-                                </span>
-                                <button
-                                  onClick={() => handleEdit(subCat)}
-                                  className="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                  title="Sửa danh mục con"
-                                >
-                                  <Edit size={14} />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteClick(subCat)}
-                                  className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                  title="Xóa danh mục con"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                            </div>
+                          {parentCategory.children.map((subNode) => (
+                            <RecursiveCategoryTreeItem
+                              key={subNode.id}
+                              node={subNode}
+                              onAddSub={handleAdd}
+                              onEdit={handleEdit}
+                              onDelete={handleDeleteClick}
+                              getItemCountLabel={getItemCountLabel}
+                            />
                           ))}
                         </div>
                       )}
@@ -510,11 +560,11 @@ const CategoryManagement: React.FC = () => {
                   className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
                 >
                   <option value="">📁 Không có (Tạo làm Danh mục chính Cấp 1)</option>
-                  {parentCategories
-                    .filter(c => c.id !== editingCategory?.id)
-                    .map(cat => (
-                      <option key={cat.id} value={cat.id}>
-                        └ 📂 {cat.name} (Cấp 1)
+                  {flattenCategoryTreeForSelect(categories)
+                    .filter(item => item.id !== editingCategory?.id)
+                    .map(item => (
+                      <option key={item.id} value={item.id}>
+                        {item.indentName} (Cấp {item.level})
                       </option>
                     ))
                   }

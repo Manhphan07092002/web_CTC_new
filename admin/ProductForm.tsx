@@ -13,6 +13,7 @@ import SeoAnalyzer from './components/SeoAnalyzer';
 import AiProductWriterModal from './components/AiProductWriterModal';
 import { formatSeoProductHtml } from './utils/seoProductFormatter';
 import { safeParseJson } from './utils/jsonParser';
+import { flattenCategoryTreeForSelect } from '../utils/categoryTreeHelper';
 
 interface ProductCategory {
   id: string;
@@ -490,29 +491,11 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON thuần (không bọc tron
                 className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
               >
                 <option value="">-- Chọn danh mục sản phẩm --</option>
-                {categories
-                  .filter(c => !c.parentId)
-                  .map((parentCat) => {
-                    const subs = categories.filter(c => c.parentId === parentCat.id);
-                    if (subs.length === 0) {
-                      return (
-                        <option key={parentCat.id} value={parentCat.id}>
-                          📂 {parentCat.name}
-                        </option>
-                      );
-                    }
-                    return (
-                      <optgroup key={parentCat.id} label={`📂 ${parentCat.name}`}>
-                        <option value={parentCat.id}>{parentCat.name} (Tất cả / Danh mục chính)</option>
-                        {subs.map((sub) => (
-                          <option key={sub.id} value={sub.id}>
-                            -- 📁 {sub.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    );
-                  })
-                }
+                {flattenCategoryTreeForSelect(categories).map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.indentName}
+                  </option>
+                ))}
               </select>
             </div>
 
