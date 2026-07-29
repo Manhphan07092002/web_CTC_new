@@ -40,9 +40,15 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
       onNavigate();
       navigate(`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`);
     } else {
-      setSelectedLevel1(node.id);
-      setSelectedLevel2(null);
-      setSelectedLevel3(null);
+      if (selectedLevel1 === node.id) {
+        setSelectedLevel1(null);
+        setSelectedLevel2(null);
+        setSelectedLevel3(null);
+      } else {
+        setSelectedLevel1(node.id);
+        setSelectedLevel2(null);
+        setSelectedLevel3(null);
+      }
     }
   };
 
@@ -53,8 +59,13 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
       onNavigate();
       navigate(`/products?cat=${encodeURIComponent((level1Node?.name || '').toLowerCase())}&subcat=${encodeURIComponent(node.id)}`);
     } else {
-      setSelectedLevel2(node.id);
-      setSelectedLevel3(null);
+      if (selectedLevel2 === node.id) {
+        setSelectedLevel2(null);
+        setSelectedLevel3(null);
+      } else {
+        setSelectedLevel2(node.id);
+        setSelectedLevel3(null);
+      }
     }
   };
 
@@ -65,7 +76,11 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
       onNavigate();
       navigate(`/products?cat=${encodeURIComponent((level1Node?.name || '').toLowerCase())}&subcat=${encodeURIComponent(node.id)}`);
     } else {
-      setSelectedLevel3(node.id);
+      if (selectedLevel3 === node.id) {
+        setSelectedLevel3(null);
+      } else {
+        setSelectedLevel3(node.id);
+      }
     }
   };
 
@@ -94,14 +109,7 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
             <button
               key={node.id}
               onClick={(e) => handleLevel1Click(node, e)}
-              onMouseEnter={() => {
-                if (hasChildren) {
-                  setSelectedLevel1(node.id);
-                  setSelectedLevel2(null);
-                  setSelectedLevel3(null);
-                }
-              }}
-              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
+              className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
                 isSelected
                   ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 border-l-4 border-sky-500 shadow-2xs'
                   : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-sky-500'
@@ -116,7 +124,7 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
         })}
       </div>
 
-      {/* CỘT 2 (CẤP 2) */}
+      {/* CỘT 2 (CẤP 2) - Chỉ hiện khi BẤM chọn selectedLevel1 */}
       {selectedLevel1 && level2Items.length > 0 && (
         <div className="w-60 flex-shrink-0 px-2 border-r border-gray-100 dark:border-slate-800/80 overflow-y-auto space-y-1 animate-fade-in">
           <div className="px-3 py-1.5 text-[10px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider flex items-center justify-between">
@@ -129,13 +137,7 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
               <button
                 key={node.id}
                 onClick={(e) => handleLevel2Click(node, e)}
-                onMouseEnter={() => {
-                  if (hasChildren) {
-                    setSelectedLevel2(node.id);
-                    setSelectedLevel3(null);
-                  }
-                }}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
                   isSelected
                     ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 border-l-4 border-sky-500 shadow-2xs'
                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-sky-500'
@@ -151,7 +153,7 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
         </div>
       )}
 
-      {/* CỘT 3 (CẤP 3) */}
+      {/* CỘT 3 (CẤP 3) - Chỉ hiện khi BẤM chọn selectedLevel2 */}
       {selectedLevel2 && level3Items.length > 0 && (
         <div className="w-60 flex-shrink-0 px-2 border-r border-gray-100 dark:border-slate-800/80 overflow-y-auto space-y-1 animate-fade-in">
           <div className="px-3 py-1.5 text-[10px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider flex items-center justify-between">
@@ -164,12 +166,7 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
               <button
                 key={node.id}
                 onClick={(e) => handleLevel3Click(node, e)}
-                onMouseEnter={() => {
-                  if (hasChildren) {
-                    setSelectedLevel3(node.id);
-                  }
-                }}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
                   isSelected
                     ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 border-l-4 border-sky-500 shadow-2xs'
                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-sky-500'
