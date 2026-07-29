@@ -217,11 +217,11 @@ const executeOpenAICallStream = async (
 };
 
 export const chatService = {
-  sendMessage: async (text: string): Promise<string> => {
-    return chatService.sendMessageStream(text, () => {});
+  sendMessage: async (text: string, customSystemInstruction?: string): Promise<string> => {
+    return chatService.sendMessageStream(text, () => {}, customSystemInstruction);
   },
 
-  sendMessageStream: async (text: string, onChunk: (chunk: string) => void): Promise<string> => {
+  sendMessageStream: async (text: string, onChunk: (chunk: string) => void, customSystemInstruction?: string): Promise<string> => {
     try {
       let siteSettings: any = null;
       try {
@@ -274,36 +274,48 @@ export const chatService = {
 
       const modelName = siteSettings?.aiModel || defaultModels[provider] || 'gemini-2.5-flash';
       const temperature = siteSettings?.aiTemperature ?? 0.6;
-      let baseSystemInstruction = siteSettings?.aiSystemInstruction?.trim() || DEFAULT_SYSTEM_INSTRUCTION;
 
-      // ============================================================
-      // RAG CONTEXT RETRIEVAL (Real-Time Database Augmentation)
-      // ============================================================
-      try {
-        const products = await api.products.getAll();
-        if (products && Array.isArray(products) && products.length > 0) {
-          const queryLower = text.toLowerCase();
-          const matchedProducts = products.filter(p => {
-            const nameStr = (p.name || p.title || '').toLowerCase();
-            const catStr = (p.category || '').toLowerCase();
-            const descStr = (p.description || '').toLowerCase();
-            const brandStr = (p.brand || '').toLowerCase();
-            return queryLower.split(/\s+/).some(word => 
-              word.length >= 3 && (nameStr.includes(word) || catStr.includes(word) || descStr.includes(word) || brandStr.includes(word))
-            );
-          }).slice(0, 5);
+      const isWriterRequest = text.includes('NHIỆM VỤ:') || text.includes('JSON') || text.includes('MÔ TẢ SẢN PHẨM') || text.includes('BÀI VIẾT') || text.includes('technicalSpecs');
 
-          const targetList = matchedProducts.length > 0 ? matchedProducts : products.slice(0, 4);
-
-          const ragContext = `\n\n### DỮ LIỆU SẢN PHẨM THỰC TẾ TỪ CƠ SỞ DỮ LIỆU CTC (RAG CONTEXT):\n` +
-            targetList.map(p => 
-              `- **${p.name || p.title}** | Giá: ${p.price ? p.price.toLocaleString('vi-VN') + 'đ' : 'Liên hệ báo giá'} | Danh mục: ${p.category || 'Điện mặt trời'} | Mô tả: ${(p.description || 'Sản phẩm chính hãng CTC, bảo hành dài hạn').slice(0, 150)}`
-            ).join('\n');
-
-          baseSystemInstruction += ragContext;
+      let baseSystemInstruction = customSystemInstruction?.trim();
+      if (!baseSystemInstruction) {
+        if (isWriterRequest) {
+          baseSystemInstruction = `Bạn là Chuyên gia Biên tập Nội dung & Kỹ thuật viên Sản phẩm cao cấp của Công ty CTC. Nhiệm vụ của bạn là tạo bài viết mô tả sản phẩm và bảng thông số kỹ thuật cực kỳ chi tiết, phong phú, chuẩn SEO 100/100 bằng tiếng Việt. KHÔNG giới hạn độ dài, hãy viết chi tiết nhất có thể.`;
+        } else {
+          baseSystemInstruction = siteSettings?.aiSystemInstruction?.trim() || DEFAULT_SYSTEM_INSTRUCTION;
         }
-      } catch (ragErr) {
-        console.warn('[RAG Engine] Product context retrieval fallback:', ragErr);
+      }
+
+      // ============================================================
+      // RAG CONTEXT RETRIEVAL (Only for general chatbot requests)
+      // ============================================================
+      if (!customSystemInstruction && !isWriterRequest) {
+        try {
+          const products = await api.products.getAll();
+          if (products && Array.isArray(products) && products.length > 0) {
+            const queryLower = text.toLowerCase();
+            const matchedProducts = products.filter(p => {
+              const nameStr = (p.name || p.title || '').toLowerCase();
+              const catStr = (p.category || '').toLowerCase();
+              const descStr = (p.description || '').toLowerCase();
+              const brandStr = (p.brand || '').toLowerCase();
+              return queryLower.split(/\s+/).some(word => 
+                word.length >= 3 && (nameStr.includes(word) || catStr.includes(word) || descStr.includes(word) || brandStr.includes(word))
+              );
+            }).slice(0, 5);
+
+            const targetList = matchedProducts.length > 0 ? matchedProducts : products.slice(0, 4);
+
+            const ragContext = `\n\n### DỮ LIỆU SẢN PHẨM THỰC TẾ TỪ CƠ SỞ DỮ LIỆU CTC (RAG CONTEXT):\n` +
+              targetList.map(p => 
+                `- **${p.name || p.title}** | Giá: ${p.price ? p.price.toLocaleString('vi-VN') + 'đ' : 'Liên hệ báo giá'} | Danh mục: ${p.category || 'Điện mặt trời'} | Mô tả: ${(p.description || 'Sản phẩm chính hãng CTC, bảo hành dài hạn').slice(0, 150)}`
+              ).join('\n');
+
+            baseSystemInstruction += ragContext;
+          }
+        } catch (ragErr) {
+          console.warn('[RAG Engine] Product context retrieval fallback:', ragErr);
+        }
       }
 
       const systemInstruction = baseSystemInstruction;

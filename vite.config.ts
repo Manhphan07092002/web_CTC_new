@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
         supported: { 'dynamic-import': true },
         legalComments: 'none',
         treeShaking: true,
+        charset: 'utf8',
       },
       rollupOptions: {
         output: {

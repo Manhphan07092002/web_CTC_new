@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Eye, Heart, Share2, TrendingUp, BarChart3, Package, RefreshCw, Download } from 'lucide-react';
 import { api } from '../services/api';
 import { Product } from '../types';

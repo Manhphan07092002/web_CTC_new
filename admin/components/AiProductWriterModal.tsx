@@ -3,6 +3,7 @@ import { Sparkles, CheckCircle2, X, Wand2, RefreshCw, Target, Edit3, Link2, Code
 import { chatService } from '../../services/chatService';
 import { useToast } from '../../contexts/ToastContext';
 import { api } from '../../services/api';
+import { safeParseJson } from '../utils/jsonParser';
 import { formatSeoProductHtml } from '../utils/seoProductFormatter';
 
 interface AiProductWriterModalProps {
@@ -276,7 +277,7 @@ Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style =
 
 ━━━ NỘI DUNG GỐC & THÔNG SỐ CÀO ĐƯỢC ━━━
 ${hasRealContent
-  ? scrapedRawText.slice(0, 5000)
+  ? scrapedRawText.slice(0, 2500)
   : '⚠️ Không có nội dung cào được. Chỉ được viết dựa trên tên sản phẩm. TUYỆT ĐỐI KHÔNG bịa thông số kỹ thuật cụ thể như số GHz, GB, W... nếu không chắc chắn.'}
 
 ━━━ HÌNH ẢNH CÀO ĐƯỢC ━━━
@@ -336,7 +337,7 @@ Trả về JSON thuần không bọc markdown:
   "shortDescription": "Mô tả meta 120-160 ký tự, chứa từ khóa focus",
   "image": "${scrapedImages[0] || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'}",
   "images": ${JSON.stringify(scrapedImages.slice(1, 4).length > 0 ? scrapedImages.slice(1, 4) : ['https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'])},
-  "description": "<p>Mở đầu bám sát nội dung gốc, chứa từ khóa...</p><h2>...</h2>...",
+  "description": "Viết toàn bộ nội dung mã HTML bài viết thực tế đầy đủ 1000-1500 từ...",
   "specifications": "Tóm tắt thông số kỹ thuật chính từ nội dung gốc",
   "warranty": "24 tháng chính hãng",
   "features": [
@@ -358,19 +359,12 @@ Trả về JSON thuần không bọc markdown:
   }
 }`;
 
-      const response = await chatService.sendMessage(prompt);
+      const customSystemInstruction = `Bạn là Chuyên gia Biên tập Nội dung & Kỹ thuật viên Sản phẩm cao cấp của Công ty CTC. Nhiệm vụ của bạn là tạo bài viết mô tả sản phẩm và bảng thông số kỹ thuật cực kỳ chi tiết, phong phú, dài từ 1000 đến 1500 từ, chuẩn SEO 100/100 bằng tiếng Việt. BẮT BUỘC có Bảng Thông Số Kỹ Thuật Chi Tiết (8-15 thông số cụ thể), Đặc Điểm Nổi Bật, Hiệu Năng & Ứng Dụng Thực Tế. TUYỆT ĐỐI KHÔNG viết ngắn hay sơ sài.`;
+
+      const response = await chatService.sendMessage(prompt, customSystemInstruction);
       clearTimeout(timer1); clearTimeout(timer2);
 
-      try {
-        const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
-        const match = cleanResponse.match(/\{[\s\S]*\}/);
-        if (match) {
-          try { parsed = JSON.parse(match[0]); }
-          catch { parsed = JSON.parse(match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r')); }
-        }
-      } catch (e) {
-        console.warn('JSON parse error:', e);
-      }
+      parsed = safeParseJson(response);
 
       clearTimeout(timer1); clearTimeout(timer2);
 
@@ -386,7 +380,10 @@ Trả về JSON thuần không bọc markdown:
           parsed.description || '',
           kwToUse,
           finalMainImg,
-          finalExtraImgs
+          finalExtraImgs,
+          scrapedVideos,
+          (parsed.technicalSpecs && typeof parsed.technicalSpecs === 'object') ? parsed.technicalSpecs : undefined,
+          parsed.specifications || ''
         );
 
         setResult({

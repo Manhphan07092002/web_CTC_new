@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Account Settings Page
  * Trang quản lý thông tin tài khoản cá nhân
  */

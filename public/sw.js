@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const STATIC_CACHE = `ctc-static-${CACHE_VERSION}`;
 const FONT_CACHE = `ctc-fonts-${CACHE_VERSION}`;
 const IMAGE_CACHE = `ctc-images-${CACHE_VERSION}`;

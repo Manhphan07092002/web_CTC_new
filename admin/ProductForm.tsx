@@ -12,6 +12,7 @@ const RichTextEditor = lazy(() => import('./components/RichTextEditor'));
 import SeoAnalyzer from './components/SeoAnalyzer';
 import AiProductWriterModal from './components/AiProductWriterModal';
 import { formatSeoProductHtml } from './utils/seoProductFormatter';
+import { safeParseJson } from './utils/jsonParser';
 
 interface ProductCategory {
   id: string;
@@ -121,80 +122,68 @@ const ProductForm: React.FC = () => {
 
     setIsGeneratingAI(true);
     try {
-      const prompt = `Bạn là chuyên gia kỹ thuật điện mặt trời & xây lắp CTC, đồng thời là chuyên gia SEO Yoast Top 1 Google.
-Hãy tự động tạo TOÀN BỘ thông tin sản phẩm và bài viết mô tả kỹ thuật CHUẨN SEO 100/100 bằng tiếng Việt cho Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC).
+      const customSystemInstruction = `Bạn là Chuyên gia Biên tập Nội dung & Kỹ thuật viên Sản phẩm cao cấp của Công ty CTC. Nhiệm vụ của bạn là tạo bài viết mô tả sản phẩm và bảng thông số kỹ thuật cực kỳ chi tiết, phong phú, dài từ 1000 đến 1500 từ, chuẩn SEO 100/100 bằng tiếng Việt. BẮT BUỘC có Bảng Thông Số Kỹ Thuật Chi Tiết (8-15 thông số cụ thể), Đặc Điểm Nổi Bật, Hiệu Năng & Ứng Dụng Thực Tế. TUYỆT ĐỐI KHÔNG viết ngắn hay sơ sài.`;
 
-Thông tin sản phẩm đầu vào:
+      const prompt = `Hãy viết bài mô tả sản phẩm và bảng thông số kỹ thuật CHUẨN SEO 100/100 & CHI TIẾT 100/100 bằng tiếng Việt cho sản phẩm sau:
+
+━━━ THÔNG TIN ĐẦU VÀO ━━━
 - Tên sản phẩm: "${formData.name}"
-- Mã sản phẩm: "${formData.code || 'N/A'}"
-- Danh mục: "${formData.categoryLabel || formData.category || 'Thiết bị Năng Lượng Mặt Trời'}"
+- Mã sản phẩm / SKU: "${formData.code || 'CTC-' + Math.floor(1000 + Math.random() * 9000)}"
+- Danh mục: "${formData.categoryLabel || formData.category || 'Thiết bị Công Nghệ & Năng Lượng'}"
 
-YÊU CẦU CHUẨN SEO YOAST BẮT BUỘC:
-1. Từ khóa Focus (focusKeyword): Tự động rút ra 1 từ khóa SEO chính 2-4 từ từ tên sản phẩm (VD: "pin mặt trời 550w", "inverter sungrow 100kw").
-2. Tiêu đề Meta: Phải chứa chính xác từ khóa Focus.
-3. Mô tả ngắn (shortDescription): Độ dài CHÍNH XÁC từ 120 đến 160 ký tự, PHẢI CHỨA TỪ KHÓA FOCUS.
-4. Nội dung bài viết (description): 
-   - Độ dài BẮT BUỘC TRÊN 800 TỪ (viết rất chi tiết, phân tích chuyên sâu).
-   - Từ khóa Focus xuất hiện ngay ở đoạn mở đầu (150 từ đầu tiên).
-   - Mật độ từ khóa Focus phân bổ đều 1.2% - 2.0% trong bài (xuất hiện 8-15 lần).
-   - BẮT BUỘC sử dụng thẻ <h2> và <h3> chuẩn cấu trúc SEO Yoast:
-     * <h2>Giới Thiệu Tổng Quan Về [focusKeyword]</h2>
-     * <h2>Đặc Điểm & Công Nghệ Kỹ Thuật Nổi Bật</h2>
-     * <h3>Thiết Kế & Tiêu Chuẩn Độ Bền Kỹ Thuật</h3>
-     * <h2>Ứng Dụng Thực Tế & Lợi Ích Đầu Tư</h2>
-     * <h2>Tại Sao Nên Chọn Giải Pháp Điện Mặt Trời Tại CTC?</h2>
-   - Sử dụng nhiều từ nối SEO: "Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra", "Tóm lại".
-   - QUY TẮC DỄ ĐỌC (READABILITY 100/100):
-     * CÂU VĂN NGẮN: Tất cả các câu BẮT BUỘC ngắn gọn (dưới 15-18 từ/câu). Ngắt câu bằng dấu chấm thường xuyên.
-     * ĐOẠN VĂN NGẮN: Mỗi thẻ <p> chỉ chứa 2-3 câu ngắn (dưới 60 từ/đoạn) để thoáng mắt.
-     * CHÈN DANH SÁCH: BẮT BUỘC chèn ít nhất 2 danh sách dạng <ul><li>...</li></ul> trong bài cho Đặc điểm nổi bật và Ứng dụng thực tế.
-   - LIÊN KẾT NỘI BỘ: Ở cuối bài viết BẮT BUỘC chèn 1 đoạn chứa liên kết nội bộ: <p className="mt-4 pt-4 border-t">Quý khách có thể xem thêm các thiết bị khác tại <a href="/products" className="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc liên hệ nhận báo giá ưu đãi tại <a href="/contact" className="text-primary font-bold hover:underline">Trang Liên Hệ CTC</a>.</p>.
-   - Chèn ít nhất 1 hình ảnh minh họa dạng HTML có thuộc tính alt chứa từ khóa Focus: <img src="${formData.image || 'https://ctcdn.vn/images/solar-panel.jpg'}" alt="[focusKeyword] chính hãng CTC" class="rounded-xl my-4 w-full" />.
+━━━ YÊU CẦU NỘI DUNG VÀ THÔNG SỐ BẮT BUỘC ━━━
+1. BẢNG THÔNG SỐ KỸ THUẬT CHI TIẾT (technicalSpecs): BẮT BUỘC tạo 8 đến 15 cặp Key-Value thông số kỹ thuật chính xác và thực tế nhất phù hợp với loại sản phẩm "${formData.name}".
+   - Nếu là thiết bị công nghệ (iPad, Laptop, Điện thoại, Máy tính...): CPU/Chipset, RAM, Bộ nhớ trong/SSD, Màn hình & Độ phân giải, Card đồ họa GPU, Camera, Pin & Công nghệ sạc, Hệ điều hành, Trọng lượng, Kích thước, Cổng kết nối, WiFi/Bluetooth, Chất liệu vỏ, Bảo hành.
+   - Nếu là thiết bị điện/năng lượng (Pin mặt trời, Inverter, biến tần...): Công suất cực đại, Hiệu suất, Loại Cell, Điện áp hệ thống, Kích thước, Trọng lượng, Chuẩn kháng nước IP, Nhiệt độ vận hành, Tuổi thọ bảo hành.
+   - Nếu là thiết bị khác: Công suất, Điện áp, Chất liệu, Trọng lượng, Kích thước, Xuất xứ, Tiêu chuẩn an toàn, Bảo hành.
 
-Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc trong markdown codeblock):
+2. NỘI DUNG BÀI VIẾT (description): 
+   - Bài viết DÀI VÀ CHI TIẾT (từ 1000 - 1500 từ), phân tích cực kỳ đầy đủ.
+   - BẮT BUỘC bao gồm các phần sau bằng thẻ <h2> và <h3>:
+     * <h2>Giới Thiệu Tổng Quan & Đột Phá Thiết Kế [focusKeyword]</h2>
+     * <h2>Hiệu Năng Vượt Trội & Công Nghệ Tiên Tiến</h2>
+     * <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2> (Chứa 1 bảng HTML <table> định dạng đẹp liệt kê 8-15 thông số ở trên)
+     * <h2>Đặc Điểm & Tính Năng Nổi Bật</h2> (Chứa danh sách <ul><li>...</li></ul> liệt kê 5-8 tính năng hàng đầu)
+     * <h2>Ứng Dụng Thực Tế & Trải Nghiệm Sử Dụng</h2>
+     * <h2>Lý Do Nên Chọn Mua Sản Phẩm Tại CTC</h2>
+   - Mật độ từ khóa Focus: 1.2% - 2.0%.
+   - Dùng nhiều từ nối SEO: "Tuy nhiên", "Bên cạnh đó", "Do đó", "Vì vậy", "Đặc biệt", "Ngoài ra".
+   - Thẻ <p> ngắn 2-3 câu, dễ đọc.
+
+🔴 QUY TẮC CẮT BỎ HƯỚNG DẪN: Tuyệt đối KHÔNG copy các câu ví dụ hay câu hướng dẫn (như "Đoạn mở đầu...", "[focusKeyword]") vào kết quả. Viết nội dung bài viết đọc thực tế 100%!
+
+Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON thuần (không bọc trong markdown codeblock):
 
 {
   "focusKeyword": "từ khóa focus chính",
-  "shortDescription": "Đoạn mô tả ngắn chuẩn 120-160 ký tự chứa từ khóa focus...",
-  "description": "<p>Đoạn mở đầu có chứa từ khóa focus...</p><h2>Giới Thiệu...</h2>...",
+  "shortDescription": "Viết đoạn mô tả ngắn chuẩn 120-160 ký tự...",
+  "description": "Viết toàn bộ bài viết mã HTML hoàn chỉnh 1000-1500 từ chứa các thẻ h2, h3, p, ul, li...",
   "specifications": "Tóm tắt thông số kỹ thuật...",
-  "power": 0.55,
-  "efficiency": 21.5,
-  "warranty": "25 năm hiệu suất, 12 năm vật lý",
+  "power": 0,
+  "efficiency": 0,
+  "warranty": "24 tháng chính hãng",
   "features": [
-    "Công nghệ Half-cell thế hệ mới giảm tổn hao công suất",
-    "Khả năng chống ăn mòn amoniac và muối biển chuẩn IEC 61701",
-    "Khung nhôm mạ anodized chịu tải tuyết 5400Pa và tải gió 2400Pa",
-    "Hộp đấu nối chuẩn chống nước IP68 bảo vệ toàn diện"
+    "Viết đặc điểm nổi bật 1",
+    "Viết đặc điểm nổi bật 2",
+    "Viết đặc điểm nổi bật 3",
+    "Viết đặc điểm nổi bật 4",
+    "Viết đặc điểm nổi bật 5"
   ],
   "technicalSpecs": {
-    "Kích thước": "2278 x 1134 x 35 mm",
-    "Trọng lượng": "27.5 kg",
-    "Loại Cell": "Monocrystalline / N-Type",
-    "Chuẩn chống nước": "IP68",
-    "Nhiệt độ vận hành": "-40°C đến +85°C",
-    "Điện áp hệ thống tối đa": "1500V DC"
+    "Vi xử lý (CPU)": "Giá trị cụ thể",
+    "Bộ nhớ RAM": "Giá trị cụ thể",
+    "Màn hình": "Giá trị cụ thể",
+    "Pin & Sạc": "Giá trị cụ thể",
+    "Kích thước": "Giá trị cụ thể",
+    "Trọng lượng": "Giá trị cụ thể",
+    "Hệ điều hành": "Giá trị cụ thể",
+    "Bảo hành": "Giá trị cụ thể"
   }
 }
 `;
 
-      const response = await chatService.sendMessage(prompt);
-      let parsed: any = null;
-      
-      try {
-        const cleanResponse = response.replace(/```json/gi, '').replace(/```/g, '').trim();
-        const match = cleanResponse.match(/\{[\s\S]*\}/);
-        if (match) {
-          try {
-            parsed = JSON.parse(match[0]);
-          } catch (jsonErr) {
-            const fixedJson = match[0].replace(/\n/g, '\\n').replace(/\r/g, '\\r');
-            parsed = JSON.parse(fixedJson);
-          }
-        }
-      } catch (e) {
-        console.warn('JSON parse error from AI response, using text fallback:', e);
-      }
+      const response = await chatService.sendMessage(prompt, customSystemInstruction);
+      const parsed: any = safeParseJson(response);
 
       if (parsed && (parsed.description || parsed.shortDescription || parsed.technicalSpecs || parsed.features)) {
         const generatedKw = parsed.focusKeyword || focusKeyword || formData.name.toLowerCase().trim();
@@ -202,7 +191,10 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON chuẩn (không bọc tron
           parsed.description || '',
           generatedKw,
           parsed.image || formData.image,
-          parsed.images || []
+          parsed.images || [],
+          [],
+          (parsed.technicalSpecs && typeof parsed.technicalSpecs === 'object') ? parsed.technicalSpecs : undefined,
+          parsed.specifications || ''
         );
 
         setFocusKeyword(generatedKw);

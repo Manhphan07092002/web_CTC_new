@@ -55,28 +55,39 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
   const [htmlSource, setHtmlSource] = useState(content || '');
 
   // Stable extension configuration without duplicates
-  const extensions = useMemo(() => [
-    StarterKit.configure({
-      heading: { levels: [1, 2, 3] },
-      bulletList: { keepMarks: true, keepAttributes: false },
-      orderedList: { keepMarks: true, keepAttributes: false },
-    }),
-    Image.configure({ 
-      inline: false, 
-      allowBase64: true, 
-      HTMLAttributes: { class: 'rounded-2xl shadow-md my-4 max-h-[550px] mx-auto object-cover' } 
-    }),
-    Link.configure({ 
-      openOnClick: false, 
-      HTMLAttributes: { class: 'text-primary underline font-medium hover:text-secondary' } 
-    }),
-    Underline,
-    TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    Highlight.configure({ multicolor: false }),
-    Placeholder.configure({ 
-      placeholder: placeholder || 'Nhập nội dung chi tiết... Bạn có thể chèn hình ảnh, đường dẫn liên kết, dán mã HTML...' 
-    }),
-  ], [placeholder]);
+  const extensions = useMemo(() => {
+    const rawList = [
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+        bulletList: { keepMarks: true, keepAttributes: false },
+        orderedList: { keepMarks: true, keepAttributes: false },
+      }),
+      Image.configure({ 
+        inline: false, 
+        allowBase64: true, 
+        HTMLAttributes: { class: 'rounded-2xl shadow-md my-4 max-h-[550px] mx-auto object-cover' } 
+      }),
+      Link.configure({ 
+        openOnClick: false, 
+        HTMLAttributes: { class: 'text-primary underline font-medium hover:text-secondary' } 
+      }),
+      Underline,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Highlight.configure({ multicolor: false }),
+      Placeholder.configure({ 
+        placeholder: placeholder || 'Nhập nội dung chi tiết... Bạn có thể chèn hình ảnh, đường dẫn liên kết, dán mã HTML...' 
+      }),
+    ];
+
+    const seen = new Set<string>();
+    return rawList.filter(ext => {
+      const n = ext.name;
+      if (!n) return true;
+      if (seen.has(n)) return false;
+      seen.add(n);
+      return true;
+    });
+  }, [placeholder]);
 
   const editor = useEditor({
     extensions,

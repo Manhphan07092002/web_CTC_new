@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User as UserIcon, Lock, LogOut, ChevronDown, Menu } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';

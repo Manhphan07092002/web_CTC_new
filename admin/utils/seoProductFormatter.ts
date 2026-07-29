@@ -11,14 +11,22 @@ export function formatSeoProductHtml(
   focusKeyword: string = 'sản phẩm',
   mainImage?: string,
   extraImages: string[] = [],
-  scrapedVideos: string[] = []
+  scrapedVideos: string[] = [],
+  technicalSpecs?: { [key: string]: string },
+  specificationsText?: string
 ): { cleanHtml: string; finalMainImage: string; finalExtraImages: string[] } {
   if (!rawHtml) return { cleanHtml: '', finalMainImage: '', finalExtraImages: [] };
 
   let html = rawHtml.trim();
 
-  // 1. Remove markdown code blocks if present
+  // 1. Clean markdown blocks & placeholder strings from prompt templates
   html = html.replace(/```html/gi, '').replace(/```/g, '').trim();
+  html = html.replace(/<p>\s*Mở đầu bám sát nội dung gốc[^\n<]*<\/p>/gi, '');
+  html = html.replace(/Mở đầu bám sát nội dung gốc[^\n<]*/gi, '');
+  html = html.replace(/<p>\s*\[\s*focusKeyword\s*\][^\n<]*<\/p>/gi, '');
+  html = html.replace(/\[focusKeyword\]/gi, focusKeyword);
+  html = html.replace(/<p>\s*\.\.\.\s*<\/p>/gi, '');
+  html = html.replace(/^\s*\.\.\.\s*$/gm, '');
 
   // 2. Convert markdown bold **text** -> <strong>text</strong>
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -39,6 +47,63 @@ export function formatSeoProductHtml(
       .filter(Boolean)
       .map(p => `<p>${p}</p>`)
       .join('');
+  }
+
+  // 5.5 Build Responsive Spec Grid Card (Tiptap friendly) if missing
+  if (!html.includes('Bảng Thông Số Kỹ Thuật Chi Tiết') && !html.includes('grid-cols')) {
+    let specItemsHtml = '';
+    
+    if (technicalSpecs && typeof technicalSpecs === 'object' && Object.keys(technicalSpecs).length > 0) {
+      specItemsHtml = Object.entries(technicalSpecs).map(([key, val]) => `
+        <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 shadow-2xs">
+          <span class="font-bold text-slate-700 dark:text-slate-200 text-sm flex-shrink-0">${key}:</span>
+          <span class="text-slate-900 dark:text-white font-semibold text-sm text-right">${val}</span>
+        </div>
+      `).join('');
+    } else if (specificationsText && specificationsText.trim().length > 10) {
+      const lines = specificationsText.split(/\n|,|;/).map(l => l.trim()).filter(Boolean);
+      specItemsHtml = lines.map(line => {
+        const parts = line.split(/:|-|=/);
+        if (parts.length >= 2) {
+          const k = parts[0].trim();
+          const v = parts.slice(1).join(':').trim();
+          return `
+        <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 shadow-2xs">
+          <span class="font-bold text-slate-700 dark:text-slate-200 text-sm flex-shrink-0">${k}:</span>
+          <span class="text-slate-900 dark:text-white font-semibold text-sm text-right">${v}</span>
+        </div>`;
+        } else {
+          return `
+        <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <span class="text-slate-900 dark:text-white font-semibold text-sm">${line}</span>
+        </div>`;
+        }
+      }).join('');
+    }
+
+    if (specItemsHtml) {
+      const specCardHtml = `
+<div class="my-8 p-5 bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-3xl shadow-sm">
+  <h2 class="text-xl font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+    <span>📋</span> Bảng Thông Số Kỹ Thuật Chi Tiết
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    ${specItemsHtml}
+  </div>
+</div>`;
+
+      if (html.includes('<h2>')) {
+        const firstH2Pos = html.indexOf('<h2>');
+        const nextH2Pos = html.indexOf('<h2>', firstH2Pos + 4);
+        if (nextH2Pos > 0) {
+          html = html.substring(0, nextH2Pos) + specCardHtml + html.substring(nextH2Pos);
+        } else {
+          html += specCardHtml;
+        }
+      } else {
+        html += specCardHtml;
+      }
+    }
   }
 
   // 6. Resolve Images
