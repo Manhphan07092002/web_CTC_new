@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Tag, Grid, Layers, FolderOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Tag, Grid, Layers, FolderOpen, CornerDownRight, FolderPlus, FolderTree } from 'lucide-react';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { PermissionGate } from '../contexts/PermissionContext';
@@ -14,6 +14,7 @@ interface Category {
   color?: string;
   order?: number;
   isActive?: boolean;
+  parentId?: string;
   productCount?: number;
   newsCount?: number;
   projectCount?: number;
@@ -38,7 +39,8 @@ const CategoryManagement: React.FC = () => {
     icon: '',
     color: '#3B82F6',
     order: 0,
-    isActive: true
+    isActive: true,
+    parentId: ''
   });
 
   useEffect(() => {
@@ -63,7 +65,6 @@ const CategoryManagement: React.FC = () => {
           data = await api.documentCategories.getAdmin();
           break;
       }
-      // Sort by order
       data.sort((a, b) => (a.order || 0) - (b.order || 0));
       setCategories(data);
     } catch (error) {
@@ -85,16 +86,18 @@ const CategoryManagement: React.FC = () => {
       .trim();
   };
 
-  const handleAdd = () => {
+  const handleAdd = (parentIdParam: string = '') => {
     setEditingCategory(null);
+    const parentCat = categories.find(c => c.id === parentIdParam);
     setFormData({
       name: '',
       slug: '',
       description: '',
-      icon: '',
-      color: '#3B82F6',
+      icon: parentCat?.icon || '',
+      color: parentCat?.color || '#3B82F6',
       order: categories.length,
-      isActive: true
+      isActive: true,
+      parentId: parentIdParam
     });
     setIsModalOpen(true);
   };
@@ -108,7 +111,8 @@ const CategoryManagement: React.FC = () => {
       icon: category.icon || '',
       color: category.color || '#3B82F6',
       order: category.order || 0,
-      isActive: category.isActive !== false
+      isActive: category.isActive !== false,
+      parentId: category.parentId || ''
     });
     setIsModalOpen(true);
   };
@@ -166,9 +170,12 @@ const CategoryManagement: React.FC = () => {
       return;
     }
 
-    // Auto-generate slug if empty
     const slug = formData.slug || generateSlug(formData.name);
-    const dataToSave = { ...formData, slug };
+    const dataToSave = { 
+      ...formData, 
+      slug,
+      parentId: formData.parentId || undefined
+    };
 
     try {
       if (editingCategory) {
@@ -228,22 +235,39 @@ const CategoryManagement: React.FC = () => {
     { id: 'document' as CategoryType, label: 'Thể loại tài liệu', icon: FolderOpen }
   ];
 
+  // Organize parent and sub categories
+  const parentCategories = categories.filter(c => !c.parentId);
+  const getSubCategories = (parentId: string) => categories.filter(c => c.parentId === parentId);
+  const orphanSubCategories = categories.filter(c => c.parentId && !categories.some(p => p.id === c.parentId));
+
+  const getItemCountLabel = (cat: Category) => {
+    if (activeTab === 'product') return `${cat.productCount || 0} sản phẩm`;
+    if (activeTab === 'news') return `${cat.newsCount || 0} tin tức`;
+    if (activeTab === 'project') return `${cat.projectCount || 0} dự án`;
+    return `${cat.resourceCount || 0} tài liệu`;
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Quản lý Danh mục</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Quản lý danh mục cho sản phẩm, dự án, tin tức và tài liệu của hệ thống</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+            <FolderTree className="text-primary" size={32} />
+            Quản lý Danh mục
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Phân cấp danh mục chính & danh mục con cho sản phẩm, dự án, tin tức</p>
         </div>
         <PermissionGate permission="manage_product_categories">
-          <button
-            onClick={handleAdd}
-            className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 shadow-sm"
-          >
-            <Plus size={18} />
-            Thêm danh mục
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleAdd('')}
+              className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 shadow-sm transition-colors"
+            >
+              <Plus size={18} />
+              Thêm danh mục chính
+            </button>
+          </div>
         </PermissionGate>
       </div>
 
@@ -272,91 +296,190 @@ const CategoryManagement: React.FC = () => {
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500 dark:text-gray-400 mt-4">Đang tải...</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-4">Đang tải danh mục...</p>
         </div>
       ) : categories.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-slate-800/90 rounded-xl border border-gray-100 dark:border-slate-700/60">
           <Tag size={48} className="mx-auto text-gray-300 dark:text-slate-600 mb-4" />
           <p className="text-gray-500 dark:text-gray-400 font-medium">Chưa có danh mục nào</p>
           <button
-            onClick={handleAdd}
+            onClick={() => handleAdd('')}
             className="mt-4 px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium shadow-sm"
           >
             Thêm danh mục đầu tiên
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              className={`bg-white dark:bg-slate-800/90 rounded-xl shadow-sm border-2 p-4 hover:shadow-md transition-all flex flex-col justify-between ${
-                category.isActive !== false 
-                  ? 'border-gray-100 dark:border-slate-700/60' 
-                  : 'border-gray-200 dark:border-slate-700 opacity-60'
-              }`}
-              style={{ borderLeftColor: category.color, borderLeftWidth: '4px' }}
-            >
-              <div>
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    {category.icon && (
-                      <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-xs"
-                        style={{ backgroundColor: category.color }}
-                      >
-                        {category.icon}
+        <div className="space-y-6">
+          {/* Parent Categories Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {parentCategories.map((parentCategory) => {
+              const subs = getSubCategories(parentCategory.id);
+              return (
+                <div
+                  key={parentCategory.id}
+                  className={`bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm border-2 p-5 hover:shadow-md transition-all flex flex-col justify-between ${
+                    parentCategory.isActive !== false 
+                      ? 'border-gray-100 dark:border-slate-700/60' 
+                      : 'border-gray-200 dark:border-slate-700 opacity-60'
+                  }`}
+                  style={{ borderLeftColor: parentCategory.color || '#3B82F6', borderLeftWidth: '5px' }}
+                >
+                  <div>
+                    {/* Header line */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-xs"
+                          style={{ backgroundColor: parentCategory.color || '#3B82F6' }}
+                        >
+                          {parentCategory.icon || '📂'}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base truncate" title={parentCategory.name}>
+                              {parentCategory.name}
+                            </h3>
+                            <span className="text-[10px] uppercase tracking-wider bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-black">
+                              Danh mục chính
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">{parentCategory.slug}</p>
+                        </div>
                       </div>
+
+                      <div className="flex gap-1 flex-shrink-0">
+                        <PermissionGate permission="manage_product_categories">
+                          <button
+                            onClick={() => handleAdd(parentCategory.id)}
+                            className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold"
+                            title="Thêm danh mục con vào đây"
+                          >
+                            <FolderPlus size={16} />
+                            <span className="hidden sm:inline">+ Danh mục con</span>
+                          </button>
+                          <button
+                            onClick={() => handleEdit(parentCategory)}
+                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                            title="Sửa danh mục chính"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(parentCategory)}
+                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                            title="Xóa danh mục chính"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </PermissionGate>
+                      </div>
+                    </div>
+
+                    {parentCategory.description && (
+                      <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 leading-relaxed">
+                        {parentCategory.description}
+                      </p>
                     )}
-                    <div className="min-w-0">
-                      <h3 className="font-bold text-gray-800 dark:text-gray-100 text-sm sm:text-base truncate" title={category.name}>{category.name}</h3>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">{category.slug}</p>
+
+                    {/* Sub categories list */}
+                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">
+                        <span className="flex items-center gap-1">
+                          <CornerDownRight size={13} className="text-primary" />
+                          Danh mục con ({subs.length})
+                        </span>
+                        <button
+                          onClick={() => handleAdd(parentCategory.id)}
+                          className="text-primary hover:underline text-[11px] font-bold"
+                        >
+                          + Thêm mới
+                        </button>
+                      </div>
+
+                      {subs.length === 0 ? (
+                        <p className="text-xs italic text-gray-400 dark:text-gray-500 py-1">
+                          Chưa có danh mục con. Bấm "+ Thêm danh mục con" để chia nhỏ danh mục này.
+                        </p>
+                      ) : (
+                        <div className="space-y-2">
+                          {subs.map((subCat) => (
+                            <div
+                              key={subCat.id}
+                              className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-700/50 hover:border-primary/50 transition-all group"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-sm flex-shrink-0">{subCat.icon || '📁'}</span>
+                                <div className="min-w-0">
+                                  <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200 truncate">{subCat.name}</h4>
+                                  <span className="text-[10px] text-gray-400 font-mono block truncate">{subCat.slug}</span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                                  {getItemCountLabel(subCat)}
+                                </span>
+                                <button
+                                  onClick={() => handleEdit(subCat)}
+                                  className="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                  title="Sửa danh mục con"
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteClick(subCat)}
+                                  className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                  title="Xóa danh mục con"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="flex gap-1 flex-shrink-0">
-                    <PermissionGate permission="manage_product_categories">
-                      <button
-                        onClick={() => handleEdit(category)}
-                        className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                        title="Sửa"
-                      >
-                        <Edit size={16} />
-                      </button>
-                    </PermissionGate>
-                    <PermissionGate permission="manage_product_categories">
-                      <button
-                        onClick={() => handleDeleteClick(category)}
-                        className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                        title="Xóa"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </PermissionGate>
+
+                  <div className="flex items-center justify-between text-xs pt-3 mt-3 border-t border-gray-100 dark:border-slate-700/50">
+                    <span className="text-gray-500 dark:text-gray-400 font-bold">
+                      Tổng: {getItemCountLabel(parentCategory)}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                      parentCategory.isActive !== false
+                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700/50'
+                        : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400'
+                    }`}>
+                      {parentCategory.isActive !== false ? 'Hoạt động' : 'Ẩn'}
+                    </span>
                   </div>
                 </div>
+              );
+            })}
+          </div>
 
-                {category.description && (
-                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 leading-relaxed">{category.description}</p>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between text-xs pt-2 border-t border-gray-50 dark:border-slate-700/50">
-                <span className="text-gray-500 dark:text-gray-400 font-medium">
-                  {activeTab === 'product' && `${category.productCount || 0} sản phẩm`}
-                  {activeTab === 'news' && `${category.newsCount || 0} tin tức`}
-                  {activeTab === 'project' && `${category.projectCount || 0} dự án`}
-                  {activeTab === 'document' && `${category.resourceCount || 0} tài liệu`}
-                </span>
-                <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                  category.isActive !== false
-                    ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700/50'
-                    : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400'
-                }`}>
-                  {category.isActive !== false ? 'Hoạt động' : 'Ẩn'}
-                </span>
+          {/* Orphan sub categories if any */}
+          {orphanSubCategories.length > 0 && (
+            <div className="mt-8 bg-amber-50/50 dark:bg-amber-950/20 p-5 rounded-2xl border border-amber-200 dark:border-amber-900/50">
+              <h3 className="text-sm font-bold text-amber-800 dark:text-amber-300 mb-3 flex items-center gap-2">
+                <CornerDownRight size={16} /> Danh mục con tự do (Chưa gán danh mục chính):
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {orphanSubCategories.map(cat => (
+                  <div key={cat.id} className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-amber-200 dark:border-slate-700 flex justify-between items-center">
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">{cat.name}</h4>
+                      <p className="text-[10px] text-slate-400 font-mono">{cat.slug}</p>
+                    </div>
+                    <button onClick={() => handleEdit(cat)} className="text-xs text-blue-600 font-bold hover:underline">
+                      Gán danh mục cha
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          )}
         </div>
       )}
 
@@ -366,15 +489,43 @@ const CategoryManagement: React.FC = () => {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg relative z-10 border border-transparent dark:border-slate-700 text-gray-800 dark:text-gray-100">
             <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                <FolderTree size={20} className="text-primary" />
                 {editingCategory ? 'Chỉnh sửa Danh mục' : 'Thêm Danh mục mới'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* Select Parent Category */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                  Phân cấp danh mục (Danh mục cha)
+                </label>
+                <select
+                  value={formData.parentId || ''}
+                  onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
+                  className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                >
+                  <option value="">📁 Không có (Tạo làm Danh mục chính Cấp 1)</option>
+                  {parentCategories
+                    .filter(c => c.id !== editingCategory?.id)
+                    .map(cat => (
+                      <option key={cat.id} value={cat.id}>
+                        └ 📂 {cat.name} (Cấp 1)
+                      </option>
+                    ))
+                  }
+                </select>
+                <p className="text-xs text-primary font-medium mt-1">
+                  {formData.parentId 
+                    ? `👉 Sẽ tạo danh mục con nằm trong: "${parentCategories.find(c => c.id === formData.parentId)?.name}"`
+                    : '👉 Sẽ tạo làm Danh mục chính cấp 1'}
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                   Tên danh mục <span className="text-red-500">*</span>
@@ -385,7 +536,7 @@ const CategoryManagement: React.FC = () => {
                   value={formData.name}
                   onChange={(e) => handleNameChange(e.target.value)}
                   className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  placeholder="VD: Tấm pin năng lượng mặt trời"
+                  placeholder={formData.parentId ? "VD: Tấm pin Solar N-Type (Danh mục con)" : "VD: Thiết Bị Điện Mặt Trời (Danh mục chính)"}
                 />
               </div>
 
@@ -398,7 +549,7 @@ const CategoryManagement: React.FC = () => {
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                   className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-sm"
-                  placeholder="tam-pin-nang-luong-mat-troi"
+                  placeholder="tam-pin-solar-n-type"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Tự động tạo nếu để trống</p>
               </div>
@@ -408,7 +559,7 @@ const CategoryManagement: React.FC = () => {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
+                  rows={2}
                   className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
                   placeholder="Mô tả ngắn về danh mục..."
                 />
@@ -458,7 +609,7 @@ const CategoryManagement: React.FC = () => {
                 </div>
 
                 <div className="flex items-end">
-                  <label className="flex items-center gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.isActive}
@@ -474,13 +625,13 @@ const CategoryManagement: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl font-medium transition-colors"
+                  className="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl font-medium transition-colors cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium shadow-sm"
+                  className="px-6 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium shadow-sm cursor-pointer"
                 >
                   {editingCategory ? 'Cập nhật' : 'Thêm mới'}
                 </button>
@@ -499,7 +650,9 @@ const CategoryManagement: React.FC = () => {
         itemName={deleteConfirm.category?.name}
         itemType="category"
         description={`Bạn có chắc chắn muốn xóa danh mục "${deleteConfirm.category?.name}"?`}
-        warningText="Các sản phẩm / dự án / bài viết nằm trong danh mục này sẽ không bị xóa."
+        warningText={getSubCategories(deleteConfirm.category?.id || '').length > 0 
+          ? `⚠️ Danh mục này có ${getSubCategories(deleteConfirm.category?.id || '').length} danh mục con! Các danh mục con sẽ chuyển thành danh mục tự do.` 
+          : "Các sản phẩm / dự án / bài viết nằm trong danh mục này sẽ không bị xóa."}
         confirmText="Đồng ý xóa"
       />
     </div>

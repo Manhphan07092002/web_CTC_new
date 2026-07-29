@@ -18,6 +18,7 @@ interface ProductCategory {
   id: string;
   name: string;
   slug: string;
+  parentId?: string;
 }
 
 const ProductForm: React.FC = () => {
@@ -486,14 +487,32 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON thuần (không bọc tron
                 required
                 value={formData.categoryId}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
               >
-                <option value="">Chọn danh mục</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
+                <option value="">-- Chọn danh mục sản phẩm --</option>
+                {categories
+                  .filter(c => !c.parentId)
+                  .map((parentCat) => {
+                    const subs = categories.filter(c => c.parentId === parentCat.id);
+                    if (subs.length === 0) {
+                      return (
+                        <option key={parentCat.id} value={parentCat.id}>
+                          📂 {parentCat.name}
+                        </option>
+                      );
+                    }
+                    return (
+                      <optgroup key={parentCat.id} label={`📂 ${parentCat.name}`}>
+                        <option value={parentCat.id}>{parentCat.name} (Tất cả / Danh mục chính)</option>
+                        {subs.map((sub) => (
+                          <option key={sub.id} value={sub.id}>
+                            -- 📁 {sub.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })
+                }
               </select>
             </div>
 

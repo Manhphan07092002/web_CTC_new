@@ -59,9 +59,11 @@ export interface Category {
   color?: string;
   order?: number;
   isActive?: boolean;
+  parentId?: string; // ID của danh mục cha (nếu là danh mục con)
   productCount?: number;
   newsCount?: number;
   projectCount?: number;
+  resourceCount?: number;
 }
 
 export interface Project {
