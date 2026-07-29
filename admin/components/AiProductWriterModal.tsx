@@ -101,7 +101,7 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
 
     const addImage = (src: string | null | undefined) => {
       if (!src || src.startsWith('data:') || src.length < 10) return;
-      if (/logo|icon|avatar|spinner|pixel|1x1|blank|placeholder|\.gif$|\.svg$/i.test(src)) return;
+      if (/logo|icon|avatar|spinner|pixel|1x1|blank|placeholder|\.gif$|\.svg$|banner|promo|khuyen-mai|quang-cao|discount|store|exclusive|slider|adv/i.test(src)) return;
       try {
         const abs = new URL(src, url).href;
         if (!result.images.includes(abs) && result.images.length < 12) result.images.push(abs);
@@ -272,9 +272,9 @@ const AiProductWriterModal: React.FC<AiProductWriterModalProps> = ({
         `<div class="my-6 aspect-video rounded-2xl overflow-hidden shadow-lg"><iframe src="${v}" class="w-full h-full" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`
       ).join('\n');
 
-      const prompt = `Bạn là Chuyên gia Sản phẩm & SEO Yoast của Công ty CTC.
+      const prompt = `Bạn là Chuyên gia Kỹ thuật & Copywriter Bán hàng SEO Top 1 Google của Công ty CTC.
 
-NHIỆM VỤ: Đọc hiểu toàn bộ văn bản/thông số mẫu dưới đây và viết bài mô tả sản phẩm CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
+NHIỆM VỤ: Viết bài mô tả sản phẩm KỸ THUẬT VÀ BÁN HÀNG ĐẮC GIÁ, CHUẨN SEO 100/100 & DỄ ĐỌC 100/100 bằng tiếng Việt.
 
 ━━━ THÔNG TIN SẢN PHẨM ĐẦU VÀO ━━━
 Tên/Model: "${scrapedTitle || nameToUse || 'Tự động rút ra từ văn bản mẫu'}"
@@ -284,85 +284,82 @@ Phong cách: ${style === 'technical' ? 'Kỹ thuật chuyên sâu B2B' : style =
 
 ━━━ NỘI DUNG GỐC & THÔNG SỐ SẢN PHẨM MẪU ━━━
 ${hasRealContent
-  ? combinedRawText.slice(0, 3000)
-  : '⚠️ Không có nội dung cào/dán. Viết dựa trên tên sản phẩm.'}
+  ? (scrapedRawText || combinedRawText || '').slice(0, 5500)
+  : '⚠️ Không có nội dung cào/dán. Chỉ được viết dựa trên tên sản phẩm. TUYỆT ĐỐI KHÔNG bịa thông số kỹ thuật cụ thể nếu không chắc chắn.'}
 
-━━━ HÌNH ẢNH CÀO ĐƯỢC ━━━
+━━━ HÌNH ẢNH CÀO ĐƯỢC (CHỈ DÙNG ẢNH SẢN PHẨM THỰC TẾ) ━━━
 ${hasImages
   ? scrapedImages.map((img, i) => `Ảnh ${i + 1}: ${img}`).join('\n')
   : '(Không cào được ảnh từ link)'}
 
-━━━ LUẬT BẮT BUỘC ━━━
+━━━ YÊU CẦU BẮT BUỘC VỀ BÀI VIẾT ━━━
 
-🔴 LUẬT 1 - TÊN SẢN PHẨM (name):
-- Bóc tách CHÍNH XÁC từ nội dung gốc, KHÔNG thêm từ marketing
+🔴 LUẬT 1 - NỘI DUNG CHUYÊN NGHỆP & KHÔNG VIẾT DỞ DANG:
+- TUYỆT ĐỐI KHÔNG viết dấu ba chấm (...) lười biếng hoặc viết dở câu.
+- TUYỆT ĐỐI KHÔNG lấy banner quảng cáo, thông tin shop khác (như ROG Store, An Phat, CellphoneS,...). Tất cả thông tin phân phối đều đứng tên Công ty CTC.
 
-🔴 LUẬT 2 - HÌNH ẢNH:
-${hasImages
-  ? `- image: PHẢI dùng đúng URL này: "${scrapedImages[0]}"
-- images: PHẢI dùng đúng các URL này: ${JSON.stringify(scrapedImages.slice(1, 4))}`
-  : `- image: Dùng ảnh Unsplash liên quan đến "${scrapedTitle || nameToUse}"
-- images: Dùng 2 ảnh Unsplash liên quan`}
-
-🔴 LUẬT 3 - BẢNG THÔNG SỐ KỸ THUẬT HTML TRONG BÀI VIẾT (description):
-- BẮT BUỘC có 1 phần <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2> chứa bảng HTML định dạng đẹp:
+🔴 LUẬT 2 - CẤU TRÚC H2/H3 ĐẦY ĐỦ KỸ THUẬT & CHỨC NĂNG:
+Bài viết trong "description" PHẢI theo đúng cấu trúc chuẩn SEO sau:
+1. <p>Đoạn mở đầu cuốn hút, nêu bật vị thế sản phẩm và chứa từ khóa Focus "${scrapedTitle || nameToUse}" trong 100 từ đầu tiên.</p>
+2. <h2>1. Tổng Quan Sản Phẩm & Phong Cách Thiết Kế</h2> (Phân tích chi tiết kiểu dáng, vật liệu, kích thước, độ hoàn thiện).
+3. <h2>2. Sức Mạnh Hiệu Năng & Khả Năng Xử Lý Đa Nhiệm</h2> (Phân tích sâu vi xử lý CPU, RAM, ổ cứng SSD, card đồ họa GPU, khả năng vận hành ứng dụng).
+4. <h2>3. Hệ Thống Cổng Kết Nối & Chuẩn Mạng Tốc Độ Cao</h2> (Chi tiết Thunderbolt, USB, HDMI/DisplayPort, WiFi 6/6E, LAN 2.5G,...).
+5. <h2>4. Bảng Thông Số Kỹ Thuật Chi Tiết</h2> (Bảng HTML 2 cột định dạng sang trọng):
   <div class="overflow-x-auto my-6">
     <table class="w-full text-sm border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-xs">
       <thead>
-        <tr class="bg-slate-800 text-white font-bold"><th class="p-3 border border-slate-700 text-left">Thông số</th><th class="p-3 border border-slate-700 text-left">Chi tiết kỹ thuật</th></tr>
+        <tr class="bg-slate-900 text-white font-bold"><th class="p-3 border border-slate-800 text-left">Thông số</th><th class="p-3 border border-slate-800 text-left">Chi tiết kỹ thuật</th></tr>
       </thead>
       <tbody>
         <tr class="border-b border-slate-200 hover:bg-slate-50"><td class="p-3 font-semibold bg-slate-50">...</td><td class="p-3">...</td></tr>
       </tbody>
     </table>
   </div>
-- Liệt kê ĐẦY ĐỦ 8-15 thông số (Vi xử lý CPU, RAM, Ổ cứng SSD, Màn hình, Card đồ họa GPU, Pin, Trọng lượng, Kích thước, Cổng kết nối, Hệ điều hành, Công nghệ làm mát, Chuẩn kết nối WiFi/Bluetooth, Bảo hành...).
+6. <h2>5. Các Tính Năng Nổi Bật & Ưu Điểm Vượt Trội</h2> (Danh sách <ul><li> với các bullet chi tiết).
+7. <h2>6. Ứng Dụng Thực Tế & Khách Hàng Mục Tiêu</h2> (Phù hợp cho doanh nghiệp, văn phòng, đồ họa, hạ tầng,...).
+8. <h2>7. Lý Do Nên Chọn Mua Sản Phẩm Tại CTC</h2> (Nêu uy tín Công ty Cổ phần Xây lắp Bưu điện Miền Trung CTC, cam kết hàng chính hãng, bảo hành 24-36 tháng).
 
-🔴 LUẬT 4 - NỘI DUNG BÀI VIẾT CHI TIẾT:
-- Cấu trúc:
-  1. <p>Đoạn mở đầu ấn tượng chứa từ khóa Focus trong 150 từ đầu</p>
-  2. <h2>Tổng Quan & Thiết Kế Nổi Bật</h2>
-  3. <h2>Hiệu Năng & Trải Nghiệm Thực Tế</h2>
-  4. <h2>Bảng Thông Số Kỹ Thuật Chi Tiết</h2> (Bảng HTML trên)
-  5. <h2>Đặc Điểm & Tính Năng Nổi Bật</h2> (Liệt kê danh sách <ul><li>...</li></ul>)
-  6. <h2>Tổng Kết & Lý Do Nên Chọn Mua</h2>
-- Câu tối đa 16 từ, đoạn tối đa 60 từ.
-- BẮT BUỘC ≥ 2 danh sách <ul><li>...</li></ul>.
-- Mật độ từ khóa Focus: 1.2-2.0%.
-- Từ nối bắt buộc: Tuy nhiên, Bên cạnh đó, Ngoài ra, Do đó, Đặc biệt.${videoEmbeds ? '\n- Chèn video này vào giữa bài:\n' + videoEmbeds : ''}
-- Cuối bài: <p class="mt-4 pt-4 border-t">Xem thêm <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá</a>.</p>
+🔴 LUẬT 3 - TIÊU CHUẨN ĐỘ DỄ ĐỌC & TỐI ƯU SEO YOAST:
+- Câu văn: tối đa 16 từ/câu.
+- Đoạn văn: mỗi <p> tối đa 60 từ.
+- BẮT BUỘC có ít nhất 2 danh sách <ul><li>...</li></ul>.
+- Mật độ từ khóa Focus: 1.2% - 2.0%.
+- Sử dụng các từ nối: Tuy nhiên, Bên cạnh đó, Ngoài ra, Do đó, Đặc biệt, Vì vậy.${videoEmbeds ? '\n- Chèn video nhúng này vào giữa bài:\n' + videoEmbeds : ''}
+- Cuối bài: <p class="mt-4 pt-4 border-t">Quý khách tham khảo thêm tại <a href="/products" class="text-primary font-bold hover:underline">Danh mục Sản phẩm CTC</a> hoặc <a href="/contact" class="text-primary font-bold hover:underline">Liên Hệ Báo Giá CTC</a>.</p>
 
-🔴 LUẬT 5 - ĐỊNH DẠNG JSON TRẢ VỀ:
-- technicalSpecs: Object chứa ĐẦY ĐỦ 8-15 cặp Key-Value thông số kỹ thuật (vd: {"CPU": "Intel Core Ultra 7 155H", "RAM": "16GB LPDDR5X", ...})
-- features: Array chứa 5-8 dòng đặc điểm nổi bật nhất (vd: ["Vi xử lý Intel Core Ultra 7 với NPU AI tích hợp", "Màn hình OLED 2.8K 120Hz chuẩn màu 100% DCI-P3", ...])
+🔴 LUẬT 4 - ĐỊNH DẠNG JSON TRẢ VỀ:
+- technicalSpecs: Object chứa 8-15 cặp Key-Value chi tiết nhất
+- features: Array chứa 5-8 dòng tính năng kỹ thuật nổi bật nhất
 
 Trả về JSON thuần không bọc markdown:
 {
-  "name": "Tên chính xác từ nội dung gốc",
+  "name": "Tên sản phẩm chính xác từ nội dung gốc",
   "code": "${productCode2}",
   "focusKeyword": "từ khóa SEO 2-4 từ",
-  "shortDescription": "Mô tả meta 120-160 ký tự, chứa từ khóa focus",
+  "shortDescription": "Mô tả meta 120-160 ký tự cuốn hút, chứa từ khóa focus",
   "image": "${scrapedImages[0] || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800'}",
   "images": ${JSON.stringify(scrapedImages.slice(1, 4).length > 0 ? scrapedImages.slice(1, 4) : ['https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'])},
-  "description": "Viết toàn bộ nội dung mã HTML bài viết thực tế đầy đủ 1000-1500 từ...",
+  "description": "<p>Mở đầu chuyên nghiệp bám sát nội dung gốc 1000-1500 từ, chứa từ khóa...</p><h2>1. Tổng Quan...</h2>...",
   "specifications": "Tóm tắt thông số kỹ thuật chính từ nội dung gốc",
-  "warranty": "24 tháng chính hãng",
+  "warranty": "36 tháng chính hãng",
   "features": [
-    "Đặc điểm nổi bật 1 từ nội dung gốc",
-    "Đặc điểm nổi bật 2",
-    "Đặc điểm nổi bật 3",
-    "Đặc điểm nổi bật 4",
-    "Đặc điểm nổi bật 5"
+    "Vi xử lý thế hệ mới với hiệu năng xử lý đa nhiệm vượt trội",
+    "Thiết kế nhỏ gọn tối ưu không gian làm việc chuyên nghiệp",
+    "Hệ thống cổng kết nối đa dạng hỗ trợ xuất hình 4K/8K",
+    "Chuẩn kết nối không dây tốc độ cao mượt mà",
+    "Độ bền đạt chuẩn vận hành liên tục 24/7"
   ],
   "technicalSpecs": {
     "Vi xử lý (CPU)": "Giá trị từ nội dung gốc",
-    "Bộ nhớ RAM": "Giá trị",
-    "Ổ cứng": "Giá trị",
-    "Màn hình": "Giá trị",
-    "Card đồ họa (GPU)": "Giá trị",
-    "Pin & Sạc": "Giá trị",
-    "Trọng lượng": "Giá trị",
-    "Hệ điều hành": "Giá trị"
+    "Bộ nhớ RAM": "Giá trị từ nội dung gốc",
+    "Ổ cứng": "Giá trị từ nội dung gốc",
+    "Màn hình / Đồ họa": "Giá trị",
+    "Cổng kết nối": "Giá trị",
+    "Kết nối không dây": "Giá trị",
+    "Pin / Nguồn": "Giá trị",
+    "Kích thước & Trọng lượng": "Giá trị",
+    "Hệ điều hành": "Giá trị",
+    "Bảo hành": "36 tháng chính hãng CTC"
   }
 }`;
 

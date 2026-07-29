@@ -242,7 +242,7 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
     const scrapedImages: string[] = [];
     const addImage = (raw: string) => {
       if (!raw || raw.startsWith('data:image') || raw.length < 5) return;
-      if (/(?:logo|icon|avatar|pixel|spinner|loading|\.gif$|\.svg$|1x1|blank|placeholder)/i.test(raw)) return;
+      if (/(?:logo|icon|avatar|pixel|spinner|loading|\.gif$|\.svg$|1x1|blank|placeholder|banner|promo|khuyen-mai|quang-cao|discount|store|exclusive|slider|adv)/i.test(raw)) return;
       const resolved = resolveAbsoluteUrl(raw, url);
       if (resolved && !scrapedImages.includes(resolved) && scrapedImages.length < 12) {
         scrapedImages.push(resolved);

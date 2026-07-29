@@ -32,6 +32,10 @@ export default defineConfig(({ mode }) => {
       }
     },
     plugins: [tailwindcss(), spaFallbackPlugin(), react()],
+    esbuild: mode === 'production' ? {
+      drop: ['console', 'debugger'],
+      legalComments: 'none',
+    } : {},
     build: {
       cssCodeSplit: true,
       target: 'es2020',

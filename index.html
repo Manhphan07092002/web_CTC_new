@@ -60,14 +60,21 @@
       }
     }, true);
 
-    // Register Service Worker for PWA asset caching & offline support
+    // Register Service Worker on idle to prevent blocking LCP / initial hydration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(function(reg) {
-          console.log('[PWA] Service Worker registered:', reg.scope);
-        }).catch(function(err) {
-          console.log('[PWA] Service Worker registration failed:', err);
-        });
+        const registerSW = function() {
+          navigator.serviceWorker.register('/sw.js').then(function(reg) {
+            console.log('[PWA] Service Worker registered:', reg.scope);
+          }).catch(function(err) {
+            console.log('[PWA] Service Worker registration failed:', err);
+          });
+        };
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(registerSW, { timeout: 3000 });
+        } else {
+          setTimeout(registerSW, 1500);
+        }
       });
     }
   </script>

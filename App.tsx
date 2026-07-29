@@ -1,5 +1,5 @@
 
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -50,6 +50,29 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const AdminDashboard = lazy(() => import('./admin/Dashboard'));
 const Login = lazy(() => import('./admin/Login'));
 
+// Deferred ChatBox loading wrapper for peak mobile INP & hydration speed
+const LazyIdleChatBox: React.FC = () => {
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const handle = (window as any).requestIdleCallback(() => setShouldRender(true), { timeout: 3500 });
+      return () => (window as any).cancelIdleCallback(handle);
+    } else {
+      const timer = setTimeout(() => setShouldRender(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  if (!shouldRender) return null;
+
+  return (
+    <Suspense fallback={null}>
+      <ChatBox />
+    </Suspense>
+  );
+};
+
 // Layout wrapper for public pages
 const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -61,9 +84,7 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         </Suspense>
       </main>
       <Footer />
-      <Suspense fallback={null}>
-        <ChatBox />
-      </Suspense>
+      <LazyIdleChatBox />
       <BackToTopButton />
     </div>
   );
