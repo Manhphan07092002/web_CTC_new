@@ -11,42 +11,200 @@ import { Category } from '../types';
 import { getLangText } from '../utils/translation-helper';
 import { buildCategoryTree, CategoryNode, getCategoryDescendantIdsOnly, getCategorySiblingIds } from '../utils/categoryTreeHelper';
 
-interface RecursiveFlyoutProps {
-  nodes: CategoryNode[];
-  language: Language;
+interface HeaderMegaMenuProps {
+  categoryTree: CategoryNode[];
   onNavigate: () => void;
 }
 
-const RecursiveCategoryFlyout: React.FC<RecursiveFlyoutProps> = ({ nodes, language, onNavigate }) => {
-  return (
-    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl py-2 min-w-[260px] max-w-[320px]">
-      {nodes.map((node) => {
-        const hasChildren = node.children && node.children.length > 0;
-        return (
-          <div key={node.id} className="relative group/sub">
-            <Link
-              to={`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`}
-              onClick={onNavigate}
-              className="flex items-center justify-between px-4 py-2.5 text-[11px] font-bold text-gray-700 dark:text-gray-200 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-200 border-b border-gray-50 dark:border-slate-800/70 last:border-0 uppercase tracking-wide cursor-pointer"
-            >
-              <div className="flex items-center gap-2 min-w-0 pr-1">
-                <span className="w-1.5 h-4 rounded-full bg-sky-500/30 group-hover/sub:bg-sky-500 flex-shrink-0 transition-colors duration-200" />
-                <span className="truncate">{node.name}</span>
-              </div>
-              {hasChildren && (
-                <ChevronRight size={14} className="text-gray-400 dark:text-gray-500 group-hover/sub:text-sky-500 transition-transform group-hover/sub:translate-x-0.5 flex-shrink-0" />
-              )}
-            </Link>
+const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigate }) => {
+  const navigate = useNavigate();
+  const [selectedLevel1, setSelectedLevel1] = useState<string | null>(null);
+  const [selectedLevel2, setSelectedLevel2] = useState<string | null>(null);
+  const [selectedLevel3, setSelectedLevel3] = useState<string | null>(null);
 
-            {/* Submenu Level 2, 3, 4 Flyout to the Right */}
-            {hasChildren && (
-              <div className="absolute left-full top-0 -ml-1 pl-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 transform translate-x-2 group-hover/sub:translate-x-0 z-50">
-                <RecursiveCategoryFlyout nodes={node.children} language={language} onNavigate={onNavigate} />
-              </div>
-            )}
+  const level1Items = categoryTree;
+
+  const level1Node = selectedLevel1 ? level1Items.find(item => item.id === selectedLevel1) : null;
+  const level2Items = level1Node?.children || [];
+
+  const level2Node = selectedLevel2 ? level2Items.find(item => item.id === selectedLevel2) : null;
+  const level3Items = level2Node?.children || [];
+
+  const level3Node = selectedLevel3 ? level3Items.find(item => item.id === selectedLevel3) : null;
+  const level4Items = level3Node?.children || [];
+
+  const handleLevel1Click = (node: CategoryNode, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!node.children || node.children.length === 0) {
+      onNavigate();
+      navigate(`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`);
+    } else {
+      setSelectedLevel1(node.id);
+      setSelectedLevel2(null);
+      setSelectedLevel3(null);
+    }
+  };
+
+  const handleLevel2Click = (node: CategoryNode, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!node.children || node.children.length === 0) {
+      onNavigate();
+      navigate(`/products?cat=${encodeURIComponent((level1Node?.name || '').toLowerCase())}&subcat=${encodeURIComponent(node.id)}`);
+    } else {
+      setSelectedLevel2(node.id);
+      setSelectedLevel3(null);
+    }
+  };
+
+  const handleLevel3Click = (node: CategoryNode, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!node.children || node.children.length === 0) {
+      onNavigate();
+      navigate(`/products?cat=${encodeURIComponent((level1Node?.name || '').toLowerCase())}&subcat=${encodeURIComponent(node.id)}`);
+    } else {
+      setSelectedLevel3(node.id);
+    }
+  };
+
+  const handleLevel4Click = (node: CategoryNode, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onNavigate();
+    navigate(`/products?cat=${encodeURIComponent((level1Node?.name || '').toLowerCase())}&subcat=${encodeURIComponent(node.id)}`);
+  };
+
+  return (
+    <div 
+      className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl p-3 flex gap-0 min-h-[280px] max-h-[70vh] overflow-hidden text-slate-800 dark:text-slate-100 z-50 transform transition-all duration-200"
+      style={{ width: 'max-content', maxWidth: 'calc(100vw - 32px)' }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* CỘT 1 (CẤP 1) */}
+      <div className="w-60 flex-shrink-0 pr-2 border-r border-gray-100 dark:border-slate-800/80 overflow-y-auto space-y-1">
+        <div className="px-3 py-1.5 text-[10px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider">
+          Danh mục chính
+        </div>
+        {level1Items.map((node) => {
+          const isSelected = selectedLevel1 === node.id;
+          const hasChildren = node.children && node.children.length > 0;
+          return (
+            <button
+              key={node.id}
+              onClick={(e) => handleLevel1Click(node, e)}
+              onMouseEnter={() => {
+                if (hasChildren) {
+                  setSelectedLevel1(node.id);
+                  setSelectedLevel2(null);
+                  setSelectedLevel3(null);
+                }
+              }}
+              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
+                isSelected
+                  ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 border-l-4 border-sky-500 shadow-2xs'
+                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-sky-500'
+              }`}
+            >
+              <span className="truncate pr-1">{node.name}</span>
+              {hasChildren && (
+                <ChevronRight size={14} className={`flex-shrink-0 transition-transform ${isSelected ? 'text-sky-500 translate-x-0.5' : 'text-gray-400 group-hover:text-sky-500'}`} />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* CỘT 2 (CẤP 2) */}
+      {selectedLevel1 && level2Items.length > 0 && (
+        <div className="w-60 flex-shrink-0 px-2 border-r border-gray-100 dark:border-slate-800/80 overflow-y-auto space-y-1 animate-fade-in">
+          <div className="px-3 py-1.5 text-[10px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider flex items-center justify-between">
+            <span className="truncate">{level1Node?.name}</span>
           </div>
-        );
-      })}
+          {level2Items.map((node) => {
+            const isSelected = selectedLevel2 === node.id;
+            const hasChildren = node.children && node.children.length > 0;
+            return (
+              <button
+                key={node.id}
+                onClick={(e) => handleLevel2Click(node, e)}
+                onMouseEnter={() => {
+                  if (hasChildren) {
+                    setSelectedLevel2(node.id);
+                    setSelectedLevel3(null);
+                  }
+                }}
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
+                  isSelected
+                    ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 border-l-4 border-sky-500 shadow-2xs'
+                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-sky-500'
+                }`}
+              >
+                <span className="truncate pr-1">{node.name}</span>
+                {hasChildren && (
+                  <ChevronRight size={14} className={`flex-shrink-0 transition-transform ${isSelected ? 'text-sky-500 translate-x-0.5' : 'text-gray-400 group-hover:text-sky-500'}`} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* CỘT 3 (CẤP 3) */}
+      {selectedLevel2 && level3Items.length > 0 && (
+        <div className="w-60 flex-shrink-0 px-2 border-r border-gray-100 dark:border-slate-800/80 overflow-y-auto space-y-1 animate-fade-in">
+          <div className="px-3 py-1.5 text-[10px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider flex items-center justify-between">
+            <span className="truncate">{level2Node?.name}</span>
+          </div>
+          {level3Items.map((node) => {
+            const isSelected = selectedLevel3 === node.id;
+            const hasChildren = node.children && node.children.length > 0;
+            return (
+              <button
+                key={node.id}
+                onClick={(e) => handleLevel3Click(node, e)}
+                onMouseEnter={() => {
+                  if (hasChildren) {
+                    setSelectedLevel3(node.id);
+                  }
+                }}
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer ${
+                  isSelected
+                    ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 border-l-4 border-sky-500 shadow-2xs'
+                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-sky-500'
+                }`}
+              >
+                <span className="truncate pr-1">{node.name}</span>
+                {hasChildren && (
+                  <ChevronRight size={14} className={`flex-shrink-0 transition-transform ${isSelected ? 'text-sky-500 translate-x-0.5' : 'text-gray-400 group-hover:text-sky-500'}`} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* CỘT 4 (CẤP 4) */}
+      {selectedLevel3 && level4Items.length > 0 && (
+        <div className="w-60 flex-shrink-0 pl-2 overflow-y-auto space-y-1 animate-fade-in">
+          <div className="px-3 py-1.5 text-[10px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-wider flex items-center justify-between">
+            <span className="truncate">{level3Node?.name}</span>
+          </div>
+          {level4Items.map((node) => {
+            return (
+              <button
+                key={node.id}
+                onClick={(e) => handleLevel4Click(node, e)}
+                className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-sky-500"
+              >
+                <span className="truncate pr-1">{node.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
     </div>
   );
 };
@@ -664,7 +822,7 @@ const Header: React.FC = () => {
                 {link.submenu && (
                   <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 z-50">
                     {link.key === 'products' && categoryTree.length > 0 ? (
-                      <RecursiveCategoryFlyout nodes={categoryTree} language={language} onNavigate={() => {}} />
+                      <HeaderMegaMenu categoryTree={categoryTree} onNavigate={() => {}} />
                     ) : (
                       <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl py-2 w-72">
                         {link.submenu.map((sub, index) => (
