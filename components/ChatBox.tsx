@@ -113,17 +113,17 @@ const ChatBox: React.FC = () => {
              href={ZALO_LINK} 
              target="_blank" 
              rel="noreferrer"
-             className="relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-115 hover:shadow-xl hover:shadow-blue-500/60 group p-0"
+             className="relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-blue-600 shadow-lg shadow-blue-500/40 transition-all duration-300 hover:scale-115 hover:shadow-xl hover:shadow-blue-500/80 group p-0 cursor-pointer"
              title="Chat Zalo"
            >
-             {/* Ripple Ring Effect */}
-             <span className="absolute -inset-1 rounded-full bg-blue-500/30 animate-ping duration-1000"></span>
+             {/* Ripple Ring Wave Effect */}
+             <span className="absolute -inset-1 rounded-full bg-blue-500/40 animate-pulse-ring pointer-events-none"></span>
              
              <span className="font-bold text-[9px] absolute -top-1.5 -left-1.5 bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-bounce z-10 shadow-md">1</span>
-             <img src="/images/zalo-icon.svg" alt="Zalo" className="w-full h-full object-cover rounded-full relative z-0 transition-transform group-hover:rotate-6" />
+             <img src="/images/zalo-icon.svg" alt="Zalo" className="w-full h-full object-cover rounded-full relative z-0 transition-transform group-hover:rotate-12" />
              
              {/* Tooltip */}
-             <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs">
+             <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs pointer-events-none">
                Chat Zalo trực tiếp
              </span>
            </a>
@@ -131,17 +131,17 @@ const ChatBox: React.FC = () => {
            {/* 2. NÚT HOTLINE CÓ RUNG VÀ SÓNG ĐỎ KHẨN CẤP */}
            <a 
              href={`tel:${HOTLINE}`} 
-             className="relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all duration-300 hover:scale-115 hover:shadow-xl hover:shadow-red-500/60 group"
+             className="relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-red-500 text-white shadow-lg shadow-red-500/40 transition-all duration-300 hover:scale-115 hover:shadow-xl hover:shadow-red-500/80 group cursor-pointer"
              title="Call Hotline"
            >
              {/* Red Ripple Wave */}
-             <span className="absolute -inset-1 rounded-full bg-red-500/40 animate-ping duration-700"></span>
+             <span className="absolute -inset-1 rounded-full bg-red-500/40 animate-pulse-ring pointer-events-none"></span>
              
-             <Phone size={20} className="animate-bounce sm:hidden relative z-10" />
-             <Phone size={24} className="animate-bounce hidden sm:block relative z-10" />
+             <Phone size={20} className="animate-phone-shake sm:hidden relative z-10" />
+             <Phone size={24} className="animate-phone-shake hidden sm:block relative z-10" />
              
              {/* Tooltip */}
-             <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs">
+             <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs pointer-events-none">
                Hotline: 0915 059 666
              </span>
            </a>
@@ -152,17 +152,17 @@ const ChatBox: React.FC = () => {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="group relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-white text-white shadow-xl shadow-sky-500/30 transition-all duration-300 hover:scale-115 hover:shadow-2xl hover:shadow-sky-500/60 p-0"
+          className="group relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-white text-white shadow-xl shadow-sky-500/40 transition-all duration-300 hover:scale-115 hover:shadow-2xl hover:shadow-sky-500/80 p-0 cursor-pointer"
           title="Chat với AI CTC"
         >
           {/* AI Glow Aura Ring */}
-          <span className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 opacity-40 animate-ping duration-1000"></span>
-          <span className="absolute -inset-0.5 rounded-full bg-sky-400/30 animate-pulse"></span>
+          <span className="absolute -inset-1.5 rounded-full bg-sky-400/40 animate-pulse-ring pointer-events-none"></span>
+          <span className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-sky-400 to-blue-600 opacity-40 animate-pulse pointer-events-none"></span>
           
           <img 
             src="/images/ai-chatbot-icon.png" 
             alt="AI Bot" 
-            className="w-full h-full object-cover rounded-full relative z-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" 
+            className="w-full h-full object-cover rounded-full relative z-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" 
           />
           
           {/* Online Indicator Badge */}
@@ -172,7 +172,7 @@ const ChatBox: React.FC = () => {
           </span>
 
           {/* Tooltip */}
-          <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs">
+          <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs pointer-events-none">
             Trợ lý AI tư vấn 24/7
           </span>
         </button>
