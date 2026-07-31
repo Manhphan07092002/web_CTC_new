@@ -745,7 +745,7 @@ const Header: React.FC = () => {
   };
 
   const getLogoClass = () => {
-    return "h-11 sm:h-13 md:h-14 w-auto object-contain transition-all duration-300 rounded-xl shadow-md border border-white/20 hover:scale-105";
+    return "h-10 sm:h-12 md:h-14 w-auto max-w-[160px] sm:max-w-[200px] object-contain transition-all duration-300 hover:scale-105 border-0 shadow-none bg-transparent lg:border lg:border-white/20 lg:shadow-md lg:rounded-xl";
   };
 
   return (
@@ -898,14 +898,12 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center">
           
           {/* Logo Section */}
-          <Link to="/" className="flex items-center group flex-shrink-0" aria-label={settings.siteName || "CTC Web"}>
+          <Link to="/" className="logo-wrapper flex items-center group flex-shrink-0" aria-label={settings.siteName || "CTC Web"}>
             <img 
               src={settings.logoHeader || settings.logo} 
               alt={settings.siteName || "CTC Web"} 
-              width="180"
-              height="48"
-              className={getLogoClass()} 
-              style={{ aspectRatio: '180/48', objectFit: 'contain' }}
+              className={`header-logo ${getLogoClass()}`} 
+              loading="eager"
             />
           </Link>
 
