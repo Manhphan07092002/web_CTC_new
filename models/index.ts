@@ -263,13 +263,25 @@ ProjectCategorySchema.index({ isActive: 1, order: 1 });
 // Project Schema
 export interface IProject extends BaseDocument {
   title: string;
+  slug?: string;
   location: string;
   capacity: string;
   completionDate: string;
   image: string;
   description: string;
+  content?: string;
+  excerpt?: string;
   categoryId?: mongoose.Types.ObjectId; // Reference to ProjectCategory
   category?: string; // Category name for display
+  categorySlug?: string;
+  featured?: boolean;
+  verified?: boolean;
+  isPublished?: boolean;
+  pageType?: string;
+  geo?: any;
+  seo?: any;
+  source?: any;
+  structuredData?: any;
   translations?: TranslationsMap<ProjectTranslation>;
 }
 
