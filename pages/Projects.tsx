@@ -123,6 +123,7 @@ const Projects: React.FC = () => {
       <SEO 
         title={selectedProject ? selectedProject.title : t('projects.title')}
         description={selectedProject ? `${selectedProject.title} - ${selectedProject.location}. ${selectedProject.capacity}.` : t('projects.subtitle')}
+        keywords={selectedProject ? `${selectedProject.title}, dự án CTC, ${selectedProject.location}, ${selectedProject.capacity}, thi công điện mặt trời nhà xưởng, Farm Solar` : "dự án CTC, thi công điện mặt trời áp mái, dự án Farm Solar 4MWp Gio Linh, dự án Dệt Châu Giang 3MWp, Coco Việt Nam 2.531kWp, Thiện Hoàng 1.5MWp, trạm 110kV Thạnh Hải, điện gió Hướng Hiệp 1, nhà thầu EPC CTC, chứng chỉ viễn thông Hạng I, chứng chỉ trạm biến áp Hạng II"}
         image={selectedProject?.image}
         schema={selectedProject ? getProjectSchema(selectedProject) : {
             "@context": "https://schema.org",

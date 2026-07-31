@@ -289,8 +289,9 @@ const Products: React.FC = () => {
   return (
     <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300 pt-28 md:pt-36">
       <SEO
-        title={`${getCurrentCategoryName()} - Thiết Bị Điện Mặt Trời | CTC`}
-        description={`Cung cấp ${getCurrentCategoryName()} chính hãng, hiệu suất cao, đạt chứng chỉ CO/CQ. Bảo hành dài hạn 12-25 năm, tư vấn & báo giá ưu đãi tại CTC.`}
+        title={`${getCurrentCategoryName()} - Thiết Bị Viễn Thông, CNTT & Solar | CTC`}
+        description={`Cung cấp ${getCurrentCategoryName()} chính hãng, hiệu suất cao, đạt chứng chỉ CO/CQ. Bảo hành dài hạn 12-36 tháng, tư vấn & báo giá ưu đãi tại CTC Telecom.`}
+        keywords={`${getCurrentCategoryName()}, router MikroTik, router DrayTek, switch PoE, Wi-Fi 6, SFP, ODF, VoIP Gateway Dinstar, inverter Huawei, inverter Sungrow, tấm pin Canadian Solar, LONGI TOPCon, ắc quy Lithium 48V-100Ah, ắc quy viễn thông, UPS APC, thiết bị mạng Đà Nẵng, CTC Telecom`}
         schema={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",

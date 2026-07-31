@@ -117,7 +117,8 @@ const Resources: React.FC = () => {
     <div className="w-full pt-28 md:pt-36 pb-20 animate-fade-in relative bg-gray-50 dark:bg-gray-900 min-h-screen">
       <SEO 
         title={t('resources.title') || 'Tài liệu kỹ thuật'} 
-        description="Thư viện tài liệu kỹ thuật, catalogue sản phẩm, hướng dẫn sử dụng và chính sách bảo hành điện mặt trời của CTC."
+        description="Thư viện tài liệu kỹ thuật, catalogue sản phẩm, hướng dẫn sử dụng, bản vẽ CAD, CO/CQ và quy trình O&M điện mặt trời, viễn thông của CTC."
+        keywords="datasheet tấm pin Canadian Solar, datasheet inverter Huawei, bản vẽ CAD điện mặt trời, sơ đồ 1 sợi trạm 110kV, hướng dẫn O&M solar, chứng nhận CO CQ, tiêu chuẩn TUV Rheinland, UL 1741, ISO 9001:2015, tài liệu SCADA IoT, firmware RouterOS MikroTik"
         schema={{
           "@context": "https://schema.org",
           "@type": "WebPage",

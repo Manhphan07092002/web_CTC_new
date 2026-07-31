@@ -95,7 +95,7 @@ export const COMPANY_INFO = {
 const SEO: React.FC<SEOProps> = ({ 
   title, 
   description, 
-  keywords = "điện mặt trời, solar energy, năng lượng mặt trời, tấm pin mặt trời, inverter, CTC, lắp đặt điện mặt trời Đà Nẵng, hệ thống điện mặt trời, pin năng lượng mặt trời, điện năng lượng tái tạo", 
+  keywords = "thi công điện mặt trời áp mái, điện mặt trời nhà xưởng, EPC Solar C&I, nhà thầu cáp quang, thiết kế mạng doanh nghiệp, Data Center, trạm 110kV, chứng chỉ viễn thông Hạng I, chứng chỉ trạm biến áp Hạng II, router MikroTik, router DrayTek, switch PoE, Wi-Fi 6, SFP, ODF, VoIP Gateway Dinstar, inverter hòa lưới Huawei, Sungrow, ắc quy Lithium 48V-100Ah, ắc quy viễn thông, pin lưu trữ điện mặt trời, UPS phòng server, PoE Budget, VLAN, VPN Site-to-Site, suy hao quang, đo OTDR, FXS và FXO, bảo trì điện mặt trời O&M, thiết bị mạng Đà Nẵng, điện mặt trời Đà Nẵng, thi công cáp quang miền Trung, điện mặt trời Quảng Trị, thiết bị viễn thông Đắk Lắk, CTC Telecom", 
   image = "/images/why_choose_us_visual.webp",
   type = 'website',
   schema,
