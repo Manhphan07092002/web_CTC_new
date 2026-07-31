@@ -1396,7 +1396,7 @@ async function main(): Promise<void> {
       await mongoose.connect(MONGO_URI);
     } catch (err: any) {
       if (err.message && (err.message.includes('ENOTFOUND') || err.message.includes('mongo')) && MONGO_URI.includes('mongo')) {
-        const fallbackUri = MONGO_URI.replace('//mongo:', '//127.0.0.1:').replace('//mongo/', '//127.0.0.1/');
+        const fallbackUri = MONGO_URI.replace(/([\/@])mongo(?=[:\/]|$)/g, '$1127.0.0.1');
         console.warn(`⚠️ Không tìm thấy host 'mongo' (chạy ngoài Docker container), tự động chuyển sang: ${fallbackUri}`);
         await mongoose.connect(fallbackUri);
       } else {
