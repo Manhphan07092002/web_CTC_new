@@ -897,11 +897,14 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center">
           
           {/* Logo Section */}
-          <Link to="/" className="flex items-center group">
+          <Link to="/" className="flex items-center group flex-shrink-0" aria-label={settings.siteName || "CTC Web"}>
             <img 
               src={settings.logoHeader || settings.logo} 
-              alt={settings.siteName} 
+              alt={settings.siteName || "CTC Web"} 
+              width="180"
+              height="48"
               className={getLogoClass()} 
+              style={{ aspectRatio: '180/48', objectFit: 'contain' }}
             />
           </Link>
 
@@ -1028,6 +1031,8 @@ const Header: React.FC = () => {
 
             <button 
               onClick={toggleMenu} 
+              aria-label={isMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
+              title={isMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
               className={`p-2 rounded-xl transition-colors ${
                 isScrolled 
                   ? 'text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800' 
@@ -1035,6 +1040,7 @@ const Header: React.FC = () => {
               }`}
             >
               {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+              <span className="sr-only">{isMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}</span>
             </button>
           </div>
 
