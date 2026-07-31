@@ -225,25 +225,33 @@ const Hero: React.FC = () => {
     }
   };
 
-  // Detect if mobile to skip heavy video
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const [showVideo, setShowVideo] = useState(!isMobile);
+  // Detect if mobile or tablet (< 1024px) to skip heavy 6.9MB video background
+  const [showVideo, setShowVideo] = useState(false);
 
-  // Video performance adjustments - desktop only
+  // Video performance adjustments - desktop only (>= 1024px)
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video || isMobile) return;
+    if (typeof window === 'undefined') return;
+    const isDesktop = window.innerWidth >= 1024;
+    if (!isDesktop) return;
 
     // Check connection speed
     const nav = navigator as any;
     const conn = nav.connection;
     const slowConnection = conn?.saveData || conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g';
-    if (slowConnection) { setShowVideo(false); return; }
+    if (slowConnection) return;
+
+    setShowVideo(true);
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !showVideo) return;
 
     // Check battery
+    const nav = navigator as any;
     if (nav.getBattery) {
       nav.getBattery().then((battery: any) => {
-        if (battery.level < 0.15) { video.pause(); return; }
+        if (battery.level < 0.15) { video.pause(); }
       });
     }
 
@@ -264,7 +272,7 @@ const Hero: React.FC = () => {
       observer.observe(video);
       return () => observer.disconnect();
     }
-  }, [isMobile]);
+  }, [showVideo]);
 
   return (
     <>
