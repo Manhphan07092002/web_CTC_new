@@ -736,7 +736,7 @@ function formatMiddleAndFirstNameEmail(fullName: string): string {
 }
 
 // Ảnh logo chính thức của công ty CTC dùng làm đại diện đồng nhất
-const COMPANY_LOGO = '/uploads/images/logo/logodo.png';
+const COMPANY_LOGO = '/uploads/images/Logo/ctc081120212032205053_63a503cd.gif';
 
 async function main() {
   console.log('\n============================================================');
