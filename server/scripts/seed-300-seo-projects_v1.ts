@@ -1504,17 +1504,8 @@ async function seed() {
       };
     });
 
-    console.log(`🌱 Upsert ${docsWithCategoryId.length} bản ghi...`);
-
-    const operations = docsWithCategoryId.map((doc) => ({
-      updateOne: {
-        filter: { slug: doc.slug },
-        update: { $set: doc },
-        upsert: true,
-      },
-    }));
-
-    const result = await Project.bulkWrite(operations, { ordered: false });
+    console.log(`🌱 Đang chèn ${docsWithCategoryId.length} bản ghi dự án vào MongoDB...`);
+    const insertedDocs = await Project.insertMany(docsWithCategoryId);
 
     for (const category of CATEGORIES) {
       const categoryId = categoryMap.get(category.slug);
@@ -1545,9 +1536,7 @@ async function seed() {
         INDEX_GENERATED_GEO_PAGES ? generatedDocs.length : 0
       }`,
     );
-    console.log(`   - Matched: ${result.matchedCount}`);
-    console.log(`   - Modified: ${result.modifiedCount}`);
-    console.log(`   - Upserted: ${result.upsertedCount}`);
+    console.log(`   - Tổng số dự án đã chèn vào DB thành công: ${insertedDocs.length}`);
 
     if (!PUBLISH_GENERATED_GEO_PAGES) {
       console.log(

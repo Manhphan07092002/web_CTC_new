@@ -275,15 +275,27 @@ export interface IProject extends BaseDocument {
 
 const ProjectSchema = new Schema<IProject>({
   title: { type: String, required: true },
+  slug: { type: String, required: true, index: true },
   location: { type: String, required: true },
   capacity: { type: String, required: true },
   completionDate: { type: String, required: true },
   image: { type: String, required: true },
   description: { type: String, required: true },
+  content: String,
+  excerpt: String,
   categoryId: { type: Schema.Types.ObjectId, ref: 'ProjectCategory' },
   category: { type: String },
+  categorySlug: String,
+  featured: { type: Boolean, default: false },
+  verified: { type: Boolean, default: false },
+  isPublished: { type: Boolean, default: true },
+  pageType: String,
+  geo: Schema.Types.Mixed,
+  seo: Schema.Types.Mixed,
+  source: Schema.Types.Mixed,
+  structuredData: Schema.Types.Mixed,
   translations: createTranslationSchema()
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
 ProjectSchema.index({ categoryId: 1 });
 ProjectSchema.index({ category: 1 });
