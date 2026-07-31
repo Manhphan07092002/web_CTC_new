@@ -104,7 +104,7 @@ const ChatBox: React.FC = () => {
   const ZALO_LINK = `https://zalo.me/${HOTLINE}`;
 
   return (
-    <div className="fixed bottom-4 right-2 z-50 flex flex-col items-end gap-2 font-sans sm:bottom-6 sm:right-5 sm:gap-3 print:hidden">
+    <div className="fixed bottom-20 right-3 z-50 flex flex-col items-end gap-2.5 font-sans sm:bottom-6 sm:right-5 sm:gap-3 print:hidden">
       {/* Floating Contact Buttons (Visible when chat is closed) */}
       {!isOpen && (
         <div className="flex flex-col gap-3 animate-fade-in-up">
