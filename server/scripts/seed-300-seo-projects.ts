@@ -314,24 +314,21 @@ async function main() {
   await mongoose.connect(MONGO_URI);
   console.log('✅ Connected to MongoDB\n');
 
-  // 1. Tạo/Cập nhật các Danh mục dự án (ProjectCategories)
-  console.log('🌱 Đang khởi tạo Danh mục dự án (ProjectCategories)...');
+  // 1. Xóa sạch 100% dữ liệu danh mục dự án và dự án cũ
+  console.log('🗑️  Đang xóa sạch toàn bộ danh mục dự án cũ và dự án cũ trong Database...');
+  await ProjectCategory.deleteMany({});
+  await Project.deleteMany({});
+  console.log('✅ Đã xóa sạch dữ liệu dự án cũ!\n');
+
+  // 2. Khởi tạo lại 6 Danh mục dự án (ProjectCategories)
+  console.log('🌱 Đang khởi tạo lại Danh mục dự án (ProjectCategories)...');
   const catMap: Record<string, any> = {};
 
   for (const c of CATEGORIES) {
-    let catDoc = await ProjectCategory.findOne({ slug: c.slug });
-    if (!catDoc) {
-      catDoc = await ProjectCategory.create(c);
-      console.log(`  ➕ Tạo danh mục mới: ${c.name}`);
-    } else {
-      await ProjectCategory.updateOne({ _id: catDoc._id }, c);
-    }
+    const catDoc = await ProjectCategory.create(c);
+    console.log(`  ➕ Tạo danh mục: ${c.name}`);
     catMap[c.slug] = catDoc._id;
   }
-
-  // 2. Xóa các dự án cũ và chèn 300 dự án mới chuẩn SEO/GEO
-  console.log('\n🗑️  Xóa dự án cũ để đảm bảo dữ liệu mới 300 dự án đồng bộ...');
-  await Project.deleteMany({});
 
   const allProjects = generate300Projects();
   console.log(`\n🚀 Đang tiến hành chèn ${allProjects.length} Dự án tiêu biểu (Chuẩn SEO & GEO Location)...`);
