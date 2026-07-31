@@ -43,7 +43,7 @@ function cleanDocForInsert(doc: any) {
 /**
  * IMPORT BACKUP (Upload ZIP containing all site JSON collections)
  */
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'Chưa chọn file sao lưu ZIP' });
@@ -395,7 +395,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 /**
  * EXPORT FULL BACKUP ZIP (Packages 100% of all site database collections)
  */
-router.get('/export', async (req, res) => {
+router.all('/export', async (req, res) => {
   try {
     const zip = new AdmZip();
 

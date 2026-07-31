@@ -84,27 +84,13 @@ const MigrationManagement: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `HTTP error! status: ${response.status}`);
       }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (!reader) throw new Error('No reader available');
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n').filter(l => l.trim());
-        for (const line of lines) {
-          try {
-            const parsed = JSON.parse(line);
-            if (parsed.log) setLogs(prev => [...prev, parsed.log]);
-          } catch {
-            if (line.trim()) setLogs(prev => [...prev, line]);
-          }
-        }
+      const data = await response.json();
+      if (data.logs && Array.isArray(data.logs)) {
+        setLogs(prev => [...prev, ...data.logs]);
       }
 
       showToast('Nhập dữ liệu thành công!', 'success');
