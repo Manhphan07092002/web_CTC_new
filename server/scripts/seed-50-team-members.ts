@@ -722,19 +722,17 @@ function removeVietnameseTones(str: string): string {
     .trim();
 }
 
-function formatMiddleAndFirstNameEmail(fullName: string, department: string): string {
-  const isBranch1 = department.includes('Công ty Số 1') || fullName.includes('.cn1');
+function formatMiddleAndFirstNameEmail(fullName: string): string {
   const cleanName = fullName.replace(/\s*\([^)]*\)/g, '').trim();
   const words = removeVietnameseTones(cleanName).split(/\s+/).filter(Boolean);
   
-  if (words.length === 0) return `contact${isBranch1 ? '.cn1' : ''}@ctcdn.vn`;
-  if (words.length === 1) return `${words[0].toLowerCase()}${isBranch1 ? '.cn1' : ''}@ctcdn.vn`;
+  if (words.length === 0) return `contact@ctcdn.vn`;
+  if (words.length === 1) return `${words[0].toLowerCase()}@ctcdn.vn`;
 
   const firstName = words[words.length - 1].toLowerCase();
   const middleName = words[words.length - 2].toLowerCase();
   
-  const prefix = `${middleName}${firstName}`;
-  return `${prefix}${isBranch1 ? '.cn1' : ''}@ctcdn.vn`;
+  return `${middleName}${firstName}@ctcdn.vn`;
 }
 
 async function main() {
@@ -754,10 +752,11 @@ async function main() {
     const teamToInsert = EMPLOYEES_DATA.map((emp, idx) => {
       const avatarList = emp.gender === 'Nữ' ? FEMALE_AVATARS : MALE_AVATARS;
       const avatarUrl = avatarList[idx % avatarList.length];
-      const formattedEmail = formatMiddleAndFirstNameEmail(emp.name, emp.department);
+      const cleanName = emp.name.replace(/\s*\([^)]*\)/g, '').trim();
+      const formattedEmail = formatMiddleAndFirstNameEmail(emp.name);
 
       return {
-        name: emp.name,
+        name: cleanName,
         role: emp.role,
         department: emp.department,
         birthYear: emp.birthYear,
