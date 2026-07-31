@@ -176,7 +176,7 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
                 de: 'Unser Technikerprofil wird aktualisiert.'
               })}
             </div>
-          ) : teamMembers.map((member, index) => {
+          ) : teamMembers.slice(0, 4).map((member, index) => {
             return (
               <div
                 key={`team-${index}-${member._id || member.id}`}
