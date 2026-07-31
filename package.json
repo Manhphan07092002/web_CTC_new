@@ -25,7 +25,7 @@
     "setup-first-time": "node scripts/setup-first-time.js",
     "setup-with-data": "node scripts/setup-with-data.js",
     "seed:news": "npx tsx server/scripts/seed-30-news.ts",
-    "seed:resources": "npx tsx server/scripts/seed-100-resources.ts",
+    "seed:resources": "npx tsx server/scripts/seed-200-resources.ts",
     "seed:categories": "npx tsx server/scripts/seed-categories.ts",
     "seed:products": "npx tsx server/scripts/seed-300-seo-products.ts",
     "seed:projects": "npx tsx server/scripts/seed-300-seo-projects_v1.ts",
