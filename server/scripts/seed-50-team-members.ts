@@ -735,6 +735,9 @@ function formatMiddleAndFirstNameEmail(fullName: string): string {
   return `${middleName}${firstName}@ctcdn.vn`;
 }
 
+// Ảnh logo chính thức của công ty CTC dùng làm đại diện đồng nhất
+const COMPANY_LOGO = '/uploads/images/logo/logodo.png';
+
 async function main() {
   console.log('\n============================================================');
   console.log('CTC — SEED 50 NHÂN SỰ CHÍNH THỨC CHUẨN SEO + GEO');
@@ -749,9 +752,7 @@ async function main() {
     await TeamMember.deleteMany({});
     console.log('✓ Cleared old team members.\n');
 
-    const teamToInsert = EMPLOYEES_DATA.map((emp, idx) => {
-      const avatarList = emp.gender === 'Nữ' ? FEMALE_AVATARS : MALE_AVATARS;
-      const avatarUrl = avatarList[idx % avatarList.length];
+    const teamToInsert = EMPLOYEES_DATA.map((emp) => {
       const cleanName = emp.name.replace(/\s*\([^)]*\)/g, '').trim();
       const formattedEmail = formatMiddleAndFirstNameEmail(emp.name);
 
@@ -764,7 +765,7 @@ async function main() {
         projectsCount: emp.projectsCount,
         specialization: emp.specialization,
         bio: emp.bio,
-        image: avatarUrl,
+        image: COMPANY_LOGO,
         email: formattedEmail,
         phone: emp.phone,
         order: emp.order,
