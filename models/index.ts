@@ -437,6 +437,12 @@ const UserSchema = new Schema<IUser>({
 export interface ITeamMember extends BaseDocument {
   name: string;
   role: string;
+  department?: string;
+  birthYear?: number;
+  gender?: 'Nam' | 'Nữ';
+  projectsCount?: number;
+  specialization?: string;
+  bio?: string;
   image: string;
   email: string;
   phone: string;
@@ -448,13 +454,19 @@ export interface ITeamMember extends BaseDocument {
 const TeamMemberSchema = new Schema<ITeamMember>({
   name: { type: String, required: true },
   role: { type: String, required: true },
+  department: { type: String, default: '' },
+  birthYear: Number,
+  gender: String,
+  projectsCount: { type: Number, default: 0 },
+  specialization: { type: String, default: '' },
+  bio: { type: String, default: '' },
   image: { type: String, required: true },
-  email: { type: String, required: true },
-  phone: { type: String, required: true },
+  email: { type: String, default: '' },
+  phone: { type: String, default: '' },
   linkedin: String,
   order: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true }
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
 // Contact Schema (Yêu cầu tư vấn)
 export interface IContact extends BaseDocument {
