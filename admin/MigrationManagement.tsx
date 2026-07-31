@@ -93,8 +93,14 @@ const MigrationManagement: React.FC = () => {
         setLogs(prev => [...prev, ...data.logs]);
       }
 
-      showToast('Nhập dữ liệu thành công!', 'success');
+      showToast('Nhập dữ liệu thành công! Đang tải lại dữ liệu mới...', 'success');
+      setFile(null);
       fetchHistory();
+      
+      // Tự động làm mới trang sau 1.5s để cập nhật toàn bộ CSDL và hình ảnh mới
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       setLogs(prev => [...prev, `Lỗi: ${error}`]);
       showToast('Có lỗi xảy ra khi nhập dữ liệu', 'error');
