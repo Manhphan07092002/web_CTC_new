@@ -738,6 +738,20 @@ function formatMiddleAndFirstNameEmail(fullName: string): string {
 // Ảnh logo chính thức của công ty CTC dùng làm đại diện đồng nhất
 const COMPANY_LOGO = '/uploads/images/Logo/ctc081120212032205053_63a503cd.gif';
 
+async function connectMongo(): Promise<void> {
+  try {
+    await mongoose.connect(MONGO_URI);
+  } catch (err: any) {
+    if (err.message && err.message.includes('ENOTFOUND') && MONGO_URI.includes('mongo')) {
+      const fallbackUri = MONGO_URI.replace(/([\/@])mongo(?=[:\/]|$)/g, '$1127.0.0.1');
+      console.warn(`⚠️ Không tìm thấy host 'mongo' (chạy ngoài Docker container), tự động chuyển sang: ${fallbackUri}`);
+      await mongoose.connect(fallbackUri);
+    } else {
+      throw err;
+    }
+  }
+}
+
 async function main() {
   console.log('\n============================================================');
   console.log('CTC — SEED 50 NHÂN SỰ CHÍNH THỨC CHUẨN SEO + GEO');
@@ -745,7 +759,7 @@ async function main() {
 
   try {
     console.log('Connecting to MongoDB...');
-    await mongoose.connect(MONGO_URI);
+    await connectMongo();
     console.log('✅ Connected to MongoDB.\n');
 
     console.log('🔥 Clearing existing team members...');
