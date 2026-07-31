@@ -1392,7 +1392,17 @@ async function main(): Promise<void> {
 
   // Chỉ kết nối MongoDB sau khi đã thu đủ tài liệu hợp lệ.
   if (!DRY_RUN) {
-    await mongoose.connect(MONGO_URI);
+    try {
+      await mongoose.connect(MONGO_URI);
+    } catch (err: any) {
+      if (err.message && (err.message.includes('ENOTFOUND') || err.message.includes('mongo')) && MONGO_URI.includes('mongo')) {
+        const fallbackUri = MONGO_URI.replace('//mongo:', '//127.0.0.1:').replace('//mongo/', '//127.0.0.1/');
+        console.warn(`⚠️ Không tìm thấy host 'mongo' (chạy ngoài Docker container), tự động chuyển sang: ${fallbackUri}`);
+        await mongoose.connect(fallbackUri);
+      } else {
+        throw err;
+      }
+    }
     console.log('✅ Đã kết nối MongoDB.');
   }
 
