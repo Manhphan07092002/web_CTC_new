@@ -670,6 +670,8 @@ const Hero: React.FC = () => {
         .stat-card-data {
             display: flex;
             flex-direction: column;
+            /* Reserve space for full stat block height to prevent CLS */
+            min-height: 52px;
         }
         .stat-card-val {
             font-size: 1.3rem;
@@ -677,6 +679,11 @@ const Hero: React.FC = () => {
             color: #ffffff;
             line-height: 1.2;
             letter-spacing: -0.5px;
+            /* Prevent CLS: reserve space for longest possible counter text (e.g. "500+ Dự án") */
+            min-height: 1.6rem;
+            min-width: 7ch;
+            display: block;
+            contain: layout style;
         }
         .stat-card-title {
             font-size: 0.75rem;

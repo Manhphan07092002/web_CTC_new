@@ -89,7 +89,7 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="relative overflow-hidden border-t border-sky-400/15 bg-slate-950 text-white min-h-[680px] lg:min-h-[480px]">
+    <footer className="relative overflow-hidden border-t border-sky-400/15 bg-slate-950 text-white" style={{ minHeight: '480px', containIntrinsicSize: '0 480px' }}>
       <style>{`
         .footer-grid {
           position: absolute; inset: 0; pointer-events: none;

@@ -379,32 +379,35 @@ section, main, article, aside, footer {
     ) !important;
   }
 
-  /* Mobile Logo Clean Layout (No Border, Auto Natural Width) */
-  .header-logo,
+  /* ── Mobile Header Logo: Framed White Background ──────────────────── */
   .logo-wrapper {
-    width: auto !important;
-    height: auto !important;
-    min-width: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 52px !important;
+    height: 52px !important;
+    padding: 4px !important;
+    flex-shrink: 0 !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.22) !important;
+    overflow: hidden !important;
   }
 
-  .header-logo,
-  .logo-wrapper img {
+  .header-logo {
     display: block !important;
-    width: auto !important;
-    height: 42px !important;
-    max-width: 160px !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: contain !important;
+    border-radius: 8px !important;
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
+    max-width: unset !important;
   }
 }
+
 
 
 
