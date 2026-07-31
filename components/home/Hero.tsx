@@ -767,12 +767,12 @@ const Hero: React.FC = () => {
             100% { opacity: 1; transform: scale(0.95) translateY(0); }
         }
         @keyframes slideUpFade {
-            0% { opacity: 0; transform: translateY(30px); filter: blur(12px); }
-            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+            0% { opacity: 0; transform: translate3d(0, 24px, 0); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0); }
         }
         @keyframes slideInRightBlur {
-            0% { opacity: 0; transform: translateX(50px); filter: blur(12px); }
-            100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+            0% { opacity: 0; transform: translate3d(32px, 0, 0); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0); }
         }
         @keyframes bounceScroll {
             0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }

@@ -89,7 +89,7 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="relative overflow-hidden border-t border-sky-400/15 bg-slate-950 text-white min-h-[480px]">
+    <footer className="relative overflow-hidden border-t border-sky-400/15 bg-slate-950 text-white min-h-[680px] lg:min-h-[480px]">
       <style>{`
         .footer-grid {
           position: absolute; inset: 0; pointer-events: none;
@@ -127,8 +127,11 @@ const Footer: React.FC = () => {
             >
               <img
                 src={settings.logoFooter || settings.logo}
-                alt={settings.siteName}
+                alt={settings.siteName || "CTC"}
+                width="180"
+                height="48"
                 className="h-11 w-auto rounded-lg border border-white/10 bg-white object-contain shadow-sm sm:h-12"
+                style={{ aspectRatio: '180/48', objectFit: 'contain' }}
               />
               <span className="min-w-0">
                 <span className="block text-sm font-black uppercase tracking-wider text-white">CTC</span>
