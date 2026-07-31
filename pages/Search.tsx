@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import SEO from '../components/SEO';
 import { useAuth } from '../contexts/AuthContext';
 import { getProductUrl, getProjectUrl, getNewsUrl } from '../utils/news-url-helper';
+import Pagination from '../components/Pagination';
 import {
   Search as SearchIcon, FileText, ShoppingBag, FolderOpen, Newspaper, ClipboardList,
   ChevronRight, RefreshCw, XCircle, ArrowLeft, Download, Tag, Calendar, MapPin
@@ -400,27 +401,13 @@ const Search: React.FC = () => {
         ))}
 
         {/* Pagination bar */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 pt-6">
-            <button
-              onClick={() => handlePageChange(pageParam - 1)}
-              disabled={pageParam === 1}
-              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 disabled:opacity-50 text-gray-500 hover:text-primary transition-all cursor-pointer disabled:cursor-not-allowed"
-            >
-              <ArrowLeft size={16} />
-            </button>
-            <span className="text-xs text-gray-500 font-semibold px-3">
-              Trang {pageParam} / {totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(pageParam + 1)}
-              disabled={pageParam === totalPages}
-              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 disabled:opacity-50 text-gray-500 hover:text-primary transition-all cursor-pointer disabled:cursor-not-allowed"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        )}
+        <Pagination
+          currentPage={pageParam}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          totalItems={counts[typeParam] || results.length}
+          showSummary={true}
+        />
       </div>
     );
   };

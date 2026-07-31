@@ -14,6 +14,7 @@ import { useCart } from '../contexts/CartContext';
 import { getProductUrl } from '../utils/news-url-helper';
 
 import { calculatePriceWithVat, parseNumericPrice } from '../utils/priceUtils';
+import Pagination from '../components/Pagination';
 
 const Products: React.FC = () => {
   const { addToCart, openCartModal } = useCart();
@@ -431,40 +432,23 @@ const Products: React.FC = () => {
             />
 
             {/* Pagination Controls */}
-            {!loading && totalPages > 1 && (
-              <div className="mt-12 flex justify-center items-center gap-2">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary hover:text-primary disabled:opacity-50 disabled:hover:border-gray-200 disabled:hover:text-gray-650 dark:disabled:hover:border-gray-700 dark:disabled:hover:text-gray-350 transition-all flex items-center justify-center active:scale-95"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                
-                {Array.from({ length: totalPages }).map((_, i) => {
-                  const page = i + 1;
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-4 py-2 rounded-lg border font-bold text-sm transition-all active:scale-95 ${
-                        currentPage === page
-                          ? 'bg-primary border-primary text-white shadow-md'
-                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary hover:text-primary'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary hover:text-primary disabled:opacity-50 disabled:hover:border-gray-200 disabled:hover:text-gray-650 dark:disabled:hover:border-gray-700 dark:disabled:hover:text-gray-350 transition-all flex items-center justify-center active:scale-95"
-                >
-                  <ChevronRight size={18} />
-                </button>
+            {!loading && (
+              <div className="mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  totalItems={filteredProducts.length}
+                  itemsPerPage={itemsPerPage}
+                  itemLabel={{
+                    vi: ' sản phẩm',
+                    en: ' products',
+                    ko: ' 제품',
+                    ja: ' 製品',
+                    zh: ' 产品',
+                    de: ' Produkte'
+                  }}
+                />
               </div>
             )}
           </div>

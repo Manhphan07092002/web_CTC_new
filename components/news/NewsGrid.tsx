@@ -3,6 +3,7 @@ import { NewsItem } from '../../types';
 import NewsCard from './NewsCard';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { ChevronLeft, ChevronRight, LayoutList, LayoutGrid } from 'lucide-react';
+import Pagination from '../Pagination';
 
 interface NewsGridProps {
   news: NewsItem[];
@@ -109,47 +110,19 @@ const NewsGrid: React.FC<NewsGridProps> = ({
       )}
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border">
-          <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-            Trang <span className="font-bold text-gray-800 dark:text-white">{currentPage}</span> / <span className="font-bold text-corporate dark:text-primary">{totalPages}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              title="Trang trước"
-            >
-              <ChevronLeft size={18} />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={`news-page-${page}`}
-                onClick={() => onPageChange(page)}
-                className={`w-9 h-9 text-sm font-bold rounded-lg transition-all ${
-                  currentPage === page
-                    ? 'bg-primary text-white shadow-md shadow-primary/30'
-                    : 'border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-
-            <button
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              title="Trang sau"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+        itemLabel={{
+          vi: ' bài viết',
+          en: ' articles',
+          ko: ' 기사',
+          ja: ' 記事',
+          zh: ' 文章',
+          de: ' Artikel'
+        }}
+      />
     </div>
   );
 };

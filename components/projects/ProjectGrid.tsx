@@ -3,7 +3,7 @@ import { Project } from '../../types';
 import ProjectCard from './ProjectCard';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLangText } from '../../utils/translation-helper';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Pagination from '../Pagination';
 
 interface ProjectGridProps {
   projects: Project[];
@@ -52,51 +52,21 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({
       </div>
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border">
-          <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-            {getLangText(language, { vi: 'Hiển thị ', en: 'Showing ', ko: '표시 중 ', ja: '表示中 ', zh: '显示 ', de: 'Angezeigt ' })}
-            <span className="font-bold text-gray-800 dark:text-white">{startItem}-{endItem}</span>
-            {getLangText(language, { vi: ' trên tổng số ', en: ' of ', ko: ' / 총 ', ja: ' / 全 ', zh: ' / 共 ', de: ' von ' })}
-            <span className="font-bold text-primary">{totalItems}</span>
-            {getLangText(language, { vi: ' dự án', en: ' projects', ko: ' 개 프로젝트', ja: ' 件', zh: ' 个项目', de: ' Projekten' })}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              title={getLangText(language, { vi: 'Trang trước', en: 'Previous page', ko: '이전 페이지', ja: '前へ', zh: '上一页', de: 'Vorherige Seite' })}
-            >
-              <ChevronLeft size={18} />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={`page-${page}`}
-                onClick={() => onPageChange(page)}
-                className={`w-9 h-9 text-sm font-bold rounded-lg transition-all ${
-                  currentPage === page
-                    ? 'bg-primary text-white shadow-md shadow-primary/30'
-                    : 'border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-
-            <button
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              title={getLangText(language, { vi: 'Trang sau', en: 'Next page', ko: '다음 페이지', ja: '次へ', zh: '下一页', de: 'Nächste Seite' })}
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        itemLabel={{
+          vi: ' dự án',
+          en: ' projects',
+          ko: ' 개 프로젝트',
+          ja: ' 件',
+          zh: ' 个项目',
+          de: ' Projekten'
+        }}
+      />
     </div>
   );
 };
