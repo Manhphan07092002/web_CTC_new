@@ -712,6 +712,31 @@ const EMPLOYEES_DATA = [
   },
 ];
 
+function removeVietnameseTones(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd')
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .trim();
+}
+
+function formatMiddleAndFirstNameEmail(fullName: string, department: string): string {
+  const isBranch1 = department.includes('Công ty Số 1') || fullName.includes('.cn1');
+  const cleanName = fullName.replace(/\s*\([^)]*\)/g, '').trim();
+  const words = removeVietnameseTones(cleanName).split(/\s+/).filter(Boolean);
+  
+  if (words.length === 0) return `contact${isBranch1 ? '.cn1' : ''}@ctcdn.vn`;
+  if (words.length === 1) return `${words[0].toLowerCase()}${isBranch1 ? '.cn1' : ''}@ctcdn.vn`;
+
+  const firstName = words[words.length - 1].toLowerCase();
+  const middleName = words[words.length - 2].toLowerCase();
+  
+  const prefix = `${middleName}${firstName}`;
+  return `${prefix}${isBranch1 ? '.cn1' : ''}@ctcdn.vn`;
+}
+
 async function main() {
   console.log('\n============================================================');
   console.log('CTC — SEED 50 NHÂN SỰ CHÍNH THỨC CHUẨN SEO + GEO');
@@ -729,6 +754,7 @@ async function main() {
     const teamToInsert = EMPLOYEES_DATA.map((emp, idx) => {
       const avatarList = emp.gender === 'Nữ' ? FEMALE_AVATARS : MALE_AVATARS;
       const avatarUrl = avatarList[idx % avatarList.length];
+      const formattedEmail = formatMiddleAndFirstNameEmail(emp.name, emp.department);
 
       return {
         name: emp.name,
@@ -740,7 +766,7 @@ async function main() {
         specialization: emp.specialization,
         bio: emp.bio,
         image: avatarUrl,
-        email: emp.email,
+        email: formattedEmail,
         phone: emp.phone,
         order: emp.order,
         isActive: true,
