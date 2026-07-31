@@ -9,10 +9,11 @@
  *   docker compose exec app npx tsx server/scripts/seed-300-seo-projects.ts
  */
 
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { ProjectCategory, Project } from '../../models/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,33 +22,6 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
-
-// Inline Schemas
-const ProjectCategorySchema = new Schema({
-  name: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
-  description: { type: String, default: '' },
-  icon: String,
-  color: String,
-  order: { type: Number, default: 0 },
-  isActive: { type: Boolean, default: true },
-  projectCount: { type: Number, default: 0 }
-}, { timestamps: true });
-
-const ProjectSchema = new Schema({
-  title: { type: String, required: true },
-  location: { type: String, required: true },
-  capacity: { type: String, required: true },
-  completionDate: { type: String, required: true },
-  image: { type: String, required: true },
-  description: { type: String, required: true },
-  categoryId: { type: Schema.Types.ObjectId, ref: 'ProjectCategory' },
-  category: String,
-  featured: { type: Boolean, default: false }
-}, { timestamps: true });
-
-const ProjectCategory = mongoose.models.ProjectCategory || mongoose.model('ProjectCategory', ProjectCategorySchema);
-const Project = mongoose.models.Project || mongoose.model('Project', ProjectSchema);
 
 // Ảnh chất lượng cao chuẩn ngành
 const IMAGES = {
