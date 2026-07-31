@@ -763,19 +763,20 @@ const Header: React.FC = () => {
         .btn-header-contact-shimmer {
             position: absolute;
             top: 0;
-            left: -150%;
+            left: 0;
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-            transform: skewX(-20deg);
+            transform: translate3d(-150%, 0, 0) skewX(-20deg);
+            will-change: transform;
             pointer-events: none;
             animation: headerBtnShimmer 5s infinite ease-in-out;
         }
         
         @keyframes headerBtnShimmer {
-            0% { left: -150%; }
-            15% { left: 150%; }
-            100% { left: 150%; }
+            0% { transform: translate3d(-150%, 0, 0) skewX(-20deg); }
+            15% { transform: translate3d(150%, 0, 0) skewX(-20deg); }
+            100% { transform: translate3d(150%, 0, 0) skewX(-20deg); }
         }
         
         .btn-header-contact:hover {
@@ -789,8 +790,8 @@ const Header: React.FC = () => {
         /* Manual hover shimmer sweep override */
         .btn-header-contact:hover .btn-header-contact-shimmer {
             animation: none;
-            left: 150%;
-            transition: left 0.75s ease;
+            transform: translate3d(150%, 0, 0) skewX(-20deg);
+            transition: transform 0.75s ease;
         }
         
         /* Phone vibrating ring animation */
