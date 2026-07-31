@@ -56,6 +56,39 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
 
     let catMap: Record<string, any> = {};
 
+    // 0. Extract images and media files into uploads/ directory
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    let extractedMediaCount = 0;
+    const mediaExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.mp4'];
+
+    for (const entry of zipEntries) {
+      if (entry.isDirectory) continue;
+      const entryName = entry.entryName;
+      const ext = path.extname(entryName).toLowerCase();
+
+      if (mediaExtensions.includes(ext) || entryName.toLowerCase().startsWith('uploads/') || entryName.toLowerCase().startsWith('images/')) {
+        let relativePath = entryName;
+        if (relativePath.toLowerCase().startsWith('uploads/')) {
+          relativePath = relativePath.substring(8);
+        }
+        const targetPath = path.join(uploadsDir, relativePath);
+        const targetDir = path.dirname(targetPath);
+        if (!fs.existsSync(targetDir)) {
+          fs.mkdirSync(targetDir, { recursive: true });
+        }
+        fs.writeFileSync(targetPath, entry.getData());
+        extractedMediaCount++;
+      }
+    }
+    if (extractedMediaCount > 0) {
+      logs.push(`Đã giải nén ${extractedMediaCount} hình ảnh & tệp tin phương tiện vào thư mục uploads/`);
+      importCounts['MediaFiles'] = extractedMediaCount;
+    }
+
     // 1. Process Product Categories & Products
     const categoriesEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('categories.json') && !e.entryName.toLowerCase().includes('project') && !e.entryName.toLowerCase().includes('news') && !e.entryName.toLowerCase().includes('document'));
     if (categoriesEntry) {
@@ -460,6 +493,24 @@ router.all('/export', async (req, res) => {
     // 8. Export Users
     const users = await User.find({}).lean();
     zip.addFile('Users.json', Buffer.from(JSON.stringify(users, null, 2), 'utf8'));
+
+    // 9. Export uploaded media files
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    if (fs.existsSync(uploadsDir)) {
+      const addFilesRecursively = (dir: string, zipPath: string) => {
+        const files = fs.readdirSync(dir, { withFileTypes: true });
+        for (const file of files) {
+          const fullPath = path.join(dir, file.name);
+          const zipSubPath = path.join(zipPath, file.name);
+          if (file.isDirectory()) {
+            addFilesRecursively(fullPath, zipSubPath);
+          } else if (file.isFile()) {
+            zip.addFile(zipSubPath, fs.readFileSync(fullPath));
+          }
+        }
+      };
+      addFilesRecursively(uploadsDir, 'uploads');
+    }
 
     const zipBuffer = zip.toBuffer();
 
