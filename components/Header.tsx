@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare, ShoppingCart, Search, RefreshCw, ChevronRight } from 'lucide-react';
+import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare, ShoppingCart, Search, RefreshCw, ChevronRight, Home, LayoutGrid, ShoppingBag } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -1397,57 +1397,61 @@ const Header: React.FC = () => {
         </div>
       </>
     )}
-    {/* Mobile Bottom Navigation Bar (Fixed PWA Experience) */}
-    <nav className="mobile-bottom-nav lg:hidden fixed bottom-0 left-0 right-0 z-[1000] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 shadow-2xl flex items-center justify-around py-1.5 px-2 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+    {/* Mobile Bottom Navigation Bar (Sleek Modern PWA Experience) */}
+    <nav className="mobile-bottom-nav lg:hidden fixed bottom-0 left-0 right-0 z-[1000] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 shadow-2xl flex items-center justify-around py-1.5 px-2 text-[10px] font-bold text-slate-500 dark:text-slate-400">
       <Link 
         to="/" 
-        className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
+        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all duration-200 ${
           location.pathname === '/' ? 'text-sky-500 dark:text-sky-400 font-black scale-105' : 'hover:text-sky-500'
         }`}
       >
-        <span className="text-base">🏠</span>
+        <Home size={20} className={location.pathname === '/' ? 'stroke-[2.5px] text-sky-500 dark:text-sky-400' : 'stroke-[1.8px]'} />
         <span>Trang chủ</span>
       </Link>
+      
       <button 
         onClick={() => { setIsMenuOpen(true); }} 
-        className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
-          isMenuOpen ? 'text-sky-500 dark:text-sky-400 font-black' : 'hover:text-sky-500'
+        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all duration-200 ${
+          isMenuOpen ? 'text-sky-500 dark:text-sky-400 font-black scale-105' : 'hover:text-sky-500'
         }`}
       >
-        <span className="text-base">📂</span>
+        <LayoutGrid size={20} className={isMenuOpen ? 'stroke-[2.5px] text-sky-500 dark:text-sky-400' : 'stroke-[1.8px]'} />
         <span>Danh mục</span>
       </button>
+      
       <button 
         onClick={() => setIsSearchOpen(true)} 
-        className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
-          isSearchOpen ? 'text-sky-500 dark:text-sky-400 font-black' : 'hover:text-sky-500'
+        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all duration-200 ${
+          isSearchOpen ? 'text-sky-500 dark:text-sky-400 font-black scale-105' : 'hover:text-sky-500'
         }`}
       >
-        <span className="text-base">🔍</span>
+        <Search size={20} className={isSearchOpen ? 'stroke-[2.5px] text-sky-500 dark:text-sky-400' : 'stroke-[1.8px]'} />
         <span>Tìm kiếm</span>
       </button>
+      
       <Link 
         to="/cart" 
-        className={`relative flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
+        className={`relative flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all duration-200 ${
           location.pathname === '/cart' ? 'text-sky-500 dark:text-sky-400 font-black scale-105' : 'hover:text-sky-500'
         }`}
       >
-        <span className="text-base">🛒</span>
+        <ShoppingBag size={20} className={location.pathname === '/cart' ? 'stroke-[2.5px] text-sky-500 dark:text-sky-400' : 'stroke-[1.8px]'} />
         <span>Giỏ hàng</span>
         {totalItems > 0 && (
-          <span className="absolute top-0 right-1 bg-red-600 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-black shadow-xs">
+          <span className="absolute -top-0.5 right-1.5 bg-red-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-md border border-white dark:border-slate-900 animate-pulse">
             {totalItems}
           </span>
         )}
       </Link>
+      
       <a 
         href="https://zalo.me/0915059666" 
         target="_blank" 
         rel="noopener noreferrer" 
-        className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-sky-600 dark:text-sky-400 hover:scale-105 transition-transform"
+        className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-slate-500 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 transition-all duration-200 group"
       >
-        <img src="/images/zalo-icon.svg" alt="Zalo" className="w-5 h-5 object-contain" />
-        <span>Zalo</span>
+        <img src="/images/zalo-icon.svg" alt="Zalo" className="w-5 h-5 object-contain transition-transform duration-200 group-hover:scale-110" />
+        <span className="text-sky-600 dark:text-sky-400 font-bold">Zalo</span>
       </a>
     </nav>
   </>
