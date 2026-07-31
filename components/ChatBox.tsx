@@ -107,45 +107,73 @@ const ChatBox: React.FC = () => {
     <div className="fixed bottom-4 right-2 z-50 flex flex-col items-end gap-2 font-sans sm:bottom-6 sm:right-5 sm:gap-3 print:hidden">
       {/* Floating Contact Buttons (Visible when chat is closed) */}
       {!isOpen && (
-        <div className="flex flex-col gap-2.5 animate-fade-in-up">
+        <div className="flex flex-col gap-3 animate-fade-in-up">
+           {/* 1. NÚT ZALO CÓ SÓNG LAN TỎA & SHADOW GLOW */}
            <a 
              href={ZALO_LINK} 
              target="_blank" 
              rel="noreferrer"
-             className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-white shadow-lg transition-transform hover:scale-110 group sm:h-14 sm:w-14"
+             className="relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-115 hover:shadow-xl hover:shadow-blue-500/60 group p-0"
              title="Chat Zalo"
            >
-             <span className="font-bold text-[9px] absolute -top-1.5 -left-1.5 bg-red-500 text-white px-1 rounded-full animate-bounce">1</span>
-             <span className="font-bold text-[10px] sm:text-xs">Zalo</span>
+             {/* Ripple Ring Effect */}
+             <span className="absolute -inset-1 rounded-full bg-blue-500/30 animate-ping duration-1000"></span>
+             
+             <span className="font-bold text-[9px] absolute -top-1.5 -left-1.5 bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-bounce z-10 shadow-md">1</span>
+             <img src="/images/zalo-icon.svg" alt="Zalo" className="w-full h-full object-cover rounded-full relative z-0 transition-transform group-hover:rotate-6" />
+             
              {/* Tooltip */}
-             <span className="absolute right-full mr-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity">Chat Zalo</span>
+             <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs">
+               Chat Zalo trực tiếp
+             </span>
            </a>
            
+           {/* 2. NÚT HOTLINE CÓ RUNG VÀ SÓNG ĐỎ KHẨN CẤP */}
            <a 
              href={`tel:${HOTLINE}`} 
-             className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-red-500 text-white shadow-lg transition-transform hover:scale-110 group sm:h-14 sm:w-14"
+             className="relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all duration-300 hover:scale-115 hover:shadow-xl hover:shadow-red-500/60 group"
              title="Call Hotline"
            >
-             <Phone size={20} className="animate-pulse sm:hidden" />
-             <Phone size={24} className="animate-pulse hidden sm:block" />
-             <span className="absolute right-full mr-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity">0915 059 666</span>
+             {/* Red Ripple Wave */}
+             <span className="absolute -inset-1 rounded-full bg-red-500/40 animate-ping duration-700"></span>
+             
+             <Phone size={20} className="animate-bounce sm:hidden relative z-10" />
+             <Phone size={24} className="animate-bounce hidden sm:block relative z-10" />
+             
+             {/* Tooltip */}
+             <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs">
+               Hotline: 0915 059 666
+             </span>
            </a>
         </div>
       )}
 
-      {/* Main Chat Toggle (AI Bot) */}
+      {/* 3. NÚT AI CHATBOT CÓ HÀO QUANG & HÌNH ANH ROBOT LINH HOẠT */}
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="group flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-primary text-white shadow-xl transition-all duration-300 hover:scale-110 hover:bg-secondary sm:h-14 sm:w-14"
+          className="group relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-white bg-white text-white shadow-xl shadow-sky-500/30 transition-all duration-300 hover:scale-115 hover:shadow-2xl hover:shadow-sky-500/60 p-0"
           title="Chat với AI CTC"
         >
-          <Bot size={20} className="transition-transform group-hover:rotate-12 sm:hidden" />
-          <Bot size={24} className="transition-transform group-hover:rotate-12 hidden sm:block sm:h-7 sm:w-7" />
-          {/* Optional Badge/Indicator */}
-          <span className="absolute top-0 right-0 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+          {/* AI Glow Aura Ring */}
+          <span className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 opacity-40 animate-ping duration-1000"></span>
+          <span className="absolute -inset-0.5 rounded-full bg-sky-400/30 animate-pulse"></span>
+          
+          <img 
+            src="/images/ai-chatbot-icon.png" 
+            alt="AI Bot" 
+            className="w-full h-full object-cover rounded-full relative z-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" 
+          />
+          
+          {/* Online Indicator Badge */}
+          <span className="absolute top-0 right-0 flex h-3.5 w-3.5 z-10">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white"></span>
+          </span>
+
+          {/* Tooltip */}
+          <span className="absolute right-full mr-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity shadow-lg backdrop-blur-xs">
+            Trợ lý AI tư vấn 24/7
           </span>
         </button>
       )}
@@ -157,8 +185,8 @@ const ChatBox: React.FC = () => {
           <div className="bg-corporate p-4 text-white">
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-3">
-                <div className="bg-white p-1.5 rounded-full relative">
-                   <Bot size={24} className="text-corporate" />
+                <div className="bg-white p-1 rounded-full relative w-8 h-8 flex items-center justify-center">
+                   <img src="/images/ai-chatbot-icon.png" alt="AI Bot" className="w-6 h-6 object-contain" />
                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-white rounded-full"></span>
                 </div>
                 <div>
@@ -188,7 +216,7 @@ const ChatBox: React.FC = () => {
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                 {!msg.isUser && (
-                   <div className="w-8 h-8 rounded-full bg-corporate flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0 mt-1">AI</div>
+                   <img src="/images/ai-chatbot-icon.png" alt="AI" className="w-8 h-8 rounded-full bg-white p-0.5 border border-sky-200 object-contain mr-2 flex-shrink-0 mt-1 shadow-xs" />
                 )}
                 <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
                   msg.isUser 

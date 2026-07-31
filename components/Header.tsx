@@ -9,7 +9,7 @@ import { useCart } from '../contexts/CartContext';
 import { api } from '../services/api';
 import { Category } from '../types';
 import { getLangText } from '../utils/translation-helper';
-import { buildCategoryTree, CategoryNode, getCategoryDescendantIdsOnly, getCategorySiblingIds } from '../utils/categoryTreeHelper';
+import { buildCategoryTree, CategoryNode, getCategoryDescendantIdsOnly, getCategorySiblingIds, getCategoryAncestorIds } from '../utils/categoryTreeHelper';
 
 interface HeaderMegaMenuProps {
   categoryTree: CategoryNode[];
@@ -18,9 +18,41 @@ interface HeaderMegaMenuProps {
 
 const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigate }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedLevel1, setSelectedLevel1] = useState<string | null>(null);
   const [selectedLevel2, setSelectedLevel2] = useState<string | null>(null);
   const [selectedLevel3, setSelectedLevel3] = useState<string | null>(null);
+
+  // Tự động chọn nhánh active dựa trên URL khi mount hoặc đổi location
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const catId = params.get('catId') || params.get('subcat');
+    const catName = params.get('cat');
+
+    if ((catId || catName) && categoryTree.length > 0) {
+      const allNodes: CategoryNode[] = [];
+      const collect = (nodes: CategoryNode[]) => {
+        nodes.forEach(n => {
+          allNodes.push(n);
+          if (n.children?.length) collect(n.children);
+        });
+      };
+      collect(categoryTree);
+
+      const target = allNodes.find(n =>
+        (catId && n.id === catId) ||
+        (catName && (n.slug || '').toLowerCase() === catName.toLowerCase()) ||
+        (catName && (n.name || '').toLowerCase() === catName.toLowerCase())
+      );
+
+      if (target && target.parentChain && target.parentChain.length > 0) {
+        const chain = target.parentChain;
+        if (chain[0]) setSelectedLevel1(chain[0].id);
+        if (chain[1]) setSelectedLevel2(chain[1].id);
+        if (chain[2]) setSelectedLevel3(chain[2].id);
+      }
+    }
+  }, [location.search, categoryTree]);
 
   const level1Items = categoryTree;
 
@@ -38,7 +70,7 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
     e.stopPropagation();
     if (!node.children || node.children.length === 0) {
       onNavigate();
-      navigate(`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`);
+      navigate(`/products?cat=${encodeURIComponent((node.slug || node.name).toLowerCase())}&catId=${node.id}`);
     } else {
       if (selectedLevel1 === node.id) {
         setSelectedLevel1(null);
@@ -202,6 +234,34 @@ const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({ categoryTree, onNavigat
         </div>
       )}
 
+      {/* PROMO CARD GÓC PHẢI MEGAMENU */}
+      <div className="w-56 flex-shrink-0 pl-3 border-l border-gray-100 dark:border-slate-800/80 hidden xl:flex flex-col justify-between">
+        <div className="bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-transparent dark:from-sky-900/30 dark:to-slate-900 border border-sky-200/50 dark:border-sky-800/40 rounded-xl p-3 text-left">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs">
+              HOT DEAL
+            </span>
+            <span className="text-[10px] text-sky-600 dark:text-sky-400 font-bold">CHÍNH HÃNG</span>
+          </div>
+          <h4 className="text-xs font-black text-slate-800 dark:text-slate-100 line-clamp-2 mb-1">
+            Router & Switch MikroTik / DrayTek Doanh Nghiệp
+          </h4>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-2 mb-2.5">
+            Định tuyến chịu tải cao, Wi-Fi 6 Mesh, bảo hành 24-36 tháng.
+          </p>
+          <button
+            onClick={() => {
+              onNavigate();
+              navigate('/products?cat=thiet-bi-mang');
+            }}
+            className="w-full py-1.5 px-3 bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px] uppercase rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer"
+          >
+            <span>Khám phá ngay</span>
+            <ChevronRight size={12} />
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 };
@@ -229,15 +289,15 @@ const RecursiveMobileCategoryMenu: React.FC<RecursiveMobileMenuProps> = ({
 
         const levelPadding = 
           node.level === 1 ? 'pl-2' :
-          node.level === 2 ? 'pl-5' :
-          node.level === 3 ? 'pl-8' : 'pl-11';
+          node.level === 2 ? 'pl-6' :
+          node.level === 3 ? 'pl-10' : 'pl-14';
 
         return (
           <div key={node.id} className="border-b border-gray-200/40 dark:border-slate-800/60 last:border-none pb-1">
             <div className={`flex items-center justify-between py-2 px-2.5 ${levelPadding}`}>
-              {/* Tên danh mục -> Chuyển trang */}
+              {/* Tên danh mục -> Chuyển trang & đóng mobile menu */}
               <Link
-                to={`/products?cat=${encodeURIComponent(node.name.toLowerCase())}&catId=${node.id}`}
+                to={`/products?cat=${encodeURIComponent((node.slug || node.name).toLowerCase())}&catId=${node.id}`}
                 onClick={onNavigate}
                 className="flex-1 min-w-0 text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-sky-500 uppercase tracking-wide truncate flex items-center gap-1.5"
               >
@@ -256,10 +316,12 @@ const RecursiveMobileCategoryMenu: React.FC<RecursiveMobileMenuProps> = ({
                 {/* Icon mũi tên -> Tách vùng bấm riêng mở/đóng submenu từng cấp */}
                 {hasChildren && (
                   <button
+                    type="button"
                     onClick={(e) => toggleMobileCat(node.id, e)}
                     aria-expanded={isOpen}
-                    aria-label={`Mở/đóng danh mục con của ${node.name}`}
-                    className="p-1 rounded text-slate-400 hover:text-sky-500 transition-colors cursor-pointer"
+                    aria-controls={`mobile-cat-sub-${node.id}`}
+                    aria-label={`Mở hoặc đóng danh mục con của ${node.name}`}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-sky-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer focus:outline-none"
                   >
                     <ChevronRight 
                       size={15} 
@@ -270,16 +332,23 @@ const RecursiveMobileCategoryMenu: React.FC<RecursiveMobileMenuProps> = ({
               </div>
             </div>
 
-            {/* Submenu chỉ hiển thị khi mở cấp này (Mở theo từng cấp) */}
-            {hasChildren && isOpen && (
-              <div className="pt-0.5 pb-1 transition-all duration-200">
-                <RecursiveMobileCategoryMenu 
-                  nodes={node.children} 
-                  allCategories={allCategories}
-                  openMobileCatIds={openMobileCatIds}
-                  toggleMobileCat={toggleMobileCat}
-                  onNavigate={onNavigate} 
-                />
+            {/* Submenu chỉ hiển thị khi mở cấp này (Mở theo từng cấp + Smooth grid transition) */}
+            {hasChildren && (
+              <div 
+                id={`mobile-cat-sub-${node.id}`}
+                className={`grid transition-all duration-300 ease-in-out ${
+                  isOpen ? 'grid-rows-[1fr] opacity-100 pt-0.5 pb-1' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+                }`}
+              >
+                <div className="overflow-hidden space-y-1">
+                  <RecursiveMobileCategoryMenu 
+                    nodes={node.children} 
+                    allCategories={allCategories}
+                    openMobileCatIds={openMobileCatIds}
+                    toggleMobileCat={toggleMobileCat}
+                    onNavigate={onNavigate} 
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -612,6 +681,41 @@ const Header: React.FC = () => {
 
   const navLinks = getDynamicNavLinks();
 
+  // Tự động mở nhánh active cho mobile navigation & mobile category tree khi đổi URL/Location
+  useEffect(() => {
+    // 1. Tự động mở menu top-level trên mobile (e.g. 'solutions', 'products')
+    const activeNav = navLinks.find(link => {
+      if (location.pathname === link.path) return true;
+      if (link.submenu) {
+        return link.submenu.some(sub => location.pathname === sub.path || (sub.path !== '/products' && location.pathname.startsWith(sub.path)));
+      }
+      return false;
+    });
+    if (activeNav && activeNav.submenu) {
+      setExpandedMobileMenu(activeNav.key);
+    }
+
+    // 2. Tự động mở cây danh mục sản phẩm trên mobile
+    if (categories.length > 0) {
+      const params = new URLSearchParams(location.search);
+      const catId = params.get('catId') || params.get('subcat');
+      const catName = params.get('cat');
+
+      if (catId || catName) {
+        const keyLower = (catName || '').toLowerCase();
+        const activeCat = categories.find(c =>
+          (catId && c.id === catId) ||
+          (catName && (c.slug || '').toLowerCase() === keyLower) ||
+          (catName && (c.name || '').toLowerCase() === keyLower)
+        );
+        if (activeCat) {
+          const ancestorIds = getCategoryAncestorIds(activeCat.id, categories);
+          setOpenMobileCatIds(prev => Array.from(new Set([...prev, ...ancestorIds])));
+        }
+      }
+    }
+  }, [location.pathname, location.search, categories]);
+
   const getHeaderContainerClass = () => {
     const base = "fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ";
     if (isScrolled) {
@@ -801,15 +905,20 @@ const Header: React.FC = () => {
             />
           </Link>
 
-          {/* Center Navigation Links (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 h-full">
+          {/* Center Navigation Links (Desktop) - SEO Schema SiteNavigationElement */}
+          <nav 
+            itemScope 
+            itemType="http://schema.org/SiteNavigationElement"
+            className="hidden lg:flex items-center gap-6 xl:gap-8 h-full"
+          >
             {navLinks.map((link) => (
               <div key={link.path} className="relative group h-full flex items-center py-2">
                 <Link
+                  itemProp="url"
                   to={link.path}
                   className={`flex items-center text-xs xl:text-sm font-bold uppercase tracking-wider transition-colors duration-200 ${getNavLinkClass(link.path)}`}
                 >
-                  {(link as any).displayName || link.name}
+                  <span itemProp="name">{(link as any).displayName || link.name}</span>
                   {link.submenu && (
                     <ChevronDown size={13} className="ml-1 group-hover:rotate-180 transition-transform duration-300" />
                   )}
@@ -824,12 +933,13 @@ const Header: React.FC = () => {
                       <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl py-2 w-72">
                         {link.submenu.map((sub, index) => (
                           <Link 
+                            itemProp="url"
                             key={index}
                             to={sub.path}
                             className="flex items-center gap-3 px-5 py-2.5 text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-200 border-b border-gray-50 dark:border-slate-800/70 last:border-0 uppercase tracking-wide group/sub"
                           >
                             <span className="w-1 h-4 rounded-full bg-sky-500/30 group-hover/sub:bg-sky-500 flex-shrink-0 transition-colors duration-200" />
-                            {getSubmenuDisplayName(sub, language)}
+                            <span itemProp="name">{getSubmenuDisplayName(sub, language)}</span>
                           </Link>
                         ))}
                       </div>
@@ -953,6 +1063,33 @@ const Header: React.FC = () => {
                 <X size={20} />
               </button>
             </form>
+
+            {/* Popular Trending Search Tags */}
+            {!searchQuery.trim() && (
+              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-1">
+                  Từ khóa hot:
+                </span>
+                {[
+                  'Router MikroTik',
+                  'Inverter 5kW',
+                  'Cáp mạng Cat6',
+                  'Tổng đài VoIP',
+                  'Pin Lithium',
+                  'Switch PoE',
+                  'Module quang SFP'
+                ].map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setSearchQuery(tag)}
+                    className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-sky-900/40 text-slate-700 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 text-xs font-semibold transition-all cursor-pointer border border-transparent hover:border-sky-300 dark:hover:border-sky-700"
+                  >
+                    🔥 {tag}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {searchQuery.trim() && (
               <div className="mt-4 border-t border-gray-100 dark:border-slate-850 pt-4 max-h-[70vh] overflow-y-auto">
@@ -1253,6 +1390,59 @@ const Header: React.FC = () => {
         </div>
       </>
     )}
+    {/* Mobile Bottom Navigation Bar (Fixed PWA Experience) */}
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[90] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 shadow-2xl flex items-center justify-around py-1.5 px-2 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+      <Link 
+        to="/" 
+        className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
+          location.pathname === '/' ? 'text-sky-500 dark:text-sky-400 font-black scale-105' : 'hover:text-sky-500'
+        }`}
+      >
+        <span className="text-base">🏠</span>
+        <span>Trang chủ</span>
+      </Link>
+      <button 
+        onClick={() => { setIsMenuOpen(true); }} 
+        className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
+          isMenuOpen ? 'text-sky-500 dark:text-sky-400 font-black' : 'hover:text-sky-500'
+        }`}
+      >
+        <span className="text-base">📂</span>
+        <span>Danh mục</span>
+      </button>
+      <button 
+        onClick={() => setIsSearchOpen(true)} 
+        className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
+          isSearchOpen ? 'text-sky-500 dark:text-sky-400 font-black' : 'hover:text-sky-500'
+        }`}
+      >
+        <span className="text-base">🔍</span>
+        <span>Tìm kiếm</span>
+      </button>
+      <Link 
+        to="/cart" 
+        className={`relative flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
+          location.pathname === '/cart' ? 'text-sky-500 dark:text-sky-400 font-black scale-105' : 'hover:text-sky-500'
+        }`}
+      >
+        <span className="text-base">🛒</span>
+        <span>Giỏ hàng</span>
+        {totalItems > 0 && (
+          <span className="absolute top-0 right-1 bg-red-600 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-black shadow-xs">
+            {totalItems}
+          </span>
+        )}
+      </Link>
+      <a 
+        href="https://zalo.me/0915059666" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-sky-600 dark:text-sky-400 hover:scale-105 transition-transform"
+      >
+        <img src="/images/zalo-icon.svg" alt="Zalo" className="w-5 h-5 object-contain" />
+        <span>Zalo</span>
+      </a>
+    </div>
   </>
   );
 };

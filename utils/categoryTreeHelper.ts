@@ -167,8 +167,9 @@ export function getCategoryDescendantIdsOnly(categoryId: string, categories: Cat
 export function getCategorySiblingIds(categoryId: string, categories: Category[]): string[] {
   const target = categories.find(c => c.id === categoryId);
   if (!target) return [];
+  const targetParent = target.parentId || null;
   return categories
-    .filter(c => c.parentId === target.parentId && c.id !== categoryId)
+    .filter(c => (c.parentId || null) === targetParent && c.id !== categoryId)
     .map(c => c.id);
 }
 

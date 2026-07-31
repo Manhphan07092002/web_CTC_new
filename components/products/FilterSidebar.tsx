@@ -53,34 +53,43 @@ const RecursiveSidebarCategoryItem: React.FC<{
   handleCategoryChange
 }) => {
   const categoryKey = node.slug || node.name.toLowerCase();
-  const isActive = activeCategoryKey === categoryKey;
+  const isActive = activeCategoryKey.toLowerCase() === categoryKey.toLowerCase() || activeCategoryKey === node.id;
   const isOpen = openMenuIds.includes(node.id);
   const hasChildren = node.children && node.children.length > 0;
 
-  // Level-based indentation padding
+  // Level-based indentation padding (Cấp 1: 12px, Cấp 2: 28px, Cấp 3: 44px, Cấp 4: 60px)
   const levelPaddingClass = 
     node.level === 1 ? 'pl-3' :
-    node.level === 2 ? 'pl-6' :
-    node.level === 3 ? 'pl-9' : 'pl-12';
+    node.level === 2 ? 'pl-7' :
+    node.level === 3 ? 'pl-11' : 'pl-15';
 
   const fontSizeClass =
     node.level === 1 ? 'text-sm font-bold text-gray-800 dark:text-gray-100' :
     node.level === 2 ? 'text-xs font-semibold text-gray-700 dark:text-gray-200' :
     'text-[11px] font-medium text-gray-600 dark:text-gray-300';
 
+  const handleTitleClick = (e: React.MouseEvent) => {
+    handleCategoryChange(categoryKey);
+    // Nếu chưa mở submenu và có danh mục con, mở trực tiếp danh mục con cấp này
+    if (hasChildren && !isOpen) {
+      toggleMenu(node.id, e);
+    }
+  };
+
   return (
     <div className="space-y-0.5">
       <div 
         className={`w-full text-left py-2 pr-2.5 rounded-lg transition-all flex items-center justify-between group border-l-4 ${levelPaddingClass} ${
           isActive
-            ? 'border-primary bg-sky-50 dark:bg-sky-900/30 text-primary dark:text-sky-400 font-bold'
+            ? 'border-primary bg-sky-50 dark:bg-sky-900/30 text-primary dark:text-sky-400 font-bold shadow-2xs'
             : 'border-transparent hover:bg-gray-50/80 dark:hover:bg-gray-700/30 hover:text-primary'
         }`}
       >
         {/* Tên danh mục -> Lọc sản phẩm */}
         <button
-          onClick={() => handleCategoryChange(categoryKey)}
+          onClick={handleTitleClick}
           className={`flex-1 min-w-0 text-left truncate flex items-center gap-1.5 cursor-pointer ${fontSizeClass}`}
+          title={node.name}
         >
           {node.level > 1 && <span className="opacity-40 font-mono text-[10px]">└</span>}
           <span className="truncate">{node.name}</span>
@@ -99,10 +108,12 @@ const RecursiveSidebarCategoryItem: React.FC<{
           {/* Icon mũi tên -> Tách vùng bấm riêng mở/đóng submenu từng cấp */}
           {hasChildren && (
             <button
+              type="button"
               onClick={(e) => toggleMenu(node.id, e)}
               aria-expanded={isOpen}
-              aria-label={`Mở/đóng danh mục con của ${node.name}`}
-              className="p-1 rounded-md hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-400 hover:text-primary transition-all cursor-pointer"
+              aria-controls={`sidebar-submenu-${node.id}`}
+              aria-label={`Mở hoặc đóng danh mục con của ${node.name}`}
+              className="p-1 rounded-md hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-400 hover:text-primary transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <ChevronRight 
                 size={14} 
@@ -113,19 +124,26 @@ const RecursiveSidebarCategoryItem: React.FC<{
         </div>
       </div>
 
-      {/* Hiển thị danh mục con chỉ khi danh mục hiện tại đang MỞ (Mở từng cấp) */}
-      {hasChildren && isOpen && (
-        <div className="space-y-0.5 transition-all duration-200 animate-fade-in">
-          {node.children.map(child => (
-            <RecursiveSidebarCategoryItem
-              key={child.id}
-              node={child}
-              activeCategoryKey={activeCategoryKey}
-              openMenuIds={openMenuIds}
-              toggleMenu={toggleMenu}
-              handleCategoryChange={handleCategoryChange}
-            />
-          ))}
+      {/* Hiển thị danh mục con dạng Accordion hiệu ứng mượt grid transition */}
+      {hasChildren && (
+        <div 
+          id={`sidebar-submenu-${node.id}`}
+          className={`grid transition-all duration-300 ease-in-out ${
+            isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+          }`}
+        >
+          <div className="overflow-hidden space-y-0.5">
+            {node.children.map(child => (
+              <RecursiveSidebarCategoryItem
+                key={child.id}
+                node={child}
+                activeCategoryKey={activeCategoryKey}
+                openMenuIds={openMenuIds}
+                toggleMenu={toggleMenu}
+                handleCategoryChange={handleCategoryChange}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -150,19 +168,24 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const allCats = getActiveCategories();
   const categoryTree = buildCategoryTree(allCats);
 
-  // State lưu danh sách ID các danh mục đang mở
+  // State lưu danh sách ID các danh mục đang mở (Default closed, chỉ mở nhánh active)
   const [openMenuIds, setOpenMenuIds] = useState<string[]>([]);
 
   // Tự động mở đúng nhánh chứa danh mục đang active khi tải trang hoặc chuyển danh mục
   useEffect(() => {
     if (activeCategoryKey && activeCategoryKey !== 'all' && allCats.length > 0) {
-      const activeCat = allCats.find(c => (c.slug || c.name.toLowerCase()) === activeCategoryKey.toLowerCase());
+      const keyLower = activeCategoryKey.toLowerCase();
+      const activeCat = allCats.find(
+        c => (c.slug || '').toLowerCase() === keyLower ||
+             (c.name || '').toLowerCase() === keyLower ||
+             c.id === activeCategoryKey
+      );
       if (activeCat) {
         const ancestorIds = getCategoryAncestorIds(activeCat.id, allCats);
         setOpenMenuIds(prev => Array.from(new Set([...prev, ...ancestorIds])));
       }
     }
-  }, [activeCategoryKey, allCats.length]);
+  }, [activeCategoryKey, allCats]);
 
   // Logic Mở/Đóng submenu từng cấp dạng Accordion
   const toggleMenu = (id: string, e: React.MouseEvent) => {
@@ -171,12 +194,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
     setOpenMenuIds((prev) => {
       if (prev.includes(id)) {
-        // Đóng: Xóa ID này VÀ toàn bộ ID danh mục con/cháu bên trong
+        // Đóng: Xóa ID này VÀ toàn bộ ID danh mục con/cháu bên trong nhánh đó
         const descendants = getCategoryDescendantIdsOnly(id, allCats);
         const toRemove = new Set([id, ...descendants]);
         return prev.filter((item) => !toRemove.has(item));
       } else {
-        // Mở: Thêm ID này, đóng các danh mục cùng cấp (Accordion)
+        // Mở: Thêm ID này, đóng các danh mục cùng cấp (Accordion) và các con cháu cùng cấp
         const siblings = getCategorySiblingIds(id, allCats);
         const siblingDescendants = siblings.flatMap((sId) => [sId, ...getCategoryDescendantIdsOnly(sId, allCats)]);
         const toRemove = new Set(siblingDescendants);
