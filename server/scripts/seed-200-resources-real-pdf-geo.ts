@@ -1253,7 +1253,9 @@ async function upsertCategories(): Promise<Map<string, mongoose.Types.ObjectId>>
   const now = new Date();
 
   for (const category of CATEGORIES_DATA) {
-    const existing = await DocumentCategory.collection.findOne({ slug: category.slug });
+    const existing = await DocumentCategory.collection.findOne({
+      $or: [{ name: category.name }, { slug: category.slug }],
+    });
     const categoryId = (existing?._id as mongoose.Types.ObjectId | undefined) || new mongoose.Types.ObjectId();
 
     await DocumentCategory.collection.updateOne(
