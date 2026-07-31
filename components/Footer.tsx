@@ -121,27 +121,30 @@ const Footer: React.FC = () => {
       <div className="container relative z-10 mx-auto px-4 pb-6 pt-14 sm:pt-16">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4 lg:pr-8">
+            {/* ── Footer Logo Block ── */}
             <Link
               to="/"
-              className="mb-5 inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.055] p-2.5 pr-4 backdrop-blur-md transition-all duration-300 hover:border-sky-400/35 hover:bg-white/[0.08]"
+              className="mb-4 inline-flex items-center gap-0 rounded-xl border border-white/10 bg-white/[0.05] backdrop-blur-md transition-all duration-300 hover:border-sky-400/40 hover:bg-white/[0.09] w-fit overflow-hidden"
             >
+              {/* Logo image — full fill, no inner padding */}
               <img
                 src={settings.logoFooter || settings.logo}
                 alt={settings.siteName || "CTC"}
-                width="180"
-                height="48"
-                className="h-11 w-auto rounded-lg border border-white/10 bg-white object-contain shadow-sm sm:h-12"
-                style={{ aspectRatio: '180/48', objectFit: 'contain' }}
+                width="160"
+                height="56"
+                className="h-14 w-auto self-stretch bg-white object-contain sm:h-16"
+                style={{ objectFit: 'contain' }}
               />
-              <span className="min-w-0">
-                <span className="block text-sm font-black uppercase tracking-wider text-white">CTC</span>
-                <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-300">
+              {/* Brand name */}
+              <span className="min-w-0 flex flex-col justify-center px-4">
+                <span className="block text-sm font-black uppercase tracking-wider text-white leading-tight">CTC</span>
+                <span className="block whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-300 leading-tight mt-0.5">
                   {getLangText(language, { vi: 'Niềm tin · Chất lượng', en: 'Trust · Quality', ko: '신뢰 · 품질', ja: '信頼 · 品質', zh: '信任 · 品质', de: 'Vertrauen · Qualität' })}
                 </span>
               </span>
             </Link>
 
-            <p className="max-w-md text-sm leading-7 text-slate-300/90">{getLangText(language, { vi: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). Doanh nghiệp hàng đầu trong lĩnh vực xây lắp và năng lượng tái tạo.', en: 'Central Vietnam Posts and Telecommunications Construction JSC (CTC). Pioneering in renewable energy.', ko: 'CTC 전기 건설 및 컨설팅 주식회사(CTC). 재생 에너지 분야의 선구자.', ja: 'CTC電気建設コンサルティング株式会社。再生可能エネルギー分野のパイオニア。', zh: 'CTC中部越南邮电建筑股份公司。可再生能源领域的先驱。', de: 'CTC Mittel-Vietnam Post- und Telekommunikationsbau AG. Pionier im Bereich erneuerbare Energien.' })}</p>
+            <p className="mt-0 mb-0 max-w-md text-sm leading-7 text-slate-300/90">{getLangText(language, { vi: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). Doanh nghiệp hàng đầu trong lĩnh vực xây lắp và năng lượng tái tạo.', en: 'Central Vietnam Posts and Telecommunications Construction JSC (CTC). Pioneering in renewable energy.', ko: 'CTC 전기 건설 및 컨설팅 주식회사(CTC). 재생 에너지 분야의 선구자.', ja: 'CTC電気建設コンサルティング株式会社。再生可能エネルギー分野のパイオニア。', zh: 'CTC中部越南邮电建筑股份公司。可再生能源领域的先驱。', de: 'CTC Mittel-Vietnam Post- und Telekommunikationsbau AG. Pionier im Bereich erneuerbare Energien.' })}</p>
 
             <div className="mt-6 flex flex-wrap gap-2.5">
               {settings.facebook && <a href={settings.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={socialClass}><Facebook size={17} /></a>}
