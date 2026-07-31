@@ -25,6 +25,7 @@
     "setup-first-time": "node scripts/setup-first-time.js",
     "setup-with-data": "node scripts/setup-with-data.js",
     "seed:news": "npx tsx server/scripts/seed-30-news.ts",
+    "seed:news:100": "npx tsx server/scripts/seed-100-seo-geo-news.ts",
     "seed:resources": "npx tsx server/scripts/seed-200-resources.ts",
     "seed:resources:real": "npx tsx server/scripts/seed-200-resources-real-pdf-geo.ts",
     "seed:categories": "npx tsx server/scripts/seed-categories.ts",
