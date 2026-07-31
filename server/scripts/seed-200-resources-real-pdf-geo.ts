@@ -1285,7 +1285,7 @@ async function upsertCategories(): Promise<Map<string, mongoose.Types.ObjectId>>
 
 async function ensureIndexes(): Promise<void> {
   const indexes = [
-    Resource.collection.createIndex({ slug: 1 }, { unique: true, name: 'resource_slug_unique' }),
+    Resource.collection.createIndex({ slug: 1 }, { unique: true, sparse: true, name: 'resource_slug_unique' }),
     Resource.collection.createIndex({ 'pdf.sha256': 1 }, { sparse: true, name: 'resource_pdf_sha256' }),
     Resource.collection.createIndex({ categoryId: 1, isPublished: 1 }, { name: 'resource_category_published' }),
     Resource.collection.createIndex({ title: 'text', description: 'text', content: 'text' }, { name: 'resource_search_text' }),
