@@ -1398,7 +1398,7 @@ const Header: React.FC = () => {
       </>
     )}
     {/* Mobile Bottom Navigation Bar (Fixed PWA Experience) */}
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[90] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 shadow-2xl flex items-center justify-around py-1.5 px-2 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+    <nav className="mobile-bottom-nav lg:hidden fixed bottom-0 left-0 right-0 z-[1000] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 shadow-2xl flex items-center justify-around py-1.5 px-2 text-[10px] font-bold text-slate-600 dark:text-slate-300">
       <Link 
         to="/" 
         className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
@@ -1449,7 +1449,7 @@ const Header: React.FC = () => {
         <img src="/images/zalo-icon.svg" alt="Zalo" className="w-5 h-5 object-contain" />
         <span>Zalo</span>
       </a>
-    </div>
+    </nav>
   </>
   );
 };

@@ -344,3 +344,40 @@ section, main, article, aside, footer {
   animation: phone-shake 1.5s ease-in-out infinite;
 }
 
+/* Mobile Bottom Nav & Floating Contact Buttons Safe Area Layout */
+:root {
+  --mobile-bottom-nav-height: 64px;
+}
+
+@media (max-width: 1023px) {
+  body,
+  main,
+  .page-content,
+  .public-layout-main {
+    padding-bottom: calc(
+      var(--mobile-bottom-nav-height) +
+      env(safe-area-inset-bottom, 0px) +
+      24px
+    ) !important;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    z-index: 1000 !important;
+  }
+
+  .floating-contact-buttons {
+    bottom: calc(
+      var(--mobile-bottom-nav-height) +
+      env(safe-area-inset-bottom, 0px) +
+      16px
+    ) !important;
+  }
+}
+
+
