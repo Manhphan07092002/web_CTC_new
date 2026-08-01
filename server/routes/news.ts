@@ -151,6 +151,18 @@ router.post('/:id/view', async (req, res) => {
   }
 });
 
+router.post('/:id/like', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id || id === 'undefined') return res.status(400).json({ message: 'Invalid ID' });
+    await db.news.incrementLikesCount(id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error incrementing likes count:', error);
+    res.status(500).json({ message: 'Failed to increment likes count' });
+  }
+});
+
 // Comments routes
 router.get('/:id/comments', async (req, res) => {
   try {

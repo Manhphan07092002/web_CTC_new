@@ -214,6 +214,7 @@ export const api = {
       method: 'DELETE',
     }),
     incrementView: (id: string) => fetchAPI<{ success: boolean }>(`/news/${id}/view`, { method: 'POST' }),
+    incrementLike: (id: string) => fetchAPI<{ success: boolean }>(`/news/${id}/like`, { method: 'POST' }),
     getComments: (id: string) => fetchAPI<any[]>(`/news/${id}/comments`),
     addComment: (id: string, data: { name: string; email?: string; content: string }) => fetchAPI<any>(`/news/${id}/comments`, {
       method: 'POST',

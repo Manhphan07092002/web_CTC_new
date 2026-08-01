@@ -324,6 +324,7 @@ export interface INewsItem extends BaseDocument {
   content?: string;
   author?: string;
   viewCount?: number;        // Lượt xem
+  likes?: number;            // Lượt thích bài viết
   isFeatured?: boolean;      // Bài nổi bật
   featuredOrder?: number;    // Thứ tự nổi bật
   tags?: string[];           // Tags
@@ -342,6 +343,7 @@ const NewsSchema = new Schema<INewsItem>({
   content: { type: String },
   author: { type: String },
   viewCount: { type: Number, default: 0 },
+  likes: { type: Number, default: 0 },
   isFeatured: { type: Boolean, default: false },
   featuredOrder: { type: Number, default: 0 },
   tags: [{ type: String }],

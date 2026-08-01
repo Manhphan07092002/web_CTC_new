@@ -356,6 +356,19 @@ export const db = {
       }
     },
 
+    incrementLikesCount: async (idParam: string) => {
+      if (!idParam) return;
+      try {
+        const newsItem = await db.news.getById(idParam);
+        if (newsItem) {
+          const targetId = newsItem._id || newsItem.id;
+          await News.findByIdAndUpdate(targetId, { $inc: { likes: 1 } });
+        }
+      } catch (err) {
+        console.error('Error incrementing likes count:', err);
+      }
+    },
+
     getFeatured: async (limit = 5) => {
       const items = await News.find({ isFeatured: true }).sort({ featuredOrder: 1, createdAt: -1 }).limit(limit);
       return items.map(toPlainObject<INewsItem>);

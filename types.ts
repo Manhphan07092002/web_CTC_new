@@ -105,6 +105,7 @@ export interface NewsItem {
   isFeatured?: boolean;
   featuredOrder?: number;
   viewCount?: number;
+  likes?: number;
   createdAt?: string;
   updatedAt?: string;
 }

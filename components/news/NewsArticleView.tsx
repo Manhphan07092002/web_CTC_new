@@ -28,13 +28,18 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
   const { settings } = useSettings();
   const logoSrc = settings?.logoHeader || settings?.logo || '/uploads/images/logo/logodo.png';
   
+  const articleId = (news as any)._id || news.id;
   const [copied, setCopied] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
-  const [likes, setLikes] = useState((news as any).likes || 24);
-  const [hasLiked, setHasLiked] = useState(false);
+  const [likes, setLikes] = useState<number>((news as any).likes || 0);
+  const [hasLiked, setHasLiked] = useState<boolean>(() => {
+    return localStorage.getItem(`ctc_news_liked_${articleId}`) === 'true';
+  });
 
   useEffect(() => {
-    setLikes((news as any).likes || 24);
+    const currentId = (news as any)._id || news.id;
+    setLikes((news as any).likes || 0);
+    setHasLiked(localStorage.getItem(`ctc_news_liked_${currentId}`) === 'true');
   }, [news]);
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xlarge'>('normal');
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -175,12 +180,12 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
   };
 
   const handleLike = () => {
+    const targetId = (news as any)._id || news.id;
     if (!hasLiked) {
       setLikes(prev => prev + 1);
       setHasLiked(true);
-    } else {
-      setLikes(prev => prev - 1);
-      setHasLiked(false);
+      localStorage.setItem(`ctc_news_liked_${targetId}`, 'true');
+      api.news.incrementLike(targetId).catch(err => console.error('Error incrementing like:', err));
     }
   };
 
