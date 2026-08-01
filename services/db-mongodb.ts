@@ -111,18 +111,18 @@ const findProductDoc = async (idParam: string) => {
 export const db = {
   products: {
     getAll: async () => {
-      const products = await Product.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 });
+      const products = await Product.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 }).lean();
       return products.map(toPlainObject<IProduct>);
     },
 
     getAllIncludingDeleted: async () => {
-      const products = await Product.find({}).sort({ createdAt: -1 });
+      const products = await Product.find({}).sort({ createdAt: -1 }).lean();
       return products.map(toPlainObject<IProduct>);
     },
 
     getDeleted: async () => {
       console.log('DB: Fetching deleted products...');
-      const products = await Product.find({ isDeleted: true }).sort({ deletedAt: -1 });
+      const products = await Product.find({ isDeleted: true }).sort({ deletedAt: -1 }).lean();
       console.log('DB: Found', products.length, 'deleted products');
       return products.map(toPlainObject<IProduct>);
     },
@@ -138,7 +138,8 @@ export const db = {
         isDeleted: { $ne: true } 
       })
         .sort({ featuredOrder: 1, createdAt: -1 })
-        .limit(limit);
+        .limit(limit)
+        .lean();
       return products.map(toPlainObject<IProduct>);
     },
     

@@ -451,3 +451,9 @@ const server = app.listen(PORT, async () => {
     }
   }
 });
+
+// Configure Server Timeouts for Anti-Slowloris & Connection Reuse
+server.keepAliveTimeout = 65000; // 65 seconds (slightly higher than Nginx 60s default)
+server.headersTimeout = 66000; // Must be greater than keepAliveTimeout
+(server as any).requestTimeout = 30000; // Max 30s per request
+

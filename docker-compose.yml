@@ -1,9 +1,10 @@
 services:
-  # ─── MongoDB ───────────────────────────────────────────────────
+  # ─── MongoDB (Tối ưu WiredTiger Cache 1.5GB cho RAM 6GB) ─────────
   mongo:
     image: mongo:7
     container_name: ctc_mongo
     restart: unless-stopped
+    command: mongod --wiredTigerCacheSizeGB 1.5
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS:-ctcadmin2024}
@@ -15,6 +16,10 @@ services:
       - mongo_config:/data/configdb
     networks:
       - ctc_network
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -22,7 +27,7 @@ services:
       retries: 5
       start_period: 20s
 
-  # ─── App (Express API + Vite static) ───────────────────────────
+  # ─── App (Express API + Vite static - Max Heap 1GB) ─────────────
   app:
     build:
       context: .
@@ -37,7 +42,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      # Override MONGO_URI to point to the mongo service
+      NODE_OPTIONS: "--max-old-space-size=1024"
       MONGO_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-ctcadmin2024}@mongo:27017/ctc_web_new?authSource=admin
       SITE_URL: ${SITE_URL:-https://ctcdn.vn}
       FRONTEND_URL: ${FRONTEND_URL:-https://ctcdn.vn}
@@ -48,6 +53,10 @@ services:
       - uploads_data:/app/uploads
     networks:
       - ctc_network
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:4000/"]
       interval: 30s
@@ -55,7 +64,7 @@ services:
       retries: 3
       start_period: 40s
 
-  # ─── Nginx reverse proxy (optional but recommended) ────────────
+  # ─── Nginx reverse proxy (Fast Micro-cache & SSL) ───────────────
   nginx:
     image: nginx:alpine
     container_name: ctc_nginx
@@ -72,8 +81,13 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./chung chi:/etc/nginx/chung_chi:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /dev/shm:/dev/shm
     networks:
       - ctc_network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
 volumes:
   mongo_data:

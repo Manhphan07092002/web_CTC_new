@@ -14,6 +14,16 @@ const getIPBlacklist = () => mongoose.models.IPBlacklist || mongoose.model('IPBl
 // Simple rate limiting in memory
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
+// Periodic cleanup of expired rate limit keys to prevent RAM leak during DDoS attacks
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of rateLimitStore.entries()) {
+    if (now > record.resetTime) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 60000).unref();
+
 // In-memory blacklist cache (synced with DB)
 const blacklistCache = new Set<string>();
 let blacklistLastSync = 0;
@@ -62,10 +72,10 @@ export const createRateLimit = (windowMs: number, max: number) => {
   };
 };
 
-// Rate limiters (increased significantly for development/testing resilience)
-export const generalRateLimiter = createRateLimit(15 * 60 * 1000, 100000); // 100,000 req/15min
-export const loginRateLimiter = createRateLimit(15 * 60 * 1000, 10000); // 10,000 req/15min
-export const uploadRateLimiter = createRateLimit(60 * 1000, 10000); // 10,000 req/min
+// Rate limiters (Tùy chỉnh ngưỡng vừa phải hỗ trợ trải nghiệm người dùng & chống DDoS)
+export const generalRateLimiter = createRateLimit(15 * 60 * 1000, 3000); // 3,000 req/15min per IP
+export const loginRateLimiter = createRateLimit(15 * 60 * 1000, 30); // 30 req/15min per IP (Brute-force protection)
+export const uploadRateLimiter = createRateLimit(60 * 1000, 60); // 60 req/min per IP
 
 // Security headers
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {

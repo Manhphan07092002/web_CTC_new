@@ -35,7 +35,8 @@
     "seed:team": "npx tsx server/scripts/seed-50-team-members.ts",
     "clear:products": "npx tsx server/scripts/clear-all-products.ts",
     "seed:sql": "npx tsx scripts/import-sql-data.ts",
-    "optimize:images": "node scripts/optimize-uploads.js"
+    "optimize:images": "node scripts/optimize-uploads.js",
+    "test:load": "node scripts/load-test.js"
   },
   "dependencies": {
     "@google/genai": "^1.29.1",
