@@ -3,6 +3,7 @@ import { Search, Filter, RotateCcw, Folder, Check } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLangText } from '../../utils/translation-helper';
 import { useProjectCategories } from '../../hooks/useCategories';
+import { Category } from '../../types';
 
 interface ProjectFilterSidebarProps {
   searchQuery: string;
@@ -12,6 +13,7 @@ interface ProjectFilterSidebarProps {
   totalProjects: number;
   filteredCount: number;
   onReset: () => void;
+  categories?: Category[];
 }
 
 const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
@@ -22,9 +24,12 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
   totalProjects,
   filteredCount,
   onReset,
+  categories: propCategories,
 }) => {
   const { language } = useLanguage();
-  const { categories, loading } = useProjectCategories();
+  const { categories: fetchedCategories, loading } = useProjectCategories();
+
+  const categories = propCategories && propCategories.length > 0 ? propCategories : fetchedCategories;
 
   return (
     <aside className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 space-y-6 sticky top-24">
@@ -36,7 +41,7 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
         {(selectedCategoryId || searchQuery) && (
           <button
             onClick={onReset}
-            className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium hover:underline transition-all"
+            className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium hover:underline transition-all cursor-pointer"
           >
             <RotateCcw size={14} /> {getLangText(language, { vi: 'Xóa bộ lọc', en: 'Clear filters', ko: '필터 초기화', ja: 'フィルターをクリア', zh: '清除筛选', de: 'Filter zurücksetzen' })}
           </button>
@@ -63,12 +68,12 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
       {/* Categories */}
       <div>
         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-          {getLangText(language, { vi: 'Danh mục', en: 'Categories', ko: '카테고리', ja: 'カテゴリー', zh: '项目分类', de: 'Kategorien' })}
+          {getLangText(language, { vi: 'Danh mục dự án', en: 'Project Categories', ko: '프로젝트 카테고리', ja: 'プロジェクトカテゴリー', zh: '项目分类', de: 'Projektkategorien' })}
         </label>
         <div className="space-y-1">
           <button
             onClick={() => onCategoryChange(null)}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
               selectedCategoryId === null
                 ? 'bg-primary text-white shadow-md shadow-primary/20'
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -77,24 +82,55 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
             <span className="flex items-center gap-2">
               <Folder size={16} /> {getLangText(language, { vi: 'Tất cả dự án', en: 'All Projects', ko: '모든 프로젝트', ja: 'すべてのプロジェクト', zh: '全部项目', de: 'Alle Projekte' })}
             </span>
-            {selectedCategoryId === null && <Check size={16} />}
+            <div className="flex items-center gap-2">
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                selectedCategoryId === null ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+              }`}>
+                {totalProjects}
+              </span>
+              {selectedCategoryId === null && <Check size={16} />}
+            </div>
           </button>
 
-          {!loading &&
-            categories.map((cat) => (
+          {loading && categories.length === 0 && (
+            <div className="py-4 text-center text-xs text-gray-400">
+              {getLangText(language, { vi: 'Đang tải danh mục...', en: 'Loading categories...', ko: '카테고리 로드 중...', ja: 'カテゴリーを読み込み中...', zh: '正在加载分类...', de: 'Kategorien werden geladen...' })}
+            </div>
+          )}
+
+          {categories.map((cat, idx) => {
+            const catId = cat.id || cat._id || cat.slug || `proj-cat-${idx}`;
+            const isSelected = selectedCategoryId === cat.id ||
+              selectedCategoryId === cat._id ||
+              selectedCategoryId === cat.slug ||
+              selectedCategoryId === cat.name;
+
+            const count = cat.projectCount !== undefined ? cat.projectCount : undefined;
+
+            return (
               <button
-                key={cat.id || cat._id}
-                onClick={() => onCategoryChange(cat.id || cat._id || null)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                  selectedCategoryId === (cat.id || cat._id)
+                key={`project-cat-${catId}`}
+                onClick={() => onCategoryChange(isSelected ? null : (cat.id || cat._id || cat.slug || cat.name))}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                  isSelected
                     ? 'bg-primary text-white shadow-md shadow-primary/20'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
-                <span>{cat.name}</span>
-                {selectedCategoryId === (cat.id || cat._id) && <Check size={16} />}
+                <span className="truncate pr-2">{cat.name}</span>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {count !== undefined && count > 0 && (
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {count}
+                    </span>
+                  )}
+                  {isSelected && <Check size={16} />}
+                </div>
               </button>
-            ))}
+            );
+          })}
         </div>
       </div>
 
@@ -106,6 +142,15 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
         </p>
         <p className="flex justify-between">
           <span>{getLangText(language, { vi: 'Kết quả tìm kiếm:', en: 'Search results:', ko: '검색 결과:', ja: '検索結果:', zh: '搜索结果:', de: 'Suchergebnisse:' })}</span>
+          <strong className="text-green-600 dark:text-green-400 font-bold">{filteredCount}</strong>
+        </p>
+      </div>
+    </aside>
+  );
+};
+
+export default ProjectFilterSidebar;
+{ vi: 'Kết quả tìm kiếm:', en: 'Search results:', ko: '검색 결과:', ja: '検索結果:', zh: '搜索结果:', de: 'Suchergebnisse:' })}</span>
           <strong className="text-green-600 dark:text-green-400 font-bold">{filteredCount}</strong>
         </p>
       </div>

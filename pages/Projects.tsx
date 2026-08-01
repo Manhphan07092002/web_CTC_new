@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../services/api';
 import { Project } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useProjectCategories } from '../hooks/useCategories';
 import SEO from '../components/SEO';
 import Loading from '../components/Loading';
 import analyticsTracking from '../services/analytics-tracking';
@@ -19,6 +20,7 @@ const ITEMS_PER_PAGE = 9; // 3 items per row x 3 rows = 9 items per page
 
 const Projects: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -26,6 +28,15 @@ const Projects: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { t, language } = useLanguage();
+  const { categories: projectCategories } = useProjectCategories();
+
+  // Read initial category filter from URL query param
+  useEffect(() => {
+    const catParam = searchParams.get('cat') || searchParams.get('category') || searchParams.get('categoryId');
+    if (catParam) {
+      setSelectedCategoryId(catParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     // Track page view
@@ -54,13 +65,50 @@ const Projects: React.FC = () => {
     fetchProjects();
   }, [language]);
 
+  const handleCategoryChange = (catId: string | null) => {
+    setSelectedCategoryId(catId);
+    if (catId) {
+      setSearchParams({ cat: catId });
+    } else {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('cat');
+      newParams.delete('category');
+      newParams.delete('categoryId');
+      setSearchParams(newParams);
+    }
+  };
+
   // Filter projects by category & search query
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
       // Category filter
-      const matchesCategory = selectedCategoryId
-        ? project.categoryId === selectedCategoryId || project.category === selectedCategoryId
-        : true;
+      let matchesCategory = true;
+      if (selectedCategoryId) {
+        const targetCat = projectCategories.find(c =>
+          c.id === selectedCategoryId ||
+          c._id === selectedCategoryId ||
+          c.slug === selectedCategoryId ||
+          c.name?.toLowerCase() === selectedCategoryId.toLowerCase()
+        );
+
+        const projectCatId = typeof project.categoryId === 'object' ? (project.categoryId as any)?._id || (project.categoryId as any)?.id : project.categoryId;
+        const projectCatName = project.category;
+        const projectCatSlug = (project as any).categorySlug;
+
+        if (targetCat) {
+          matchesCategory =
+            projectCatId === targetCat.id ||
+            projectCatId === targetCat._id ||
+            projectCatName === targetCat.name ||
+            projectCatSlug === targetCat.slug;
+        } else {
+          matchesCategory =
+            projectCatId === selectedCategoryId ||
+            projectCatName === selectedCategoryId ||
+            projectCatSlug === selectedCategoryId ||
+            (typeof projectCatName === 'string' && projectCatName.toLowerCase() === selectedCategoryId.toLowerCase());
+        }
+      }
 
       // Search query filter
       const matchesSearch = searchQuery.trim()
@@ -71,7 +119,7 @@ const Projects: React.FC = () => {
 
       return matchesCategory && matchesSearch;
     });
-  }, [projects, selectedCategoryId, searchQuery]);
+  }, [projects, selectedCategoryId, searchQuery, projectCategories]);
 
   // Reset to page 1 whenever filter or search changes
   useEffect(() => {
@@ -89,6 +137,11 @@ const Projects: React.FC = () => {
     setSelectedCategoryId(null);
     setSearchQuery('');
     setCurrentPage(1);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('cat');
+    newParams.delete('category');
+    newParams.delete('categoryId');
+    setSearchParams(newParams);
   };
 
   const closeModal = () => {
@@ -151,10 +204,11 @@ const Projects: React.FC = () => {
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               selectedCategoryId={selectedCategoryId}
-              onCategoryChange={setSelectedCategoryId}
+              onCategoryChange={handleCategoryChange}
               totalProjects={projects.length}
               filteredCount={filteredProjects.length}
               onReset={handleResetFilters}
+              categories={projectCategories}
             />
           </div>
 
