@@ -81,4 +81,5 @@ volumes:
 
 networks:
   ctc_network:
+    name: ctc_network
     driver: bridge
