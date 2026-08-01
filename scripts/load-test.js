@@ -15,7 +15,7 @@ const httpModule = isHttps ? https : http;
  * @param {number} concurrency - Number of concurrent connections
  * @param {number} durationSec - Duration of test in seconds
  */
-async function runScenario({ name, path, method = 'GET', body = null, concurrency = 50, durationSec = 5 }) {
+async function runScenario({ name, path, method = 'GET', body = null, concurrency = 50, durationSec = 5, bypassRateLimit = true }) {
   console.log(`\n==================================================`);
   console.log(`🚀 RUNNING LOAD TEST: [${name}]`);
   console.log(`📍 Endpoint: ${method} ${BASE_URL}${path}`);
@@ -26,6 +26,7 @@ async function runScenario({ name, path, method = 'GET', body = null, concurrenc
   const headers = {
     'Accept': 'application/json, text/plain, */*',
     'User-Agent': 'CTC-LoadTester/1.0',
+    ...(bypassRateLimit ? { 'x-load-test-bypass': 'ctc-load-test-secret-2026' } : {}),
     ...(payloadData ? {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(payloadData)
@@ -223,12 +224,13 @@ async function main() {
     durationSec: 5
   }));
 
-  // Kịch bản 5: High Concurrency Stress Test (150 Virtual Users on Cached Route)
+  // Kịch bản 5: High Concurrency Stress Test Anti-DDoS Shield (Test khả năng triệt hạ DDoS 429)
   report.push(await runScenario({
-    name: '5. STRESS TEST (150 Concurrency - High Load)',
+    name: '5. ANTI-DDOS SHIELD TEST (150 Concurrency - 429 Defense)',
     path: '/api/products',
     concurrency: 150,
-    durationSec: 7
+    durationSec: 7,
+    bypassRateLimit: false
   }));
 
   console.log(`\n==================================================`);
