@@ -256,9 +256,6 @@ Allow: /about
 Sitemap: ${SITE_URL}/sitemap.xml
 Sitemap: ${SITE_URL}/rss.xml
 
-# Crawl-delay
-Crawl-delay: 1
-
 # Host
 Host: ${SITE_URL}
 `;
