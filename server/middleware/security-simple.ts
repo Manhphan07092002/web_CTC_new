@@ -78,9 +78,9 @@ export const createRateLimit = (windowMs: number, max: number) => {
 };
 
 // Rate limiters (Tùy chỉnh ngưỡng vừa phải hỗ trợ trải nghiệm người dùng & chống DDoS)
-export const generalRateLimiter = createRateLimit(15 * 60 * 1000, 3000); // 3,000 req/15min per IP
-export const loginRateLimiter = createRateLimit(15 * 60 * 1000, 30); // 30 req/15min per IP (Brute-force protection)
-export const uploadRateLimiter = createRateLimit(60 * 1000, 60); // 60 req/min per IP
+export const generalRateLimiter = createRateLimit(15 * 60 * 1000, 5000); // 5,000 req/15min per IP
+export const loginRateLimiter = createRateLimit(15 * 60 * 1000, 100); // 100 req/15min per IP (Brute-force protection)
+export const uploadRateLimiter = createRateLimit(60 * 1000, 100); // 100 req/min per IP
 
 // Security headers
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
