@@ -1,0 +1,27 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/v1/mcp.json",
+  "name": "CTC Solar & Industrial Technology WebMCP Service",
+  "description": "Cung cấp các công cụ tra cứu sản phẩm, giải pháp điện mặt trời, dự án EPC và đăng ký tư vấn báo giá CTC",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "submit_ctc_contact_request",
+      "description": "Gửi yêu cầu tư vấn và nhận báo giá EPC giải pháp Điện mặt trời & Hạ tầng công nghiệp CTC",
+      "endpoint": "/api/contact/submit"
+    },
+    {
+      "name": "calculate_solar_system_capacity",
+      "description": "Tính toán công suất hệ thống điện mặt trời CTC, chi phí đầu tư và thời gian hoàn vốn dựa trên hóa đơn tiền điện hàng tháng"
+    },
+    {
+      "name": "search_ctc_products",
+      "description": "Tìm kiếm và lọc danh mục thiết bị điện mặt trời, Inverter, Pin mặt trời, BESS lưu trữ của CTC",
+      "endpoint": "/api/products"
+    },
+    {
+      "name": "search_ctc_projects",
+      "description": "Tra cứu các dự án EPC điện mặt trời và công trình công nghiệp đã thi công bởi CTC",
+      "endpoint": "/api/projects"
+    }
+  ]
+}

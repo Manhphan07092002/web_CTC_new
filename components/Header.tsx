@@ -1070,10 +1070,17 @@ const Header: React.FC = () => {
             <div className="fixed inset-0 z-[10000] bg-white dark:bg-slate-900 flex flex-col p-4 lg:hidden animate-fade-in">
               {/* Mobile Search Input Header Bar */}
               <div className="flex items-center gap-2 pb-3 border-b border-gray-150 dark:border-slate-800">
-                <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center gap-2 bg-gray-100 dark:bg-slate-800 px-3.5 py-2.5 rounded-2xl border border-gray-200/80 dark:border-slate-700/80">
+                <form 
+                  onSubmit={handleSearchSubmit} 
+                  toolname="search_ctc_website"
+                  tooldescription="Tìm kiếm thông tin sản phẩm, dự án, tin tức trên website CTC Solar"
+                  className="flex-1 flex items-center gap-2 bg-gray-100 dark:bg-slate-800 px-3.5 py-2.5 rounded-2xl border border-gray-200/80 dark:border-slate-700/80"
+                >
                   <Search size={20} className="text-gray-400 dark:text-slate-400 flex-shrink-0" />
                   <input
                     type="text"
+                    name="q"
+                    toolparamdescription="Từ khóa tìm kiếm nội dung website CTC"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Tìm kiếm sản phẩm, dự án, tin tức..."
@@ -1254,10 +1261,17 @@ const Header: React.FC = () => {
           {/* Desktop Search Dropdown Panel */}
           <div className="hidden lg:block absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-150 dark:border-slate-800 shadow-xl z-50 animate-slide-down select-none">
             <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-              <form onSubmit={handleSearchSubmit} className="relative flex items-center gap-3">
+              <form 
+                onSubmit={handleSearchSubmit} 
+                toolname="search_ctc_website"
+                tooldescription="Tìm kiếm thông tin sản phẩm, dự án, tin tức trên website CTC Solar"
+                className="relative flex items-center gap-3"
+              >
                 <Search className="text-gray-400 dark:text-gray-500 flex-shrink-0" size={22} />
                 <input
                   type="text"
+                  name="q"
+                  toolparamdescription="Từ khóa tìm kiếm nội dung website CTC"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Nhập từ khóa tìm kiếm (sản phẩm, giải pháp, dự án, tin tức, tài liệu...)"

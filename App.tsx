@@ -107,8 +107,13 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 };
 
 import ProgressBar from './components/ProgressBar';
+import { registerGlobalWebMCPTools } from './services/webmcp-service';
 
 const App: React.FC = () => {
+  useEffect(() => {
+    registerGlobalWebMCPTools();
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
