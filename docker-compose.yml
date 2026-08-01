@@ -71,6 +71,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./chung chi:/etc/nginx/chung_chi:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
       - ctc_network
 
