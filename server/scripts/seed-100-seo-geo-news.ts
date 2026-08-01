@@ -2145,14 +2145,12 @@ async function main(): Promise<void> {
   await mongoose.connect(MONGO_URI);
   console.log('✅ Đã kết nối MongoDB.');
 
-  if (RESET_ALL) {
-    const db = mongoose.connection.db;
-    if (db) {
-      const res1 = await db.collection('news').deleteMany({}).catch(() => ({ deletedCount: 0 }));
-      const res2 = await db.collection('newsarticles').deleteMany({}).catch(() => ({ deletedCount: 0 }));
-      const res3 = await db.collection('newscategories').deleteMany({}).catch(() => ({ deletedCount: 0 }));
-      console.log(`🗑️ Đã xóa sạch toàn bộ bài viết cũ (${(res1.deletedCount || 0) + (res2.deletedCount || 0)} bài) và danh mục tin tức cũ (${res3.deletedCount || 0} danh mục).`);
-    }
+  const db = mongoose.connection.db;
+  if (db) {
+    const res1 = await db.collection('news').deleteMany({}).catch(() => ({ deletedCount: 0 }));
+    const res2 = await db.collection('newsarticles').deleteMany({}).catch(() => ({ deletedCount: 0 }));
+    const res3 = await db.collection('newscategories').deleteMany({}).catch(() => ({ deletedCount: 0 }));
+    console.log(`🗑️ Đã xóa sạch toàn bộ bài viết cũ (${(res1.deletedCount || 0) + (res2.deletedCount || 0)} bài) và danh mục tin tức cũ (${res3.deletedCount || 0} danh mục).`);
   }
 
   const categoryMap = await ensureCategories();
