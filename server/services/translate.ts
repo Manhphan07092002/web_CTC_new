@@ -252,23 +252,28 @@ export async function translateProject(projectData: any): Promise<any> {
  * Auto-translate news fields
  */
 export async function translateNews(newsData: any): Promise<any> {
-  const fieldsToTranslate: Record<string, string> = {};
-  
-  if (newsData.title) fieldsToTranslate.title = newsData.title;
-  if (newsData.excerpt) fieldsToTranslate.excerpt = newsData.excerpt;
-  if (newsData.content) fieldsToTranslate.content = newsData.content;
-  
-  if (Object.keys(fieldsToTranslate).length === 0) {
+  try {
+    const fieldsToTranslate: Record<string, string> = {};
+    
+    if (newsData.title) fieldsToTranslate.title = newsData.title;
+    if (newsData.excerpt) fieldsToTranslate.excerpt = newsData.excerpt;
+    if (newsData.content) fieldsToTranslate.content = newsData.content;
+    
+    if (Object.keys(fieldsToTranslate).length === 0) {
+      return newsData;
+    }
+    
+    console.log('🌐 Auto-translating news:', newsData.title);
+    const translations = await autoTranslate(fieldsToTranslate);
+    
+    return {
+      ...newsData,
+      translations
+    };
+  } catch (err) {
+    console.warn('⚠️ Auto-translate news skipped due to error:', err);
     return newsData;
   }
-  
-  console.log('🌐 Auto-translating news:', newsData.title);
-  const translations = await autoTranslate(fieldsToTranslate);
-  
-  return {
-    ...newsData,
-    translations
-  };
 }
 
 /**

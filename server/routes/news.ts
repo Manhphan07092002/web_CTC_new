@@ -74,10 +74,14 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    // Auto-translate news
-    const translatedData = await translateNews(req.body);
+    let translatedData = req.body;
+    try {
+      translatedData = await translateNews(req.body);
+    } catch (e) {
+      console.warn('⚠️ Auto-translate skipped:', e);
+    }
     const created = await db.news.add(translatedData);
-    console.log('News created with translations:', created.id);
+    console.log('News created:', created.id);
     
     // Helper tao Clean SEO URL cho Indexing
     const getCleanUrl = (item: any) => {
