@@ -38,9 +38,7 @@ const MONGO_URI =
 const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://ctcdn.vn').replace(/\/$/, '');
 const PUBLISH_NEWS = String(process.env.PUBLISH_NEWS || 'true').toLowerCase() === 'true';
 const INDEX_NEWS = String(process.env.INDEX_NEWS || 'true').toLowerCase() === 'true';
-const RESET_SEEDED_NEWS =
-  String(process.env.RESET_SEEDED_NEWS || 'false').toLowerCase() === 'true';
-const RESET_ALL = String(process.env.RESET_ALL || 'false').toLowerCase() === 'true' || RESET_SEEDED_NEWS;
+const RESET_ALL = String(process.env.RESET_ALL || 'true').toLowerCase() !== 'false';
 const DRY_RUN = String(process.env.DRY_RUN || 'false').toLowerCase() === 'true';
 
 const SEED_SOURCE = 'ctcdn-keyword-plan-2026-v1';
