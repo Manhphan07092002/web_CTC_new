@@ -36,11 +36,12 @@ const MONGO_URI =
   process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 
 const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://ctcdn.vn').replace(/\/$/, '');
-const PUBLISH_NEWS = String(process.env.PUBLISH_NEWS || 'false').toLowerCase() === 'true';
-const INDEX_NEWS = String(process.env.INDEX_NEWS || 'false').toLowerCase() === 'true';
+const PUBLISH_NEWS = String(process.env.PUBLISH_NEWS || 'true').toLowerCase() === 'true';
+const INDEX_NEWS = String(process.env.INDEX_NEWS || 'true').toLowerCase() === 'true';
 const RESET_SEEDED_NEWS =
   String(process.env.RESET_SEEDED_NEWS || 'false').toLowerCase() === 'true';
-const DRY_RUN = String(process.env.DRY_RUN || 'true').toLowerCase() === 'true';
+const RESET_ALL = String(process.env.RESET_ALL || 'false').toLowerCase() === 'true' || RESET_SEEDED_NEWS;
+const DRY_RUN = String(process.env.DRY_RUN || 'false').toLowerCase() === 'true';
 
 const SEED_SOURCE = 'ctcdn-keyword-plan-2026-v1';
 
@@ -102,8 +103,8 @@ const NewsCategory =
   mongoose.model('NewsCategory', NewsCategorySchema);
 
 const NewsArticle =
-  mongoose.models.NewsArticle ||
-  mongoose.model('NewsArticle', NewsArticleSchema);
+  mongoose.models.News ||
+  mongoose.model('News', NewsArticleSchema);
 
 type ClusterKey =
   | 'solar'
@@ -2146,9 +2147,14 @@ async function main(): Promise<void> {
   await mongoose.connect(MONGO_URI);
   console.log('✅ Đã kết nối MongoDB.');
 
-  if (RESET_SEEDED_NEWS) {
-    const result = await NewsArticle.deleteMany({ seedSource: SEED_SOURCE });
-    console.log(`🗑️ Đã xóa ${result.deletedCount} bài thuộc seed này.`);
+  if (RESET_ALL) {
+    const db = mongoose.connection.db;
+    if (db) {
+      const res1 = await db.collection('news').deleteMany({}).catch(() => ({ deletedCount: 0 }));
+      const res2 = await db.collection('newsarticles').deleteMany({}).catch(() => ({ deletedCount: 0 }));
+      const res3 = await db.collection('newscategories').deleteMany({}).catch(() => ({ deletedCount: 0 }));
+      console.log(`🗑️ Đã xóa sạch toàn bộ bài viết cũ (${(res1.deletedCount || 0) + (res2.deletedCount || 0)} bài) và danh mục tin tức cũ (${res3.deletedCount || 0} danh mục).`);
+    }
   }
 
   const categoryMap = await ensureCategories();
