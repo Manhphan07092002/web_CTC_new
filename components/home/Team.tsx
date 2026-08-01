@@ -17,18 +17,6 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
   const parallax = useMouseParallax();
   const { ref: teamRef, isInView } = useInView(0.1);
 
-  const getTranslatedRole = (role: string) => {
-    if (!role) return '';
-    const r = role.toUpperCase();
-    if (r.includes('GIÁM ĐỐC') || r.includes('EXECUTIVE')) {
-      return getLangText(language, { vi: 'GIÁM ĐỐC ĐIỀU HÀNH', en: 'CHIEF EXECUTIVE OFFICER', ko: '최고 경영자 (CEO)', ja: '最高経営責任者 (CEO)', zh: '首席执行官 (CEO)', de: 'HAUPTGESCHÄFTSFÜHRER (CEO)' });
-    }
-    if (r.includes('KỸ SƯ TRƯỞNG') || r.includes('CHIEF ENGINEER')) {
-      return getLangText(language, { vi: 'KỸ SƯ TRƯỞNG', en: 'CHIEF ENGINEER', ko: '수석 엔지니어', ja: '主任技師', zh: '总工程师', de: 'CHEFINGENIEUR' });
-    }
-    return role;
-  };
-
   return (
     <section ref={teamRef} className="py-24 bg-slate-50 dark:bg-[#060d1d] relative overflow-hidden transition-colors duration-300">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -207,7 +195,7 @@ const Team: React.FC<TeamProps> = ({ teamMembers, isLoading = false }) => {
                 </div>
                 <div className="text-center pb-3">
                   <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-1 group-hover:text-sky-500 transition-colors">{member.name}</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{getTranslatedRole(member.role)}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{member.role}</p>
                 </div>
               </div>
             );
