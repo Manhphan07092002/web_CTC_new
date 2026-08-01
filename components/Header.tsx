@@ -906,9 +906,9 @@ const Header: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <Link to="/admin/login" className="hover:text-sky-400 transition-colors hidden lg:flex items-center gap-1 font-semibold text-slate-200">
+              <Link to="/admin/login" className="hover:text-sky-400 transition-colors hidden lg:flex items-center gap-1 font-semibold text-slate-200" title={getLangText(language, { vi: 'Quản trị hệ thống', en: 'Admin Portal', ko: '관리 포털', ja: '管理ポータル', zh: '管理入口', de: 'Admin Portal' })}>
                 <User size={13} className="text-sky-400" />
-                <span>Đăng nhập</span>
+                <span>{getLangText(language, { vi: 'Quản trị', en: 'Admin', ko: '관리', ja: '管理', zh: '管理', de: 'Verwaltung' })}</span>
               </Link>
             )}
           </div>
