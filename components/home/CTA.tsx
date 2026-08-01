@@ -138,13 +138,21 @@ const CTA: React.FC = () => {
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                  <form 
+                    onSubmit={handleSubmit} 
+                    toolname="quick_ctc_consultation"
+                    tooldescription="Form đăng ký nhận tư vấn giải pháp nhanh từ đội ngũ kỹ sư CTC"
+                    className="space-y-4" 
+                    noValidate
+                  >
                     <div>
                       <label htmlFor="cta-name" className="block text-xs font-bold text-white mb-1.5">{getLangText(language, { vi: 'Họ và tên', en: 'Full Name', ko: '성명', ja: 'お名前', zh: '姓名', de: 'Vollständiger Name' })} *</label>
                       <input
                         id="cta-name"
                         required
                         type="text"
+                        name="name"
+                        toolparamdescription="Họ và tên người dùng"
                         value={formData.name}
                         onChange={(e) => updateField('name', e.target.value)}
                         className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm"
@@ -162,11 +170,11 @@ const CTA: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="cta-phone" className="block text-xs font-bold text-white mb-1.5">{getLangText(language, { vi: 'Số điện thoại', en: 'Phone Number', ko: '전화번호', ja: '電話番号', zh: '电话号码', de: 'Telefonnummer' })} *</label>
-                        <input id="cta-phone" required type="tel" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0915 059 666" />
+                        <input id="cta-phone" required type="tel" name="phone" toolparamdescription="Số điện thoại liên hệ" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm" placeholder="0915 059 666" />
                       </div>
                       <div>
                         <label htmlFor="cta-email" className="block text-xs font-bold text-white mb-1.5">{t('contact.email')} *</label>
-                        <input id="cta-email" required type="email" value={formData.email} onChange={(e) => updateField('email', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm" placeholder="email@example.com" />
+                        <input id="cta-email" required type="email" name="email" toolparamdescription="Địa chỉ Email nhận thông tin" value={formData.email} onChange={(e) => updateField('email', e.target.value)} className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm" placeholder="email@example.com" />
                       </div>
                     </div>
 
@@ -176,6 +184,8 @@ const CTA: React.FC = () => {
                         id="cta-message"
                         required
                         rows={4}
+                        name="message"
+                        toolparamdescription="Nội dung nhu cầu cần tư vấn kỹ thuật"
                         value={formData.message}
                         onChange={(e) => updateField('message', e.target.value)}
                         className="cta-contact-input w-full rounded-xl px-4 py-3 text-sm resize-y"

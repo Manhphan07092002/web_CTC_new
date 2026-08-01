@@ -137,7 +137,12 @@ const TrackOrder: React.FC = () => {
         {/* Search Form (Only if no order is selected) */}
         {!selectedOrder && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 p-6 sm:p-8 shadow-md mb-6 transition-all">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form 
+              onSubmit={handleSubmit} 
+              toolname="track_ctc_order"
+              tooldescription="Form tra cứu trạng thái đơn hàng CTC theo mã đơn hoặc số điện thoại"
+              className="space-y-4"
+            >
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-2">
                   Thông tin tìm kiếm
@@ -147,6 +152,8 @@ const TrackOrder: React.FC = () => {
                   <input
                     type="text"
                     id="track-search-input"
+                    name="orderQuery"
+                    toolparamdescription="Mã đơn hàng (CTC-ORD-...) hoặc Số điện thoại đặt hàng"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Nhập mã đơn (CTC-ORD-...) hoặc số điện thoại..."
