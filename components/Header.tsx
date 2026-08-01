@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare, ShoppingCart, Search, RefreshCw, ChevronRight, Home, LayoutGrid, ShoppingBag } from 'lucide-react';
+import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare, ShoppingCart, Search, RefreshCw, ChevronRight, Home, LayoutGrid, ShoppingBag, User, LogOut } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import { api } from '../services/api';
 import { Category } from '../types';
 import { getLangText } from '../utils/translation-helper';
@@ -439,6 +440,7 @@ const Header: React.FC = () => {
   const { theme, themeMode, toggleTheme, setThemeMode } = useTheme();
   const { settings } = useSettings();
   const { totalItems } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
 
   // Scroll handler with hysteresis deadband (50px / 10px) to eliminate header flickering chatter
   useEffect(() => {
@@ -888,7 +890,27 @@ const Header: React.FC = () => {
             </div>
 
             <div className="h-3 w-px bg-white/20 hidden sm:block"></div>
-            <Link to="/admin" className="hover:text-sky-400 transition-colors hidden lg:block font-medium">{t('header.admin')}</Link>
+            {isAuthenticated ? (
+              <div className="hidden lg:flex items-center gap-2">
+                <Link to="/admin" className="hover:text-sky-400 transition-colors font-medium flex items-center gap-1 text-sky-300">
+                  <User size={13} />
+                  <span>{user?.name || t('header.admin')}</span>
+                </Link>
+                <button 
+                  onClick={logout} 
+                  className="text-slate-400 hover:text-red-400 transition-colors text-[11px] font-medium flex items-center gap-0.5 ml-1 cursor-pointer"
+                  title="Đăng xuất"
+                >
+                  <LogOut size={12} />
+                  <span>(Thoát)</span>
+                </button>
+              </div>
+            ) : (
+              <Link to="/admin/login" className="hover:text-sky-400 transition-colors hidden lg:flex items-center gap-1 font-semibold text-slate-200">
+                <User size={13} className="text-sky-400" />
+                <span>Đăng nhập</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -925,13 +947,13 @@ const Header: React.FC = () => {
                   className={`flex items-center text-xs xl:text-sm font-bold uppercase tracking-wider transition-colors duration-200 ${getNavLinkClass(link.path)}`}
                 >
                   <span itemProp="name">{(link as any).displayName || link.name}</span>
-                  {link.submenu && (
+                  {Boolean(link.submenu && link.submenu.length > 0) && (
                     <ChevronDown size={13} className="ml-1 group-hover:rotate-180 transition-transform duration-300" />
                   )}
                 </Link>
 
                 {/* Submenu Dropdown */}
-                {link.submenu && (
+                {Boolean(link.submenu && link.submenu.length > 0) && (
                   <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 z-50">
                     {link.key === 'products' && categoryTree.length > 0 ? (
                       <HeaderMegaMenu categoryTree={categoryTree} onNavigate={() => {}} />
@@ -983,6 +1005,29 @@ const Header: React.FC = () => {
                 </span>
               )}
             </Link>
+
+            {/* User Account / Login Button in Desktop Navigation */}
+            {isAuthenticated ? (
+              <Link 
+                to="/admin" 
+                className="p-2.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2 text-xs font-bold shadow-sm"
+                title={`Tài khoản: ${user?.name || user?.email}`}
+                style={{ color: isScrolled ? undefined : 'white' }}
+              >
+                <User size={18} className="text-sky-400" />
+                <span className="hidden xl:inline max-w-[100px] truncate">{user?.name || 'Admin'}</span>
+              </Link>
+            ) : (
+              <Link 
+                to="/admin/login" 
+                className="p-2.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2 text-xs font-bold shadow-sm"
+                title="Đăng nhập tài khoản"
+                style={{ color: isScrolled ? undefined : 'white' }}
+              >
+                <User size={18} className="text-sky-400" />
+                <span className="hidden xl:inline">Đăng nhập</span>
+              </Link>
+            )}
 
             <a 
               href={settings.headerCtaLink || "https://zalo.me/0915059666"} 
@@ -1485,7 +1530,7 @@ const Header: React.FC = () => {
                   >
                     {(link as any).displayName || link.name}
                   </Link>
-                  {link.submenu && (
+                  {Boolean(link.submenu && link.submenu.length > 0) && (
                     <button 
                       onClick={() => toggleMobileSubmenu(link.key)}
                       className="p-3 text-slate-400 min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -1497,7 +1542,7 @@ const Header: React.FC = () => {
                 </div>
 
                 {/* Mobile Dropdown Sublinks */}
-                {link.submenu && expandedMobileMenu === link.key && (
+                {Boolean(link.submenu && link.submenu.length > 0) && expandedMobileMenu === link.key && (
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl mb-3 overflow-hidden border border-gray-100/50 dark:border-slate-800 p-2 space-y-1">
                     {link.key === 'products' && categoryTree.length > 0 ? (
                       <RecursiveMobileCategoryMenu 
@@ -1536,6 +1581,48 @@ const Header: React.FC = () => {
                 <Phone size={14} className="phone-vibe-icon" />
                 <span>{getLangText(language, { vi: 'Liên hệ Zalo', en: 'Zalo Support', ko: 'Zalo 문의', ja: 'Zaloサポート', zh: 'Zalo客服', de: 'Zalo Support' })}</span>
               </a>
+
+              {/* Mobile Login / User Profile Box */}
+              <div className="mt-2 pt-3 border-t border-gray-100 dark:border-slate-800">
+                {isAuthenticated ? (
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-gray-200/60 dark:border-slate-800">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-500 flex items-center justify-center font-bold flex-shrink-0">
+                        <User size={18} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{user?.name || 'Admin'}</p>
+                        <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                      <Link 
+                        to="/admin" 
+                        onClick={() => setIsMenuOpen(false)}
+                        className="px-3 py-1.5 bg-sky-500 text-white text-[11px] font-bold rounded-lg shadow-sm"
+                      >
+                        Quản trị
+                      </Link>
+                      <button 
+                        onClick={() => { logout(); setIsMenuOpen(false); }}
+                        className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg cursor-pointer"
+                        title="Đăng xuất"
+                      >
+                        <LogOut size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <Link 
+                    to="/admin/login" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 w-full py-3 bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs font-bold uppercase rounded-xl transition-all"
+                  >
+                    <User size={16} className="text-sky-500" />
+                    <span>Đăng nhập tài khoản</span>
+                  </Link>
+                )}
+              </div>
               {/* Mobile Language Selector */}
               <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
                 <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2.5 text-center">
