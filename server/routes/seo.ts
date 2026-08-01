@@ -168,7 +168,7 @@ router.get('/sitemap.xml', async (req, res) => {
  */
 const handleRss = async (req: express.Request, res: express.Response) => {
   try {
-    const news = await News.find({}).sort({ createdAt: -1 }).limit(50).lean();
+    const news = await News.find({}).sort({ createdAt: -1 }).limit(100).lean();
     const buildDate = new Date().toUTCString();
 
     const createSlug = (str: string) => {
@@ -189,18 +189,16 @@ const handleRss = async (req: express.Request, res: express.Response) => {
       const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
       const slugStr = (item as any).slug || createSlug((item as any).title);
       const link = `${SITE_URL}/news/${slugStr}-${shortHash}`;
-      const title = (item.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      const description = (item.excerpt || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      const author = item.author || 'CTC News';
+      const title = item.title || '';
+      const description = item.excerpt || '';
       const pubDate = item.createdAt ? new Date(item.createdAt).toUTCString() : new Date().toUTCString();
 
       return `
     <item>
-      <title>${title}</title>
+      <title><![CDATA[${title}]]></title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
-      <description>${description}</description>
-      <author>${author}</author>
+      <description><![CDATA[${description}]]></description>
       <pubDate>${pubDate}</pubDate>
     </item>`;
     }).join('');
