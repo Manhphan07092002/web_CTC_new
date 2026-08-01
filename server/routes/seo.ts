@@ -15,21 +15,6 @@ const router = express.Router();
 // Site configuration
 const SITE_URL = process.env.SITE_URL || 'https://ctcdn.vn';
 
-// 301 Redirect for legacy PDF files & broken paths to Homepage (SEO Best Practice)
-router.use((req, res, next) => {
-  const reqPath = (req.path || '').toLowerCase();
-  if (
-    reqPath.endsWith('.pdf') ||
-    reqPath.includes('tinh_hinh_tai_chinh') ||
-    reqPath.includes('image/pdf') ||
-    reqPath.includes('pdf')
-  ) {
-    console.log(`[SEO 301 Redirect] Legacy PDF path requested: ${req.path} -> Redirecting to /`);
-    return res.redirect(301, `${SITE_URL}/`);
-  }
-  next();
-});
-
 // Favicon fallback route
 router.get('/favicon.ico', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../public/favicon.svg'));

@@ -197,6 +197,22 @@ app.use(i18nMiddleware.handle(i18next));
 app.use(i18nHelpers);
 
 // ============================================
+// LEGACY URL 301 REDIRECTS FOR SEO (Bing/Google Old Links)
+// ============================================
+app.use((req, res, next) => {
+  const lowerPath = req.path.toLowerCase();
+  if (
+    lowerPath.includes('tinh_hinh_tai_chinh') ||
+    lowerPath.includes('/image/pdf') ||
+    (lowerPath.endsWith('.pdf') && !fs.existsSync(path.join(process.cwd(), 'public', req.path)) && !fs.existsSync(path.join(process.cwd(), 'uploads', req.path)))
+  ) {
+    console.log(`🔀 301 Redirecting legacy URL: ${req.originalUrl} -> /about`);
+    return res.redirect(301, '/about');
+  }
+  next();
+});
+
+// ============================================
 // STATIC FILES WITH 30-DAY BROWSER CACHING
 // ============================================
 const uploadsPath = path.join(process.cwd(), 'uploads');
