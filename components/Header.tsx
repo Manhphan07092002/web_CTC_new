@@ -1006,28 +1006,7 @@ const Header: React.FC = () => {
               )}
             </Link>
 
-            {/* User Account / Login Button in Desktop Navigation */}
-            {isAuthenticated ? (
-              <Link 
-                to="/admin" 
-                className="p-2.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2 text-xs font-bold shadow-sm"
-                title={`Tài khoản: ${user?.name || user?.email}`}
-                style={{ color: isScrolled ? undefined : 'white' }}
-              >
-                <User size={18} className="text-sky-400" />
-                <span className="hidden xl:inline max-w-[100px] truncate">{user?.name || 'Admin'}</span>
-              </Link>
-            ) : (
-              <Link 
-                to="/admin/login" 
-                className="p-2.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2 text-xs font-bold shadow-sm"
-                title="Đăng nhập tài khoản"
-                style={{ color: isScrolled ? undefined : 'white' }}
-              >
-                <User size={18} className="text-sky-400" />
-                <span className="hidden xl:inline">Đăng nhập</span>
-              </Link>
-            )}
+
 
             <a 
               href={settings.headerCtaLink || "https://zalo.me/0915059666"} 
