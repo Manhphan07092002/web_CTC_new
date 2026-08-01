@@ -82,25 +82,25 @@ router.get('/sitemap.xml', async (req, res) => {
 
     // Dynamic pages from database
     try {
-      // Products
-      const products = await Product.find({ isActive: true }).select('slug updatedAt').lean();
+      // Products (430 items)
+      const products = await Product.find({ isDeleted: { $ne: true } }).select('_id slug updatedAt').lean();
       for (const product of products) {
         links.push({
           url: `/products/${product._id}`,
           changefreq: 'weekly',
-          priority: 0.7,
-          lastmod: product.updatedAt?.toISOString()
+          priority: 0.8,
+          lastmod: (product as any).updatedAt ? new Date((product as any).updatedAt).toISOString() : new Date().toISOString()
         });
       }
 
-      // Projects
-      const projects = await Project.find({ isActive: true }).select('slug updatedAt').lean();
+      // Projects (300 items)
+      const projects = await Project.find({ isDeleted: { $ne: true } }).select('_id slug updatedAt').lean();
       for (const project of projects) {
         links.push({
           url: `/projects/${project._id}`,
           changefreq: 'monthly',
-          priority: 0.6,
-          lastmod: project.updatedAt?.toISOString()
+          priority: 0.7,
+          lastmod: (project as any).updatedAt ? new Date((project as any).updatedAt).toISOString() : new Date().toISOString()
         });
       }
 
