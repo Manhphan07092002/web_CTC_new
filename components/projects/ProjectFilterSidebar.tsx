@@ -150,12 +150,3 @@ const ProjectFilterSidebar: React.FC<ProjectFilterSidebarProps> = ({
 };
 
 export default ProjectFilterSidebar;
-{ vi: 'Kết quả tìm kiếm:', en: 'Search results:', ko: '검색 결과:', ja: '検索結果:', zh: '搜索结果:', de: 'Suchergebnisse:' })}</span>
-          <strong className="text-green-600 dark:text-green-400 font-bold">{filteredCount}</strong>
-        </p>
-      </div>
-    </aside>
-  );
-};
-
-export default ProjectFilterSidebar;
