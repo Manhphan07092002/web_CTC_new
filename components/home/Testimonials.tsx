@@ -88,7 +88,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials, isLoading = f
           display: flex;
           gap: 1.75rem;
           width: max-content;
-          animation: testi-marquee 30s linear infinite;
+          animation: testi-marquee 85s linear infinite;
         }
         .testi-track:hover { animation-play-state: paused; }
 
