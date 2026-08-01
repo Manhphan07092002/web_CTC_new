@@ -1,15 +1,15 @@
-
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { Product } from '../types';
-import { Search, Filter, ChevronRight, SlidersHorizontal, ChevronLeft } from 'lucide-react';
+import { Search, Filter, ChevronRight, SlidersHorizontal, ChevronLeft, List } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import SEO from '../components/SEO';
 import CategoryFilter from '../components/CategoryFilter';
 import { useProductCategories } from '../hooks/useCategories';
 import analyticsTracking from '../services/analytics-tracking';
-import { ProductsHero, FilterSidebar, ProductGrid, ProductsCTA } from '../components/products';
+import { ProductsHero, FilterSidebar, ProductGrid, ProductsCTA, MobileCategoryDrawer } from '../components/products';
 import { useCart } from '../contexts/CartContext';
 import { getProductUrl } from '../utils/news-url-helper';
 
@@ -31,6 +31,10 @@ const Products: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('default');
 
+  // UI States
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [showMobileCatDrawer, setShowMobileCatDrawer] = useState(false);
+
   // Technical Filters States
   const [techFilters, setTechFilters] = useState({
     minPrice: '',
@@ -40,9 +44,6 @@ const Products: React.FC = () => {
     minEff: '',
     maxEff: ''
   });
-
-  // UI States
-  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
@@ -309,40 +310,62 @@ const Products: React.FC = () => {
         }}
       />
 
+      {/* Off-Canvas Mobile Category Drawer */}
+      <MobileCategoryDrawer
+        isOpen={showMobileCatDrawer}
+        onClose={() => setShowMobileCatDrawer(false)}
+        categories={productCategories}
+        activeCategoryKey={activeCategoryKey}
+        onSelectCategory={handleCategoryChange}
+        t={t}
+      />
+
       {/* Breadcrumb / Toolbar Header */}
-      <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[108px] md:top-[120px] z-30 shadow-sm transition-colors duration-300">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-              <Link to="/" className="hover:text-primary transition-colors">{t('nav.home')}</Link>
-              <ChevronRight size={14} className="mx-2" />
-              <Link to="/products" className="hover:text-primary transition-colors">{t('nav.products')}</Link>
-              <ChevronRight size={14} className="mx-2" />
-              <span className="text-primary font-bold uppercase">{getCurrentCategoryName()}</span>
+      <div id="product-catalog" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[60px] sm:top-[70px] md:top-[120px] z-30 shadow-sm transition-colors duration-300">
+        <div className="container mx-auto px-4 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 overflow-x-auto whitespace-nowrap py-1">
+              <Link to="/" className="hover:text-primary transition-colors flex-shrink-0">{t('nav.home')}</Link>
+              <ChevronRight size={14} className="mx-1.5 flex-shrink-0" />
+              <Link to="/products" className="hover:text-primary transition-colors flex-shrink-0">{t('nav.products')}</Link>
+              <ChevronRight size={14} className="mx-1.5 flex-shrink-0" />
+              <span className="text-primary font-bold uppercase truncate max-w-[200px] sm:max-w-none">{getCurrentCategoryName()}</span>
             </div>
 
-            <button
-              className="md:hidden flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg font-bold text-gray-700 dark:text-gray-200"
-              onClick={() => setShowMobileFilter(!showMobileFilter)}
-            >
-              <Filter size={18} /> {t('products.filter')}
-            </button>
+            <div className="lg:hidden flex items-center gap-2">
+              <button
+                type="button"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-800 text-white px-3.5 py-2 rounded-xl font-bold text-xs uppercase tracking-wide shadow-md active:scale-95 transition-all cursor-pointer min-h-[40px]"
+                onClick={() => setShowMobileCatDrawer(true)}
+              >
+                <List size={16} /> Danh mục sản phẩm
+              </button>
+
+              <button
+                type="button"
+                className="flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-2 rounded-xl font-bold text-xs text-gray-700 dark:text-gray-200 transition-colors cursor-pointer min-h-[40px]"
+                onClick={() => setShowMobileFilter(!showMobileFilter)}
+              >
+                <Filter size={16} /> {t('products.filter')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile Filter Drawer */}
-      {showMobileFilter && (
-        <div className="fixed inset-0 z-[60] md:hidden">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobileFilter(false)}></div>
-          <div className="absolute right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 p-6 overflow-y-auto shadow-2xl animate-slide-in-right transition-colors duration-300">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">{t('products.filter')}</h3>
-              <button onClick={() => setShowMobileFilter(false)} className="text-gray-700 dark:text-gray-300">
-                <ChevronRight size={24} />
+      {/* Mobile Filter Drawer (Technical Filters) */}
+      {showMobileFilter && createPortal(
+        <div className="fixed inset-0 z-[9998] lg:hidden">
+          <div className="absolute inset-0 bg-black/55 backdrop-blur-xs" onClick={() => setShowMobileFilter(false)}></div>
+          <div className="absolute right-0 top-0 h-full w-80 max-w-[85%] bg-white dark:bg-gray-800 p-5 overflow-y-auto shadow-2xl animate-slide-in-right transition-colors duration-300 z-[9999]">
+            <div className="flex justify-between items-center mb-5 pb-3 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="font-bold text-base text-gray-800 dark:text-gray-100 uppercase tracking-wider">{t('products.filter')}</h3>
+              <button onClick={() => setShowMobileFilter(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300">
+                <ChevronRight size={22} />
               </button>
             </div>
             <FilterSidebar
+              hideCategories={true}
               activeCategoryKey={activeCategoryKey}
               handleCategoryChange={handleCategoryChange}
               productCategories={productCategories}
@@ -355,7 +378,8 @@ const Products: React.FC = () => {
               t={t}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Main Grid Content */}
@@ -380,15 +404,6 @@ const Products: React.FC = () => {
 
           {/* RIGHT CONTENT - PRODUCT LIST */}
           <div className="flex-1 min-w-0">
-            {/* Horizontal Category Tabs Filter - Hidden on Desktop to avoid duplicate filters */}
-            <div className="mb-6 lg:hidden">
-              <CategoryFilter
-                type="product"
-                selectedCategoryId={selectedCategoryId}
-                onCategoryChange={handleCategoryFilterChange}
-                showAll={true}
-              />
-            </div>
 
             {/* Toolbar Search / Sort */}
             <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 transition-colors duration-300">

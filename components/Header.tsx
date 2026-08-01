@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Phone, Globe, ChevronDown, ChevronUp, Moon, Sun, Monitor, MessageSquare, ShoppingCart, Search, RefreshCw, ChevronRight, Home, LayoutGrid, ShoppingBag } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
@@ -894,10 +895,10 @@ const Header: React.FC = () => {
       )}
 
       {/* Main Navigation Row */}
-      <div className="container mx-auto px-4 py-2.5">
-        <div className="flex justify-between items-center">
+      <div className="container mx-auto px-4 py-2 sm:py-2.5">
+        <div className="flex justify-between items-center w-full min-h-[52px] sm:min-h-[60px]">
           
-          {/* Logo Section */}
+          {/* Logo Section (Positioned Left on Mobile & Desktop) */}
           <Link to="/" className="logo-wrapper flex items-center group flex-shrink-0" aria-label={settings.siteName || "CTC Web"}>
             <img 
               src={settings.logoHeader || settings.logo} 
@@ -952,7 +953,7 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Right Action Button (Blue capsule button matching website theme) */}
+          {/* Right Action Button (Desktop) */}
           <div className="hidden lg:flex items-center gap-3">
             <button 
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -995,50 +996,62 @@ const Header: React.FC = () => {
                   en: 'CONTACT US',
                   ko: '문의하기',
                   ja: 'お問い合わせ',
-                  zh: '联系我们',
+                  zh: '联系 chúng tôi',
                   de: 'KONTAKT'
                 })}
               </span>
             </a>
           </div>
 
-          {/* Mobile Menu & Cart Toggle */}
-          <div className="flex items-center gap-2 lg:hidden">
+          {/* Mobile Right Action Icons (Sequence: Search -> Cart -> Menu) */}
+          <div className="flex items-center gap-3.5 sm:gap-4 lg:hidden flex-shrink-0">
+            {/* 1. Search Icon */}
             <button 
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-slate-800 dark:text-white hover:text-primary transition-colors flex items-center justify-center cursor-pointer"
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors cursor-pointer active:scale-95 ${
+                isScrolled 
+                  ? 'text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800' 
+                  : 'text-white hover:bg-white/10'
+              }`}
               style={{ color: isScrolled ? undefined : 'white' }}
               aria-label="Tìm kiếm"
             >
-              <Search size={24} />
+              <Search size={22} />
               <span className="sr-only">Tìm kiếm</span>
             </button>
 
+            {/* 2. Cart Icon */}
             <Link 
               to="/cart" 
-              className="relative p-2 text-sky-400 hover:text-sky-300 transition-colors"
+              className={`w-10 h-10 rounded-xl relative flex items-center justify-center transition-colors active:scale-95 ${
+                isScrolled 
+                  ? 'text-sky-500 dark:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-800' 
+                  : 'text-sky-400 hover:bg-white/10'
+              }`}
               aria-label="Giỏ hàng"
             >
               <ShoppingCart size={22} />
               <span className="sr-only">Giỏ hàng</span>
               {totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-md">
+                <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold shadow-md border border-white dark:border-slate-900">
                   {totalItems}
                 </span>
               )}
             </Link>
 
+            {/* 3. Hamburger Menu Icon */}
             <button 
               onClick={toggleMenu} 
               aria-label={isMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
               title={isMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
-              className={`p-2 rounded-xl transition-colors ${
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                 isScrolled 
                   ? 'text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800' 
                   : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: isScrolled ? undefined : 'white' }}
             >
-              {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               <span className="sr-only">{isMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}</span>
             </button>
           </div>
@@ -1046,200 +1059,389 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Live Search Panel Dropdown */}
+      {/* Live Search Panel (Mobile Fullscreen Portal & Desktop Dropdown) */}
       {isSearchOpen && (
-        <div className="absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-150 dark:border-slate-800 shadow-xl z-50 animate-slide-down select-none">
-          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-            <form onSubmit={handleSearchSubmit} className="relative flex items-center gap-3">
-              <Search className="text-gray-400 dark:text-gray-500 flex-shrink-0" size={22} />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Nhập từ khóa tìm kiếm (sản phẩm, giải pháp, dự án, tin tức, tài liệu...)"
-                className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-800 dark:text-white text-base py-2 placeholder-gray-400 dark:placeholder-gray-500 font-medium"
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={handleCloseSearch}
-                className="p-1.5 rounded-full hover:bg-gray-150 dark:hover:bg-slate-850 text-gray-500 dark:text-gray-400 transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </form>
-
-            {/* Popular Trending Search Tags */}
-            {!searchQuery.trim() && (
-              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-1">
-                  Từ khóa hot:
-                </span>
-                {[
-                  'Router MikroTik',
-                  'Inverter 5kW',
-                  'Cáp mạng Cat6',
-                  'Tổng đài VoIP',
-                  'Pin Lithium',
-                  'Switch PoE',
-                  'Module quang SFP'
-                ].map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => setSearchQuery(tag)}
-                    className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-sky-900/40 text-slate-700 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 text-xs font-semibold transition-all cursor-pointer border border-transparent hover:border-sky-300 dark:hover:border-sky-700"
-                  >
-                    🔥 {tag}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {searchQuery.trim() && (
-              <div className="mt-4 border-t border-gray-100 dark:border-slate-850 pt-4 max-h-[70vh] overflow-y-auto">
-                {searchLoading ? (
-                  <div className="flex items-center justify-center py-8 gap-2.5 text-gray-500 dark:text-gray-400 text-sm">
-                    <RefreshCw className="animate-spin text-primary" size={18} />
-                    <span>Đang tìm kiếm gợi ý...</span>
-                  </div>
-                ) : liveResults && (
-                  Object.values(liveResults).every((arr: any) => arr.length === 0) ? (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm font-medium">
-                      Không tìm thấy gợi ý nào khớp với từ khóa "{searchQuery}"
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
-                      {/* Products */}
-                      {liveResults.products?.length > 0 && (
-                        <div className="space-y-3">
-                          <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Sản phẩm</h3>
-                          <div className="space-y-2">
-                            {liveResults.products.map((p: any) => (
-                              <Link
-                                key={p._id}
-                                to={`/products/${p._id}`}
-                                onClick={handleCloseSearch}
-                                className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
-                              >
-                                <img src={p.image} className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-gray-700" />
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{p.name}</h4>
-                                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-semibold uppercase">{p.code || p.category}</p>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Solutions */}
-                      {liveResults.solutions?.length > 0 && (
-                        <div className="space-y-3">
-                          <h3 className="text-xs font-bold text-gray-455 dark:text-gray-500 uppercase tracking-widest pl-1">Giải pháp</h3>
-                          <div className="space-y-2">
-                            {liveResults.solutions.map((s: any) => (
-                              <Link
-                                key={s.slug}
-                                to={s.path}
-                                onClick={handleCloseSearch}
-                                className="block p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
-                              >
-                                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">{s.title}</h4>
-                                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 line-clamp-2 leading-relaxed">{s.description}</p>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Projects */}
-                      {liveResults.projects?.length > 0 && (
-                        <div className="space-y-3">
-                          <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Dự án</h3>
-                          <div className="space-y-2">
-                            {liveResults.projects.map((pr: any) => (
-                              <Link
-                                key={pr._id}
-                                to={`/projects/${pr._id}`}
-                                onClick={handleCloseSearch}
-                                className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
-                              >
-                                <img src={pr.image} className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-gray-700" />
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{pr.title}</h4>
-                                  <p className="text-[10px] text-gray-455 dark:text-gray-500 mt-0.5 truncate">{pr.location || pr.category}</p>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Documents */}
-                      {liveResults.resources?.length > 0 && (
-                        <div className="space-y-3">
-                          <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Tài liệu</h3>
-                          <div className="space-y-2">
-                            {liveResults.resources.map((r: any) => (
-                              <a
-                                key={r._id}
-                                href={r.fileUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
-                              >
-                                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{r.title}</h4>
-                                <p className="text-[10px] text-gray-455 dark:text-gray-500 mt-0.5 font-bold uppercase">{r.size || 'PDF'}</p>
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* News */}
-                      {liveResults.news?.length > 0 && (
-                        <div className="space-y-3">
-                          <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Tin tức</h3>
-                          <div className="space-y-2">
-                            {liveResults.news.map((n: any) => (
-                              <Link
-                                key={n._id}
-                                to={`/news/${n._id}`}
-                                onClick={handleCloseSearch}
-                                className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
-                              >
-                                <img src={n.image} className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-gray-700" />
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{n.title}</h4>
-                                  <p className="text-[10px] text-gray-455 dark:text-gray-500 mt-0.5">{new Date(n.date).toLocaleDateString('vi-VN')}</p>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )
-                )}
-
-                {/* View all results */}
-                {!searchLoading && searchQuery.trim() && (
-                  <div className="mt-6 border-t border-gray-100 dark:border-slate-855 pt-4 text-center">
+        <>
+          {/* Mobile Fullscreen Search Modal (Portaled to body to escape stacking context) */}
+          {createPortal(
+            <div className="fixed inset-0 z-[10000] bg-white dark:bg-slate-900 flex flex-col p-4 lg:hidden animate-fade-in">
+              {/* Mobile Search Input Header Bar */}
+              <div className="flex items-center gap-2 pb-3 border-b border-gray-150 dark:border-slate-800">
+                <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center gap-2 bg-gray-100 dark:bg-slate-800 px-3.5 py-2.5 rounded-2xl border border-gray-200/80 dark:border-slate-700/80">
+                  <Search size={20} className="text-gray-400 dark:text-slate-400 flex-shrink-0" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Tìm kiếm sản phẩm, dự án, tin tức..."
+                    className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-800 dark:text-white text-sm font-medium placeholder-gray-400 dark:placeholder-slate-400"
+                    autoFocus
+                  />
+                  {searchQuery && (
                     <button
-                      type="submit"
-                      onClick={handleSearchSubmit}
-                      className="inline-flex items-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full shadow-md transition-all active:scale-[0.98]"
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 flex-shrink-0"
                     >
-                      <Search size={14} />
-                      <span>Xem tất cả kết quả tìm kiếm</span>
+                      <X size={16} />
                     </button>
-                  </div>
-                )}
+                  )}
+                </form>
+                <button
+                  type="button"
+                  onClick={handleCloseSearch}
+                  className="px-2 py-1 text-sm font-bold text-sky-600 dark:text-sky-400 hover:opacity-80 transition-opacity flex-shrink-0 cursor-pointer"
+                >
+                  Hủy
+                </button>
               </div>
-            )}
+
+              {/* Popular Trending Search Tags on Mobile */}
+              {!searchQuery.trim() && (
+                <div className="mt-4">
+                  <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
+                    🔥 Từ khóa hot:
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      'Router MikroTik',
+                      'Inverter 5kW',
+                      'Cáp mạng Cat6',
+                      'Tổng đài VoIP',
+                      'Pin Lithium',
+                      'Switch PoE',
+                      'Module quang SFP'
+                    ].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => setSearchQuery(tag)}
+                        className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-sky-950/50 text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 text-xs font-semibold transition-all border border-gray-200/50 dark:border-slate-700/50 active:scale-95 cursor-pointer"
+                      >
+                        🔥 {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Mobile Search Results List */}
+              {searchQuery.trim() && (
+                <div className="flex-1 overflow-y-auto mt-3 pr-1 pb-10">
+                  {searchLoading ? (
+                    <div className="flex items-center justify-center py-12 gap-2 text-gray-500 text-sm">
+                      <RefreshCw className="animate-spin text-primary" size={18} />
+                      <span>Đang tìm kiếm gợi ý...</span>
+                    </div>
+                  ) : liveResults && (
+                    Object.values(liveResults).every((arr: any) => arr.length === 0) ? (
+                      <div className="text-center py-12 text-gray-500 text-sm">
+                        Không tìm thấy gợi ý nào khớp với từ khóa "{searchQuery}"
+                      </div>
+                    ) : (
+                      <div className="space-y-5">
+                        {/* Products */}
+                        {liveResults.products?.length > 0 && (
+                          <div>
+                            <h3 className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Sản phẩm ({liveResults.products.length})</h3>
+                            <div className="space-y-2">
+                              {liveResults.products.map((p: any) => (
+                                <Link
+                                  key={p._id}
+                                  to={`/products/${p._id}`}
+                                  onClick={handleCloseSearch}
+                                  className="flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 dark:bg-slate-800/60 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-colors"
+                                >
+                                  <img src={p.image} className="w-12 h-12 object-cover rounded-lg border border-gray-200 dark:border-slate-700 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{p.name}</h4>
+                                    <p className="text-[10px] text-gray-400 dark:text-slate-400 font-semibold uppercase mt-0.5">{p.code || p.category}</p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Solutions */}
+                        {liveResults.solutions?.length > 0 && (
+                          <div>
+                            <h3 className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Giải pháp ({liveResults.solutions.length})</h3>
+                            <div className="space-y-2">
+                              {liveResults.solutions.map((s: any) => (
+                                <Link
+                                  key={s.slug}
+                                  to={s.path}
+                                  onClick={handleCloseSearch}
+                                  className="block p-3 rounded-xl bg-gray-50 dark:bg-slate-800/60 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-colors"
+                                >
+                                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100">{s.title}</h4>
+                                  <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-1 line-clamp-2">{s.description}</p>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Projects */}
+                        {liveResults.projects?.length > 0 && (
+                          <div>
+                            <h3 className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Dự án ({liveResults.projects.length})</h3>
+                            <div className="space-y-2">
+                              {liveResults.projects.map((pr: any) => (
+                                <Link
+                                  key={pr._id}
+                                  to={`/projects/${pr._id}`}
+                                  onClick={handleCloseSearch}
+                                  className="flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 dark:bg-slate-800/60 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-colors"
+                                >
+                                  <img src={pr.image} className="w-12 h-12 object-cover rounded-lg border border-gray-200 dark:border-slate-700 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{pr.title}</h4>
+                                    <p className="text-[10px] text-gray-400 dark:text-slate-400 truncate mt-0.5">{pr.location || pr.category}</p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* News */}
+                        {liveResults.news?.length > 0 && (
+                          <div>
+                            <h3 className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Tin tức ({liveResults.news.length})</h3>
+                            <div className="space-y-2">
+                              {liveResults.news.map((n: any) => (
+                                <Link
+                                  key={n._id}
+                                  to={`/news/${n._id}`}
+                                  onClick={handleCloseSearch}
+                                  className="flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 dark:bg-slate-800/60 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-colors"
+                                >
+                                  <img src={n.image} className="w-12 h-12 object-cover rounded-lg border border-gray-200 dark:border-slate-700 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{n.title}</h4>
+                                    <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5">{new Date(n.date).toLocaleDateString('vi-VN')}</p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Submit button */}
+                        <div className="pt-2 text-center">
+                          <button
+                            type="button"
+                            onClick={handleSearchSubmit}
+                            className="w-full py-3 bg-primary text-white text-xs font-bold uppercase rounded-xl shadow-md active:scale-98 transition-transform cursor-pointer"
+                          >
+                            Xem tất cả kết quả cho "{searchQuery}"
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+            </div>,
+            document.body
+          )}
+
+          {/* Desktop Search Dropdown Panel */}
+          <div className="hidden lg:block absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-150 dark:border-slate-800 shadow-xl z-50 animate-slide-down select-none">
+            <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+              <form onSubmit={handleSearchSubmit} className="relative flex items-center gap-3">
+                <Search className="text-gray-400 dark:text-gray-500 flex-shrink-0" size={22} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Nhập từ khóa tìm kiếm (sản phẩm, giải pháp, dự án, tin tức, tài liệu...)"
+                  className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-800 dark:text-white text-base py-2 placeholder-gray-400 dark:placeholder-gray-500 font-medium"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={handleCloseSearch}
+                  className="p-1.5 rounded-full hover:bg-gray-150 dark:hover:bg-slate-850 text-gray-500 dark:text-gray-400 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </form>
+
+              {/* Popular Trending Search Tags */}
+              {!searchQuery.trim() && (
+                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-1">
+                    Từ khóa hot:
+                  </span>
+                  {[
+                    'Router MikroTik',
+                    'Inverter 5kW',
+                    'Cáp mạng Cat6',
+                    'Tổng đài VoIP',
+                    'Pin Lithium',
+                    'Switch PoE',
+                    'Module quang SFP'
+                  ].map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => setSearchQuery(tag)}
+                      className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-sky-900/40 text-slate-700 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 text-xs font-semibold transition-all cursor-pointer border border-transparent hover:border-sky-300 dark:hover:border-sky-700"
+                    >
+                      🔥 {tag}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {searchQuery.trim() && (
+                <div className="mt-4 border-t border-gray-100 dark:border-slate-855 pt-4 max-h-[70vh] overflow-y-auto">
+                  {searchLoading ? (
+                    <div className="flex items-center justify-center py-8 gap-2.5 text-gray-500 dark:text-gray-400 text-sm">
+                      <RefreshCw className="animate-spin text-primary" size={18} />
+                      <span>Đang tìm kiếm gợi ý...</span>
+                    </div>
+                  ) : liveResults && (
+                    Object.values(liveResults).every((arr: any) => arr.length === 0) ? (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm font-medium">
+                        Không tìm thấy gợi ý nào khớp với từ khóa "{searchQuery}"
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
+                        {/* Products */}
+                        {liveResults.products?.length > 0 && (
+                          <div className="space-y-3">
+                            <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Sản phẩm</h3>
+                            <div className="space-y-2">
+                              {liveResults.products.map((p: any) => (
+                                <Link
+                                  key={p._id}
+                                  to={`/products/${p._id}`}
+                                  onClick={handleCloseSearch}
+                                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
+                                >
+                                  <img src={p.image} className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-gray-700" />
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{p.name}</h4>
+                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-semibold uppercase">{p.code || p.category}</p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Solutions */}
+                        {liveResults.solutions?.length > 0 && (
+                          <div className="space-y-3">
+                            <h3 className="text-xs font-bold text-gray-455 dark:text-gray-500 uppercase tracking-widest pl-1">Giải pháp</h3>
+                            <div className="space-y-2">
+                              {liveResults.solutions.map((s: any) => (
+                                <Link
+                                  key={s.slug}
+                                  to={s.path}
+                                  onClick={handleCloseSearch}
+                                  className="block p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
+                                >
+                                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">{s.title}</h4>
+                                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 line-clamp-2 leading-relaxed">{s.description}</p>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Projects */}
+                        {liveResults.projects?.length > 0 && (
+                          <div className="space-y-3">
+                            <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Dự án</h3>
+                            <div className="space-y-2">
+                              {liveResults.projects.map((pr: any) => (
+                                <Link
+                                  key={pr._id}
+                                  to={`/projects/${pr._id}`}
+                                  onClick={handleCloseSearch}
+                                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
+                                >
+                                  <img src={pr.image} className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-gray-700" />
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{pr.title}</h4>
+                                    <p className="text-[10px] text-gray-455 dark:text-gray-500 mt-0.5 truncate">{pr.location || pr.category}</p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Documents */}
+                        {liveResults.resources?.length > 0 && (
+                          <div className="space-y-3">
+                            <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Tài liệu</h3>
+                            <div className="space-y-2">
+                              {liveResults.resources.map((r: any) => (
+                                <a
+                                  key={r._id}
+                                  href={r.fileUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
+                                >
+                                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{r.title}</h4>
+                                  <p className="text-[10px] text-gray-455 dark:text-gray-500 mt-0.5 font-bold uppercase">{r.size || 'PDF'}</p>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* News */}
+                        {liveResults.news?.length > 0 && (
+                          <div className="space-y-3">
+                            <h3 className="text-xs font-bold text-gray-450 dark:text-gray-500 uppercase tracking-widest pl-1">Tin tức</h3>
+                            <div className="space-y-2">
+                              {liveResults.news.map((n: any) => (
+                                <Link
+                                  key={n._id}
+                                  to={`/news/${n._id}`}
+                                  onClick={handleCloseSearch}
+                                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
+                                >
+                                  <img src={n.image} className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-gray-700" />
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary truncate transition-colors">{n.title}</h4>
+                                    <p className="text-[10px] text-gray-455 dark:text-gray-500 mt-0.5">{new Date(n.date).toLocaleDateString('vi-VN')}</p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  )}
+
+                  {/* View all results */}
+                  {!searchLoading && searchQuery.trim() && (
+                    <div className="mt-6 border-t border-gray-100 dark:border-slate-855 pt-4 text-center">
+                      <button
+                        type="submit"
+                        onClick={handleSearchSubmit}
+                        className="inline-flex items-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full shadow-md transition-all active:scale-[0.98]"
+                      >
+                        <Search size={14} />
+                        <span>Xem tất cả kết quả tìm kiếm</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
 

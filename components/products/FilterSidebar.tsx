@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { List, ChevronRight, SlidersHorizontal, Zap, Activity, DollarSign, Tag } from 'lucide-react';
 import { Category } from '../../types';
@@ -13,6 +13,7 @@ import {
 } from '../../utils/categoryTreeHelper';
 
 interface FilterSidebarProps {
+  hideCategories?: boolean;
   activeCategoryKey: string;
   handleCategoryChange: (key: string) => void;
   productCategories: Category[];
@@ -151,6 +152,7 @@ const RecursiveSidebarCategoryItem: React.FC<{
 };
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({
+  hideCategories = false,
   activeCategoryKey,
   handleCategoryChange,
   productCategories,
@@ -165,8 +167,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const { language } = useLanguage();
   const isFilterActive = techFilters.minPrice || techFilters.maxPrice || techFilters.minPower || techFilters.maxPower || techFilters.minEff || techFilters.maxEff;
 
-  const allCats = getActiveCategories();
-  const categoryTree = buildCategoryTree(allCats);
+  const allCats = useMemo(() => {
+    return getActiveCategories ? getActiveCategories() : (productCategories || []).filter(c => c.isActive !== false);
+  }, [getActiveCategories, productCategories]);
+
+  const categoryTree = useMemo(() => {
+    return buildCategoryTree(allCats);
+  }, [allCats]);
 
   // State lưu danh sách ID các danh mục đang mở (Default closed, chỉ mở nhánh active)
   const [openMenuIds, setOpenMenuIds] = useState<string[]>([]);
@@ -182,7 +189,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       );
       if (activeCat) {
         const ancestorIds = getCategoryAncestorIds(activeCat.id, allCats);
-        setOpenMenuIds(prev => Array.from(new Set([...prev, ...ancestorIds])));
+        setOpenMenuIds(prev => {
+          const missing = ancestorIds.filter(id => !prev.includes(id));
+          if (missing.length === 0) return prev;
+          return Array.from(new Set([...prev, ...ancestorIds]));
+        });
       }
     }
   }, [activeCategoryKey, allCats]);
@@ -210,51 +221,55 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sticky top-[160px] md:top-[170px]">
-      {/* Categories */}
-      <h3 className="font-bold text-lg text-corporate dark:text-sky-400 mb-6 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
-        <List size={20} className="text-primary" /> {t('products.category_list')}
-      </h3>
-      <nav className="space-y-1 mb-8">
-        {/* Tất cả danh mục */}
-        <button
-          onClick={() => handleCategoryChange('all')}
-          className={`w-full text-left py-2.5 rounded-r-lg text-sm font-bold transition-all flex items-center justify-between group border-l-4 ${
-            activeCategoryKey === 'all'
-              ? 'border-primary bg-gradient-to-r from-primary/8 to-transparent text-primary'
-              : 'border-transparent text-gray-600 dark:text-gray-300 hover:border-primary/30 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:text-primary'
-          }`}
-          style={{ paddingLeft: '12px', paddingRight: '12px' }}
-        >
-          <span>{t('common.all_categories')}</span>
-          <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition-colors ${
-            activeCategoryKey === 'all'
-              ? 'bg-primary/15 text-primary'
-              : 'bg-gray-100 dark:bg-gray-750 text-gray-400 dark:text-gray-400 group-hover:bg-primary/10 group-hover:text-primary'
-          }`}>
-            {t('common.all')}
-          </span>
-        </button>
+      {/* Categories (Conditionally rendered when hideCategories is false) */}
+      {!hideCategories && (
+        <>
+          <h3 className="font-bold text-lg text-corporate dark:text-sky-400 mb-6 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">
+            <List size={20} className="text-primary" /> {t('products.category_list')}
+          </h3>
+          <nav className="space-y-1 mb-8">
+            {/* Tất cả danh mục */}
+            <button
+              onClick={() => handleCategoryChange('all')}
+              className={`w-full text-left py-2.5 rounded-r-lg text-sm font-bold transition-all flex items-center justify-between group border-l-4 ${
+                activeCategoryKey === 'all'
+                  ? 'border-primary bg-gradient-to-r from-primary/8 to-transparent text-primary'
+                  : 'border-transparent text-gray-600 dark:text-gray-300 hover:border-primary/30 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:text-primary'
+              }`}
+              style={{ paddingLeft: '12px', paddingRight: '12px' }}
+            >
+              <span>{t('common.all_categories')}</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition-colors ${
+                activeCategoryKey === 'all'
+                  ? 'bg-primary/15 text-primary'
+                  : 'bg-gray-100 dark:bg-gray-750 text-gray-400 dark:text-gray-400 group-hover:bg-primary/10 group-hover:text-primary'
+              }`}>
+                {t('common.all')}
+              </span>
+            </button>
 
-        {/* Categories từ database (Mở đệ quy từng cấp) */}
-        {categoriesLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="w-full pl-3 pr-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-750 animate-pulse">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-            </div>
-          ))
-        ) : (
-          categoryTree.map((rootNode) => (
-            <RecursiveSidebarCategoryItem
-              key={rootNode.id}
-              node={rootNode}
-              activeCategoryKey={activeCategoryKey}
-              openMenuIds={openMenuIds}
-              toggleMenu={toggleMenu}
-              handleCategoryChange={handleCategoryChange}
-            />
-          ))
-        )}
-      </nav>
+            {/* Categories từ database (Mở đệ quy từng cấp) */}
+            {categoriesLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="w-full pl-3 pr-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-750 animate-pulse">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                </div>
+              ))
+            ) : (
+              categoryTree.map((rootNode) => (
+                <RecursiveSidebarCategoryItem
+                  key={rootNode.id}
+                  node={rootNode}
+                  activeCategoryKey={activeCategoryKey}
+                  openMenuIds={openMenuIds}
+                  toggleMenu={toggleMenu}
+                  handleCategoryChange={handleCategoryChange}
+                />
+              ))
+            )}
+          </nav>
+        </>
+      )}
 
       {/* Technical & Price Filters */}
       <h3 className="font-bold text-lg text-corporate dark:text-sky-400 mb-4 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-4">

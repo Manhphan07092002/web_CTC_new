@@ -3,7 +3,7 @@
  * Custom hook để fetch và quản lý categories
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../services/api';
 import { Category } from '../types';
 
@@ -43,17 +43,17 @@ export function useCategories(type: CategoryType) {
     }
   };
 
-  const getCategoryById = (id: string) => {
+  const getCategoryById = useCallback((id: string) => {
     return categories.find(cat => cat.id === id);
-  };
+  }, [categories]);
 
-  const getCategoryBySlug = (slug: string) => {
+  const getCategoryBySlug = useCallback((slug: string) => {
     return categories.find(cat => cat.slug === slug);
-  };
+  }, [categories]);
 
-  const getActiveCategories = () => {
+  const getActiveCategories = useCallback(() => {
     return categories.filter(cat => cat.isActive !== false);
-  };
+  }, [categories]);
 
   return {
     categories,

@@ -379,14 +379,15 @@ section, main, article, aside, footer {
     ) !important;
   }
 
-  /* ── Mobile Header Logo: Framed White Background ──────────────────── */
+  /* ── Mobile Header Logo: Left Aligned 48px ──────────────────── */
   .logo-wrapper {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 52px !important;
-    height: 52px !important;
-    padding: 4px !important;
+    height: 48px !important;
+    width: auto !important;
+    max-width: 160px !important;
+    padding: 3px 6px !important;
     flex-shrink: 0 !important;
     background: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
@@ -397,8 +398,9 @@ section, main, article, aside, footer {
 
   .header-logo {
     display: block !important;
-    width: 100% !important;
+    width: auto !important;
     height: 100% !important;
+    max-height: 42px !important;
     object-fit: contain !important;
     border-radius: 8px !important;
     border: none !important;
@@ -407,6 +409,32 @@ section, main, article, aside, footer {
     max-width: unset !important;
   }
 }
+
+/* ── Mobile Category Off-canvas Drawer Styles ── */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9998;
+}
+
+.mobile-category-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 82%;
+  max-width: 320px;
+  height: 100dvh;
+  overflow-y: auto;
+  background: #fff;
+  z-index: 9999;
+  transition: transform 0.25s ease;
+}
+
+.dark .mobile-category-drawer {
+  background: #0f172a;
+}
+
 
 
 
