@@ -105,6 +105,49 @@ const SolarCalculator: React.FC = () => {
     setRoofArea(area); setBatteryCapacity(E_battery);
   }, [monthlyBill, daytimeUsageRatio, customerType]);
 
+  // WebMCP Tool Registration for AI Agents
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && navigator.modelContext) {
+      navigator.modelContext.registerTool({
+        name: 'calculate_solar_system_capacity',
+        description: 'Tính toán công suất hệ thống điện mặt trời CTC, chi phí đầu tư và thời gian hoàn vốn dựa trên hóa đơn tiền điện hàng tháng',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            monthlyBill: {
+              type: 'number',
+              description: 'Số tiền điện trung bình hàng tháng (VNĐ)'
+            },
+            customerType: {
+              type: 'string',
+              enum: ['residential', 'commercial'],
+              description: 'Loại hộ sử dụng: residential (Hộ gia đình) hoặc commercial (Doanh nghiệp)'
+            }
+          },
+          required: ['monthlyBill']
+        },
+        execute: async (args: { monthlyBill: number; customerType?: 'residential' | 'commercial' }) => {
+          const bill = args.monthlyBill || 2000000;
+          const kwhMonth = calculateKwhFromBill(bill);
+          const kwhDay = kwhMonth / 30;
+          const sizeKwp = Math.max(3, Math.round((kwhDay * COVERAGE_RATIO / H_PV) * 2) / 2);
+          const estCost = sizeKwp * COST_PER_KWP;
+          const estProdMonth = sizeKwp * PR * H_PV * 30 * ETA_SYS;
+          const estSavingsMonth = bill * 0.70;
+          const roi = estCost / (estSavingsMonth * 12);
+          return {
+            recommendedCapacityKwp: sizeKwp,
+            estimatedCostVnd: estCost,
+            monthlyProductionKwh: Math.round(estProdMonth),
+            estimatedMonthlySavingsVnd: Math.round(estSavingsMonth),
+            paybackYears: Math.round(roi * 10) / 10,
+            requiredRoofAreaM2: Math.round(sizeKwp * 5.45)
+          };
+        }
+      });
+    }
+  }, []);
+
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
 

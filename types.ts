@@ -161,3 +161,19 @@ export enum PageRoute {
   CONTACT = '/contact',
   ADMIN = '/admin',
 }
+
+// WebMCP Navigator Extensions for AI Agent Browsing
+declare global {
+  interface Navigator {
+    modelContext?: {
+      registerTool: (tool: {
+        name: string;
+        description: string;
+        inputSchema: Record<string, any>;
+        execute: (args: any) => Promise<any>;
+      }) => void;
+      unregisterTool?: (name: string) => void;
+    };
+  }
+}
+

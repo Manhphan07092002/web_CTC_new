@@ -195,7 +195,12 @@ const ContactForm: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form 
+                  onSubmit={handleSubmit} 
+                  className="space-y-5"
+                  toolname="submit_ctc_contact_request"
+                  tooldescription="Gửi yêu cầu tư vấn và nhận báo giá EPC giải pháp Điện mặt trời & Hạ tầng công nghiệp CTC"
+                >
                   {/* Honeypot field for anti-spam bots */}
                   <input
                     type="text"
@@ -218,6 +223,8 @@ const ContactForm: React.FC = () => {
                         <input
                           required
                           type="text"
+                          name="name"
+                          toolparamdescription="Họ và tên khách hàng cần tư vấn"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder={getLangText(language, { vi: 'Ví dụ: Nguyễn Văn A', en: 'e.g. John Smith', ko: '예: 홍길동', ja: '例: 山田太郎', zh: '例如: 张三', de: 'z.B. Max Mustermann' })}
@@ -235,6 +242,8 @@ const ContactForm: React.FC = () => {
                         <input
                           required
                           type="tel"
+                          name="phone"
+                          toolparamdescription="Số điện thoại di động liên hệ tư vấn"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           placeholder="0915 059 666"
@@ -254,6 +263,8 @@ const ContactForm: React.FC = () => {
                       <div className="relative">
                         <input
                           type="email"
+                          name="email"
+                          toolparamdescription="Địa chỉ Email nhận báo giá giải pháp CTC"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder="company@domain.com"
@@ -270,6 +281,8 @@ const ContactForm: React.FC = () => {
                       <div className="relative">
                         <input
                           type="text"
+                          name="address"
+                          toolparamdescription="Địa điểm lắp đặt dự án hoặc Tỉnh thành"
                           value={formData.address}
                           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                           placeholder={getLangText(language, { vi: 'Ví dụ: KCN Hòa Khánh, Đà Nẵng', en: 'e.g. Hoa Khanh IP, Da Nang', ko: '예: 다낭 화칸 산업단지', ja: '例: ダナン ホアカン工業団地', zh: '例如: 岘港和庆工业区', de: 'z.B. Industriegebiet Hoa Khanh, Da Nang' })}
@@ -288,6 +301,8 @@ const ContactForm: React.FC = () => {
                     <div className="relative">
                       <input
                         type="text"
+                        name="service"
+                        toolparamdescription="Hạng mục giải pháp quan tâm (VD: Điện mặt trời 500kWp, BESS lưu trữ, Trạm biến áp)"
                         value={formData.service}
                         onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                         placeholder={getLangText(language, { vi: 'Ví dụ: Điện mặt trời mái nhà xưởng 500kWp, BESS lưu trữ, Trạm biến áp...', en: 'e.g. Factory Rooftop Solar 500kWp, BESS storage, 110kV Substation...', ko: '예: 공장 옥상 태양광 500kWp, BESS 저장장치, 110kV 변전소...', ja: '例: 工場屋根太陽光500kWp、BESS蓄電池、110kV変電所...', zh: '例如: 工厂屋顶光伏500kWp, BESS储能系统, 110kV变电站...', de: 'z.B. Fabrik-Dachsolar 500kWp, BESS Speicher, 110kV Umspannwerk...' })}
@@ -305,6 +320,8 @@ const ContactForm: React.FC = () => {
                     <div className="relative">
                       <textarea
                         rows={3}
+                        name="message"
+                        toolparamdescription="Chi tiết yêu cầu thiết kế dự án hoặc ghi chú bổ sung"
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder={getLangText(language, { vi: 'Mô tả chi tiết diện tích mái nhà xưởng, mức tiêu thụ điện năng hàng tháng...', en: 'Describe roof area, monthly electricity consumption...', ko: '공장 옥상 면적, 월간 전력 소비량 등 상세 설명...', ja: '屋根面積や月間電力使用量などの詳細をご入力ください...', zh: '请描述厂房屋顶面积、每月用电量等详细需求...', de: 'Beschreiben Sie Dachfläche, monatlichen Stromverbrauch...' })}
