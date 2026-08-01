@@ -62,6 +62,8 @@ services:
     restart: unless-stopped
     depends_on:
       - app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "80:80"
       - "443:443"
