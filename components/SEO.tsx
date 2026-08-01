@@ -69,7 +69,7 @@ export const COMPANY_INFO = {
   phone: '02363745555',
   phoneFormatted: '+84 236 3745 555',
   email: 'info@ctcdn.vn',
-  website: 'https://www.ctcdn.vn',
+  website: 'https://ctcdn.vn',
   address: {
     street: '50B Nguyễn Du',
     ward: 'Phường Thạch Thang',
