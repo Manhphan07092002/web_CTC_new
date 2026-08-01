@@ -50,18 +50,34 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const AdminDashboard = lazy(() => import('./admin/Dashboard'));
 const Login = lazy(() => import('./admin/Login'));
 
-// Deferred ChatBox loading wrapper for peak mobile INP & hydration speed
+// Deferred ChatBox loading wrapper for peak mobile INP, FCP & hydration speed
 const LazyIdleChatBox: React.FC = () => {
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const handle = (window as any).requestIdleCallback(() => setShouldRender(true), { timeout: 3500 });
-      return () => (window as any).cancelIdleCallback(handle);
-    } else {
-      const timer = setTimeout(() => setShouldRender(true), 2000);
-      return () => clearTimeout(timer);
-    }
+    const triggerLoad = () => {
+      setShouldRender(true);
+      window.removeEventListener('pointerdown', triggerLoad);
+      window.removeEventListener('touchstart', triggerLoad);
+      window.removeEventListener('scroll', triggerLoad);
+      window.removeEventListener('keydown', triggerLoad);
+    };
+
+    window.addEventListener('pointerdown', triggerLoad, { passive: true, once: true });
+    window.addEventListener('touchstart', triggerLoad, { passive: true, once: true });
+    window.addEventListener('scroll', triggerLoad, { passive: true, once: true });
+    window.addEventListener('keydown', triggerLoad, { passive: true, once: true });
+
+    // Fallback load for long sessions (8s delay)
+    const timer = setTimeout(() => setShouldRender(true), 8000);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('pointerdown', triggerLoad);
+      window.removeEventListener('touchstart', triggerLoad);
+      window.removeEventListener('scroll', triggerLoad);
+      window.removeEventListener('keydown', triggerLoad);
+    };
   }, []);
 
   if (!shouldRender) return null;

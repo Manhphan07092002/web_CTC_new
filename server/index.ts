@@ -209,6 +209,16 @@ app.use('/uploads', express.static(uploadsPath, {
   }
 }));
 
+const publicPath = path.join(process.cwd(), 'public');
+app.use(express.static(publicPath, {
+  maxAge: '30d',
+  etag: true,
+  immutable: true,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+  }
+}));
+
 // ============================================
 // ROUTES
 // ============================================

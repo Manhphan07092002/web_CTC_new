@@ -1,5 +1,4 @@
 
-import { GoogleGenAI, Chat } from "@google/genai";
 import { api } from "./api";
 
 export interface ChatMessage {
@@ -8,7 +7,7 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-let chatSession: Chat | null = null;
+let chatSession: any = null;
 let currentConfigKey = "";
 
 const DEFAULT_SYSTEM_INSTRUCTION = `
@@ -62,6 +61,7 @@ const isQuotaOrAuthError = (errMsg: string, statusCode?: number): boolean => {
 };
 
 const executeGeminiCall = async (apiKey: string, modelName: string, temperature: number, systemInstruction: string, text: string): Promise<string> => {
+  const { GoogleGenAI } = await import("@google/genai");
   const ai = new GoogleGenAI({ apiKey });
   const chat = ai.chats.create({
     model: modelName,
@@ -82,6 +82,7 @@ const executeGeminiCallStream = async (
   text: string, 
   onChunk: (chunk: string) => void
 ): Promise<string> => {
+  const { GoogleGenAI } = await import("@google/genai");
   const ai = new GoogleGenAI({ apiKey });
   const chat = ai.chats.create({
     model: modelName,

@@ -37,6 +37,7 @@ export default defineConfig(({ mode }) => {
       legalComments: 'none',
     } : {},
     build: {
+      emptyOutDir: false,
       cssCodeSplit: true,
       target: 'es2020',
       minify: 'esbuild',
@@ -45,7 +46,6 @@ export default defineConfig(({ mode }) => {
       reportCompressedSize: false,
       chunkSizeWarningLimit: 1000,
       esbuildOptions: {
-        // Tận dụng đa nhân CPU để transform nhanh hơn
         supported: { 'dynamic-import': true },
         legalComments: 'none',
         treeShaking: true,
@@ -53,7 +53,6 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         output: {
-          // Function-based manualChunks: granular, admin-aware splitting
           manualChunks(id: string) {
             // Tiptap rich-text editor (admin only)
             if (id.includes('@tiptap')) return 'vendor-tiptap';
@@ -61,14 +60,17 @@ export default defineConfig(({ mode }) => {
             // Charts / D3 (admin dashboard only)
             if (id.includes('recharts') || id.includes('/d3-') || id.includes('d3-scale') || id.includes('d3-shape')) return 'vendor-charts';
 
-            // Google AI (chat widget, lazy loaded)
+            // Google AI (chat widget, dynamic on-demand loaded)
             if (id.includes('@google/genai')) return 'vendor-ai';
 
             // Icons
             if (id.includes('lucide-react')) return 'vendor-icons';
 
-            // SEO metadata (react-helmet-async + dependencies)
+            // SEO metadata
             if (id.includes('react-helmet-async') || id.includes('react-fast-compare') || id.includes('invariant')) return 'vendor-seo';
+
+            // Utility libraries (not needed on initial FCP paint)
+            if (id.includes('i18next') || id.includes('canvas-confetti') || id.includes('adm-zip')) return 'vendor-utils';
 
             // React core
             if (

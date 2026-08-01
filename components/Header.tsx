@@ -903,8 +903,11 @@ const Header: React.FC = () => {
             <img 
               src={settings.logoHeader || settings.logo} 
               alt={settings.siteName || "CTC Web"} 
+              width="200"
+              height="56"
               className={`header-logo ${getLogoClass()}`} 
               loading="eager"
+              fetchPriority="high"
             />
           </Link>
 

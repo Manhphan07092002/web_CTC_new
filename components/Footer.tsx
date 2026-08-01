@@ -175,9 +175,9 @@ const Footer: React.FC = () => {
             </ul>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-md">
-              <h5 className="mb-2.5 text-[11px] font-black uppercase tracking-[0.14em] text-slate-200">
+              <h4 className="mb-2.5 text-[11px] font-black uppercase tracking-[0.14em] text-slate-200">
                 {getLangText(language, { vi: 'Đăng ký nhận tin', en: 'Subscribe to Newsletter', ko: '뉴스레터 구독', ja: 'ニュースレター登録', zh: '订阅资讯', de: 'Newsletter abonnieren' })}
-              </h5>
+              </h4>
               <form onSubmit={handleSubscribe} className="flex gap-2">
                 <label htmlFor="footer-email" className="sr-only">Email</label>
                 <input

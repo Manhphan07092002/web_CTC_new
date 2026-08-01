@@ -431,7 +431,8 @@ const Hero: React.FC = () => {
             color: transparent;
             -webkit-text-stroke: 1px rgba(255, 255, 255, 0.35);
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
-            animation: slideUpFade 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+            opacity: 1;
+            will-change: transform, opacity;
         }
         
         .title-main-bold {
@@ -445,7 +446,9 @@ const Hero: React.FC = () => {
             color: #ffffff;
             margin-bottom: 6px;
             text-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+            opacity: 1;
+            content-visibility: visible;
+            will-change: transform, opacity;
         }
 
         .title-main-gradient {
@@ -461,9 +464,10 @@ const Hero: React.FC = () => {
             -webkit-text-fill-color: transparent;
             margin-bottom: 35px;
             filter: drop-shadow(0 10px 20px rgba(14, 165, 233, 0.25));
-            animation: slideUpFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+            opacity: 1;
             white-space: normal;
             word-break: break-word;
+            will-change: transform, opacity;
         }
 
         /* Slogan Display */
