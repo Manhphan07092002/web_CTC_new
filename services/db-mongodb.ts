@@ -332,7 +332,7 @@ export const db = {
       cleanData.image = typeof cleanData.image === 'string' && cleanData.image.trim() ? cleanData.image.trim() : '/uploads/images/default-news.webp';
       cleanData.date = typeof cleanData.date === 'string' && cleanData.date.trim() ? cleanData.date.trim() : new Date().toISOString().split('T')[0];
       cleanData.content = typeof cleanData.content === 'string' ? cleanData.content : '';
-      cleanData.author = typeof cleanData.author === 'string' ? cleanData.author : 'Admin';
+      cleanData.author = typeof cleanData.author === 'string' && cleanData.author.trim() ? cleanData.author : 'Phan Xuân Mạnh';
       cleanData.viewCount = typeof cleanData.viewCount === 'number' && !isNaN(cleanData.viewCount) ? cleanData.viewCount : 0;
       cleanData.likes = typeof cleanData.likes === 'number' && !isNaN(cleanData.likes) ? cleanData.likes : 0;
       cleanData.isFeatured = Boolean(cleanData.isFeatured);
