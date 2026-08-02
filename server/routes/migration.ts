@@ -11,7 +11,8 @@ import {
   Order, OrderItem,
   Contact, Review,
   Settings, TeamMember, Testimonial, Partner,
-  Notification, User, MigrationLog 
+  Notification, User, MigrationLog,
+  AnalyticsGoal, FunnelMetrics, AnalyticsEvent
 } from '../../models';
 
 const router = express.Router();
@@ -475,6 +476,33 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
       importCounts['Users'] = importedUserCount;
     }
 
+    // 11. Process Analytics Goals (Quản lý Mục tiêu)
+    const goalsEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('goals.json') || e.entryName.toLowerCase().includes('analyticsgoals.json'));
+    if (goalsEntry) {
+      logs.push('Đang xử lý Mục tiêu (Analytics Goals)...');
+      const items = parseJsonEntry(goalsEntry) || [];
+      await AnalyticsGoal.deleteMany({});
+      for (const item of items) {
+        try {
+          await new AnalyticsGoal(cleanDocForInsert(item)).save();
+        } catch (e) {}
+      }
+      importCounts['AnalyticsGoals'] = items.length;
+    }
+
+    // 12. Process Funnel Metrics
+    const funnelEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('funnelmetrics.json'));
+    if (funnelEntry) {
+      const items = parseJsonEntry(funnelEntry) || [];
+      await FunnelMetrics.deleteMany({});
+      for (const item of items) {
+        try {
+          await new FunnelMetrics(cleanDocForInsert(item)).save();
+        } catch (e) {}
+      }
+      importCounts['FunnelMetrics'] = items.length;
+    }
+
     const detailsStr = Object.entries(importCounts).map(([key, val]) => `${key}: ${val}`).join(', ') || 'Nhiều bảng dữ liệu';
 
     const logEntry = new MigrationLog({
@@ -570,6 +598,13 @@ router.all('/export', async (req, res) => {
     // 8. Export Users
     const users = await User.find({}).lean();
     zip.addFile('Users.json', Buffer.from(JSON.stringify(users, null, 2), 'utf8'));
+
+    // 9. Export Analytics Goals & Funnel Metrics (Quản lý Mục tiêu)
+    const goals = await AnalyticsGoal.find({}).lean();
+    zip.addFile('AnalyticsGoals.json', Buffer.from(JSON.stringify(goals, null, 2), 'utf8'));
+
+    const funnelMetrics = await FunnelMetrics.find({}).lean();
+    zip.addFile('FunnelMetrics.json', Buffer.from(JSON.stringify(funnelMetrics, null, 2), 'utf8'));
 
     // 9. Export uploaded media files
     const uploadsDir = path.join(process.cwd(), 'uploads');
