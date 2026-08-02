@@ -225,6 +225,17 @@ app.use('/uploads', express.static(uploadsPath, {
   }
 }));
 
+// Fallback for missing uploads image files (prevents broken image 404s)
+app.use('/uploads', (req, res, next) => {
+  if (req.path.match(/\.(webp|png|jpg|jpeg|gif|svg)$/i)) {
+    const fallbackPath = path.join(process.cwd(), 'uploads', 'images', 'default-news.webp');
+    if (fs.existsSync(fallbackPath)) {
+      return res.sendFile(fallbackPath);
+    }
+  }
+  next();
+});
+
 const publicPath = path.join(process.cwd(), 'public');
 app.use(express.static(publicPath, {
   maxAge: '30d',

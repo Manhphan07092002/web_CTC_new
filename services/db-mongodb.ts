@@ -324,22 +324,47 @@ export const db = {
       if (!cleanData.categoryId || cleanData.categoryId === '' || !mongoose.Types.ObjectId.isValid(String(cleanData.categoryId))) {
         delete cleanData.categoryId;
       }
+      delete cleanData._id;
+      delete cleanData.id;
+      if (!cleanData.date) {
+        cleanData.date = new Date().toISOString().split('T')[0];
+      }
+      if (!cleanData.slug && cleanData.title) {
+        cleanData.slug = cleanData.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+      }
       const newsItem = new News(cleanData);
       await newsItem.save();
       return toPlainObject<INewsItem>(newsItem);
     },
     
     update: async (id: string, data: Partial<INewsItem>) => {
+      if (!id) return null;
       const cleanData: any = { ...data };
       if (!cleanData.categoryId || cleanData.categoryId === '' || !mongoose.Types.ObjectId.isValid(String(cleanData.categoryId))) {
         delete cleanData.categoryId;
       }
-      const newsItem = await News.findByIdAndUpdate(id, cleanData, { new: true });
+      delete cleanData._id;
+      delete cleanData.id;
+      
+      let newsItem = null;
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        newsItem = await News.findByIdAndUpdate(id, cleanData, { new: true });
+      }
+      if (!newsItem) {
+        newsItem = await News.findOneAndUpdate({ slug: id }, cleanData, { new: true });
+      }
       return newsItem ? toPlainObject<INewsItem>(newsItem) : null;
     },
     
     delete: async (id: string) => {
-      const result = await News.findByIdAndDelete(id);
+      if (!id) return false;
+      let result = null;
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        result = await News.findByIdAndDelete(id);
+      }
+      if (!result) {
+        result = await News.findOneAndDelete({ slug: id });
+      }
       return !!result;
     },
 
@@ -714,6 +739,7 @@ export const db = {
     },
     
     getById: async (id: string) => {
+      if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
       const notification = await Notification.findById(id);
       return notification ? toPlainObject<INotification>(notification) : null;
     },
@@ -725,16 +751,19 @@ export const db = {
     },
     
     update: async (id: string, data: Partial<INotification>) => {
+      if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
       const notification = await Notification.findByIdAndUpdate(id, data, { new: true });
       return notification ? toPlainObject<INotification>(notification) : null;
     },
     
     delete: async (id: string) => {
+      if (!id || !mongoose.Types.ObjectId.isValid(id)) return false;
       const result = await Notification.findByIdAndDelete(id);
       return !!result;
     },
     
     markAsRead: async (id: string) => {
+      if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
       const notification = await Notification.findByIdAndUpdate(
         id,
         { isRead: true },

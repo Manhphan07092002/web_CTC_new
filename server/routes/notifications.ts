@@ -28,6 +28,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Alias for /all
+router.get('/all', async (req, res) => {
+  try {
+    const notifications = await db.notifications.getAll();
+    res.json(notifications);
+  } catch (error) {
+    console.error('Error getting notifications:', error);
+    res.status(500).json({ error: 'Failed to get notifications' });
+  }
+});
+
 // Get unread notifications
 router.get('/unread', async (req, res) => {
   try {
@@ -39,9 +50,24 @@ router.get('/unread', async (req, res) => {
   }
 });
 
+// Delete all notifications
+router.delete('/all', async (req, res) => {
+  try {
+    await db.notifications.deleteAll();
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting all notifications:', error);
+    res.status(500).json({ error: 'Failed to delete all notifications' });
+  }
+});
+
 // Get notification by ID
 router.get('/:id', async (req, res) => {
   try {
+    if (req.params.id === 'all') {
+      const notifications = await db.notifications.getAll();
+      return res.json(notifications);
+    }
     const notification = await db.notifications.getById(req.params.id);
     if (!notification) {
       return res.status(404).json({ error: 'Notification not found' });
@@ -92,6 +118,10 @@ router.patch('/read-all', async (req, res) => {
 // Delete notification
 router.delete('/:id', async (req, res) => {
   try {
+    if (req.params.id === 'all') {
+      await db.notifications.deleteAll();
+      return res.json({ success: true });
+    }
     const success = await db.notifications.delete(req.params.id);
     if (!success) {
       return res.status(404).json({ error: 'Notification not found' });
