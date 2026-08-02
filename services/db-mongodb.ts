@@ -326,12 +326,26 @@ export const db = {
       }
       delete cleanData._id;
       delete cleanData.id;
-      if (!cleanData.date) {
-        cleanData.date = new Date().toISOString().split('T')[0];
+      
+      cleanData.title = typeof cleanData.title === 'string' && cleanData.title.trim() ? cleanData.title.trim() : 'Tin tức chưa có tiêu đề';
+      cleanData.excerpt = typeof cleanData.excerpt === 'string' && cleanData.excerpt.trim() ? cleanData.excerpt.trim() : cleanData.title;
+      cleanData.image = typeof cleanData.image === 'string' && cleanData.image.trim() ? cleanData.image.trim() : '/uploads/images/default-news.webp';
+      cleanData.date = typeof cleanData.date === 'string' && cleanData.date.trim() ? cleanData.date.trim() : new Date().toISOString().split('T')[0];
+      cleanData.content = typeof cleanData.content === 'string' ? cleanData.content : '';
+      cleanData.author = typeof cleanData.author === 'string' ? cleanData.author : 'Admin';
+      cleanData.viewCount = typeof cleanData.viewCount === 'number' && !isNaN(cleanData.viewCount) ? cleanData.viewCount : 0;
+      cleanData.likes = typeof cleanData.likes === 'number' && !isNaN(cleanData.likes) ? cleanData.likes : 0;
+      cleanData.isFeatured = Boolean(cleanData.isFeatured);
+      cleanData.featuredOrder = typeof cleanData.featuredOrder === 'number' && !isNaN(cleanData.featuredOrder) ? cleanData.featuredOrder : 0;
+      cleanData.tags = Array.isArray(cleanData.tags) ? cleanData.tags : (typeof cleanData.tags === 'string' ? (cleanData.tags as string).split(',').map(t => t.trim()).filter(Boolean) : []);
+      cleanData.focusKeyword = typeof cleanData.focusKeyword === 'string' ? cleanData.focusKeyword : '';
+      if (!['published', 'pending', 'draft'].includes(cleanData.status)) {
+        cleanData.status = 'published';
       }
       if (!cleanData.slug && cleanData.title) {
-        cleanData.slug = cleanData.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+        cleanData.slug = cleanData.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
       }
+
       const newsItem = new News(cleanData);
       await newsItem.save();
       return toPlainObject<INewsItem>(newsItem);
@@ -346,12 +360,22 @@ export const db = {
       delete cleanData._id;
       delete cleanData.id;
       
+      if (cleanData.tags && !Array.isArray(cleanData.tags)) {
+        cleanData.tags = typeof cleanData.tags === 'string' ? (cleanData.tags as string).split(',').map(t => t.trim()).filter(Boolean) : [];
+      }
+      if (cleanData.status && !['published', 'pending', 'draft'].includes(cleanData.status)) {
+        cleanData.status = 'published';
+      }
+
       let newsItem = null;
       if (mongoose.Types.ObjectId.isValid(id)) {
         newsItem = await News.findByIdAndUpdate(id, cleanData, { new: true });
       }
       if (!newsItem) {
         newsItem = await News.findOneAndUpdate({ slug: id }, cleanData, { new: true });
+      }
+      if (!newsItem) {
+        newsItem = await News.findOneAndUpdate({ id }, cleanData, { new: true });
       }
       return newsItem ? toPlainObject<INewsItem>(newsItem) : null;
     },

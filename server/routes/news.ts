@@ -81,7 +81,7 @@ router.post('/', async (req, res) => {
       console.warn('⚠️ Auto-translate skipped:', e);
     }
     const created = await db.news.add(translatedData);
-    console.log('News created:', created.id);
+    console.log('News created:', created?._id || created?.id);
     
     // Helper tao Clean SEO URL cho Indexing
     const getCleanUrl = (item: any) => {
@@ -92,21 +92,27 @@ router.post('/', async (req, res) => {
     };
 
     // Auto Instant Indexing (Chỉ ép index khi bài viết ĐÃ ĐƯỢC DUYỆT & XUẤT BẢN)
-    if (!created.status || created.status === 'published') {
-      triggerInstantIndexing(getCleanUrl(created)).catch(() => {});
+    if (created && (!created.status || created.status === 'published')) {
+      try {
+        triggerInstantIndexing(getCleanUrl(created)).catch(() => {});
+      } catch (_) {}
     }
 
     res.status(201).json(created);
   } catch (error: any) {
-    console.error('Error creating news:', error?.message || error);
-    res.status(500).json({ message: error?.message || 'Failed to create news' });
+    console.error('Error creating news:', error?.stack || error?.message || error);
+    res.status(500).json({ message: error?.message || 'Failed to create news', error: String(error?.stack || error) });
   }
 });
 
 router.put('/:id', async (req, res) => {
   try {
-    // Auto-translate updated content
-    const translatedData = await translateNews(req.body);
+    let translatedData = req.body;
+    try {
+      translatedData = await translateNews(req.body);
+    } catch (e) {
+      console.warn('⚠️ Auto-translate skipped:', e);
+    }
     const updated = await db.news.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'News not found' });
     console.log('News updated with translations:', req.params.id);
@@ -121,13 +127,15 @@ router.put('/:id', async (req, res) => {
 
     // Auto Instant Indexing (Chỉ ép index khi bài viết ĐÃ ĐƯỢC DUYỆT & XUẤT BẢN)
     if (!updated.status || updated.status === 'published') {
-      triggerInstantIndexing(getCleanUrl(updated)).catch(() => {});
+      try {
+        triggerInstantIndexing(getCleanUrl(updated)).catch(() => {});
+      } catch (_) {}
     }
 
     res.json(updated);
   } catch (error: any) {
-    console.error('Error updating news:', error?.message || error);
-    res.status(500).json({ message: error?.message || 'Failed to update news' });
+    console.error('Error updating news:', error?.stack || error?.message || error);
+    res.status(500).json({ message: error?.message || 'Failed to update news', error: String(error?.stack || error) });
   }
 });
 
