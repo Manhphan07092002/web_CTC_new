@@ -6,7 +6,7 @@ import path from 'path';
 import { 
   ProductCategory, Product, 
   ProjectCategory, Project,
-  NewsCategory, News, 
+  NewsCategory, News, NewsComment,
   DocumentCategory, Resource,
   Order, OrderItem,
   Contact, Review,
@@ -100,15 +100,16 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
       
       for (const cat of sqlCategories) {
         try {
-          const catName = cat.name || cat.Name;
-          const newCat = new ProductCategory({
-            name: catName,
-            slug: cat.slug || (cat.SearchText ? generateSlug(cat.SearchText) : generateSlug(catName)),
+          const isNative = cat.name && (cat.slug || cat._id);
+          const catDoc = isNative ? cleanDocForInsert(cat) : {
+            name: cat.name || cat.Name,
+            slug: cat.slug || (cat.SearchText ? generateSlug(cat.SearchText) : generateSlug(cat.name || cat.Name)),
             description: cat.description || cat.SEODescriptions || '',
             image: cat.image || cat.Image || '',
             order: cat.order || cat.Rank || 0,
             isActive: cat.isActive !== undefined ? cat.isActive : (cat.IsActive !== false)
-          });
+          };
+          const newCat = new ProductCategory(catDoc);
           await newCat.save();
           if (cat._id || cat.ID) {
             catMap[cat._id || cat.ID] = newCat._id;
@@ -129,35 +130,44 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
       
       for (const prod of sqlProducts) {
         try {
-          const catId = prod.categoryId || catMap[prod.CateID];
-          let imageList = prod.images || [];
-          if (imageList.length === 0) {
-            if (prod.Image) imageList.push(prod.Image);
-            if (prod.Image2) imageList.push(prod.Image2);
-            if (prod.Image3) imageList.push(prod.Image3);
-          }
+          const isNative = prod.name && (prod.price !== undefined || prod.category !== undefined);
+          if (isNative) {
+            const cleanData = cleanDocForInsert(prod);
+            if (cleanData.categoryId && catMap[cleanData.categoryId]) {
+              cleanData.categoryId = catMap[cleanData.categoryId];
+            }
+            await new Product(cleanData).save();
+          } else {
+            const catId = prod.categoryId || catMap[prod.CateID];
+            let imageList = prod.images || [];
+            if (imageList.length === 0) {
+              if (prod.Image) imageList.push(prod.Image);
+              if (prod.Image2) imageList.push(prod.Image2);
+              if (prod.Image3) imageList.push(prod.Image3);
+            }
 
-          const newProd = new Product({
-            name: prod.name || prod.Name,
-            category: prod.category || 'Default',
-            categoryId: catId,
-            code: prod.code || prod.Code,
-            description: prod.description || prod.Content || prod.Description || '',
-            shortDescription: prod.shortDescription || prod.ShortDescription,
-            price: prod.price?.toString() || prod.Price?.toString(),
-            contactPrice: prod.contactPrice !== undefined ? prod.contactPrice : (prod.Price === 0 || !prod.Price),
-            image: prod.image || prod.Image || '',
-            images: imageList,
-            power: prod.power,
-            efficiency: prod.efficiency,
-            brand: prod.brand,
-            stock: prod.stock || prod.Quantity || 0,
-            stockStatus: prod.stockStatus || 'in_stock',
-            isFeatured: prod.isFeatured !== undefined ? prod.isFeatured : (prod.IsHot || false),
-            isActive: prod.isActive !== undefined ? prod.isActive : true,
-            views: prod.views || 0
-          });
-          await newProd.save();
+            const newProd = new Product({
+              name: prod.name || prod.Name,
+              category: prod.category || 'Default',
+              categoryId: catId,
+              code: prod.code || prod.Code,
+              description: prod.description || prod.Content || prod.Description || '',
+              shortDescription: prod.shortDescription || prod.ShortDescription,
+              price: prod.price?.toString() || prod.Price?.toString(),
+              contactPrice: prod.contactPrice !== undefined ? prod.contactPrice : (prod.Price === 0 || !prod.Price),
+              image: prod.image || prod.Image || '',
+              images: imageList,
+              power: prod.power,
+              efficiency: prod.efficiency,
+              brand: prod.brand,
+              stock: prod.stock || prod.Quantity || 0,
+              stockStatus: prod.stockStatus || 'in_stock',
+              isFeatured: prod.isFeatured !== undefined ? prod.isFeatured : (prod.IsHot || false),
+              isActive: prod.isActive !== undefined ? prod.isActive : true,
+              views: prod.views || 0
+            });
+            await newProd.save();
+          }
         } catch (err: any) {
           logs.push(`Lỗi Sản phẩm [${prod.name || prod.Name}]: ${err.message}`);
         }
@@ -220,38 +230,59 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
       const existingSlugs = new Set<string>();
       for (const blog of sqlBlogs) {
         try {
-          let d = new Date();
-          if (blog.date) {
-            d = new Date(blog.date);
-          } else if (blog.CreateTime) {
-            d = new Date(parseInt(blog.CreateTime.replace('/Date(', '').replace(')/', '')));
-          }
-          if (isNaN(d.getTime())) d = new Date();
-          
-          const blogTitle = blog.title || blog.Name || 'Untitled';
-          let baseSlug = (blog.slug && typeof blog.slug === 'string' && blog.slug.trim()) 
-            ? blog.slug.trim() 
-            : (generateSlug(blogTitle) || 'tin-tuc');
-          let finalSlug = baseSlug;
-          let counter = 1;
-          while (existingSlugs.has(finalSlug)) {
-            finalSlug = `${baseSlug}-${counter}`;
-            counter++;
-          }
-          existingSlugs.add(finalSlug);
+          const isNative = blog.title && blog.excerpt && blog.date;
+          if (isNative) {
+            const cleanData = cleanDocForInsert(blog);
+            let baseSlug = (cleanData.slug && typeof cleanData.slug === 'string' && cleanData.slug.trim())
+              ? cleanData.slug.trim()
+              : (generateSlug(cleanData.title) || 'tin-tuc');
+            let finalSlug = baseSlug;
+            let counter = 1;
+            while (existingSlugs.has(finalSlug)) {
+              finalSlug = `${baseSlug}-${counter}`;
+              counter++;
+            }
+            existingSlugs.add(finalSlug);
+            cleanData.slug = finalSlug;
+            await new News(cleanData).save();
+          } else {
+            let d = new Date();
+            if (blog.date) {
+              d = new Date(blog.date);
+            } else if (blog.CreateTime) {
+              d = new Date(parseInt(blog.CreateTime.replace('/Date(', '').replace(')/', '')));
+            }
+            if (isNaN(d.getTime())) d = new Date();
+            
+            const blogTitle = blog.title || blog.Name || 'Untitled';
+            let baseSlug = (blog.slug && typeof blog.slug === 'string' && blog.slug.trim()) 
+              ? blog.slug.trim() 
+              : (generateSlug(blogTitle) || 'tin-tuc');
+            let finalSlug = baseSlug;
+            let counter = 1;
+            while (existingSlugs.has(finalSlug)) {
+              finalSlug = `${baseSlug}-${counter}`;
+              counter++;
+            }
+            existingSlugs.add(finalSlug);
 
-          const newBlog = new News({
-            title: blogTitle,
-            slug: finalSlug,
-            excerpt: blog.excerpt || blog.ShortDescription || blogTitle,
-            content: blog.content || blog.Content || 'No content',
-            image: blog.image || blog.Image || '/uploads/images/default-news.webp',
-            author: blog.author || 'Admin',
-            date: d.toISOString().split('T')[0],
-            publishedAt: d,
-            isActive: blog.isActive !== undefined ? blog.isActive : true
-          });
-          await newBlog.save();
+            const newBlog = new News({
+              title: blogTitle,
+              slug: finalSlug,
+              excerpt: blog.excerpt || blog.ShortDescription || blogTitle,
+              content: blog.content || blog.Content || 'No content',
+              image: blog.image || blog.Image || '/uploads/images/default-news.webp',
+              author: blog.author || 'Phan Xuân Mạnh',
+              date: d.toISOString().split('T')[0],
+              publishedAt: d,
+              category: blog.category || 'Tin tức',
+              tags: blog.tags || [],
+              focusKeyword: blog.focusKeyword || '',
+              status: blog.status || 'published',
+              isActive: blog.isActive !== undefined ? blog.isActive : true
+            });
+            await newBlog.save();
+          }
         } catch (err: any) {
           logs.push(`Lỗi Tin tức [${blog.title || blog.Name}]: ${err.message}`);
         }
@@ -384,7 +415,33 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
       importCounts['Partners'] = items.length;
     }
 
-    // 8. Process Users (Safely restore without E11000 duplicate key errors)
+    // 8. Process Notifications
+    const notificationsEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('notifications.json'));
+    if (notificationsEntry) {
+      const items = parseJsonEntry(notificationsEntry) || [];
+      await Notification.deleteMany({});
+      for (const item of items) {
+        try {
+          await new Notification(cleanDocForInsert(item)).save();
+        } catch (e) {}
+      }
+      importCounts['Notifications'] = items.length;
+    }
+
+    // 9. Process News Comments
+    const commentsEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('newscomments.json') || e.entryName.toLowerCase().includes('comments.json'));
+    if (commentsEntry) {
+      const items = parseJsonEntry(commentsEntry) || [];
+      await NewsComment.deleteMany({});
+      for (const item of items) {
+        try {
+          await new NewsComment(cleanDocForInsert(item)).save();
+        } catch (e) {}
+      }
+      importCounts['NewsComments'] = items.length;
+    }
+
+    // 10. Process Users (Safely restore without E11000 duplicate key errors)
     const usersEntry = zipEntries.find(e => e.entryName.toLowerCase().includes('users.json'));
     if (usersEntry) {
       const sqlUsers = parseJsonEntry(usersEntry) || [];
@@ -469,6 +526,9 @@ router.all('/export', async (req, res) => {
 
     const blogs = await News.find({}).lean();
     zip.addFile('Blog.json', Buffer.from(JSON.stringify(blogs, null, 2), 'utf8'));
+
+    const newsComments = await NewsComment.find({}).lean();
+    zip.addFile('NewsComments.json', Buffer.from(JSON.stringify(newsComments, null, 2), 'utf8'));
 
     // 4. Export Document Categories & Resources (Documents)
     const docCategories = await DocumentCategory.find({}).lean();
