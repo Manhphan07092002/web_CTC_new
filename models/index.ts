@@ -316,6 +316,7 @@ ProjectSchema.index({ createdAt: -1 });
 // News Schema
 export interface INewsItem extends BaseDocument {
   title: string;
+  slug?: string;
   excerpt: string;
   date: string;
   image: string;
@@ -335,6 +336,7 @@ export interface INewsItem extends BaseDocument {
 
 const NewsSchema = new Schema<INewsItem>({
   title: { type: String, required: true },
+  slug: { type: String, index: true },
   excerpt: { type: String, required: true },
   date: { type: String, required: true },
   image: { type: String, required: true },
@@ -350,7 +352,7 @@ const NewsSchema = new Schema<INewsItem>({
   focusKeyword: { type: String, default: '' },
   status: { type: String, enum: ['published', 'pending', 'draft'], default: 'published' },
   translations: createTranslationSchema()
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
 NewsSchema.index({ categoryId: 1 });
 NewsSchema.index({ category: 1 });

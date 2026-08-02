@@ -213,7 +213,11 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
       logs.push('Đang xử lý Bài viết/Tin tức...');
       const sqlBlogs = parseJsonEntry(blogsEntry) || [];
       await News.deleteMany({});
+      try {
+        await News.collection.dropIndexes();
+      } catch (e) {}
       
+      const existingSlugs = new Set<string>();
       for (const blog of sqlBlogs) {
         try {
           let d = new Date();
@@ -225,14 +229,25 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
           if (isNaN(d.getTime())) d = new Date();
           
           const blogTitle = blog.title || blog.Name || 'Untitled';
+          let baseSlug = (blog.slug && typeof blog.slug === 'string' && blog.slug.trim()) 
+            ? blog.slug.trim() 
+            : (generateSlug(blogTitle) || 'tin-tuc');
+          let finalSlug = baseSlug;
+          let counter = 1;
+          while (existingSlugs.has(finalSlug)) {
+            finalSlug = `${baseSlug}-${counter}`;
+            counter++;
+          }
+          existingSlugs.add(finalSlug);
+
           const newBlog = new News({
             title: blogTitle,
-            slug: blog.slug || generateSlug(blogTitle) || Date.now().toString(),
-            excerpt: blog.excerpt || blog.ShortDescription || 'No excerpt',
+            slug: finalSlug,
+            excerpt: blog.excerpt || blog.ShortDescription || blogTitle,
             content: blog.content || blog.Content || 'No content',
-            image: blog.image || blog.Image || '/placeholder.jpg',
+            image: blog.image || blog.Image || '/uploads/images/default-news.webp',
             author: blog.author || 'Admin',
-            date: d.toISOString(),
+            date: d.toISOString().split('T')[0],
             publishedAt: d,
             isActive: blog.isActive !== undefined ? blog.isActive : true
           });

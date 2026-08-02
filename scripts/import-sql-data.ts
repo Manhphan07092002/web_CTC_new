@@ -594,19 +594,23 @@ async function migrateData() {
   });
 
   const newsData: any[] = [];
+  const newsSlugs = new Set<string>();
 
   rawBlogs.forEach((b, index) => {
     const mongoId = makeObjectId(3002, b.ID || (index + 1));
     const catMongoId = b.BlogCategoryID ? newsCategoryMap.get(b.BlogCategoryID) : undefined;
     const catObj = newsCategoriesData.find(c => String(c._id) === String(catMongoId));
 
+    const title = b.Name || `Bài viết ${b.ID}`;
+    const slug = generateSlug(b.BlogURL || title, newsSlugs);
     const content = cleanHtmlText(b.Content || b.Name || '');
     const excerpt = stripHtml(content).slice(0, 180) + '...';
     const dateStr = formatDate(b.CreateTime);
 
     newsData.push({
       _id: new mongoose.Types.ObjectId(mongoId),
-      title: b.Name || `Bài viết ${b.ID}`,
+      title: title,
+      slug: slug,
       excerpt: excerpt,
       content: content,
       date: dateStr,
@@ -623,12 +627,15 @@ async function migrateData() {
 
   rawNews.forEach((n, index) => {
     const mongoId = makeObjectId(3003, n.NewsID || (index + 1));
+    const title = n.Title || `Tin sự kiện ${n.NewsID}`;
+    const slug = generateSlug(n.Url || title, newsSlugs);
     const content = cleanHtmlText(n.Content || n.Title || '');
     const dateStr = formatDate(n.PublishedDate || n.CreatedDate);
 
     newsData.push({
       _id: new mongoose.Types.ObjectId(mongoId),
-      title: n.Title || `Tin sự kiện ${n.NewsID}`,
+      title: title,
+      slug: slug,
       excerpt: n.Summary || stripHtml(content).slice(0, 180),
       content: content,
       date: dateStr,
