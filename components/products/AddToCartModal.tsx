@@ -123,7 +123,7 @@ const AddToCartModal: React.FC<AddToCartModalProps> = ({
               <span className="inline-block px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary rounded-md">
                 {product.category || 'Sản phẩm'}
               </span>
-              <h4 className="font-bold text-gray-850 dark:text-white text-sm sm:text-base line-clamp-2 leading-snug">
+              <h4 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base line-clamp-2 leading-snug">
                 {product.name}
               </h4>
               <div className="pt-1">

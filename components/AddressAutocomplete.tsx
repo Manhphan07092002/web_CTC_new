@@ -524,8 +524,8 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                 onChange={handleHouseDetailChange}
                 className={`w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-white dark:bg-slate-900 border-2 rounded-xl focus:outline-none transition-all ${
                   !houseDetail.trim()
-                    ? 'border-amber-400/80 focus:ring-2 focus:ring-amber-400/20 text-gray-850 dark:text-white'
-                    : 'border-emerald-500/80 focus:ring-2 focus:ring-emerald-500/20 text-gray-850 dark:text-white'
+                    ? 'border-amber-400/80 focus:ring-2 focus:ring-amber-400/20 text-slate-900 dark:text-white'
+                    : 'border-emerald-500/80 focus:ring-2 focus:ring-emerald-500/20 text-slate-900 dark:text-white'
                 }`}
               />
             </div>
@@ -561,7 +561,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                 className={`w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-gray-50 dark:bg-gray-750 border rounded-xl focus:outline-none transition-all ${
                   error
                     ? 'border-red-500 text-red-900 dark:text-red-200'
-                    : 'border-gray-250 dark:border-gray-650 focus:ring-2 focus:ring-primary/20 text-gray-850 dark:text-white'
+                    : 'border-gray-250 dark:border-gray-650 focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white'
                 }`}
               />
               {isSearching && (
@@ -636,7 +636,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
               placeholder="VD: K20/15 Lê Văn Hiến hoặc Số 154 Nguyễn Văn Linh..."
               value={houseDetail}
               onChange={handleHouseDetailChange}
-              className="w-full pl-4 pr-4 py-2.5 text-xs sm:text-sm bg-white dark:bg-slate-900 border-2 border-sky-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-850 dark:text-white transition-all"
+              className="w-full pl-4 pr-4 py-2.5 text-xs sm:text-sm bg-white dark:bg-slate-900 border-2 border-sky-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white transition-all"
             />
           </div>
         </div>

@@ -157,7 +157,7 @@ const TrackOrder: React.FC = () => {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Nhập mã đơn (CTC-ORD-...) hoặc số điện thoại..."
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-750 border border-gray-250 dark:border-gray-650 rounded-xl text-gray-850 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-750 border border-gray-250 dark:border-gray-650 rounded-xl text-slate-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
                     autoComplete="off"
                   />
                 </div>
@@ -280,7 +280,7 @@ const TrackOrder: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-4 self-end sm:self-auto">
                     <div className="text-right">
-                      <span className="text-xs font-bold text-gray-850 dark:text-white block">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white block">
                         {ord.totalAmount > 0 ? `${ord.totalAmount.toLocaleString('vi-VN')}đ` : 'Liên hệ'}
                       </span>
                       <span className="text-[10px] text-gray-450 capitalize">
@@ -380,7 +380,7 @@ const TrackOrder: React.FC = () => {
             {/* Timeline Progress */}
             {!isCancelled ? (
               <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 p-6 shadow-sm">
-                <h3 className="text-gray-850 dark:text-white font-bold text-sm uppercase tracking-wider mb-6 flex items-center gap-2">
+                <h3 className="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-6 flex items-center gap-2">
                   <Truck size={18} className="text-primary" />
                   <span>Lộ trình xử lý & Giao hàng</span>
                 </h3>
@@ -457,14 +457,14 @@ const TrackOrder: React.FC = () => {
             ) : (
               <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-2xl p-6 text-center">
                 <XCircle size={40} className="text-red-500 dark:text-red-400 mx-auto mb-3" />
-                <p className="text-gray-850 dark:text-white font-bold text-lg">Đơn hàng đã bị hủy</p>
+                <p className="text-slate-900 dark:text-white font-bold text-lg">Đơn hàng đã bị hủy</p>
                 <p className="text-red-600 dark:text-red-400 text-sm mt-1">Vui lòng liên hệ hotline <strong>0915 059 666</strong> để được giải đáp.</p>
               </div>
             )}
 
             {/* Product items list */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 p-6 shadow-sm">
-              <h3 className="text-gray-850 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">
+              <h3 className="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">
                 Danh sách sản phẩm
               </h3>
               <div className="space-y-2">

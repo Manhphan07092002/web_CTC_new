@@ -164,7 +164,7 @@ const Search: React.FC = () => {
       return (
         <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm">
           <XCircle className="mx-auto text-gray-300 dark:text-gray-600 mb-4" size={50} />
-          <h2 className="text-lg font-bold text-gray-850 dark:text-white">Không tìm thấy kết quả nào</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Không tìm thấy kết quả nào</h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 max-w-sm mx-auto">
             Hãy thử tìm kiếm với các từ khóa khác hoặc kiểm tra lại chính tả của bạn.
           </p>
@@ -207,7 +207,7 @@ const Search: React.FC = () => {
                       <div className="space-y-3 flex-1 flex flex-col justify-between">
                         <Link to={getProductUrl(item)}>
                           <img src={item.image} className="w-full h-32 object-cover rounded-lg mb-3 border border-gray-100 dark:border-gray-700" />
-                          <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary truncate">{highlightKeyword(item.name, queryParam)}</h3>
+                          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-200 group-hover:text-primary truncate">{highlightKeyword(item.name, queryParam)}</h3>
                           <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase mt-1">{item.code || item.category}</p>
                         </Link>
                         <p className="text-xs font-black text-primary mt-2">
@@ -219,7 +219,7 @@ const Search: React.FC = () => {
                     {sec.key === 'solutions' && (
                       <div className="flex flex-col justify-between flex-1">
                         <Link to={item.path}>
-                          <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary leading-snug">{highlightKeyword(item.title, queryParam)}</h3>
+                          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-200 group-hover:text-primary leading-snug">{highlightKeyword(item.title, queryParam)}</h3>
                           <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-2 line-clamp-3 leading-relaxed">{highlightKeyword(item.description, queryParam)}</p>
                         </Link>
                         <Link to={item.path} className="inline-flex items-center gap-1 text-[10px] font-bold text-primary mt-3 hover:underline">
@@ -232,7 +232,7 @@ const Search: React.FC = () => {
                       <div className="space-y-3 flex-1 flex flex-col justify-between">
                         <Link to={getProjectUrl(item)}>
                           <img src={item.image} className="w-full h-32 object-cover rounded-lg mb-3 border border-gray-100 dark:border-gray-700" />
-                          <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary truncate">{highlightKeyword(item.title, queryParam)}</h3>
+                          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-200 group-hover:text-primary truncate">{highlightKeyword(item.title, queryParam)}</h3>
                         </Link>
                         <div className="flex items-center gap-1.5 text-[10px] text-gray-400 dark:text-gray-500 mt-1.5">
                           <MapPin size={11} />
@@ -245,7 +245,7 @@ const Search: React.FC = () => {
                       <div className="flex flex-col justify-between flex-1">
                         <div>
                           <FileText className="text-primary/70 mb-2" size={24} />
-                          <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary line-clamp-2 leading-snug">{highlightKeyword(item.title, queryParam)}</h3>
+                          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-200 group-hover:text-primary line-clamp-2 leading-snug">{highlightKeyword(item.title, queryParam)}</h3>
                           {item.description && (
                             <p className="text-[10px] text-gray-400 mt-1 line-clamp-2">{highlightKeyword(item.description, queryParam)}</p>
                           )}
@@ -265,7 +265,7 @@ const Search: React.FC = () => {
                       <div className="space-y-3 flex-1 flex flex-col justify-between">
                         <Link to={getNewsUrl(item)}>
                           <img src={item.image} className="w-full h-32 object-cover rounded-lg mb-3 border border-gray-100 dark:border-gray-700" />
-                          <h3 className="text-xs font-bold text-gray-850 dark:text-slate-200 group-hover:text-primary line-clamp-2 leading-snug">{highlightKeyword(item.title, queryParam)}</h3>
+                          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-200 group-hover:text-primary line-clamp-2 leading-snug">{highlightKeyword(item.title, queryParam)}</h3>
                         </Link>
                         <div className="flex items-center gap-1.5 text-[9px] text-gray-400 mt-2 font-medium">
                           <Calendar size={11} />
@@ -310,7 +310,7 @@ const Search: React.FC = () => {
       return (
         <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm">
           <XCircle className="mx-auto text-gray-300 dark:text-gray-600 mb-4" size={50} />
-          <h2 className="text-lg font-bold text-gray-850 dark:text-white">Không tìm thấy kết quả nào</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Không tìm thấy kết quả nào</h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Hãy thử đổi bộ lọc hoặc điều chỉnh từ khóa tìm kiếm của bạn.</p>
         </div>
       );
@@ -338,7 +338,7 @@ const Search: React.FC = () => {
                 )}
               </div>
 
-              <h3 className="text-sm font-bold text-gray-850 dark:text-white group-hover:text-primary transition-colors">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
                 {item.name && highlightKeyword(item.name, queryParam)}
                 {item.title && highlightKeyword(item.title, queryParam)}
                 {item.orderCode && <span className="ml-2 font-normal text-xs text-gray-500">Đơn hàng của: {highlightKeyword(item.customerName, queryParam)}</span>}
