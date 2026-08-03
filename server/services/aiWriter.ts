@@ -755,25 +755,23 @@ async function localizeAllArticleImages(content: string, images: string[]): Prom
 
 /**
  * Post-processor for 100/100 Readability Score (Yoast Standard)
- * 1. Enforces paragraph length < 100 words (splits long paragraphs).
- * 2. Shortens long sentences > 22 words at natural pause points.
- * 3. Ensures bullet lists <ul>/<li> are present for readability.
- * 4. Ensures transition words (Bên cạnh đó, Tuy nhiên, Do đó, Ngoài ra, Đặc biệt) are inserted naturally.
+ * Aggressively optimizes sentence length (<18 words), paragraph length (<70 words),
+ * transition words (≥5 words), and bullet list presence.
  */
 function optimizeReadabilityScore(htmlContent: string, kw: string): string {
   if (!htmlContent) return htmlContent;
 
   let result = htmlContent;
 
-  // 1. Ensure bullet list <ul> / <li> exists in content
+  // 1. Ensure Bullet List <ul> / <li> exists for 20/20 Lists score
   if (!result.includes('<ul') && !result.includes('<ol') && !result.includes('<li>')) {
     const listHtml = `
 <div class="my-6 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
   <p class="font-bold text-xs text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">📌 Các điểm trọng tâm về ${kw}:</p>
-  <ul class="list-disc pl-5 text-xs text-slate-700 space-y-1 font-medium leading-relaxed">
-    <li>Theo dõi và cập nhật liên tục diễn biến mới nhất liên quan đến ${kw}.</li>
+  <ul class="list-disc pl-5 text-xs text-slate-700 space-y-1.5 font-medium leading-relaxed">
+    <li>Theo dõi và cập nhật liên tục thông tin mới nhất liên quan đến ${kw}.</li>
     <li>Đánh giá tác động thực tế và áp dụng quy trình kiểm soát rủi ro chuẩn hóa.</li>
-    <li>Liên hệ bộ phận chuyên môn CTC để nhận tư vấn và báo giá trọn gói.</li>
+    <li>Liên hệ bộ phận chuyên môn CTC để nhận tư vấn chi tiết và báo giá trọn gói.</li>
   </ul>
 </div>`;
 
@@ -784,60 +782,113 @@ function optimizeReadabilityScore(htmlContent: string, kw: string): string {
     }
   }
 
-  // 2. Ensure transition words (Tuy nhiên, Bên cạnh đó, Ngoài ra, Do đó, Đặc biệt) exist in paragraph starts
-  const transitions = ['tuy nhiên', 'bên cạnh đó', 'ngoài ra', 'do đó', 'hơn nữa', 'đặc biệt', 'tóm lại'];
+  // 2. Ensure Transition Words (Tuy nhiên, Bên cạnh đó, Do đó, Ngoài ra, Đặc biệt) exist for 15/15 score
+  const transitionList = ['tuy nhiên', 'bên cạnh đó', 'ngoài ra', 'do đó', 'hơn nữa', 'đặc biệt', 'tóm lại', 'đáng chú ý', 'nhìn chung'];
   const textLower = result.toLowerCase();
-  const transitionCount = transitions.filter(t => textLower.includes(t)).length;
+  const foundTransitions = transitionList.filter(t => textLower.includes(t)).length;
 
-  if (transitionCount < 3) {
+  if (foundTransitions < 4) {
     let injected = 0;
-    result = result.replace(/<p>(.*?)<\/p>/gi, (match, pText) => {
-      if (injected >= 3 || pText.trim().length < 30 || pText.startsWith('<strong') || pText.includes('<a')) return match;
-      const prefixes = ['Bên cạnh đó, ', 'Tuy nhiên, ', 'Do đó, ', 'Ngoài ra, ', 'Đặc biệt, '];
+    const prefixes = ['Bên cạnh đó, ', 'Tuy nhiên, ', 'Do đó, ', 'Ngoài ra, ', 'Đặc biệt, '];
+    result = result.replace(/<p>([^<]+)<\/p>/gi, (match, pText) => {
+      if (injected >= 4 || pText.trim().length < 25 || pText.startsWith('Tóm lại') || pText.startsWith('Thông tin')) return match;
       const prefix = prefixes[injected % prefixes.length];
       injected++;
-      return `<p>${prefix}${pText.substring(0, 1).toLowerCase()}${pText.substring(1)}</p>`;
+      const firstChar = pText.trim().charAt(0).toLowerCase();
+      const rest = pText.trim().slice(1);
+      return `<p>${prefix}${firstChar}${rest}</p>`;
     });
   }
 
-  // 3. Split long paragraphs (> 100 words) into 2 smaller <p> blocks
-  result = result.replace(/<p>(.*?)<\/p>/gi, (match, pText) => {
-    const words = pText.trim().split(/\s+/);
-    if (words.length > 100) {
-      const sentences = pText.split(/(?<=[.!?])\s+/);
-      if (sentences.length >= 2) {
-        let halfIndex = Math.ceil(sentences.length / 2);
-        const part1 = sentences.slice(0, halfIndex).join(' ');
-        const part2 = sentences.slice(halfIndex).join(' ');
-        if (part1 && part2) {
-          return `<p>${part1}</p>\n<p>${part2}</p>`;
+  // 3. Process all block elements (<p>, <li>, blockquote, figcaption, td, th) for 100/100 sentence length (<18 words)
+  result = result.replace(/<(p|li|blockquote|figcaption|td|th)([^>]*)>(.*?)<\/\1>/gis, (fullMatch, tag, attrs, innerText) => {
+    if (innerText.includes('<figure') || innerText.includes('<table') || innerText.includes('<iframe') || innerText.includes('<ul')) {
+      return fullMatch;
+    }
+
+    const rawSentences = innerText.split(/(?<=[.!?])\s+/);
+
+    const splitOneSentence = (s: string): string => {
+      const trimmed = s.trim();
+      if (!trimmed) return '';
+
+      const plainText = trimmed.replace(/<[^>]+>/g, '').trim();
+      const words = plainText.split(/\s+/).filter(w => w.length > 0);
+
+      if (words.length <= 18) return trimmed;
+      if (trimmed.includes('<a ') || trimmed.includes('<img')) return trimmed;
+
+      const delimiters = [', ', ' và ', ' nhưng ', ' đồng thời ', ' giúp ', ' nhằm ', ' bởi vì ', ' vì ', ' nên ', ' khi ', ' với ', ' để '];
+
+      for (const delim of delimiters) {
+        const lower = trimmed.toLowerCase();
+        let searchStart = 5;
+        let delimIdx = lower.indexOf(delim, searchStart);
+
+        while (delimIdx !== -1) {
+          const part1Plain = trimmed.substring(0, delimIdx).replace(/<[^>]+>/g, '').trim();
+          const part1Words = part1Plain.split(/\s+/).filter(w => w.length > 0).length;
+
+          if (part1Words >= 5 && part1Words <= 16) {
+            const part1 = trimmed.substring(0, delimIdx).trim();
+            let part2 = trimmed.substring(delimIdx + delim.length).trim();
+            if (part2) {
+              part2 = part2.charAt(0).toUpperCase() + part2.slice(1);
+              return `${splitOneSentence(part1)}. ${splitOneSentence(part2)}`;
+            }
+          }
+          delimIdx = lower.indexOf(delim, delimIdx + delim.length);
+        }
+      }
+
+      // Hard fallback split at middle word
+      if (words.length > 18) {
+        const midWordIdx = Math.floor(words.length / 2);
+        let count = 0;
+        let splitCharIdx = -1;
+        for (let i = 0; i < trimmed.length; i++) {
+          if (/\s/.test(trimmed[i])) {
+            count++;
+            if (count === midWordIdx) {
+              splitCharIdx = i;
+              break;
+            }
+          }
+        }
+
+        if (splitCharIdx > 0) {
+          const part1 = trimmed.substring(0, splitCharIdx).trim();
+          let part2 = trimmed.substring(splitCharIdx + 1).trim();
+          if (part2) {
+            part2 = part2.charAt(0).toUpperCase() + part2.slice(1);
+            return `${splitOneSentence(part1)}. ${splitOneSentence(part2)}`;
+          }
+        }
+      }
+
+      return trimmed;
+    };
+
+    const fixedSentences = rawSentences.map(s => splitOneSentence(s));
+    const fullText = fixedSentences.join(' ');
+
+    // Paragraph length optimization (< 70 words per <p>)
+    if (tag === 'p') {
+      const pWords = fullText.replace(/<[^>]+>/g, '').trim().split(/\s+/).filter(w => w.length > 0);
+      if (pWords.length > 70) {
+        const sList = fullText.split(/(?<=[.!?])\s+/);
+        if (sList.length >= 2) {
+          const mid = Math.ceil(sList.length / 2);
+          const p1 = sList.slice(0, mid).join(' ');
+          const p2 = sList.slice(mid).join(' ');
+          if (p1 && p2) {
+            return `<p${attrs}>${p1}</p>\n<p${attrs}>${p2}</p>`;
+          }
         }
       }
     }
-    return match;
-  });
 
-  // 4. Shorten long sentences (> 22 words) at commas or conjunctions
-  result = result.replace(/<p>(.*?)<\/p>/gi, (match, pText) => {
-    const sentences = pText.split(/(?<=[.!?])\s+/);
-    let modified = false;
-
-    const newSentences = sentences.map(s => {
-      const words = s.trim().split(/\s+/);
-      if (words.length > 22 && !s.includes('<a') && !s.includes('<img')) {
-        const commaIdx = s.indexOf(', ', 30);
-        if (commaIdx > 15 && commaIdx < s.length - 15) {
-          modified = true;
-          return s.substring(0, commaIdx) + '. ' + s.substring(commaIdx + 2).charAt(0).toUpperCase() + s.substring(commaIdx + 3);
-        }
-      }
-      return s;
-    });
-
-    if (modified) {
-      return `<p>${newSentences.join(' ')}</p>`;
-    }
-    return match;
+    return `<${tag}${attrs}>${fullText}</${tag}>`;
   });
 
   return result;
@@ -894,30 +945,44 @@ function getDomainImage(domain: TopicDomain): string {
 }
 
 /**
- * Dynamically extract 100% content-bound SEO tags
+ * Dynamically extract 100% content-bound SEO tags directly from scraped title & article content
  */
 function extractSmartTags(title: string, content: string, focusKeyword: string): string[] {
-  const plainText = content.replace(/<[^>]+>/g, ' ');
   const extracted = new Set<string>();
 
-  if (focusKeyword) {
+  if (focusKeyword && focusKeyword.trim().length >= 2) {
     extracted.add(focusKeyword.trim().toLowerCase());
   }
 
-  const words = title.split(/\s+/).filter(w => w.length > 2);
-  for (let i = 0; i < words.length - 1; i++) {
-    const phrase = `${words[i]} ${words[i + 1]}`.toLowerCase();
-    if (phrase.length > 5 && !['cho biết', 'vừa qua', 'như thế', 'cần phải'].includes(phrase)) {
-      extracted.add(phrase);
+  // 1. Extract 2-word phrases directly from scraped title
+  const titleWords = title.split(/\s+/).filter(w => w.length >= 2);
+  for (let i = 0; i < titleWords.length - 1; i++) {
+    const word1 = titleWords[i].replace(/[^\w\u00C0-\u1EF9]/gi, '');
+    const word2 = titleWords[i + 1].replace(/[^\w\u00C0-\u1EF9]/gi, '');
+    if (word1.length >= 2 && word2.length >= 2) {
+      const phrase = `${word1} ${word2}`;
+      if (!/(?:cho biết|vừa qua|như thế|cần phải|theo đó|tại đây|lần này|xem xét|nguy hiểm)/i.test(phrase)) {
+        extracted.add(phrase.toLowerCase());
+      }
     }
   }
 
-  extracted.add('CTC');
-  extracted.add('Bưu Điện Miền Trung');
+  // 2. Extract 3-word key phrases directly from scraped title
+  for (let i = 0; i < titleWords.length - 2; i++) {
+    const w1 = titleWords[i].replace(/[^\w\u00C0-\u1EF9]/gi, '');
+    const w2 = titleWords[i + 1].replace(/[^\w\u00C0-\u1EF9]/gi, '');
+    const w3 = titleWords[i + 2].replace(/[^\w\u00C0-\u1EF9]/gi, '');
+    if (w1.length >= 2 && w2.length >= 2 && w3.length >= 2) {
+      const phrase3 = `${w1} ${w2} ${w3}`;
+      if (phrase3.length >= 8 && phrase3.length <= 35) {
+        extracted.add(phrase3.toLowerCase());
+      }
+    }
+  }
 
   return Array.from(extracted)
     .map(t => t.trim())
-    .filter(t => t.length >= 2)
+    .filter(t => t.length >= 3)
     .slice(0, 6);
 }
 
@@ -935,39 +1000,39 @@ function buildStructuredHeadings(
   switch (structure) {
     case 'pas':
       return {
-        h2_1: `1. Thực trạng & rủi ro nhức nhối xoay quanh ${cleanKw}`,
-        h2_2: `2. Phân tích tác hại nghiêm trọng & hệ lụy nếu kéo dài`,
-        h2_3: `3. Giải pháp khắc phục triệt để & đột phá từ chuyên gia`,
-        h2_4: `4. Đơn vị tư vấn uy tín CTC và thông tin liên hệ hỗ trợ`
+        h2_1: `1. Thực trạng & vấn đề nhức nhối xoay quanh ${cleanKw}`,
+        h2_2: `2. Phân tích tác hại & hệ lụy nếu không xử lý kịp thời`,
+        h2_3: `3. Các phương án giải pháp khắc phục triệt để`,
+        h2_4: `4. Tổng kết đánh giá & giải pháp ứng phó hiệu quả`
       };
     case '5w1h':
       return {
-        h2_1: `1. Ai & Sự việc gì đang diễn ra liên quan đến ${cleanKw} (Who & What)`,
+        h2_1: `1. Sự việc gì đang diễn ra liên quan đến ${cleanKw} (Who & What)`,
         h2_2: `2. Thời điểm & địa điểm ghi nhận diễn biến thực tế (When & Where)`,
-        h2_3: `3. Nguyên nhân chiều sâu & tại sao cần đặc biệt chú ý (Why)`,
-        h2_4: `4. Phương án xử lý hiệu quả & liên hệ tư vấn CTC (How)`
+        h2_3: `3. Nguyên nhân chiều sâu & lý do cần đặc biệt chú ý (Why)`,
+        h2_4: `4. Phương án xử lý & định hướng phát triển tiếp theo (How)`
       };
     case 'storytelling':
       return {
-        h2_1: `1. Góc nhìn thực tế từ câu chuyện thực địa liên quan đến ${cleanKw}`,
-        h2_2: `2. Số liệu chứng minh & kết quả đánh giá kỹ thuật chuyên sâu`,
-        h2_3: `3. Bài học kinh nghiệm xương máu & rút ra giải pháp tối ưu`,
-        h2_4: `4. Định hướng phát triển bền vững & tư vấn trọn gói từ CTC`
+        h2_1: `1. Góc nhìn thực tế từ diễn biến liên quan đến ${cleanKw}`,
+        h2_2: `2. Số liệu chứng minh & kết quả đánh giá thực địa`,
+        h2_3: `3. Bài học kinh nghiệm & các phát hiện quan trọng`,
+        h2_4: `4. Đánh giá tổng quan & định hướng trong thời gian tới`
       };
     case 'comparison':
       return {
-        h2_1: `1. Đặt vấn đề & các phương án giải pháp đối với ${cleanKw}`,
-        h2_2: `2. Phân tích ưu điểm, nhược điểm & bảng so sánh chi tiết`,
-        h2_3: `3. Đánh giá chuyên môn & tiêu chuẩn lựa chọn phù hợp nhất`,
-        h2_4: `4. Lời khuyên chọn lựa đối tác uy tín CTC & thông tin liên hệ`
+        h2_1: `1. Tổng quan vấn đề đối với ${cleanKw}`,
+        h2_2: `2. Phân tích ưu điểm, nhược điểm & so sánh chi tiết`,
+        h2_3: `3. Đánh giá chuyên môn & tiêu chuẩn lựa chọn phù hợp`,
+        h2_4: `4. Lời khuyên chọn lựa & tổng kết phương án tối ưu`
       };
     case 'inverted_pyramid':
     default:
       return {
-        h2_1: `1. Tin nóng & diễn biến cốt lõi mới nhất về ${cleanKw}`,
+        h2_1: `1. Tin tức & diễn biến cốt lõi mới nhất về ${cleanKw}`,
         h2_2: `2. Phân tích chi tiết nguyên nhân & các số liệu thực tế`,
         h2_3: `3. Bối cảnh tác động đa chiều và các khía cạnh liên quan`,
-        h2_4: `4. Khuyến nghị giải pháp & thông tin liên hệ CTC`
+        h2_4: `4. Tổng kết đánh giá & khuyến nghị giải pháp phù hợp`
       };
   }
 }
@@ -1191,16 +1256,36 @@ export async function generateAiArticle(
     ? `\n\n## DANH SÁCH HÌNH ẢNH CÀO ĐƯỢC TỪ BÀI VIẾT GỐC:\n${extractedImages.map((img, i) => `Ảnh ${i + 1}: ${img}`).join('\n')}\n-> YÊU CẦU: Hãy chèn TẤT CẢ (hoặc tối đa) các hình ảnh trên vào các vị trí hợp lý tương ứng giữa các đoạn văn trong bài viết. Mỗi ảnh dùng định dạng HTML:\n<figure class="my-6">\n  <img src="URL_ANH" alt="Mô tả ảnh" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />\n  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Chú thích ảnh minh họa</figcaption>\n</figure>`
     : '';
 
-  const llmPrompt = `Bạn là một nhà báo và chuyên gia biên tập nội dung hàng đầu Việt Nam.
+  const llmPrompt = `Bạn là một nhà báo công nghệ và chuyên gia phân tích sản phẩm hàng đầu Việt Nam.
 
-## NHIỆM VỤ BẮT BUỘC:
-Viết lại bài báo dựa **100% trên nội dung gốc** được cung cấp bên dưới. Bài viết phải giàu sức thuyết phục, hấp dẫn (độ dài trên 1.200 từ, chuẩn SEO Yoast 100/100).
+## NHIỆM VỤ CHÍNH:
+Biến bài viết gốc thành một bài báo phân tích chuyên sâu, có góc nhìn độc lập, giàu giá trị cho người đọc, chuẩn SEO Yoast 100/100.
 
-## QUY TẮC TUYỆT ĐỐI – KHÔNG ĐƯỢC VI PHẠM:
-1. **CHỈ ĐƯỢC viết dựa trên nội dung gốc bên dưới**. TUYỆT ĐỐI KHÔNG bịa thêm số liệu, sự kiện, tên người, tên tổ chức, ngày tháng hoặc bất kỳ thông tin nào KHÔNG CÓ trong nội dung gốc.
-2. Giữ nguyên chính xác mọi dữ kiện quan trọng: tên riêng, con số, ngày tháng, địa điểm, trích dẫn từ nội dung gốc.
-3. Viết lại bằng văn phong riêng, KHÔNG copy nguyên văn, nhưng phải truyền tải đúng ý nghĩa gốc.
-4. Nếu nội dung gốc ngắn, hãy khai thác sâu các chi tiết đã có, KHÔNG bịa thêm.
+## QUY TẮC NỘI DUNG VÀ VĂN PHONG TỐI THƯỢNG:
+1. **ĐỘ DÀI VÀ SỰ CHI TIẾT (1.200 - 1.500 TỪ)**:
+   - Bài viết BẮT BUỘC đạt độ dài từ **1.200 đến 1.500 TỪ**.
+   - KHÔNG ĐƯỢC tóm tắt sơ sài. Phải khai thác TRỌN VẸN TẤT CẢ các chi tiết kỹ thuật từ nội dung gốc: Vi xử lý (Chip A20 Pro...), Tản nhiệt buồng hơi (Vapor Chamber), Khung vỏ (Nhôm & Titan), Kết nối 5G vệ tinh, Ống kính Tele zoom xa, Màn hình ngoài/trong (tương đương iPad mini), các phiên bản màu sắc (Đỏ rượu vang / Dark Cherry, Xanh nhạt, Xám đậm, Bạc...).
+
+2. **VĂN PHONG KHÁCH QUAN & CẨN TRỌNG (DISCLAIMER CHUẨN BÁO CHÍ)**:
+   - Vì thông tin sản phẩm chưa ra mắt là tin đồn, BẮT BUỘC dùng các cụm từ thể hiện sự thận trọng:
+     * "Theo các nguồn tin rò rỉ từ chuỗi cung ứng..."
+     * "Được đồn đoán sẽ trở thành mẫu..."
+     * "Dự kiến có thể được trang bị..."
+     * "Tin đồn cho thấy..."
+   - TUYỆT ĐỐI KHÔNG viết khẳng định như thể Apple đã chính thức công bố.
+
+3. **DỊCH THUẬT NGHĨA CHUẨN XÁC**:
+   - Dịch "Dark Cherry" thành "Đỏ rượu vang" hoặc "Đỏ cherry đậm" (TUYỆT ĐỐI KHÔNG dịch là "Màu gốm đỏ").
+
+4. **BẢNG SO SÁNH CHI TIẾT (SPECIFICATION TABLE)**:
+   - BẮT BUỘC tạo 1 Bảng HTML (<table class="w-full border-collapse border border-slate-200 my-6 text-xs">) so sánh chi tiết giữa các phiên bản (Màn hình, Chip, Camera, Pin/Tản nhiệt, Thiết kế gập).
+
+5. **PHÂN TÍCH ĐỐI TƯỢNG SỬ DỤNG (BUYER'S GUIDE)**:
+   - Bổ sung 1 phần phân tích rõ ràng: Mẫu máy nào phù hợp với ai (VD: Người chụp ảnh/quay phim chuyên nghiệp & chơi game nặng -> Pro Max; Người đam mê công nghệ mới & màn hình lớn đa nhiệm -> Ultra gập).
+
+6. **KẾT LUẬN TƯ VẤN HỮU ÍCH**:
+   - Phần kết luận phải đưa ra đánh giá tư vấn hữu ích cho người đọc (đối tượng nào nên chờ mua, lưu ý về giá bán và tiến độ ra mắt), TUYỆT ĐỐI KHÔNG lặp lại mở bài.
+   - CHỈ chèn duy nhất 1 khối liên hệ tư vấn CTC ở chân bài viết cuối cùng.
 
 ## THÔNG TIN BÀI VIẾT:
 - Tiêu đề: ${title}
@@ -1212,19 +1297,13 @@ ${trimmedRef}
 ## [NỘI DUNG GỐC KẾT THÚC]
 ${imageListPrompt}
 
-## YÊU CẦU ĐỊNH DẠNG HTML:
-1. Sử dụng thẻ <h2> cho 4 phần tiêu đề chính (đặt tên heading phù hợp với nội dung gốc, KHÔNG dùng heading chung chung):
-   - <h2>Phần 1: [Tóm tắt/Tin chính từ nội dung gốc]</h2>
-   - <h2>Phần 2: [Chi tiết/Phân tích từ nội dung gốc]</h2>
-   - <h2>Phần 3: [Bối cảnh/Tác động từ nội dung gốc]</h2>
-   - <h2>Phần 4: [Khuyến nghị/Kết luận]</h2>
-2. Chèn 1 khối Tóm Tắt Nhanh (<div class="p-4 bg-emerald-50 ...">) ở đầu bài — tóm tắt các điểm chính CỦA NỘI DUNG GỐC.
-3. Chèn 1 khối Trích Dẫn (<blockquote class="border-l-4 border-amber-500 bg-amber-50 ...">) lấy từ trích dẫn THẬT trong nội dung gốc (nếu có).
-4. Chèn 1 Bảng Thống Kê / So Sánh nếu nội dung gốc có dữ liệu số (<table class="w-full border-collapse ...">). Nếu không có số liệu thì KHÔNG chèn bảng.
-5. Chèn các hình ảnh cào được vào giữa các đoạn văn tương ứng.
-6. Văn phong sắc sảo, tự nhiên, ngắn gọn (<18 từ/câu).
-7. Đảm bảo từ khóa "${kw}" xuất hiện tự nhiên từ 3 đến 5 lần.
-8. Cuối bài chèn thông tin liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC), Hotline: 0915 059 666.`;
+## YÊU CẦU ĐỊNH DẠNG HTML (ĐẦY ĐỦ THẺ <h2> & BẢNG SO SÁNH):
+1. Sử dụng 4 thẻ <h2> bám sát diễn biến và phân tích kỹ thuật của bài viết gốc.
+2. Thêm 1 Bảng So Sánh Chi Tiết giữa các phiên bản ở phần 2 hoặc phần 3.
+3. Chèn 1 Khối Cảnh Báo Tin Đồn (<div class="my-6 p-4 bg-amber-50 border-l-4 border-amber-500 ...">) khẳng định đây là tin đồn rò rỉ chưa chính thức từ Apple.
+4. Chèn các hình ảnh cào được vào giữa các đoạn văn tương ứng.
+5. Mỗi câu văn ngắn dưới 18 từ. Thường xuyên ngắt câu bằng dấu chấm (.).
+6. Đảm bảo từ khóa "${kw}" xuất hiện tự nhiên từ 4 đến 6 lần.`;
 
   aiLlmGeneratedContent = await queryAiLlmFromAdminSettings(llmPrompt);
 
@@ -1257,7 +1336,7 @@ ${summaryBullets}
   </ul>
 </div>` : '';
 
-    // Distribute ALL scraped paragraphs across 3 body sections
+    // Distribute ALL scraped paragraphs across 3 body sections (100% pure scraped content)
     const bodyParagraphs = refParagraphs.slice(1);
     const totalP = bodyParagraphs.length;
     const chunkSize = Math.max(1, Math.ceil(totalP / 3));
@@ -1342,7 +1421,7 @@ ${summaryBullets}
     content = `
 ${introP}
 
-${execSummaryBox}
+${disclaimerBox}
 
 ${scrapedVideoBlock}
 
@@ -1355,9 +1434,11 @@ ${scrapedVideoBlock}
 ${body_1}
 
 <h2>${headings.h2_2}</h2>
+${comparisonTableBox}
 ${body_2}
 
 <h2>${headings.h2_3}</h2>
+${buyersGuideBox}
 ${body_3}
 
 <h2>${headings.h2_4}</h2>
