@@ -1481,6 +1481,38 @@ ${summaryBullets}
 </div>
 ` : '';
 
+    const disclaimerBox = `
+<div class="my-6 p-4 bg-amber-50/90 border-l-4 border-amber-500 rounded-r-2xl shadow-xs text-xs text-amber-900 leading-relaxed">
+  <p class="font-black uppercase tracking-wider mb-1 text-amber-950">⚠️ LƯU Ý BÁO CHÍ & DISCLAIMER TIN ĐỒN:</p>
+  <p>Các thông tin trong bài viết được tổng hợp từ các nguồn tin rò rỉ từ chuỗi cung ứng. Thông số và tính năng thực tế có thể thay đổi khi nhà sản xuất chính thức công bố.</p>
+</div>`;
+
+    const comparisonTableBox = `
+<div class="my-6 overflow-x-auto rounded-2xl border border-slate-200 shadow-sm bg-white">
+  <table class="w-full text-xs text-left border-collapse">
+    <thead class="bg-slate-900 text-white uppercase text-[10px] font-black">
+      <tr>
+        <th class="p-3">Tiêu chí / Phiên bản</th>
+        <th class="p-3">Phiên bản Tiêu Chuẩn / Pro</th>
+        <th class="p-3">Phiên bản Pro Max / Cao Cấp</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+      <tr><td class="p-3 bg-slate-50 font-bold">Vi xử lý & Hiệu năng</td><td class="p-3">Thế hệ mới tối ưu điện năng</td><td class="p-3">Hiệu năng tối đa + Tản nhiệt buồng hơi</td></tr>
+      <tr><td class="p-3 bg-slate-50 font-bold">Chất liệu khung vỏ</td><td class="p-3">Hợp kim cao cấp siêu nhẹ</td><td class="p-3">Khung Titan chịu lực tối đa</td></tr>
+    </tbody>
+  </table>
+</div>`;
+
+    const buyersGuideBox = `
+<div class="my-6 p-5 bg-sky-50/90 border border-sky-200 rounded-2xl shadow-xs space-y-2">
+  <p class="font-black text-xs text-sky-950 uppercase tracking-wider">🎯 PHÂN TÍCH ĐỐI TƯỢNG NÊN LỰA CHỌN PHIÊN BẢN NÀO:</p>
+  <ul class="text-xs text-sky-900 space-y-1.5 font-medium leading-relaxed">
+    <li>📌 <strong>Người dùng phổ thông & Văn phòng:</strong> Ưu tiên phiên bản tiêu chuẩn để có sự cân bằng hoàn hảo giữa hiệu năng và giá thành.</li>
+    <li>🔥 <strong>Người dùng chuyên nghiệp & Chơi game nặng:</strong> Nên nâng cấp phiên bản Pro/Pro Max để sở hữu cấu hình mạnh nhất.</li>
+  </ul>
+</div>`;
+
     content = `
 ${introP}
 

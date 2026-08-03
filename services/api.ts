@@ -258,6 +258,23 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ url })
     }),
+    generateProduct: (data: {
+      name: string;
+      code?: string;
+      focusKeyword?: string;
+      style?: string;
+      targetLength?: string;
+      sampleText?: string;
+      productUrl?: string;
+      selectedImages?: string[];
+    }) => fetchAPI<{ success: boolean; data: any }>('/ai/product/generate-product', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+    scrapeProductUrl: (url: string) => fetchAPI<{ success: boolean; data: { scrapedTitle: string; scrapedParagraphs: string[]; scrapedImages: string[]; scrapedVideos: string[]; specifications: { [key: string]: string }; rawText: string } }>('/ai/product/scrape-product-url', {
+      method: 'POST',
+      body: JSON.stringify({ url })
+    }),
   },
 
   // Categories (Legacy)
