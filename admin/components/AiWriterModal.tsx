@@ -37,6 +37,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<number>(0);
+  const [result, setResult] = useState<any | null>(null);
   const [scrapingPreview, setScrapingPreview] = useState(false);
   const [scrapedData, setScrapedData] = useState<{ title: string; paragraphs: string[]; images: string[]; videos: string[] } | null>(null);
 
