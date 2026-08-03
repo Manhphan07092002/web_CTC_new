@@ -65,7 +65,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
         : titleToUse;
 
       const res = await api.ai.generateArticle({
-        title: fullTitleWithNote || 'Bài báo mẫu',
+        title: fullTitleWithNote,
         focusKeyword: kwToUse,
         tone,
         targetLength,

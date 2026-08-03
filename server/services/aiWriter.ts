@@ -90,9 +90,24 @@ function resolveFocusKeyword(userTitle: string, explicitKeyword?: string): strin
 /**
  * Format SEO Title strictly within 50 to 64 characters for 10/10 Yoast SEO score
  */
+/**
+ * Format SEO Title — Preserves exact scraped article titles while truncating if overly long
+ */
 function formatYoastSeoTitle(cleanTitle: string, kw: string): string {
   let title = cleanTitle.trim();
 
+  // If title is a real scraped or user-entered title (>= 12 chars and not generic 'Bài báo mẫu')
+  // PRESERVE IT EXACTLY as scraped from the article! Do NOT append generic suffixes!
+  if (title.length >= 12 && !title.toLowerCase().includes('bài báo mẫu')) {
+    if (title.length > 100) {
+      const trimmed = title.substring(0, 97);
+      const lastSpace = trimmed.lastIndexOf(' ');
+      return (lastSpace > 30 ? trimmed.substring(0, lastSpace) : trimmed).trim() + '...';
+    }
+    return title;
+  }
+
+  // Fallback ONLY for missing or short generic titles
   if (!title.toLowerCase().includes(kw.toLowerCase())) {
     title = `${title} – ${kw}`;
   }
@@ -141,14 +156,15 @@ function formatYoastSeoTitle(cleanTitle: string, kw: string): string {
 function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: string): string {
   let excerpt = '';
   if (firstSnippet && firstSnippet.length > 30) {
-    const paraphrased = paraphraseWebSnippet(firstSnippet);
-    excerpt = `Thông tin ${kw}: ${paraphrased}`;
+    // Use actual scraped content as excerpt, not generic template
+    const cleaned = cleanHtmlEntities(firstSnippet);
+    excerpt = cleaned;
   } else {
     excerpt = `Cập nhật thông tin chi tiết về ${kw}. Phân tích bối cảnh, thực trạng diễn biến và tư vấn giải pháp thực tế từ các chuyên gia CTC.`;
   }
 
   if (!excerpt.toLowerCase().includes(kw.toLowerCase())) {
-    excerpt = `Thông tin ${kw}: ${excerpt}`;
+    excerpt = `${kw}: ${excerpt}`;
   }
 
   excerpt = excerpt.replace(/\s+/g, ' ').trim();
@@ -262,7 +278,8 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
         scrapedTitle = titleMatch[1].replace(/<[^>]+>/g, '').trim();
       }
     }
-    scrapedTitle = scrapedTitle.replace(/\s*[|–—-]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV|Tiki|Shopee|Lazada|MSI|Dell|ASUS|HP|Lenovo|CTC|ctcdn\.vn|Thế Giới Di Động|TGDD|CellphoneS|FPT Shop).*$/i, '').trim();
+    scrapedTitle = cleanHtmlEntities(scrapedTitle);
+    scrapedTitle = scrapedTitle.replace(/\s*[|–—-]\s*(?:VnExpress|Tuổi Trẻ|Dân Trí|Thanh Niên|VietnamNet|VTV|Tiki|Shopee|Lazada|MSI|Dell|ASUS|HP|Lenovo|CTC|ctcdn\.vn|Thế Giới Di Động|TGDD|CellphoneS|FPT Shop|Chứng khoán|Báo|Trang tin).*$/i, '').trim();
 
     // 2. Extract Body Text & Technical Spec Tables
     const scrapedParagraphs: string[] = [];
@@ -283,33 +300,117 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
       scrapedParagraphs.push(`=== BẢNG THÔNG SỐ KỸ THUẬT CHI TIẾT TỪ TRANG NGUỒN ===\n` + scrapedSpecs.join('\n'));
     }
 
-    // 2b. Extract text blocks (p, div, span, li, td, th, article, section)
-    const blockRegex = /<(?:p|div|span|li|td|th|h2|h3|h4|article|section)[^>]*>(.*?)<\/(?:p|div|span|li|td|th|h2|h3|h4|article|section)>/gis;
+    // 2b. Smart Content Extraction: Prioritize <article>, <main>, [role="main"], known content selectors
+    const junkPattern = /(?:copyright|all rights reserved|lượt xem|chia sẻ|theo dõi|đăng ký|quảng cáo|bảo lưu mọi quyền|cookie|chính sách|bình luận|comment|related|liên quan|xem thêm|đọc thêm|tin khác|bài viết khác|danh mục|menu|footer|header|sidebar|navigation|breadcrumb|tag|label|mạng xã hội|facebook|twitter|zalo|messenger|©|privacy|disclaimer)/i;
+
+    // Try to isolate the main article content container first
+    const articleContainerPatterns = [
+      /<article[^>]*>([\s\S]*?)<\/article>/gi,
+      /<main[^>]*>([\s\S]*?)<\/main>/gi,
+      /<div[^>]*(?:class|id)=["'][^"']*(?:article[_-]?(?:body|content|detail|text)|post[_-]?(?:body|content|detail|text)|content[_-]?(?:body|detail|text|area|main|inner)|entry[_-]?content|detail[_-]?(?:content|text|body)|news[_-]?(?:content|detail|body)|main[_-]?content|story[_-]?(?:body|content))[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi,
+      /<div[^>]*role=["']main["'][^>]*>([\s\S]*?)<\/div>/gi,
+    ];
+
+    let articleHtml = '';
+    for (const pattern of articleContainerPatterns) {
+      const containerMatch = pattern.exec(html);
+      if (containerMatch && containerMatch[1] && containerMatch[1].length > 200) {
+        articleHtml = containerMatch[1];
+        console.log(`[Scraper] Found article container (${articleHtml.length} chars) using pattern: ${pattern.source.substring(0, 40)}...`);
+        break;
+      }
+    }
+
+    // Fallback to full HTML if no article container found
+    const contentHtml = articleHtml || html;
+
+    // Extract paragraphs from the isolated content area
+    const blockRegex = /<(?:p|h2|h3|h4|li)[^>]*>(.*?)<\/(?:p|h2|h3|h4|li)>/gis;
     let blockMatch;
-    while ((blockMatch = blockRegex.exec(html)) !== null && scrapedParagraphs.length < 50) {
-      const text = blockMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-      if (text.length > 25 &&
-          !/(?:copyright|all rights reserved|lượt xem|chia sẻ|theo dõi|đăng ký|quảng cáo|bảo lưu mọi quyền|cookie|chính sách)/i.test(text) &&
+    while ((blockMatch = blockRegex.exec(contentHtml)) !== null && scrapedParagraphs.length < 80) {
+      const text = blockMatch[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+      if (text.length > 20 &&
+          !junkPattern.test(text) &&
           !scrapedParagraphs.includes(text)) {
         scrapedParagraphs.push(text);
       }
     }
 
+    // If article container yielded too few paragraphs, supplement from broader page <p> tags
+    if (scrapedParagraphs.length < 5 && articleHtml) {
+      const fallbackBlockRegex = /<p[^>]*>(.*?)<\/p>/gis;
+      let fbMatch;
+      while ((fbMatch = fallbackBlockRegex.exec(html)) !== null && scrapedParagraphs.length < 80) {
+        const text = fbMatch[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        if (text.length > 25 &&
+            !junkPattern.test(text) &&
+            !scrapedParagraphs.includes(text)) {
+          scrapedParagraphs.push(text);
+        }
+      }
+    }
+
     // 3. Extract Images - multi-source strategy
-    // 3a. JSON-LD Schema.org (most reliable for product pages)
+    // 3a. Prioritize <img> inside article content container (actual article photos!)
+    const imgAttrRegex = /<img[^>]+>/gi;
+    const attrPatterns = [
+      /data-zoom-image=["']([^"'\s]+)["']/i,
+      /data-large=["']([^"'\s]+)["']/i,
+      /data-full-src=["']([^"'\s]+)["']/i,
+      /data-original-src=["']([^"'\s]+)["']/i,
+      /data-original=["']([^"'\s]+)["']/i,
+      /data-actualsrc=["']([^"'\s]+)["']/i,
+      /data-vne-src=["']([^"'\s]+)["']/i,
+      /data-lazy-src=["']([^"'\s]+)["']/i,
+      /data-lazysrc=["']([^"'\s]+)["']/i,
+      /data-src=["']([^"'\s]+)["']/i,
+      /data-img=["']([^"'\s]+)["']/i,
+      /data-image=["']([^"'\s]+)["']/i,
+      /data-photo-url=["']([^"'\s]+)["']/i,
+      /data-url=["']([^"'\s]+)["']/i,
+      /data-srcset=["']([^"']+)["']/i,
+      /srcset=["']([^"']+)["']/i,
+      /src=["']([^"'\s]+)["']/i,
+    ];
+
+    const processImgTags = (targetHtml: string) => {
+      let match;
+      imgAttrRegex.lastIndex = 0;
+      while ((match = imgAttrRegex.exec(targetHtml)) !== null && scrapedImages.length < 20) {
+        const tag = match[0];
+        for (const ap of attrPatterns) {
+          const am = tag.match(ap);
+          if (am && am[1]) {
+            if (ap.source.includes('srcset')) {
+              const parts = am[1].split(',').map((s: string) => s.trim().split(/\s+/)[0]);
+              for (const p of parts.reverse()) { addImage(p); if (scrapedImages.length >= 20) break; }
+            } else {
+              addImage(am[1]);
+            }
+            break;
+          }
+        }
+      }
+    };
+
+    // First scan inside isolated article/main container for authentic content images
+    if (articleHtml) {
+      processImgTags(articleHtml);
+    }
+
+    // 3b. JSON-LD Schema.org (Product / ImageObject)
     const jsonLdRegex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
     let jsonLdMatch;
-    while ((jsonLdMatch = jsonLdRegex.exec(html)) !== null && scrapedImages.length < 6) {
+    while ((jsonLdMatch = jsonLdRegex.exec(html)) !== null && scrapedImages.length < 20) {
       try {
         const schema = JSON.parse(jsonLdMatch[1].trim());
         const extractSchemaImages = (obj: any) => {
           if (!obj) return;
           if (Array.isArray(obj)) { obj.forEach(extractSchemaImages); return; }
           if (typeof obj !== 'object') return;
-          if (obj['@type'] === 'Product' || obj['@type'] === 'ImageObject' || obj['@graph']) {
+          if (obj['@type'] === 'Product' || obj['@type'] === 'ImageObject' || obj['@graph'] || obj['@type'] === 'NewsArticle' || obj['@type'] === 'Article') {
             const graphs = obj['@graph'] || [obj];
             for (const item of (Array.isArray(graphs) ? graphs : [graphs])) {
-              // Product images
               if (item.image) {
                 const imgs = Array.isArray(item.image) ? item.image : [item.image];
                 for (const img of imgs) {
@@ -318,7 +419,6 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
                   else if (img?.contentUrl) addImage(img.contentUrl);
                 }
               }
-              // ImageObject
               if (item['@type'] === 'ImageObject') {
                 if (item.url) addImage(item.url);
                 if (item.contentUrl) addImage(item.contentUrl);
@@ -338,7 +438,7 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
       } catch {}
     }
 
-    // 3b. Open Graph / Twitter meta tags
+    // 3c. Open Graph / Twitter meta tags
     const metaImgPatterns = [
       /<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"'\s]+)["']/gi,
       /<meta[^>]+content=["']([^"'\s]+)["'][^>]+property=["']og:image["']/gi,
@@ -347,48 +447,20 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
     ];
     for (const pattern of metaImgPatterns) {
       let m;
-      while ((m = pattern.exec(html)) !== null && scrapedImages.length < 8) {
+      while ((m = pattern.exec(html)) !== null && scrapedImages.length < 20) {
         addImage(m[1]);
       }
     }
 
-    // 3c. <img> with all possible lazy-load attributes
-    const imgAttrRegex = /<img[^>]+>/gi;
-    let imgTagMatch;
-    while ((imgTagMatch = imgAttrRegex.exec(html)) !== null && scrapedImages.length < 10) {
-      const tag = imgTagMatch[0];
-      // Try all known image attributes in priority order
-      const attrPatterns = [
-        /data-zoom-image=["']([^"'\s]+)["']/i,
-        /data-large=["']([^"'\s]+)["']/i,
-        /data-full-src=["']([^"'\s]+)["']/i,
-        /data-original=["']([^"'\s]+)["']/i,
-        /data-lazy-src=["']([^"'\s]+)["']/i,
-        /data-lazysrc=["']([^"'\s]+)["']/i,
-        /data-src=["']([^"'\s]+)["']/i,
-        /data-img=["']([^"'\s]+)["']/i,
-        /srcset=["']([^"']+)["']/i,
-        /src=["']([^"'\s]+)["']/i,
-      ];
-      for (const ap of attrPatterns) {
-        const am = tag.match(ap);
-        if (am && am[1]) {
-          // srcset: take the largest (last) URL
-          if (ap.source.includes('srcset')) {
-            const parts = am[1].split(',').map((s: string) => s.trim().split(/\s+/)[0]);
-            for (const p of parts.reverse()) { addImage(p); if (scrapedImages.length >= 10) break; }
-          } else {
-            addImage(am[1]);
-          }
-          break; // take the best attribute, don't double-count same img tag
-        }
-      }
+    // 3d. Scan full HTML if articleHtml yielded few images
+    if (scrapedImages.length < 5) {
+      processImgTags(html);
     }
 
-    // 3d. Background-image CSS in inline styles (for gallery/slider pages)
+    // 3e. Background-image CSS in inline styles
     const bgImgRegex = /background-image\s*:\s*url\(\s*["']?([^"')]+)["']?\s*\)/gi;
     let bgMatch;
-    while ((bgMatch = bgImgRegex.exec(html)) !== null && scrapedImages.length < 10) {
+    while ((bgMatch = bgImgRegex.exec(html)) !== null && scrapedImages.length < 20) {
       addImage(bgMatch[1]);
     }
 
@@ -494,26 +566,59 @@ async function searchWebContext(query: string): Promise<{ rawSnippets: string[];
 }
 
 /**
- * Intelligent Paraphrasing Engine
+ * Full HTML entity decoder for Vietnamese text and special characters
  */
-function paraphraseWebSnippet(snippet: string): string {
+function cleanHtmlEntities(snippet: string): string {
   if (!snippet) return '';
 
-  let text = snippet
+  let str = snippet
+    // Numeric decimal entities &#7875; -> String.fromCharCode(7875)
+    .replace(/&#(\d+);/g, (_, dec) => {
+      try {
+        return String.fromCharCode(parseInt(dec, 10));
+      } catch {
+        return '';
+      }
+    })
+    // Numeric hex entities &#x1F1E6; -> String.fromCodePoint(0x1F1E6)
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
+      try {
+        return String.fromCodePoint(parseInt(hex, 16));
+      } catch {
+        return '';
+      }
+    })
+    // Basic XML/HTML entities
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
     .replace(/&#39;/g, "'")
-    .trim();
+    .replace(/&apos;/g, "'");
 
-  text = text
-    .replace(/\b(theo tin từ|theo thông tin|theo báo|tin tức)\b/gi, 'Ghi nhận thực tế cho thấy')
-    .replace(/\b(cho biết|tuyên bố|khẳng định)\b/gi, 'nhấn mạnh rằng')
-    .replace(/\b(đang|đã|sẽ)\b/gi, 'đang tích cực')
-    .replace(/\b(hiện nay|ngày nay)\b/gi, 'Trong giai đoạn hiện tại,');
+  // Named HTML entities for Latin & Vietnamese accented letters
+  const namedMap: Record<string, string> = {
+    'aacute': 'á', 'agrave': 'à', 'amacr': 'ā', 'anode': 'ã', 'acirc': 'â', 'atilde': 'ã', 'aring': 'å', 'auml': 'ä',
+    'eacute': 'é', 'egrave': 'è', 'ecirc': 'ê', 'euml': 'ë',
+    'iacute': 'í', 'igrave': 'ì', 'icirc': 'î', 'iuml': 'ï',
+    'oacute': 'ó', 'ograve': 'ò', 'ocirc': 'ô', 'otilde': 'õ', 'ouml': 'ö',
+    'uacute': 'ú', 'ugrave': 'ù', 'ucirc': 'û', 'uuml': 'ü',
+    'yacute': 'ý', 'ygrave': 'ỳ', 'ycirc': 'ŷ', 'yuml': 'ÿ',
+    'Aacute': 'Á', 'Agrave': 'À', 'Acirc': 'Â', 'Atilde': 'Ã', 'Auml': 'Ä',
+    'Eacute': 'É', 'Egrave': 'È', 'Ecirc': 'Ê', 'Euml': 'Ë',
+    'Iacute': 'Í', 'Igrave': 'Ì', 'Icirc': 'Î', 'Iuml': 'Ï',
+    'Oacute': 'Ó', 'Ograve': 'Ò', 'Ocirc': 'Ô', 'Otilde': 'Õ', 'Ouml': 'Ö',
+    'Uacute': 'Ú', 'Ugrave': 'Ù', 'Ucirc': 'Û', 'Uuml': 'Ü',
+    'Yacute': 'Ý', 'Ygrave': 'Ỳ', 'ndash': '–', 'mdash': '—', 'hellip': '…',
+    'laquo': '«', 'raquo': '»', 'ldquo': '“', 'rdquo': '”', 'lsquo': '‘', 'rsquo': '’'
+  };
 
-  return text;
+  str = str.replace(/&([a-zA-Z]+);/g, (match, entity) => {
+    return namedMap[entity] || match;
+  });
+
+  return str.replace(/\s+/g, ' ').trim();
 }
 
 /**
@@ -537,7 +642,8 @@ function parseCleanReferenceParagraphs(rawText: string): string[] {
       continue;
     }
 
-    const cleanP = paraphraseWebSnippet(text);
+    // Clean HTML entities only, preserve original wording
+    const cleanP = cleanHtmlEntities(text);
     if (cleanP.length > 20) {
       cleanParagraphs.push(cleanP);
     }
@@ -647,19 +753,31 @@ function buildStructuredHeadings(
 /**
  * Query Gemini / OpenAI API if configured in Admin Settings
  */
+/**
+ * Query Gemini / OpenAI / Groq / DeepSeek / Custom API if configured in Admin Settings
+ */
 async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | null> {
   try {
     const settings = await db.settings.get();
-    if (!settings || !settings.aiApiKey) return null;
+    if (!settings || !settings.aiApiKey) {
+      console.warn('[AI LLM API Query]: No aiApiKey found in Admin Settings.');
+      return null;
+    }
 
     const apiKey = settings.aiApiKey;
-    const provider = settings.aiProvider || 'gemini';
-    const model = settings.aiModel || 'gemini-1.5-flash';
+    const provider = (settings.aiProvider || 'gemini').toLowerCase();
+    let model = settings.aiModel || 'gemini-1.5-flash';
 
-    console.log(`[AI LLM API Query]: Querying ${provider} (${model}) from Admin Settings...`);
+    console.log(`[AI LLM API Query]: Requesting provider="${provider}", model="${model}"...`);
 
-    if (provider === 'openai') {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Handle OpenAI-compatible providers (openai, groq, deepseek, custom)
+    if (['openai', 'groq', 'deepseek', 'custom'].includes(provider)) {
+      let baseUrl = 'https://api.openai.com/v1';
+      if (provider === 'groq') baseUrl = 'https://api.groq.com/openai/v1';
+      else if (provider === 'deepseek') baseUrl = 'https://api.deepseek.com/v1';
+      else if (provider === 'custom') baseUrl = (settings.aiBaseUrl || '').replace(/\/$/, '') || 'https://api.groq.com/openai/v1';
+
+      const response = await fetch(`${baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -671,10 +789,24 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
           temperature: 0.7
         })
       });
+
       const data: any = await response.json();
-      return data.choices?.[0]?.message?.content || null;
+      if (!response.ok) {
+        console.error(`[AI LLM Query Error] Provider ${provider} returned ${response.status}:`, JSON.stringify(data));
+        return null;
+      }
+
+      const reply = data.choices?.[0]?.message?.content || null;
+      if (reply) {
+        console.log(`[AI LLM API Query]: Successfully received ${reply.length} chars from ${provider}`);
+      }
+      return reply;
     } else {
-      // Default to Google Gemini API
+      // Google Gemini API
+      // Normalize model names if user selected non-existent gemini-2.5-flash / gemini-2.5-pro
+      if (model.includes('2.5-flash') || model.includes('2.0-flash')) model = 'gemini-1.5-flash';
+      else if (model.includes('2.5-pro')) model = 'gemini-1.5-pro';
+
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: 'POST',
@@ -683,8 +815,32 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
           contents: [{ parts: [{ text: prompt }] }]
         })
       });
+
       const data: any = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+      if (!response.ok) {
+        console.error(`[AI LLM Query Error] Gemini API returned ${response.status}:`, JSON.stringify(data));
+        // Try fallback to gemini-1.5-flash if 404
+        if (response.status === 404 && model !== 'gemini-1.5-flash') {
+          console.log('[AI LLM API Query]: Retrying Gemini API with fallback model "gemini-1.5-flash"...');
+          const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+          const fbRes = await fetch(fallbackUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          });
+          const fbData: any = await fbRes.json();
+          if (fbRes.ok) {
+            return fbData.candidates?.[0]?.content?.parts?.[0]?.text || null;
+          }
+        }
+        return null;
+      }
+
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+      if (reply) {
+        console.log(`[AI LLM API Query]: Successfully received ${reply.length} chars from Gemini (${model})`);
+      }
+      return reply;
     }
   } catch (err) {
     console.error('[AI Admin Settings Query Error]:', err);
@@ -713,13 +869,14 @@ export async function generateAiArticle(
 
   // 1. Auto Scrape Article Text, Images & Videos if URL is supplied
   let scrapedUrlSuccess = false;
+  let scrapedTitleFound = '';
   if (articleUrl && articleUrl.trim().startsWith('http')) {
     console.log(`[AI Writer]: Auto scraping article content, images & videos from URL: ${articleUrl}`);
     const { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos } = await scrapeArticleFromUrl(articleUrl.trim());
-    if (scrapedParagraphs.length > 0 || scrapedImages.length > 0) {
+    if (scrapedParagraphs.length > 0 || scrapedImages.length > 0 || scrapedTitle) {
       scrapedUrlSuccess = true;
-      if (!cleanTitle && scrapedTitle) {
-        cleanTitle = scrapedTitle;
+      if (scrapedTitle) {
+        scrapedTitleFound = scrapedTitle;
       }
       rawReferenceText = scrapedParagraphs.join('\n\n');
       if (scrapedImages.length > 0) {
@@ -728,6 +885,14 @@ export async function generateAiArticle(
       if (scrapedVideos && scrapedVideos.length > 0) {
         extractedVideos = scrapedVideos;
       }
+    }
+  }
+
+  // PRECEDENCE FOR TITLE:
+  // If scrapedTitleFound is available from URL, ALWAYS prioritize it over empty or generic titles ("Bài báo mẫu")
+  if (scrapedTitleFound) {
+    if (!cleanTitle || cleanTitle.toLowerCase().includes('bài báo mẫu') || cleanTitle.length < 10) {
+      cleanTitle = scrapedTitleFound;
     }
   }
 
@@ -790,25 +955,47 @@ export async function generateAiArticle(
 
   // 7. Check if Admin Settings has Gemini API / OpenAI API configured
   let aiLlmGeneratedContent: string | null = null;
+  // Trim reference content for LLM prompt (avoid token overflow, keep first ~6000 chars)
+  const trimmedRef = (rawReferenceText || searchResult.combinedText || '').substring(0, 6000);
+
+  const imageListPrompt = extractedImages.length > 0
+    ? `\n\n## DANH SÁCH HÌNH ẢNH CÀO ĐƯỢC TỪ BÀI VIẾT GỐC:\n${extractedImages.map((img, i) => `Ảnh ${i + 1}: ${img}`).join('\n')}\n-> YÊU CẦU: Hãy chèn TẤT CẢ (hoặc tối đa) các hình ảnh trên vào các vị trí hợp lý tương ứng giữa các đoạn văn trong bài viết. Mỗi ảnh dùng định dạng HTML:\n<figure class="my-6">\n  <img src="URL_ANH" alt="Mô tả ảnh" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />\n  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Chú thích ảnh minh họa</figcaption>\n</figure>`
+    : '';
+
   const llmPrompt = `Bạn là một nhà báo và chuyên gia biên tập nội dung hàng đầu Việt Nam.
-Hãy viết một bài báo phân tích chuyên sâu, giàu sức thuyết phục, hấp dẫn và dồi dào dữ liệu (độ dài trên 1.200 từ, chuẩn SEO Yoast 100/100) theo thông tin sau:
+
+## NHIỆM VỤ BẮT BUỘC:
+Viết lại bài báo dựa **100% trên nội dung gốc** được cung cấp bên dưới. Bài viết phải giàu sức thuyết phục, hấp dẫn (độ dài trên 1.200 từ, chuẩn SEO Yoast 100/100).
+
+## QUY TẮC TUYỆT ĐỐI – KHÔNG ĐƯỢC VI PHẠM:
+1. **CHỈ ĐƯỢC viết dựa trên nội dung gốc bên dưới**. TUYỆT ĐỐI KHÔNG bịa thêm số liệu, sự kiện, tên người, tên tổ chức, ngày tháng hoặc bất kỳ thông tin nào KHÔNG CÓ trong nội dung gốc.
+2. Giữ nguyên chính xác mọi dữ kiện quan trọng: tên riêng, con số, ngày tháng, địa điểm, trích dẫn từ nội dung gốc.
+3. Viết lại bằng văn phong riêng, KHÔNG copy nguyên văn, nhưng phải truyền tải đúng ý nghĩa gốc.
+4. Nếu nội dung gốc ngắn, hãy khai thác sâu các chi tiết đã có, KHÔNG bịa thêm.
+
+## THÔNG TIN BÀI VIẾT:
 - Tiêu đề: ${title}
 - Từ khóa chính: ${kw}
 - Cấu trúc bài viết: ${structure}
-- Nội dung gốc/tham khảo: ${rawReferenceText || searchResult.combinedText}
 
-Yêu cầu định dạng HTML phong phú:
-1. Sử dụng thẻ <h2> cho 4 phần tiêu đề chính:
-   - <h2>${headings.h2_1}</h2>
-   - <h2>${headings.h2_2}</h2>
-   - <h2>${headings.h2_3}</h2>
-   - <h2>${headings.h2_4}</h2>
-2. Chèn 1 khối Tóm Tắt Nhanh (<div class="p-4 bg-emerald-50... ">) ở đầu bài.
-3. Chèn 1 khối Trích Dẫn Chuyên Gia (<blockquote class="border-l-4 border-amber-500 bg-amber-50... ">) ở giữa bài.
-4. Chèn 1 Bảng Thống Kê / Bảng So Sánh (<table class="w-full border-collapse... ">).
-5. Văn phong sắc sảo, tự nhiên, ngắn gọn (<18 từ/câu), giàu từ nối (Tuy nhiên, Bên cạnh đó, Do đó, Vì vậy, Đặc biệt).
-6. Đảm bảo từ khóa "${kw}" xuất hiện tự nhiên từ 3 đến 5 lần.
-7. Cuối bài chèn thông tin liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC), Hotline: 0915 059 666.`;
+## [NỘI DUNG GỐC BẮT ĐẦU]
+${trimmedRef}
+## [NỘI DUNG GỐC KẾT THÚC]
+${imageListPrompt}
+
+## YÊU CẦU ĐỊNH DẠNG HTML:
+1. Sử dụng thẻ <h2> cho 4 phần tiêu đề chính (đặt tên heading phù hợp với nội dung gốc, KHÔNG dùng heading chung chung):
+   - <h2>Phần 1: [Tóm tắt/Tin chính từ nội dung gốc]</h2>
+   - <h2>Phần 2: [Chi tiết/Phân tích từ nội dung gốc]</h2>
+   - <h2>Phần 3: [Bối cảnh/Tác động từ nội dung gốc]</h2>
+   - <h2>Phần 4: [Khuyến nghị/Kết luận]</h2>
+2. Chèn 1 khối Tóm Tắt Nhanh (<div class="p-4 bg-emerald-50 ...">) ở đầu bài — tóm tắt các điểm chính CỦA NỘI DUNG GỐC.
+3. Chèn 1 khối Trích Dẫn (<blockquote class="border-l-4 border-amber-500 bg-amber-50 ...">) lấy từ trích dẫn THẬT trong nội dung gốc (nếu có).
+4. Chèn 1 Bảng Thống Kê / So Sánh nếu nội dung gốc có dữ liệu số (<table class="w-full border-collapse ...">). Nếu không có số liệu thì KHÔNG chèn bảng.
+5. Chèn các hình ảnh cào được vào giữa các đoạn văn tương ứng.
+6. Văn phong sắc sảo, tự nhiên, ngắn gọn (<18 từ/câu).
+7. Đảm bảo từ khóa "${kw}" xuất hiện tự nhiên từ 3 đến 5 lần.
+8. Cuối bài chèn thông tin liên hệ Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC), Hotline: 0915 059 666.`;
 
   aiLlmGeneratedContent = await queryAiLlmFromAdminSettings(llmPrompt);
 
@@ -818,129 +1005,101 @@ Yêu cầu định dạng HTML phong phú:
     console.log('[AI Writer]: Successfully generated article using Admin Settings LLM API Key!');
     content = aiLlmGeneratedContent;
   } else {
-    // Highly Rich & Persuasive Journalistic Synthesis Engine
-    const introP = `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong> đang trở thành tâm điểm chú ý của đông đảo giới quan sát và cộng đồng. ${toneCallout} Việc đánh giá thấu đáo các khía cạnh chiều sâu là yếu tố quyết định giúp bảo vệ an toàn và tối ưu hóa lợi ích thiết thực.</p>`;
+    // Content-first Fallback Engine: ALL body comes from scraped content, only CTC contact is static
 
-    // Executive Summary Highlight Box
-    const execSummaryBox = `
+    // Intro paragraph: use first scraped paragraph or a brief intro
+    const introP = refParagraphs.length > 0
+      ? `<p><strong>${toneBadge}</strong> — ${refParagraphs[0]}</p>`
+      : `<p><strong>${toneBadge}</strong> — Các diễn biến mới nhất liên quan đến <strong>${kw}</strong>. ${toneCallout}</p>`;
+
+    // Executive Summary: built from actual scraped content
+    const summaryBullets = refParagraphs.slice(0, 3).map((p) => {
+      const short = p.length > 120 ? p.substring(0, 117).trim() + '...' : p;
+      return `    <li>${short}</li>`;
+    }).join('\n');
+
+    const execSummaryBox = refParagraphs.length >= 2 ? `
 <div class="my-6 p-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl shadow-lg border border-slate-700 space-y-2">
   <div class="flex items-center gap-2 text-amber-400 font-black text-xs uppercase tracking-wider">
-    <span>💡 TÓM TẮT DIỄN BIẾN & CÁC ĐIỂM NÓNG CẦN NẮM NHANH:</span>
+    <span>💡 TÓM TẮT CÁC ĐIỂM CHÍNH:</span>
   </div>
   <ul class="list-disc pl-5 text-xs text-slate-200 space-y-1.5 font-medium leading-relaxed">
-    <li><strong>Ghi nhận bối cảnh thực tế:</strong> Các dữ liệu liên quan đến <strong>${kw}</strong> phản ánh xu hướng chuyển dịch mạnh mẽ và đòi hỏi sự chủ động ứng phó.</li>
-    <li><strong>Đánh giá rủi ro & cơ hội:</strong> Sự thiếu hụt thông tin chuẩn xác có thể dẫn tới những tổn thất không đáng có trong vận hành.</li>
-    <li><strong>Khuyến cáo chiến lược từ CTC:</strong> Áp dụng các giải pháp hạ tầng kỹ thuật chuẩn hóa giúp giảm thiểu tối đa rủi ro và tiết kiệm chi phí lâu dài.</li>
+${summaryBullets}
   </ul>
-</div>`;
+</div>` : '';
 
-    let body_1 = '';
-    let body_2 = '';
-    let body_3 = '';
+    // Distribute ALL scraped paragraphs across 3 body sections
+    const bodyParagraphs = refParagraphs.slice(1);
+    const totalP = bodyParagraphs.length;
+    const chunkSize = Math.max(1, Math.ceil(totalP / 3));
 
-    if (hasReferenceText) {
-      const p1 = refParagraphs[0] ? `<p>${refParagraphs[0]}</p>` : '';
-      const p2 = refParagraphs[1] ? `<p>${refParagraphs[1]}</p>` : '';
-      const p3 = refParagraphs[2] ? `<p>${refParagraphs[2]}</p>` : '';
-      const p4 = refParagraphs[3] ? `<p>${refParagraphs[3]}</p>` : '';
-      const p5 = refParagraphs[4] ? `<p>${refParagraphs[4]}</p>` : '';
-      const p6 = refParagraphs[5] ? `<p>${refParagraphs[5]}</p>` : '';
-      const p7 = refParagraphs[6] ? `<p>${refParagraphs[6]}</p>` : '';
+    const section1Paragraphs = bodyParagraphs.slice(0, chunkSize);
+    const section2Paragraphs = bodyParagraphs.slice(chunkSize, chunkSize * 2);
+    const section3Paragraphs = bodyParagraphs.slice(chunkSize * 2);
 
-      body_1 = `
-${p1}
-${p2}
-<p>Dưới góc nhìn phân tích từ các chuyên gia chuyên ngành, thực trạng liên quan đến <strong>${kw}</strong> phản ánh bản chất của một làn sóng chuyển dịch rộng lớn. Việc tiếp cận nguồn thông tin đã xác minh giúp các cá nhân và doanh nghiệp nâng cao năng lực phòng vệ chủ động.</p>
-<p>Tuy nhiên, sự thiếu hụt quy trình kiểm soát rủi ro bài bản có thể dẫn tới những đánh giá sai lệch. Do đó, trang bị kiến thức chuẩn xác về <strong>${kw}</strong> chính là ưu tiên hàng đầu của mọi đối tượng trong giai đoạn hiện tại.</p>
-${p7}
-<p>Bên cạnh đó, các cơ quan chuyên môn luôn khuyến cáo việc tuân thủ nghiêm ngặt các hướng dẫn vận hành kỹ thuật nhằm duy trì sự ổn định tối đa.</p>`.trim();
+    // Build image blocks for all remaining extracted images
+    const remainingImages = extractedImages.slice(1);
+    const createImgBlock = (imgUrl: string, idx: number) => `
+<figure class="my-6">
+  <img src="${imgUrl}" alt="Hình ảnh minh họa ${kw} ${idx + 1}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
+  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh thực tế từ bài viết gốc (${idx + 1}).</figcaption>
+</figure>`;
 
-      body_2 = `
-${p3}
-${p4}
-<blockquote class="my-6 p-4 border-l-4 border-amber-500 bg-amber-50/90 rounded-r-2xl italic text-slate-800 text-xs font-serif leading-relaxed">
-  "Nhìn từ bức tranh tổng thể, việc nắm bắt chiều sâu dữ liệu xoay quanh <strong>${kw}</strong> không chỉ giúp nhận diện nguy cơ từ sớm mà còn mở ra cơ hội tối ưu hóa toàn diện nguồn lực."
-</blockquote>
-<p>Ngoài ra, kết quả phân tích đa chiều chỉ ra những mắt xích cốt lõi sau đây:</p>
-<div class="overflow-x-auto my-4">
-  <table class="w-full border-collapse border border-slate-300 text-xs shadow-xs rounded-xl overflow-hidden">
-    <thead>
-      <tr class="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold">
-        <th class="border border-slate-300 p-2.5 text-left">Tiêu chí đánh giá</th>
-        <th class="border border-slate-300 p-2.5 text-left">Thực trạng ghi nhận</th>
-        <th class="border border-slate-300 p-2.5 text-left">Khuyến nghị chuẩn hóa từ CTC</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-slate-200">
-      <tr>
-        <td class="border border-slate-300 p-2.5 font-semibold text-slate-800">1. Tính xác thực dữ liệu</td>
-        <td class="border border-slate-300 p-2.5 text-slate-600">Cần thẩm định kỹ lưỡng từ nguồn chính thống</td>
-        <td class="border border-slate-300 p-2.5 text-emerald-700 font-bold">Truy xuất dữ liệu chuẩn quy chuẩn CTC</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-300 p-2.5 font-semibold text-slate-800">2. Độ an toàn kỹ thuật</td>
-        <td class="border border-slate-300 p-2.5 text-slate-600">Tiềm ẩn rủi ro nếu thiết bị đã cũ hỏng</td>
-        <td class="border border-slate-300 p-2.5 text-emerald-700 font-bold">Nâng cấp hạ tầng thế hệ mới 2026</td>
-      </tr>
-      <tr>
-        <td class="border border-slate-300 p-2.5 font-semibold text-slate-800">3. Chi phí vận hành</td>
-        <td class="border border-slate-300 p-2.5 text-slate-600">Dễ phát sinh tổn thất ngoài dự kiến</td>
-        <td class="border border-slate-300 p-2.5 text-emerald-700 font-bold">Tối ưu hóa đến 80% chi phí trọn gói</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<p>Đặc biệt, việc nâng cao nhận thức đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài cho toàn bộ hệ thống vận hành.</p>`.trim();
+    const imgBlocks = remainingImages.map((img, idx) => createImgBlock(img, idx + 1));
 
-      body_3 = `
-${p5}
-${p6}
-<p>Hơn nữa, các quy chuẩn vận hành áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt từ khâu khảo sát đến khởi tạo. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
-<div class="my-5 p-4 border border-rose-200 bg-rose-50/80 rounded-2xl text-xs text-rose-950 font-medium space-y-1">
-  <p class="font-black text-rose-900 uppercase tracking-wider">⚠️ LƯU Ý QUAN TRỌNG TỪ ĐỘI NGŨ KỸ SƯ CTC:</p>
-  <p>Tuyệt đối không sử dụng các giải pháp trôi nổi không rõ nguồn gốc. Việc đầu tư hệ thống chuẩn hóa ngay từ đầu giúp đảm bảo tuổi thọ thiết bị và vận hành liên tục 24/7.</p>
-</div>
-<p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược quyết định sự thành công lâu dài.</p>`.trim();
+    const buildSectionWithImages = (paragraphs: string[], startImgIdx: number, imgCount: number): { html: string; nextImgIdx: number } => {
+      let html = '';
+      let imgPointer = startImgIdx;
+      const endImgIdx = Math.min(imgBlocks.length, startImgIdx + imgCount);
 
-    } else {
-      // Fallback search synthesis with rich formatting
-      body_1 = `<p>Trong giai đoạn hiện tại, diễn biến liên quan đến <strong>${kw}</strong> ghi nhận nhiều chuyển biến nhanh chóng. Việc theo dõi thông tin chính thống giúp các cá nhân và tổ chức chủ động phòng ngừa rủi ro hiệu quả.</p>
-<p>Tuy nhiên, sự thiếu hụt dữ liệu xác minh có thể dẫn tới những đánh giá sai lệch. Do đó, trang bị kiến thức chuẩn xác về <strong>${kw}</strong> là ưu tiên hàng đầu của mọi đối tượng.</p>
-<p>Bên cạnh đó, các cơ quan chuyên môn luôn tích cực đưa ra những hướng dẫn chi tiết nhằm đảm bảo an toàn tối đa cho người dùng.</p>`;
+      const pPerImg = Math.max(1, Math.floor(paragraphs.length / Math.max(1, imgCount)));
 
-      body_2 = `<p>Ngoài ra, phân tích chuyên sâu về <strong>${kw}</strong> chỉ ra các yếu tố cốt lõi sau đây:</p>
-<ul>
-  <li><strong>Cung cấp thông tin đã xác minh:</strong> Tiếp cận dữ liệu thực tế từ các đơn vị quản lý chuyên ngành.</li>
-  <li><strong>Đánh giá tác động đa chiều:</strong> Phân tích kỹ lưỡng các ưu điểm, lợi ích và thách thức tiềm ẩn.</li>
-  <li><strong>Định hướng xử lý linh hoạt:</strong> Đưa ra các khuyến cáo thiết thực áp dụng vào đời sống hàng ngày.</li>
-  <li><strong>Tối ưu hóa quy trình vận hành:</strong> Đảm bảo tính liên tục và giảm thiểu tối đa mọi rủi ro gián đoạn.</li>
-</ul>
-<p>Đặc biệt, việc nâng cao nhận thức cộng đồng đối với <strong>${kw}</strong> mang lại giá trị bền vững lâu dài cho toàn hệ thống.</p>`;
+      paragraphs.forEach((p, pIdx) => {
+        html += `<p>${p}</p>\n`;
+        if (imgPointer < endImgIdx && (pIdx + 1) % pPerImg === 0) {
+          html += imgBlocks[imgPointer] + '\n';
+          imgPointer++;
+        }
+      });
 
-      body_3 = `<p>Hơn nữa, các quy chuẩn kỹ thuật mới nhất áp dụng cho <strong>${kw}</strong> đều đòi hỏi sự tuân thủ nghiêm ngặt. Việc đáp ứng đúng các tiêu chuẩn vận hành giúp bảo vệ công trình và thiết bị tối ưu.</p>
-<p>Vì vậy, lựa chọn đối tác tư vấn có năng lực chuyên môn cao đối với <strong>${kw}</strong> là quyết định mang tính chiến lược.</p>`;
+      // Insert any remaining images assigned to this section
+      while (imgPointer < endImgIdx) {
+        html += imgBlocks[imgPointer] + '\n';
+        imgPointer++;
+      }
+
+      return { html, nextImgIdx: imgPointer };
+    };
+
+    const imgPerSec = Math.max(1, Math.ceil(imgBlocks.length / 3));
+
+    const sec1 = buildSectionWithImages(section1Paragraphs, 0, imgPerSec);
+    const sec2 = buildSectionWithImages(section2Paragraphs, sec1.nextImgIdx, imgPerSec);
+    const sec3 = buildSectionWithImages(section3Paragraphs, sec2.nextImgIdx, imgBlocks.length - sec2.nextImgIdx);
+
+    let body_1 = sec1.html;
+    let body_2 = sec2.html;
+    let body_3 = sec3.html;
+
+    if (!hasReferenceText && searchResult.rawSnippets.length > 0) {
+      const snippets = searchResult.rawSnippets;
+      const sChunk = Math.max(1, Math.ceil(snippets.length / 3));
+      body_1 = snippets.slice(0, sChunk).map(s => `<p>${s}</p>`).join('\n');
+      body_2 = snippets.slice(sChunk, sChunk * 2).map(s => `<p>${s}</p>`).join('\n');
+      body_3 = snippets.slice(sChunk * 2).map(s => `<p>${s}</p>`).join('\n');
+    } else if (!hasReferenceText) {
+      body_1 = `<p>Không thể lấy nội dung từ bài viết gốc. Vui lòng kiểm tra lại đường link hoặc dán nội dung bài báo mẫu trực tiếp.</p>`;
+      body_2 = '';
+      body_3 = '';
     }
 
+    // STATIC: Only the CTC contact section is static
     const body_4 = `<p>Tóm lại, <strong>Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</strong> luôn sẵn sàng tư vấn và đồng hành cùng quý đối tác đối với mọi giải pháp liên quan tới <strong>${kw}</strong>:</p>
 <ul>
   <li><strong>Tên đơn vị:</strong> Công Ty Cổ Phần Xây Lắp Bưu Điện Miền Trung (CTC)</li>
   <li><strong>Hotline tư vấn 24/7:</strong> <a href="tel:0915059666" class="text-primary font-bold">0915 059 666</a></li>
   <li><strong>Trang liên hệ chi tiết:</strong> Đăng ký hỗ trợ tại <a href="/contact" class="text-primary font-bold underline">Trang Liên Hệ CTC</a>.</li>
 </ul>`;
-
-    const secondImgBlock = secondImage ? `
-<figure class="my-6">
-  <img src="${secondImage}" alt="Ảnh thực tế ${kw}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
-  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh minh họa diễn biến thực tế liên quan đến ${kw}.</figcaption>
-</figure>
-` : '';
-
-    const thirdImgBlock = thirdImage ? `
-<figure class="my-6">
-  <img src="${thirdImage}" alt="Khảo sát ${kw}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
-  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh khảo sát thực tế và đánh giá từ chuyên gia.</figcaption>
-</figure>
-` : '';
 
     const scrapedVideoBlock = (extractedVideos && extractedVideos.length > 0) ? `
 <div class="my-6">
@@ -958,30 +1117,16 @@ ${execSummaryBox}
 
 ${scrapedVideoBlock}
 
-<div class="my-6 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
-  <p class="font-black text-slate-800 text-sm uppercase tracking-wider mb-2">📌 Mục lục bài viết:</p>
-  <ul class="list-decimal pl-5 space-y-1 text-xs font-semibold text-primary">
-    <li>${headings.h2_1.replace(/^\d+\.\s*/, '')}</li>
-    <li>${headings.h2_2.replace(/^\d+\.\s*/, '')}</li>
-    <li>${headings.h2_3.replace(/^\d+\.\s*/, '')}</li>
-    <li>${headings.h2_4.replace(/^\d+\.\s*/, '')}</li>
-  </ul>
-</div>
-
 <figure class="my-6">
-  <img src="${mainImage}" alt="Thông tin ${kw} CTC" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
-  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh minh họa chính bài viết về ${kw}.</figcaption>
+  <img src="${mainImage}" alt="${kw}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" />
+  <figcaption class="text-center text-xs text-gray-500 mt-2 italic">Hình ảnh minh họa bài viết về ${kw}.</figcaption>
 </figure>
 
 <h2>${headings.h2_1}</h2>
 ${body_1}
 
-${secondImgBlock}
-
 <h2>${headings.h2_2}</h2>
 ${body_2}
-
-${thirdImgBlock}
 
 <h2>${headings.h2_3}</h2>
 ${body_3}
