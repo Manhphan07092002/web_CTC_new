@@ -895,6 +895,69 @@ function optimizeReadabilityScore(htmlContent: string, kw: string): string {
 }
 
 /**
+ * HTML Styling Enhancer:
+ * Applies modern typography, gradient accents, card wrappers, and responsive table styling.
+ */
+function enhanceArticleHtmlStyling(htmlContent: string): string {
+  if (!htmlContent) return htmlContent;
+
+  let result = htmlContent;
+
+  // 1. Upgrade plain <h2> headings with gradient left accent bar & bottom border
+  result = result.replace(/<h2>(.*?)<\/h2>/gi, (match, headingText) => {
+    if (headingText.includes('class=')) return match;
+    return `<h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-8 mb-4 pb-2.5 border-b-2 border-sky-500/20 flex items-center gap-3">
+  <span class="w-3 h-7 bg-gradient-to-b from-sky-500 to-indigo-600 rounded-full inline-block flex-shrink-0 shadow-xs"></span>
+  <span>${headingText}</span>
+</h2>`;
+  });
+
+  // 2. Upgrade plain <p> tags with leading-relaxed typography
+  result = result.replace(/<p>(.*?)<\/p>/gis, (match, pText) => {
+    if (pText.includes('class=') || pText.includes('<figure') || pText.includes('<div') || pText.includes('<table')) return match;
+    return `<p class="text-slate-700 text-sm sm:text-base leading-relaxed mb-4 font-normal">${pText}</p>`;
+  });
+
+  // 3. Upgrade <figure> & <figcaption> with rounded-2xl glassmorphic shadow card
+  result = result.replace(/<figure([^>]*)>(.*?)<\/figure>/gis, (match, attrs, inner) => {
+    if (inner.includes('group')) return match;
+    return `<figure class="my-7 group">
+  <div class="overflow-hidden rounded-2xl border border-slate-200/80 shadow-md bg-slate-950">
+    ${inner.replace(/<figcaption[\s\S]*?<\/figcaption>/gi, '').trim()}
+  </div>
+  ${inner.match(/<figcaption[\s\S]*?<\/figcaption>/gi)?.[0] || ''}
+</figure>`;
+  });
+
+  result = result.replace(/<figcaption([^>]*)>(.*?)<\/figcaption>/gi, (match, attrs, text) => {
+    return `<figcaption class="text-center text-xs font-semibold text-slate-500 mt-2.5 italic flex items-center justify-center gap-1">📸 <span>${text.replace(/^📸\s*/, '')}</span></figcaption>`;
+  });
+
+  // 4. Upgrade <table> with responsive rounded wrapper & dark header
+  result = result.replace(/(<table[^>]*>[\s\S]*?<\/table>)/gi, (match, tableHtml) => {
+    if (result.includes('overflow-x-auto rounded-2xl')) return match;
+    const cleanTable = tableHtml
+      .replace(/<table[^>]*>/i, '<table class="w-full text-xs sm:text-sm text-left border-collapse">')
+      .replace(/<thead[^>]*>/i, '<thead class="bg-slate-900 text-white uppercase text-[11px] font-black tracking-wider">')
+      .replace(/<th([^>]*)>/gi, '<th class="p-3.5 border-b border-slate-800">')
+      .replace(/<td([^>]*)>/gi, '<td class="p-3.5 border-b border-slate-100">');
+
+    return `<div class="my-7 overflow-x-auto rounded-2xl border border-slate-200 shadow-sm bg-white">${cleanTable}</div>`;
+  });
+
+  // 5. Upgrade <blockquote> with amber quote card
+  result = result.replace(/<blockquote([^>]*)>(.*?)<\/blockquote>/gis, (match, attrs, qText) => {
+    if (qText.includes('bg-amber-50')) return match;
+    return `<blockquote class="my-7 p-5 bg-amber-50/90 border-l-4 border-amber-500 rounded-r-2xl shadow-xs italic text-slate-800 text-sm sm:text-base leading-relaxed space-y-1">
+  <p class="font-bold text-amber-950 non-italic text-xs uppercase tracking-wider mb-1 flex items-center gap-1">💬 Trích dẫn nổi bật:</p>
+  <div>${qText}</div>
+</blockquote>`;
+  });
+
+  return result;
+}
+
+/**
  * Filter out author, date, photo caption metadata from raw reference content
  */
 function parseCleanReferenceParagraphs(rawText: string): string[] {
@@ -1446,9 +1509,10 @@ ${body_4}
 `.trim();
   }
 
-  // 8. Auto Apply Internal Links to CTC Products/Projects/Pages & Optimize Readability (100/100)
+  // 8. Auto Apply Internal Links, Optimize Readability & Enhance HTML Styling
   content = autoApplyInternalLinks(content);
   content = optimizeReadabilityScore(content, kw);
+  content = enhanceArticleHtmlStyling(content);
 
   // 9. Auto Localize Images: Download external images to /uploads/scraped/ for reliable storage
   const imagesToLocalize = [mainImage, ...extractedImages.slice(1)];
