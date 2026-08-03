@@ -37,9 +37,35 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<number>(0);
-  const [result, setResult] = useState<any | null>(null);
+  const [scrapingPreview, setScrapingPreview] = useState(false);
+  const [scrapedData, setScrapedData] = useState<{ title: string; paragraphs: string[]; images: string[]; videos: string[] } | null>(null);
 
   if (!isOpen) return null;
+
+  const handleScrapePreview = async () => {
+    if (!articleUrl.trim().startsWith('http')) {
+      showToast('Vui lòng nhập đường link URL hợp lệ (bắt đầu bằng http:// hoặc https://)', 'error');
+      return;
+    }
+
+    setScrapingPreview(true);
+    try {
+      const res = await api.ai.scrapeUrl(articleUrl.trim());
+      if (res && res.success && res.data) {
+        setScrapedData(res.data);
+        if (res.data.title && !topicTitle) {
+          setTopicTitle(res.data.title);
+        }
+        showToast(`✨ Bóc tách thành công: ${res.data.paragraphs.length} đoạn văn & ${res.data.images.length} hình ảnh!`, 'success');
+      } else {
+        showToast('Không thể bóc tách dữ liệu từ URL này', 'error');
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Lỗi khi bóc tách URL', 'error');
+    } finally {
+      setScrapingPreview(false);
+    }
+  };
 
   const handleGenerate = async (e?: React.FormEvent, customTitle?: string, customKw?: string) => {
     if (e) e.preventDefault();
@@ -158,18 +184,61 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
               </div>
 
               {/* URL Scraper Input */}
-              <div className="p-3.5 bg-sky-50/80 border border-sky-200 rounded-2xl space-y-1.5">
+              <div className="p-3.5 bg-sky-50/80 border border-sky-200 rounded-2xl space-y-2">
                 <label className="block text-xs font-black text-sky-950 uppercase tracking-wider flex items-center gap-1.5">
-                  <Link2 size={14} className="text-sky-600" /> Dán Đường Link Bài Báo Mẫu (Tự Động Cào Nội Dung Web)
+                  <Link2 size={14} className="text-sky-600" /> Dán Đường Link Bài Báo Mẫu (Tự Động Bóc Tách Web)
                 </label>
-                <input
-                  type="url"
-                  value={articleUrl}
-                  onChange={e => setArticleUrl(e.target.value)}
-                  placeholder="https://vnexpress.net/... hoặc https://tuoitre.vn/... (AI sẽ tự lấy nội dung cào về)"
-                  disabled={loading}
-                  className="w-full border border-sky-300 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-sky-400 outline-none bg-white shadow-xs"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={articleUrl}
+                    onChange={e => setArticleUrl(e.target.value)}
+                    placeholder="https://vnexpress.net/... hoặc https://tuoitre.vn/... (Dán link bài báo vào đây)"
+                    disabled={loading || scrapingPreview}
+                    className="flex-1 border border-sky-300 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-sky-400 outline-none bg-white shadow-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleScrapePreview}
+                    disabled={loading || scrapingPreview || !articleUrl.trim()}
+                    className="px-4 py-2 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white font-extrabold rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all whitespace-nowrap"
+                  >
+                    {scrapingPreview ? <RefreshCw size={13} className="animate-spin" /> : <Search size={13} />}
+                    <span>{scrapingPreview ? 'Đang bóc tách...' : '🔍 Bóc tách & Xem trước'}</span>
+                  </button>
+                </div>
+
+                {/* Scraped Live Preview Box */}
+                {scrapedData && (
+                  <div className="p-3 bg-white border border-sky-200 rounded-xl space-y-2 text-xs animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between font-bold text-sky-950 border-b border-sky-100 pb-1.5">
+                      <span className="flex items-center gap-1">
+                        <CheckCircle2 size={14} className="text-emerald-600" /> Kết quả bóc tách URL thành công:
+                      </span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase font-black">
+                        {scrapedData.paragraphs.length} đoạn văn | {scrapedData.images.length} hình ảnh
+                      </span>
+                    </div>
+
+                    {scrapedData.title && (
+                      <div className="text-slate-900 font-extrabold flex items-start gap-1.5">
+                        <span className="text-sky-600 flex-shrink-0">📌 Tiêu đề:</span>
+                        <span className="line-clamp-2">{scrapedData.title}</span>
+                      </div>
+                    )}
+
+                    {scrapedData.images.length > 0 && (
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Hình ảnh bóc tách được ({scrapedData.images.length} ảnh):</span>
+                        <div className="flex gap-2 overflow-x-auto pb-1">
+                          {scrapedData.images.slice(0, 8).map((img, idx) => (
+                            <img key={idx} src={img} alt="" className="w-14 h-14 object-cover rounded-lg border border-slate-200 shadow-xs flex-shrink-0" />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Paste Reference Article Text Area */}

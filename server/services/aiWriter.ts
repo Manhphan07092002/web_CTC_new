@@ -14,6 +14,9 @@
  */
 
 import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 import { db } from '../../services/db-mongodb';
 
 export interface AiGeneratedArticle {
@@ -622,6 +625,135 @@ function cleanHtmlEntities(snippet: string): string {
 }
 
 /**
+ * Auto Internal Linking Engine:
+ * Scans article HTML for CTC key terms and automatically inserts high-SEO internal links.
+ */
+function autoApplyInternalLinks(htmlContent: string): string {
+  if (!htmlContent) return htmlContent;
+
+  let result = htmlContent;
+
+  const rules: { pattern: RegExp; replacement: string }[] = [
+    {
+      pattern: /(?<!<a[^>]*>)\b(điện mặt trời|pin mặt trời|cho thuê mái nhà)\b(?!<\/a>)/i,
+      replacement: `<a href="/products" class="text-primary font-bold underline hover:text-secondary transition-colors" title="Giải pháp Điện Mặt Trời CTC">$1</a>`
+    },
+    {
+      pattern: /(?<!<a[^>]*>)\b(cáp quang|hạ tầng viễn thông|mạng 5g)\b(?!<\/a>)/i,
+      replacement: `<a href="/products" class="text-primary font-bold underline hover:text-secondary transition-colors" title="Thiết bị & Hạ tầng Viễn Thông CTC">$1</a>`
+    },
+    {
+      pattern: /(?<!<a[^>]*>)\b(bưu điện miền trung|xây lắp bưu điện)\b(?!<\/a>)/i,
+      replacement: `<a href="/about" class="text-primary font-bold underline hover:text-secondary transition-colors" title="Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)">$1</a>`
+    },
+    {
+      pattern: /(?<!<a[^>]*>)\b(dự án xây lắp|thi công công trình|trạm biến áp)\b(?!<\/a>)/i,
+      replacement: `<a href="/projects" class="text-primary font-bold underline hover:text-secondary transition-colors" title="Các dự án xây lắp tiêu biểu của CTC">$1</a>`
+    },
+    {
+      pattern: /(?<!<a[^>]*>)\b(tư vấn giải pháp|báo giá trọn gói|liên hệ ctc)\b(?!<\/a>)/i,
+      replacement: `<a href="/contact" class="text-primary font-bold underline hover:text-secondary transition-colors" title="Trang liên hệ tư vấn trọn gói CTC">$1</a>`
+    }
+  ];
+
+  for (const rule of rules) {
+    let replaced = false;
+    result = result.replace(rule.pattern, (match) => {
+      if (replaced) return match;
+      replaced = true;
+      return rule.replacement.replace('$1', match);
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Asynchronously download an external image and save to /uploads/scraped/
+ * Returns relative URL (/uploads/scraped/scraped_xxx.jpg) or original URL if download fails.
+ */
+async function localizeExternalImage(imageUrl: string): Promise<string> {
+  if (!imageUrl || !imageUrl.startsWith('http')) return imageUrl;
+
+  try {
+    const scrapedDir = path.join(process.cwd(), 'uploads', 'scraped');
+    if (!fs.existsSync(scrapedDir)) {
+      fs.mkdirSync(scrapedDir, { recursive: true });
+    }
+
+    const extMatch = imageUrl.match(/\.(jpg|jpeg|png|webp|avif|gif)(\?.*)?$/i);
+    const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg';
+
+    const hash = crypto.createHash('md5').update(imageUrl).digest('hex').substring(0, 12);
+    const filename = `scraped_${hash}.${ext}`;
+    const filePath = path.join(scrapedDir, filename);
+    const relativeUrl = `/uploads/scraped/${filename}`;
+
+    if (fs.existsSync(filePath)) {
+      return relativeUrl;
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(imageUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+      },
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const buffer = await res.buffer();
+      if (buffer && buffer.length > 500) {
+        fs.writeFileSync(filePath, buffer);
+        console.log(`[AI Image Localizer]: Downloaded & saved ${imageUrl} -> ${relativeUrl} (${buffer.length} bytes)`);
+        return relativeUrl;
+      }
+    }
+  } catch (err) {
+    console.warn(`[AI Image Localizer Warning]: Could not download ${imageUrl}:`, (err as any).message);
+  }
+
+  return imageUrl;
+}
+
+/**
+ * Localize all external image URLs inside HTML content & array of image URLs
+ */
+async function localizeAllArticleImages(content: string, images: string[]): Promise<{ content: string; images: string[] }> {
+  let updatedContent = content;
+
+  const imgSrcRegex = /<img[^>]+src=["'](https?:\/\/[^"'\s]+)["']/gi;
+  const matches = Array.from(content.matchAll(imgSrcRegex));
+  const uniqueUrls = Array.from(new Set(matches.map(m => m[1])));
+
+  const localizedMap = new Map<string, string>();
+  await Promise.all(uniqueUrls.map(async (url) => {
+    const local = await localizeExternalImage(url);
+    localizedMap.set(url, local);
+  }));
+
+  localizedMap.forEach((localUrl, originalUrl) => {
+    const escaped = originalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    updatedContent = updatedContent.replace(new RegExp(escaped, 'g'), localUrl);
+  });
+
+  const updatedImages: string[] = [];
+  for (const img of images) {
+    if (localizedMap.has(img)) {
+      updatedImages.push(localizedMap.get(img)!);
+    } else {
+      const local = await localizeExternalImage(img);
+      updatedImages.push(local);
+    }
+  }
+
+  return { content: updatedContent, images: updatedImages };
+}
+
+/**
  * Filter out author, date, photo caption metadata from raw reference content
  */
 function parseCleanReferenceParagraphs(rawText: string): string[] {
@@ -1136,7 +1268,17 @@ ${body_4}
 `.trim();
   }
 
-  // 8. Extract dynamic, content-bound tags
+  // 8. Auto Apply Internal Links to CTC Products/Projects/Pages
+  content = autoApplyInternalLinks(content);
+
+  // 9. Auto Localize Images: Download external images to /uploads/scraped/ for reliable storage
+  const imagesToLocalize = [mainImage, ...extractedImages.slice(1)];
+  const localized = await localizeAllArticleImages(content, imagesToLocalize);
+  content = localized.content;
+  const finalMainImage = localized.images[0] || mainImage;
+  const finalImages = localized.images.slice(1, 6);
+
+  // 10. Extract dynamic, content-bound tags
   const tags = extractSmartTags(title, content, kw);
 
   return {
@@ -1146,8 +1288,8 @@ ${body_4}
     content,
     focusKeyword: kw,
     tags,
-    image: mainImage,
-    images: extractedImages.slice(1, 4),
+    image: finalMainImage,
+    images: finalImages,
     status: 'pending',
     sources: scrapedUrlSuccess
       ? [`Cào dữ liệu & hình ảnh từ đường link: ${articleUrl}`, 'CTC Knowledge Base']
