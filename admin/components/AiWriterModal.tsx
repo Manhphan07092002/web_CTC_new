@@ -40,6 +40,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
   const [result, setResult] = useState<any | null>(null);
   const [scrapingPreview, setScrapingPreview] = useState(false);
   const [scrapedData, setScrapedData] = useState<{ title: string; paragraphs: string[]; images: string[]; videos: string[] } | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   if (!isOpen) return null;
 
@@ -54,6 +55,7 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
       const res = await api.ai.scrapeUrl(articleUrl.trim());
       if (res && res.success && res.data) {
         setScrapedData(res.data);
+        setSelectedImages(res.data.images || []);
         if (res.data.title && !topicTitle) {
           setTopicTitle(res.data.title);
         }
@@ -66,6 +68,20 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
     } finally {
       setScrapingPreview(false);
     }
+  };
+
+  const toggleImageSelect = (url: string) => {
+    setSelectedImages(prev => 
+      prev.includes(url) ? prev.filter(u => u !== url) : [...prev, url]
+    );
+  };
+
+  const selectAllImages = () => {
+    if (scrapedData?.images) setSelectedImages(scrapedData.images);
+  };
+
+  const deselectAllImages = () => {
+    setSelectedImages([]);
   };
 
   const handleGenerate = async (e?: React.FormEvent, customTitle?: string, customKw?: string) => {
@@ -98,7 +114,8 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
         targetLength,
         referenceContent: referenceContent.trim(),
         articleUrl: urlToUse,
-        structure
+        structure,
+        selectedImages
       });
 
       clearTimeout(timer1);
@@ -115,8 +132,10 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
       }
     } catch (err: any) {
       console.error('AI Generator Error:', err);
-      showToast(err.message || 'Lỗi khi tạo bài viết với AI', 'error');
+      showToast(err.message || 'Lỗi khi tạo bài viết AI', 'error');
     } finally {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
       setLoading(false);
       setStep(0);
     }
@@ -229,12 +248,67 @@ const AiWriterModal: React.FC<AiWriterModalProps> = ({
                     )}
 
                     {scrapedData.images.length > 0 && (
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Hình ảnh bóc tách được ({scrapedData.images.length} ảnh):</span>
-                        <div className="flex gap-2 overflow-x-auto pb-1">
-                          {scrapedData.images.slice(0, 8).map((img, idx) => (
-                            <img key={idx} src={img} alt="" className="w-14 h-14 object-cover rounded-lg border border-slate-200 shadow-xs flex-shrink-0" />
-                          ))}
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1">
+                            📸 Bấm chọn hình ảnh đưa vào bài viết ({selectedImages.length}/{scrapedData.images.length}):
+                          </span>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={selectAllImages}
+                              className="text-[10px] text-sky-600 hover:text-sky-800 font-bold underline"
+                            >
+                              Chọn tất cả
+                            </button>
+                            <button
+                              type="button"
+                              onClick={deselectAllImages}
+                              className="text-[10px] text-slate-500 hover:text-slate-700 font-bold underline"
+                            >
+                              Bỏ chọn tất cả
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 max-h-52 overflow-y-auto p-1.5 border border-slate-100 rounded-xl bg-slate-50">
+                          {scrapedData.images.map((img, idx) => {
+                            const isSelected = selectedImages.includes(img);
+                            const selectedIndex = selectedImages.indexOf(img);
+
+                            return (
+                              <div
+                                key={idx}
+                                onClick={() => toggleImageSelect(img)}
+                                className={`relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all aspect-square bg-slate-900 ${
+                                  isSelected
+                                    ? 'border-emerald-500 ring-2 ring-emerald-500/30 scale-98 shadow-sm'
+                                    : 'border-slate-200 opacity-40 hover:opacity-80 grayscale'
+                                }`}
+                              >
+                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                
+                                {/* Selection Badge */}
+                                <div className={`absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shadow-md ${
+                                  isSelected ? 'bg-emerald-500 text-white' : 'bg-slate-800/80 text-white border border-white/50'
+                                }`}>
+                                  {isSelected ? '✓' : ''}
+                                </div>
+
+                                {/* Label Badge */}
+                                {isSelected && selectedIndex === 0 && (
+                                  <div className="absolute bottom-0 inset-x-0 bg-emerald-600/90 text-white text-[8px] font-black py-0.5 text-center uppercase tracking-tighter truncate px-1">
+                                    ⭐ Ảnh đại diện
+                                  </div>
+                                )}
+                                {isSelected && selectedIndex > 0 && (
+                                  <div className="absolute bottom-0 inset-x-0 bg-slate-900/80 text-slate-200 text-[8px] font-bold py-0.5 text-center truncate px-1">
+                                    Ảnh #{selectedIndex + 1}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}

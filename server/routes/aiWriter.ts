@@ -10,13 +10,13 @@ const router = express.Router();
  */
 router.post('/generate-article', async (req, res) => {
   try {
-    const { title, focusKeyword, tone, targetLength, referenceContent, articleUrl, structure } = req.body;
+    const { title, focusKeyword, tone, targetLength, referenceContent, articleUrl, structure, selectedImages } = req.body;
     if (!title && !articleUrl) {
       return res.status(400).json({ message: 'Vui lòng nhập tiêu đề hoặc dán link bài viết' });
     }
 
-    console.log(`[AI Writer] Generating article for topic: "${title}" (Tone: ${tone || 'journalistic'}, Length: ${targetLength || 'medium'}, Structure: ${structure || 'inverted_pyramid'}, Has URL: ${!!articleUrl})`);
-    const article = await generateAiArticle(title || '', focusKeyword, tone, targetLength, referenceContent, articleUrl, structure);
+    console.log(`[AI Writer] Generating article for topic: "${title}" (Tone: ${tone || 'journalistic'}, Length: ${targetLength || 'medium'}, Structure: ${structure || 'inverted_pyramid'}, Has URL: ${!!articleUrl}, Selected Images: ${selectedImages?.length || 0})`);
+    const article = await generateAiArticle(title || '', focusKeyword, tone, targetLength, referenceContent, articleUrl, structure, selectedImages);
 
     res.json({
       success: true,

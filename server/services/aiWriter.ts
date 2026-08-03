@@ -1081,7 +1081,8 @@ export async function generateAiArticle(
   targetLength: ArticleLength = 'medium',
   referenceContent?: string,
   articleUrl?: string,
-  structure: ArticleStructure = 'inverted_pyramid'
+  structure: ArticleStructure = 'inverted_pyramid',
+  selectedImages?: string[]
 ): Promise<AiGeneratedArticle> {
   let cleanTitle = userTitle.trim();
   let rawReferenceText = (referenceContent || '').trim();
@@ -1108,6 +1109,12 @@ export async function generateAiArticle(
         extractedVideos = scrapedVideos;
       }
     }
+  }
+
+  // Override extractedImages if user explicitly selected specific images in UI
+  if (selectedImages && Array.isArray(selectedImages) && selectedImages.length > 0) {
+    console.log(`[AI Writer]: Using ${selectedImages.length} user-selected images (out of ${extractedImages.length} scraped)`);
+    extractedImages = selectedImages;
   }
 
   // PRECEDENCE FOR TITLE:

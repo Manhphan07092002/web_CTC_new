@@ -249,6 +249,7 @@ export const api = {
       referenceContent?: string;
       articleUrl?: string;
       structure?: string;
+      selectedImages?: string[];
     }) => fetchAPI<{ success: boolean; data: any }>('/ai/generate-article', {
       method: 'POST',
       body: JSON.stringify(data)
