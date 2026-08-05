@@ -203,6 +203,14 @@ app.use(i18nHelpers);
 // ============================================
 app.use((req, res, next) => {
   const lowerPath = req.path.toLowerCase();
+  
+  // Legacy activity detail pages → redirect to /news
+  if (lowerPath.includes('hoat_dong_chi_tiet')) {
+    console.log(`🔀 301 Redirecting legacy activity URL: ${req.originalUrl} -> /news`);
+    return res.redirect(301, '/news');
+  }
+  
+  // Legacy financial pages and PDFs → redirect to /about  
   if (
     lowerPath.includes('tinh_hinh_tai_chinh') ||
     lowerPath.includes('/image/pdf') ||

@@ -48,7 +48,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         ))
       ) : (
         // Render Empty Results State
-        <div className="col-span-full py-20 text-center bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 border-dashed">
+        <div data-nosnippet className="col-span-full py-20 text-center bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 border-dashed">
           <Package size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
           <h3 className="text-lg font-bold text-gray-500 dark:text-gray-400">
             {t('products.no_result')}

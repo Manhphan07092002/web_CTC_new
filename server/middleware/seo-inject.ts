@@ -1,12 +1,14 @@
 /**
- * SEO Meta Injection Middleware
+ * SEO Meta & Content Injection Middleware
  * 
- * Giải quyết vấn đề SPA trả cùng 1 HTML cho mọi URL bằng cách:
+ * Giải quyết triệt để các vấn đề SEO cho SPA (React):
  * 1. Đọc dist/index.html làm template
- * 2. Thay thế <title>, <meta description>, <link canonical>, OG tags dựa trên URL
- * 3. Query MongoDB cho trang chi tiết sản phẩm/tin tức/dự án
- * 4. Trả HTTP 404 cho URL không tồn tại (thay vì soft 404)
- * 5. Redirect 301 product URL dạng ObjectID sang URL slug
+ * 2. Thay thế <title>, <meta description>, <link canonical>, OG tags động theo từng URL
+ * 3. Inject nội dung thực dạng <noscript> vào HTML server-rendered (để Googlebot thấy dữ liệu thật kể cả khi không chạy JS)
+ * 4. Inject JSON-LD Structured Data (Product, NewsArticle, Organization, ItemList, BreadcrumbList) server-side
+ * 5. Trả HTTP 404 cho URL không tồn tại (chống Soft 404)
+ * 6. Redirect 301 product/project URL dạng ObjectID sang URL slug-hash
+ * 7. Redirect 301 legacy URL dạng /hoat_dong_chi_tiet sang /news
  */
 
 import { Request, Response, NextFunction } from 'express';
@@ -49,7 +51,7 @@ interface PageMeta {
 
 const STATIC_PAGES: Record<string, PageMeta> = {
   '/': {
-    title: 'CTC — Nhà Thầu EPC Điện Mặt Trời & Hạ Tầng Viễn Thông',
+    title: 'CTC | Tổng Thầu EPC Điện Mặt Trời & Hạ Tầng Viễn Thông Đà Nẵng',
     description: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) — Nhà thầu EPC điện mặt trời áp mái, hạ tầng viễn thông, cáp quang, thiết bị mạng doanh nghiệp, trạm 110kV và Data Center toàn quốc.'
   },
   '/about': {
@@ -132,43 +134,18 @@ const STATIC_PAGES: Record<string, PageMeta> = {
   }
 };
 
-// ─── Valid route patterns for 404 detection ─────────────────────
-const VALID_ROUTE_PREFIXES = [
-  '/', '/about', '/products', '/projects', '/news', '/contact',
-  '/solutions', '/resources', '/cart', '/track-order', '/search',
-  '/admin'
-];
-
-function isValidStaticRoute(urlPath: string): boolean {
-  // Exact match
-  if (STATIC_PAGES[urlPath]) return true;
-  // Check if it's a known prefix route
-  for (const prefix of VALID_ROUTE_PREFIXES) {
-    if (urlPath === prefix) return true;
-  }
-  return false;
-}
-
-function isDynamicRoute(urlPath: string): boolean {
-  // /products/:id or /products/:slug-:hash
-  if (/^\/products\/[^/]+$/.test(urlPath)) return true;
-  // /projects/:id or /projects/:slug-:hash
-  if (/^\/projects\/[^/]+$/.test(urlPath)) return true;
-  // /news/:slug-:hash
-  if (/^\/news\/[^/]+$/.test(urlPath)) return true;
-  // /solutions/:type (already in static map, but catch dynamic ones)
-  if (/^\/solutions\/[^/]+$/.test(urlPath)) return true;
-  // /admin/* routes
-  if (urlPath.startsWith('/admin')) return true;
-  return false;
-}
-
 function isMongoObjectId(str: string): boolean {
   return /^[0-9a-fA-F]{24}$/.test(str);
 }
 
-// ─── HTML Template Injection ────────────────────────────────────
-function injectMeta(html: string, meta: PageMeta, urlPath: string): string {
+// ─── HTML Template Injection (Meta, Body Noscript & JSON-LD) ──
+function injectMeta(
+  html: string,
+  meta: PageMeta,
+  urlPath: string,
+  extraBodyContent?: string,
+  jsonLdSchema?: object | object[]
+): string {
   const fullTitle = meta.title.includes(SITE_NAME) ? meta.title : `${meta.title} | ${SITE_NAME}`;
   const canonicalUrl = `${SITE_URL}${urlPath}`;
   const robotsContent = meta.noindex ? 'noindex, follow' : 'index, follow';
@@ -211,6 +188,19 @@ function injectMeta(html: string, meta: PageMeta, urlPath: string): string {
 `;
   result = result.replace('</head>', `${ogTags}  </head>`);
 
+  // Inject JSON-LD Schema if provided
+  if (jsonLdSchema) {
+    const jsonLdStr = JSON.stringify(jsonLdSchema, null, 2);
+    const schemaScript = `    <script type="application/ld+json">\n${jsonLdStr}\n    </script>\n`;
+    result = result.replace('</head>', `${schemaScript}  </head>`);
+  }
+
+  // Inject extra body content inside <noscript> for server-rendered data fallback
+  if (extraBodyContent) {
+    const noscriptBlock = `\n    <noscript>\n      ${extraBodyContent}\n    </noscript>\n  `;
+    result = result.replace('</body>', `${noscriptBlock}</body>`);
+  }
+
   return result;
 }
 
@@ -247,17 +237,139 @@ export function createSeoInjectMiddleware(distPath: string) {
 
     const urlPath = req.path.replace(/\/+$/, '') || '/'; // normalize trailing slash
 
+    // ── Legacy URL 301 Redirects ────────────────────────────
+    if (urlPath.includes('hoat_dong_chi_tiet')) {
+      return res.redirect(301, '/news');
+    }
+    if (urlPath.includes('tinh_hinh_tai_chinh') || urlPath.includes('/image/pdf')) {
+      return res.redirect(301, '/about');
+    }
+
     try {
-      // ── 1. Check for static page ────────────────────────────
-      if (STATIC_PAGES[urlPath]) {
-        const meta = STATIC_PAGES[urlPath];
-        const html = injectMeta(htmlTemplate, meta, urlPath);
+      // ── 1. Homepage (/) ────────────────────────────────────
+      if (urlPath === '/') {
+        const meta = STATIC_PAGES['/'];
+        const orgSchema = {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
+          "alternateName": ["CTC", "CTC Đà Nẵng", "CTC Miền Trung", "CTC điện mặt trời", "CTC hạ tầng viễn thông"],
+          "url": SITE_URL,
+          "logo": `${SITE_URL}/uploads/images/logo/logodo.png`,
+          "taxID": "0400458940",
+          "foundingDate": "2004-01-30",
+          "description": meta.description,
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu",
+            "addressLocality": "Đà Nẵng",
+            "addressCountry": "VN"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+84-915-059-666",
+            "contactType": "customer service",
+            "areaServed": "VN"
+          }
+        };
+
+        const noscriptHtml = `
+          <div style="padding: 20px; font-family: sans-serif;">
+            <h1>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</h1>
+            <p>Tổng thầu EPC điện mặt trời áp mái, hạ tầng viễn thông, cáp quang, Data Center và trạm biến áp 110kV tại Đà Nẵng và trên toàn quốc.</p>
+            <h2>Dịch Vụ & Giải Pháp Chính</h2>
+            <ul>
+              <li><a href="/solutions/rooftop">Điện mặt trời áp mái nhà xưởng & doanh nghiệp</a></li>
+              <li><a href="/solutions/floating">Thi công hạ tầng viễn thông & cáp quang</a></li>
+              <li><a href="/solutions/electrical">Thi công đường dây & trạm biến áp 110kV</a></li>
+              <li><a href="/solutions/datacenter">Thiết kế & thi công Data Center chuẩn quốc tế</a></li>
+              <li><a href="/products">Cung cấp thiết bị mạng, Switch, Router, Inverter chính hãng</a></li>
+            </ul>
+          </div>
+        `;
+
+        const html = injectMeta(htmlTemplate, meta, urlPath, noscriptHtml, orgSchema);
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         return res.status(200).send(html);
       }
 
-      // ── 2. Product detail page ──────────────────────────────
+      // ── 2. Products Listing (/products) ─────────────────────
+      if (urlPath === '/products') {
+        const meta = STATIC_PAGES['/products'];
+
+        // Query real products from MongoDB for server-side HTML injection
+        let products: any[] = [];
+        try {
+          products = await Product.find({ isDeleted: { $ne: true } })
+            .select('_id name slug shortDescription price category brand')
+            .limit(24)
+            .lean();
+        } catch (e) {}
+
+        const productItemsHtml = products.map(p => {
+          const fullId = (p._id || '').toString();
+          const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+          const slugStr = (p as any).slug || createSlug((p as any).name, 'san-pham');
+          const pUrl = `/products/${slugStr}-${shortHash}`;
+          return `
+            <li style="margin-bottom: 12px;">
+              <a href="${pUrl}" style="font-weight: bold; color: #007cb9;">${escapeHtml((p as any).name)}</a>
+              <p style="margin: 4px 0; color: #555;">${escapeHtml((p as any).shortDescription || '')}</p>
+            </li>`;
+        }).join('');
+
+        const noscriptHtml = `
+          <div style="padding: 20px; font-family: sans-serif;">
+            <h1>Danh Sách Thiết Bị Mạng & Viễn Thông Chính Hãng | CTC</h1>
+            <p>Cung cấp Switch, Router, Cáp Quang, Inverter Solar, UPS, ắc quy viễn thông từ Ruijie, MikroTik, DrayTek, Huawei, Sungrow.</p>
+            <ul style="list-style: none; padding-left: 0;">
+              ${productItemsHtml}
+            </ul>
+          </div>
+        `;
+
+        const itemListSchema = {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Danh sách thiết bị mạng & viễn thông CTC",
+          "numberOfItems": products.length,
+          "itemListElement": products.map((p, idx) => {
+            const fullId = (p._id || '').toString();
+            const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+            const slugStr = (p as any).slug || createSlug((p as any).name, 'san-pham');
+            return {
+              "@type": "ListItem",
+              "position": idx + 1,
+              "name": (p as any).name,
+              "url": `${SITE_URL}/products/${slugStr}-${shortHash}`
+            };
+          })
+        };
+
+        const html = injectMeta(htmlTemplate, meta, urlPath, noscriptHtml, itemListSchema);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return res.status(200).send(html);
+      }
+
+      // ── 3. Static Pages ─────────────────────────────────────
+      if (STATIC_PAGES[urlPath]) {
+        const meta = STATIC_PAGES[urlPath];
+        const noscriptHtml = `
+          <div style="padding: 20px; font-family: sans-serif;">
+            <h1>${escapeHtml(meta.title)}</h1>
+            <p>${escapeHtml(meta.description)}</p>
+          </div>
+        `;
+        const html = injectMeta(htmlTemplate, meta, urlPath, noscriptHtml);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return res.status(200).send(html);
+      }
+
+      // ── 4. Product Detail Page (/products/:id) ──────────────
       const productMatch = urlPath.match(/^\/products\/(.+)$/);
       if (productMatch) {
         const param = productMatch[1];
@@ -274,67 +386,76 @@ export function createSeoInjectMiddleware(distPath: string) {
               return res.redirect(301, newUrl);
             }
           } catch (e) {}
-          // Product not found by ID → 404
           const meta: PageMeta = { title: 'Sản Phẩm Không Tồn Tại', description: 'Sản phẩm bạn tìm kiếm không tồn tại hoặc đã bị xóa.', noindex: true };
-          const html = injectMeta(htmlTemplate, meta, urlPath);
-          res.setHeader('Content-Type', 'text/html; charset=utf-8');
-          return res.status(404).send(html);
+          return res.status(404).send(injectMeta(htmlTemplate, meta, urlPath));
         }
 
-        // Slug-based URL: extract short hash from end
+        // Slug-based URL
+        let product: any = null;
         const hashMatch = param.match(/-([0-9a-f]{8})$/i);
         if (hashMatch) {
           const shortHash = hashMatch[1];
           try {
-            // Find product where _id ends with shortHash
-            const products = await Product.find({
-              isDeleted: { $ne: true }
-            }).select('_id name slug shortDescription').lean();
-            
-            const product = products.find(p => {
-              const id = (p._id || '').toString();
-              return id.endsWith(shortHash);
-            });
-
-            if (product) {
-              const meta: PageMeta = {
-                title: `${(product as any).name} | ${SITE_NAME}`,
-                description: (product as any).shortDescription || `Mua ${(product as any).name} chính hãng tại CTC Đà Nẵng. Bảo hành chính hãng, giao hàng toàn quốc.`
-              };
-              const html = injectMeta(htmlTemplate, meta, urlPath);
-              res.setHeader('Content-Type', 'text/html; charset=utf-8');
-              return res.status(200).send(html);
-            }
+            const products = await Product.find({ isDeleted: { $ne: true } })
+              .select('_id name slug shortDescription description price brand category images')
+              .lean();
+            product = products.find(p => (p._id || '').toString().endsWith(shortHash));
           } catch (e) {}
         }
 
-        // Try finding by exact ID (for non-ObjectID format IDs)
-        try {
-          const product = await Product.findById(param).select('name slug shortDescription').lean();
-          if (product) {
-            const meta: PageMeta = {
-              title: `${(product as any).name} | ${SITE_NAME}`,
-              description: (product as any).shortDescription || `Mua ${(product as any).name} chính hãng tại CTC.`
-            };
-            const html = injectMeta(htmlTemplate, meta, urlPath);
-            res.setHeader('Content-Type', 'text/html; charset=utf-8');
-            return res.status(200).send(html);
-          }
-        } catch (e) {}
+        if (!product) {
+          try {
+            product = await Product.findById(param).select('name slug shortDescription description price brand category images').lean();
+          } catch (e) {}
+        }
+
+        if (product) {
+          const pName = (product as any).name || 'Sản Phẩm';
+          const pDesc = (product as any).shortDescription || `Mua ${pName} chính hãng tại CTC Đà Nẵng. Bảo hành chính hãng, giao hàng toàn quốc.`;
+          const meta: PageMeta = {
+            title: `${pName} | ${SITE_NAME}`,
+            description: pDesc.substring(0, 160)
+          };
+
+          const productSchema = {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": pName,
+            "description": pDesc,
+            "brand": { "@type": "Brand", "name": (product as any).brand || "CTC" },
+            "offers": {
+              "@type": "Offer",
+              "url": `${SITE_URL}${urlPath}`,
+              "priceCurrency": "VND",
+              "price": (product as any).price || 0,
+              "availability": "https://schema.org/InStock"
+            }
+          };
+
+          const noscriptHtml = `
+            <div style="padding: 20px; font-family: sans-serif;">
+              <h1>${escapeHtml(pName)}</h1>
+              <p><strong>Thương hiệu:</strong> ${escapeHtml((product as any).brand || 'CTC')}</p>
+              <p>${escapeHtml(pDesc)}</p>
+              <div>${(product as any).description || ''}</div>
+            </div>
+          `;
+
+          const html = injectMeta(htmlTemplate, meta, urlPath, noscriptHtml, productSchema);
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          return res.status(200).send(html);
+        }
 
         // Product not found → 404
         const meta404: PageMeta = { title: 'Sản Phẩm Không Tồn Tại', description: 'Sản phẩm bạn tìm kiếm không tồn tại hoặc đã bị xóa.', noindex: true };
-        const html404 = injectMeta(htmlTemplate, meta404, urlPath);
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        return res.status(404).send(html404);
+        return res.status(404).send(injectMeta(htmlTemplate, meta404, urlPath));
       }
 
-      // ── 3. Project detail page ──────────────────────────────
+      // ── 5. Project Detail Page (/projects/:id) ──────────────
       const projectMatch = urlPath.match(/^\/projects\/(.+)$/);
       if (projectMatch) {
         const param = projectMatch[1];
 
-        // MongoDB ObjectID → redirect 301 to slug URL
         if (isMongoObjectId(param)) {
           try {
             const project = await Project.findById(param).select('title slug _id').lean();
@@ -349,62 +470,107 @@ export function createSeoInjectMiddleware(distPath: string) {
           return res.status(404).send(injectMeta(htmlTemplate, meta, urlPath));
         }
 
-        // Slug-based URL
+        let project: any = null;
         const hashMatch = param.match(/-([0-9a-f]{8})$/i);
         if (hashMatch) {
           try {
-            const projects = await Project.find({ isDeleted: { $ne: true } }).select('_id title slug description').lean();
-            const project = projects.find(p => (p._id || '').toString().endsWith(hashMatch[1]));
-            if (project) {
-              const meta: PageMeta = {
-                title: `${(project as any).title} | Dự Án CTC`,
-                description: (project as any).description?.substring(0, 160) || `Dự án ${(project as any).title} do CTC thi công.`
-              };
-              return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath));
-            }
+            const projects = await Project.find({ isDeleted: { $ne: true } }).select('_id title slug description location client').lean();
+            project = projects.find(p => (p._id || '').toString().endsWith(hashMatch[1]));
           } catch (e) {}
         }
 
-        try {
-          const project = await Project.findById(param).select('title description').lean();
-          if (project) {
-            const meta: PageMeta = {
-              title: `${(project as any).title} | Dự Án CTC`,
-              description: (project as any).description?.substring(0, 160) || `Dự án ${(project as any).title} do CTC thi công.`
-            };
-            return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath));
-          }
-        } catch (e) {}
+        if (!project) {
+          try {
+            project = await Project.findById(param).select('title slug description location client').lean();
+          } catch (e) {}
+        }
+
+        if (project) {
+          const pTitle = (project as any).title || 'Dự Án';
+          const pDesc = (project as any).description?.substring(0, 160) || `Dự án ${pTitle} do CTC thi công.`;
+          const meta: PageMeta = {
+            title: `${pTitle} | Dự Án CTC`,
+            description: pDesc
+          };
+
+          const projectSchema = {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": pTitle,
+            "description": pDesc,
+            "author": { "@type": "Organization", "name": "CTC" }
+          };
+
+          const noscriptHtml = `
+            <article style="padding: 20px; font-family: sans-serif;">
+              <h1>${escapeHtml(pTitle)}</h1>
+              <p>${escapeHtml(pDesc)}</p>
+            </article>
+          `;
+
+          return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath, noscriptHtml, projectSchema));
+        }
 
         return res.status(404).send(injectMeta(htmlTemplate, { title: 'Dự Án Không Tồn Tại', description: 'Dự án không tồn tại.', noindex: true }, urlPath));
       }
 
-      // ── 4. News detail page ─────────────────────────────────
+      // ── 6. News Detail Page (/news/:id) ─────────────────────
       const newsMatch = urlPath.match(/^\/news\/(.+)$/);
       if (newsMatch) {
         const param = newsMatch[1];
-        const hashMatch = param.match(/-([0-9a-f]{8})$/i);
+        let news: any = null;
 
+        const hashMatch = param.match(/-([0-9a-f]{8})$/i);
         if (hashMatch) {
           try {
-            const allNews = await News.find({}).select('_id title slug excerpt').lean();
-            const news = allNews.find(n => (n._id || '').toString().endsWith(hashMatch[1]));
-            if (news) {
-              const meta: PageMeta = {
-                title: `${(news as any).title} | Tin Tức CTC`,
-                description: (news as any).excerpt?.substring(0, 160) || `${(news as any).title} - Tin tức từ CTC.`
-              };
-              return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath));
-            }
+            const allNews = await News.find({}).select('_id title slug excerpt content author createdAt').lean();
+            news = allNews.find(n => (n._id || '').toString().endsWith(hashMatch[1]));
           } catch (e) {}
+        }
+
+        if (!news) {
+          try {
+            news = await News.findById(param).select('title slug excerpt content author createdAt').lean();
+          } catch (e) {}
+        }
+
+        if (news) {
+          const nTitle = (news as any).title || 'Tin Tức';
+          const nDesc = (news as any).excerpt?.substring(0, 160) || `${nTitle} - Tin tức từ CTC.`;
+          const meta: PageMeta = {
+            title: `${nTitle} | Tin Tức CTC`,
+            description: nDesc
+          };
+
+          const newsSchema = {
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            "headline": nTitle,
+            "description": nDesc,
+            "datePublished": (news as any).createdAt ? new Date((news as any).createdAt).toISOString() : new Date().toISOString(),
+            "author": { "@type": "Organization", "name": (news as any).author || "CTC" },
+            "publisher": {
+              "@type": "Organization",
+              "name": "CTC",
+              "logo": { "@type": "ImageObject", "url": `${SITE_URL}/uploads/images/logo/logodo.png` }
+            }
+          };
+
+          const noscriptHtml = `
+            <article style="padding: 20px; font-family: sans-serif;">
+              <h1>${escapeHtml(nTitle)}</h1>
+              <p>${escapeHtml(nDesc)}</p>
+            </article>
+          `;
+
+          return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath, noscriptHtml, newsSchema));
         }
 
         return res.status(404).send(injectMeta(htmlTemplate, { title: 'Bài Viết Không Tồn Tại', description: 'Bài viết không tồn tại.', noindex: true }, urlPath));
       }
 
-      // ── 5. Solutions sub-pages (catch any not in static map) ─
+      // ── 7. Solutions sub-pages ──────────────────────────────
       if (urlPath.startsWith('/solutions/')) {
-        // Already checked static map above, so this is an unknown solution page
         const meta: PageMeta = {
           title: 'Giải Pháp | CTC',
           description: 'Giải pháp từ CTC — Nhà thầu EPC điện mặt trời và hạ tầng viễn thông.'
@@ -412,25 +578,13 @@ export function createSeoInjectMiddleware(distPath: string) {
         return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath));
       }
 
-      // ── 6. Admin pages ──────────────────────────────────────
+      // ── 8. Admin pages ──────────────────────────────────────
       if (urlPath.startsWith('/admin')) {
         const meta: PageMeta = { title: 'Quản Trị | CTC', description: 'Trang quản trị hệ thống.', noindex: true };
         return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath));
       }
 
-      // ── 7. URL query params (e.g. /products?cat=router) ─────
-      if (urlPath === '/products' || urlPath === '/projects' || urlPath === '/news') {
-        // Already handled in static map, this catches with query params
-        const meta = STATIC_PAGES[urlPath];
-        return res.status(200).send(injectMeta(htmlTemplate, meta, urlPath));
-      }
-
-      // ── 8. Legacy URLs → 404 with proper status ─────────────
-      if (urlPath.includes('hoat_dong_chi_tiet') || urlPath.includes('tinh_hinh_tai_chinh')) {
-        return res.redirect(301, '/about');
-      }
-
-      // ── 9. Unknown URL → 404 ───────────────────────────────
+      // ── 9. Fallback Unknown URL → 404 ───────────────────────
       const notFoundMeta: PageMeta = {
         title: '404 — Trang Không Tồn Tại | CTC',
         description: 'Trang bạn tìm kiếm không tồn tại trên website CTC.',
@@ -442,7 +596,6 @@ export function createSeoInjectMiddleware(distPath: string) {
 
     } catch (error) {
       console.error('[SEO Inject Error]', error);
-      // Fallback: serve original HTML
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       return res.status(200).send(htmlTemplate);

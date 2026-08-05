@@ -373,7 +373,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col w-full font-sans text-gray-800 dark:text-slate-200 bg-white dark:bg-slate-900 overflow-hidden">
       <SEO
-        title="CTC – Niềm tin, Chất lượng"
+        title="CTC | Tổng Thầu EPC Điện Mặt Trời & Hạ Tầng Viễn Thông Đà Nẵng"
         description={profileIntro}
         schema={homePageSchema}
       />
