@@ -1,6 +1,6 @@
 
 import React, { Suspense, lazy, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -158,7 +158,8 @@ const App: React.FC = () => {
                       <Route path="/solutions" element={<PublicLayout><Solutions /></PublicLayout>} />
                       <Route path="/solutions/rooftop" element={<PublicLayout><SolutionRooftop /></PublicLayout>} />
                       <Route path="/solutions/farm" element={<PublicLayout><SolutionFarm /></PublicLayout>} />
-                      <Route path="/solutions/floating" element={<PublicLayout><SolutionFloating /></PublicLayout>} />
+                      <Route path="/solutions/floating" element={<Navigate to="/solutions/telecom" replace />} />
+                      <Route path="/solutions/telecom" element={<PublicLayout><SolutionFloating /></PublicLayout>} />
                       <Route path="/solutions/electrical" element={<PublicLayout><SolutionElectrical /></PublicLayout>} />
                       <Route path="/solutions/datacenter" element={<PublicLayout><SolutionDataCenter /></PublicLayout>} />
                       <Route path="/solutions/construction" element={<PublicLayout><SolutionConstruction /></PublicLayout>} />

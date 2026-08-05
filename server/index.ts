@@ -203,7 +203,13 @@ app.use(i18nHelpers);
 // ============================================
 app.use((req, res, next) => {
   const lowerPath = req.path.toLowerCase();
-  
+
+  // Solution floating legacy slug -> redirect 301 to /solutions/telecom
+  if (lowerPath === '/solutions/floating') {
+    console.log(`🔀 301 Redirecting /solutions/floating -> /solutions/telecom`);
+    return res.redirect(301, '/solutions/telecom');
+  }
+
   // Legacy activity detail pages → redirect to /news
   if (lowerPath.includes('hoat_dong_chi_tiet')) {
     console.log(`🔀 301 Redirecting legacy activity URL: ${req.originalUrl} -> /news`);
@@ -219,6 +225,14 @@ app.use((req, res, next) => {
     console.log(`🔀 301 Redirecting legacy URL: ${req.originalUrl} -> /about`);
     return res.redirect(301, '/about');
   }
+
+  // PDF X-Robots-Tag: noindex header for private / internal / legacy scans
+  if (lowerPath.endsWith('.pdf')) {
+    if (lowerPath.includes('private') || lowerPath.includes('scan') || lowerPath.includes('bao_cao_cu') || lowerPath.includes('noi_bo') || lowerPath.includes('tinh_hinh_tai_chinh')) {
+      res.setHeader('X-Robots-Tag', 'noindex, follow');
+    }
+  }
+
   next();
 });
 

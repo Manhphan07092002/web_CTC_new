@@ -576,7 +576,7 @@ const Header: React.FC = () => {
         de: 'GESAMTLÖSUNGEN'
       });
     }
-    if (p.includes('floating') || p.includes('telecom') || n.includes('viễn thông')) {
+    if (p.includes('telecom') || n.includes('viễn thông')) {
       return getLangText(lang, {
         vi: 'HẠ TẦNG VIỄN THÔNG & CNTT',
         en: 'TELECOM & IT INFRASTRUCTURE',

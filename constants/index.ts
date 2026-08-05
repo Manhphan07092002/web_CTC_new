@@ -10,7 +10,7 @@ export const NAV_LINKS = [
     key: 'solutions',
     submenu: [
       { name: 'GIẢI PHÁP TOÀN DIỆN', path: '/solutions' },
-      { name: 'HẠ TẦNG VIỄN THÔNG & CNTT', path: '/solutions/floating' },
+      { name: 'HẠ TẦNG VIỄN THÔNG & CNTT', path: '/solutions/telecom' },
       { name: 'ĐIỆN MẶT TRỜI (SOLAR EPC)', path: '/solutions/rooftop' },
       { name: 'ĐIỆN GIÓ (WIND POWER EPC)', path: '/solutions/farm' },
       { name: 'ĐƯỜNG DÂY & TRẠM BIẾN ÁP 110KV', path: '/solutions/electrical' },

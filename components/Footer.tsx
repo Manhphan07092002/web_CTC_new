@@ -80,7 +80,7 @@ const Footer: React.FC = () => {
 
   const solutionLinks: [string, string][] = [
     ['/solutions', getLangText(language, { vi: 'Giải pháp toàn diện', en: 'Comprehensive Solutions', ko: '종합 솔루션', ja: '総合ソリューション', zh: '综合解决方案', de: 'Umfassende Lösungen' })],
-    ['/solutions/floating', getLangText(language, { vi: 'Hạ tầng Viễn thông & CNTT', en: 'Telecom & IT Infrastructure', ko: '통신 및 IT 인프라', ja: '通信・ITインフラ', zh: '电信与 IT 基础设施', de: 'Telekom & IT-Infrastruktur' })],
+    ['/solutions/telecom', getLangText(language, { vi: 'Hạ tầng Viễn thông & CNTT', en: 'Telecom & IT Infrastructure', ko: '통신 및 IT 인프라', ja: '通信・ITインフラ', zh: '电信与 IT 基础设施', de: 'Telekom & IT-Infrastruktur' })],
     ['/solutions/rooftop', getLangText(language, { vi: 'Điện mặt trời (Solar EPC)', en: 'Solar Power (Solar EPC)', ko: '태양광 발전 (Solar EPC)', ja: '太陽光発電 (Solar EPC)', zh: '太阳能发电 (Solar EPC)', de: 'Solarstrom (Solar EPC)' })],
     ['/solutions/farm', getLangText(language, { vi: 'Điện gió (Wind Power EPC)', en: 'Wind Power (Wind Power EPC)', ko: '풍력 발전 (Wind EPC)', ja: '風力発電 (Wind EPC)', zh: '风力发电 (Wind EPC)', de: 'Windenergie (Wind EPC)' })],
     ['/solutions/electrical', getLangText(language, { vi: 'Đường dây & Trạm biến áp 110kV', en: 'Power Lines & 110kV Substation', ko: '110kV 송전선 및 변전소', ja: '110kV送電線・変電所', zh: '110kV输电线路与变电站', de: '110kV Stromleitungen & Umspannwerke' })],
@@ -164,9 +164,12 @@ const Footer: React.FC = () => {
                 <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-sky-400/15 bg-sky-500/10 text-sky-400"><MapPin size={15} /></span>
                 <span className="pt-1 leading-6">{settings.address}</span>
               </li>
-              <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-sky-400/15 bg-sky-500/10 text-sky-400"><Phone size={15} /></span>
-                <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="transition-colors hover:text-sky-400">{settings.phone}</a>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-sky-400/15 bg-sky-500/10 text-sky-400"><Phone size={15} /></span>
+                <div className="flex flex-col gap-1 text-sm">
+                  <div>Hotline: <a href="tel:0915059666" className="transition-colors hover:text-sky-400 font-medium">0915 059 666</a></div>
+                  <div>Tổng đài: <a href="tel:02363745555" className="transition-colors hover:text-sky-400 font-medium">0236 3745 555</a></div>
+                </div>
               </li>
               <li className="flex items-center gap-3">
                 <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-sky-400/15 bg-sky-500/10 text-sky-400"><Mail size={15} /></span>

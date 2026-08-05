@@ -191,7 +191,7 @@ const SolutionsOverview: React.FC = () => {
       ],
       stat1: '100+', stat1l: getLangText(language, { vi: 'Công trình', en: 'Projects', ko: '프로젝트', ja: '実績', zh: '项目', de: 'Projekte' }),
       stat2: '32+', stat2l: getLangText(language, { vi: 'Năm KN', en: 'Years Exp', ko: '경력 년수', ja: '年経験', zh: '年经验', de: 'Jahre Erf.' }),
-      to: '/solutions/floating',
+      to: '/solutions/telecom',
       gradient: 'linear-gradient(135deg, #0369a1 0%, #0284c7 100%)',
       glowBg: 'rgba(14,165,233,0.15)',
       accent: '#38bdf8',

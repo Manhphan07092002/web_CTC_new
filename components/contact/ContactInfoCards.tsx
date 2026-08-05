@@ -23,9 +23,9 @@ const ContactInfoCards: React.FC = () => {
       icon: Phone,
       gradientBg: 'from-amber-500 via-orange-500 to-amber-600 shadow-amber-500/30',
       glowColor: 'bg-amber-500/20',
-      title: getLangText(language, { vi: 'Đường Dây Nóng Tư Vấn', en: '24/7 Consultation Line', ko: '24/7 상담 핫라인', ja: '24/7相談窓口', zh: '24/7咨询热线', de: '24/7 Beratungs-Hotline' }),
+      title: getLangText(language, { vi: 'Hotline kinh doanh & dự án', en: 'Sales & Project Hotline', ko: '영업 및 프로젝트 핫라인', ja: '営業・プロジェクト窓口', zh: '销售与项目热线', de: 'Vertriebs- & Projekt-Hotline' }),
       primaryText: '0915 059 666',
-      secondaryText: getLangText(language, { vi: 'Cố định: 0236 374 5555', en: 'Landline: 0236 374 5555', ko: '유선전화: 0236 374 5555', ja: '固定電話: 0236 374 5555', zh: '座机: 0236 374 5555', de: 'Festnetz: 0236 374 5555' }),
+      secondaryText: getLangText(language, { vi: 'Tổng đài Đà Nẵng: 0236 3745 555', en: 'Da Nang Switchboard: 0236 3745 555', ko: '다낭 교환원: 0236 3745 555', ja: 'ダナン代表: 0236 3745 555', zh: '岘港总机: 0236 3745 555', de: 'Da Nang Zentrale: 0236 3745 555' }),
       actionText: getLangText(language, { vi: 'Gọi ngay', en: 'Call Now', ko: '지금 전화하기', ja: '今すぐ電話', zh: '立即致电', de: 'Jetzt anrufen' }),
       actionUrl: 'tel:0915059666',
       copyText: '0915059666'
