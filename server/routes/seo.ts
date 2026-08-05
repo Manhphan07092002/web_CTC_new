@@ -9,6 +9,7 @@ import { Product, Project, News, ProductCategory } from '../../models';
 import { INDEXNOW_KEY, INDEXNOW_KEY_FILENAME, triggerInstantIndexing } from '../services/indexing';
 
 import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
 
@@ -17,7 +18,15 @@ const SITE_URL = process.env.SITE_URL || 'https://ctcdn.vn';
 
 // Favicon fallback route
 router.get('/favicon.ico', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../public/favicon.svg'));
+  const publicFavicon = path.join(process.cwd(), 'public', 'favicon.svg');
+  if (fs.existsSync(publicFavicon)) {
+    return res.sendFile(publicFavicon);
+  }
+  const distFavicon = path.join(process.cwd(), 'dist', 'favicon.svg');
+  if (fs.existsSync(distFavicon)) {
+    return res.sendFile(distFavicon);
+  }
+  res.status(204).end();
 });
 
 // IndexNow Key Verification File Route
