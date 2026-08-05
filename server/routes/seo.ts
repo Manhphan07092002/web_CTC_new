@@ -62,6 +62,19 @@ router.post('/api/indexing/ping', async (req, res) => {
  */
 router.get('/sitemap.xml', async (req, res) => {
   try {
+    const createSlug = (str: string) => {
+      if (!str) return 'san-pham';
+      return str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[đĐ]/g, 'd')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    };
+
     // Static pages
     const links: any[] = [
       { url: '/', changefreq: 'daily', priority: 1.0 },
@@ -83,10 +96,13 @@ router.get('/sitemap.xml', async (req, res) => {
     // Dynamic pages from database
     try {
       // Products (430 items)
-      const products = await Product.find({ isDeleted: { $ne: true } }).select('_id slug updatedAt').lean();
+      const products = await Product.find({ isDeleted: { $ne: true } }).select('_id slug name updatedAt').lean();
       for (const product of products) {
+        const fullId = (product._id || '').toString();
+        const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+        const slugStr = (product as any).slug || createSlug((product as any).name);
         links.push({
-          url: `/products/${product._id}`,
+          url: `/products/${slugStr}-${shortHash}`,
           changefreq: 'weekly',
           priority: 0.8,
           lastmod: (product as any).updatedAt ? new Date((product as any).updatedAt).toISOString() : new Date().toISOString()
@@ -94,29 +110,19 @@ router.get('/sitemap.xml', async (req, res) => {
       }
 
       // Projects (300 items)
-      const projects = await Project.find({ isDeleted: { $ne: true } }).select('_id slug updatedAt').lean();
+      const projects = await Project.find({ isDeleted: { $ne: true } }).select('_id slug title updatedAt').lean();
       for (const project of projects) {
+        const fullId = (project._id || '').toString();
+        const shortHash = fullId.length >= 8 ? fullId.slice(-8) : fullId;
+        const slugStr = (project as any).slug || createSlug((project as any).title);
         links.push({
-          url: `/projects/${project._id}`,
+          url: `/projects/${slugStr}-${shortHash}`,
           changefreq: 'monthly',
           priority: 0.7,
           lastmod: (project as any).updatedAt ? new Date((project as any).updatedAt).toISOString() : new Date().toISOString()
         });
       }
 
-      // Helper slug generator for server
-      const createSlug = (str: string) => {
-        if (!str) return 'tin-tuc';
-        return str
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[đĐ]/g, 'd')
-          .replace(/[^a-z0-9\s-]/g, '')
-          .trim()
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-');
-      };
 
       // News
       const news = await News.find({}).select('_id id title slug excerpt author date updatedAt').sort({ createdAt: -1 }).lean();
@@ -244,6 +250,9 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
+Disallow: /cart
+Disallow: /track-order
+Disallow: /search
 
 # Allow important pages
 Allow: /products

@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS:-ctcadmin2024}
       MONGO_INITDB_DATABASE: ctc_web_new
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
@@ -58,7 +58,7 @@ services:
         limits:
           memory: 1536M
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4000/"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
       interval: 30s
       timeout: 10s
       retries: 3

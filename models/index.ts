@@ -311,7 +311,6 @@ const ProjectSchema = new Schema<IProject>({
 
 ProjectSchema.index({ categoryId: 1 });
 ProjectSchema.index({ category: 1 });
-ProjectSchema.index({ createdAt: -1 });
 
 // News Schema
 export interface INewsItem extends BaseDocument {
@@ -356,7 +355,6 @@ const NewsSchema = new Schema<INewsItem>({
 
 NewsSchema.index({ categoryId: 1 });
 NewsSchema.index({ category: 1 });
-NewsSchema.index({ createdAt: -1 });
 NewsSchema.index({ viewCount: -1 });
 
 // ==================== NEWS COMMENT MODEL ====================

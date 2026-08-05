@@ -69,6 +69,7 @@ import searchRouter from './routes/search';
 import aiWriterRouter from './routes/aiWriter';
 import productWriterRouter from './routes/productWriter';
 import { startTranslationScheduler } from './services/translationScheduler.js';
+import { createSeoInjectMiddleware } from './middleware/seo-inject';
 
 // Load envs
 dotenv.config({ path: '.env.local' });
@@ -308,35 +309,49 @@ app.use('/api/search', searchRouter);
 app.use('/api/ai', aiWriterRouter);
 app.use('/api/ai/product', productWriterRouter);
 
+// ============================================
+// HEALTH CHECK ENDPOINT (Docker healthcheck)
+// ============================================
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: Math.round(process.uptime()),
+    timestamp: new Date().toISOString()
+  });
+});
+
 // SEO Routes (sitemap.xml, robots.txt)
 app.use('/', seoRouter);
 
 // ============================================
 // SERVE REACT FRONTEND IN PRODUCTION & SPA FALLBACK
+// WITH SERVER-SIDE SEO META INJECTION
 // ============================================
 const distPath = path.join(process.cwd(), 'dist');
 const indexPath = path.join(distPath, 'index.html');
 
 if (fs.existsSync(indexPath)) {
+  // Serve static assets (JS, CSS, images) from dist/
   app.use(express.static(distPath, {
     maxAge: '7d',
     etag: true,
     lastModified: true,
+    index: false, // Don't auto-serve index.html for / route
     setHeaders: (res, filePath) => {
-      // Don't cache index.html (always fresh)
       if (filePath.endsWith('index.html')) {
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       }
     },
   }));
 
-  // SPA fallback – serve index.html for all non-API routes
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
-      return next();
-    }
-    res.sendFile(indexPath);
-  });
+  // SPA fallback with SEO meta injection:
+  // Each URL gets unique <title>, <meta description>, <link canonical>
+  // Returns proper HTTP 404 for non-existent URLs
+  // Redirects 301 for product ObjectID URLs to slug URLs
+  const seoInject = createSeoInjectMiddleware(distPath);
+  app.get('*', seoInject);
+
+  console.log('🔍 SEO Meta Injection middleware enabled');
 } else {
   // Fallback when dist/index.html is not built yet
   app.get('*', (req, res, next) => {
