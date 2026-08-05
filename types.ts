@@ -24,6 +24,7 @@ export interface Product {
   originalPrice?: string;
   vat?: number;
   contactPrice?: boolean; // Liên hệ để biết giá
+  brand?: string; // Thương hiệu (Cisco, TP-Link, MikroTik, Ruijie, Huawei, etc.)
   image: string;
   imageUrl?: string;
   images?: string[]; // Multiple images
