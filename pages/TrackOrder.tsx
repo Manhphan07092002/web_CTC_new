@@ -118,6 +118,7 @@ const TrackOrder: React.FC = () => {
       <SEO
         title="Tra Cứu Đơn Hàng - CTC"
         description="Tra cứu trạng thái đơn hàng báo giá của bạn tại CTC Solar theo mã đơn hàng hoặc số điện thoại."
+        noindex={true}
       />
 
       <div className="max-w-3xl mx-auto">

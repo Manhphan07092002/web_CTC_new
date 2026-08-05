@@ -60,6 +60,7 @@ const ErrorPage: React.FC = () => {
       <SEO 
         title={`${errorStatus} - ${getErrorTitle()}`}
         description={getErrorDescription()}
+        noindex={true}
       />
       
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center px-4 py-12">

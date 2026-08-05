@@ -417,6 +417,7 @@ const Search: React.FC = () => {
       <SEO
         title={`Kết quả tìm kiếm cho "${queryParam}" - CTC`}
         description={`Kết quả tìm kiếm cho từ khóa "${queryParam}" trên toàn hệ thống CTC Solar.`}
+        noindex={true}
       />
 
       <div className="max-w-7xl mx-auto">

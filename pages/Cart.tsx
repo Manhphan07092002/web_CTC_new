@@ -232,7 +232,7 @@ const Cart: React.FC = () => {
 
   return (
     <>
-      <SEO title="Giỏ Hàng & Báo Giá" description="Xem giỏ hàng, nhận báo giá chi tiết hệ thống điện mặt trời CTC Solar." />
+      <SEO title="Giỏ Hàng & Báo Giá" description="Xem giỏ hàng, nhận báo giá chi tiết hệ thống điện mặt trời CTC Solar." noindex={true} />
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-28 sm:pt-36 pb-16 transition-colors duration-200 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
