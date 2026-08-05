@@ -121,6 +121,16 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Row 4: Thương hiệu */}
+        <div className="flex items-center flex-wrap sm:flex-nowrap gap-2 sm:gap-4 pt-1">
+          <span className="w-32 sm:w-36 flex-shrink-0 text-gray-500 dark:text-gray-400 font-medium text-sm sm:text-base">
+            Thương hiệu:
+          </span>
+          <span className="text-gray-800 dark:text-gray-200 font-semibold text-sm sm:text-base">
+            {product.brand || 'Chính Hãng'}
+          </span>
+        </div>
       </div>
     </div>
   );

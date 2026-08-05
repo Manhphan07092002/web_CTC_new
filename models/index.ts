@@ -96,6 +96,7 @@ export interface IProduct extends BaseDocument {
   originalPrice?: string; // Giá gốc (để tạo hiệu ứng giảm giá)
   vat?: number; // Thuế VAT (%) áp dụng cho sản phẩm (VD: 0, 8, 10)
   contactPrice?: boolean; // Liên hệ để biết giá
+  brand?: string; // Thương hiệu (Cisco, TP-Link, MikroTik, Ruijie, Huawei, etc.)
   image: string;
   images?: string[];
   stock?: number;
@@ -142,6 +143,7 @@ const ProductSchema = new Schema<IProduct>({
   originalPrice: String,
   vat: { type: Number, default: 0 },
   contactPrice: { type: Boolean, default: false },
+  brand: String,
   image: { type: String, required: false },
   images: [String],
   stock: Number,
