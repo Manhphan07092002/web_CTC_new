@@ -37,7 +37,8 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { Product, ProductCategory } from '../models/index.js';
+import { Product, ProductCategory, Category } from '../models/index.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2463,8 +2464,11 @@ async function main(): Promise<void> {
       const result = await Product.deleteMany({});
       console.log(`🗑️  Đã xóa toàn bộ ${result.deletedCount} sản phẩm theo yêu cầu RESET_ALL_PRODUCTS=true.`);
       const catResult = await ProductCategory.deleteMany({});
-      console.log(`🗑️  Đã xóa toàn bộ ${catResult.deletedCount} danh mục cũ theo yêu cầu.`);
+      console.log(`🗑️  Đã xóa toàn bộ ${catResult.deletedCount} danh mục mới theo yêu cầu.`);
+      const legacyCatResult = await Category.deleteMany({});
+      console.log(`🗑️  Đã xóa toàn bộ ${legacyCatResult.deletedCount} danh mục legacy theo yêu cầu.`);
     } else if (RESET_PRODUCTS) {
+
       const result = await Product.deleteMany({ seedSource: SEED_TAG });
       console.log(`🗑️  Đã xóa ${result.deletedCount} sản phẩm của seed ${SEED_TAG}.`);
     }
