@@ -5,7 +5,8 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { Product, ProductCategory } from '../../models/index.js';
+import { Product, ProductCategory, Category } from '../../models/index.js';
+
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -29,8 +30,11 @@ async function clearAllProducts() {
     if (CLEAR_CATEGORIES) {
       console.log('\n🔥 Deleting ALL categories from database...');
       const catResult = await ProductCategory.deleteMany({});
-      console.log(`✓ Successfully deleted ${catResult.deletedCount} categories`);
+      console.log(`✓ Successfully deleted ${catResult.deletedCount} ProductCategory items`);
+      const legacyCatResult = await Category.deleteMany({});
+      console.log(`✓ Successfully deleted ${legacyCatResult.deletedCount} legacy Category items`);
     } else {
+
       console.log('\n🔄 Resetting product counts on all categories...');
       const updateResult = await ProductCategory.updateMany({}, { $set: { productCount: 0 } });
       console.log(`✓ Updated ${updateResult.modifiedCount} categories productCount to 0`);
