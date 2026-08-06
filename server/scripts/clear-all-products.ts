@@ -12,6 +12,8 @@ dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
+const CLEAR_CATEGORIES = String(process.env.CLEAR_CATEGORIES || 'true').toLowerCase() === 'true';
+
 async function clearAllProducts() {
   try {
     console.log('Connecting to MongoDB...');
@@ -23,17 +25,24 @@ async function clearAllProducts() {
     const result = await Product.deleteMany({});
     console.log(`✓ Successfully deleted ${result.deletedCount} products`);
 
-    // 2. Reset productCount on all categories to 0
-    console.log('\n🔄 Resetting product counts on all categories...');
-    const updateResult = await ProductCategory.updateMany({}, { $set: { productCount: 0 } });
-    console.log(`✓ Updated ${updateResult.modifiedCount} categories productCount to 0`);
+    // 2. Clear or Reset categories
+    if (CLEAR_CATEGORIES) {
+      console.log('\n🔥 Deleting ALL categories from database...');
+      const catResult = await ProductCategory.deleteMany({});
+      console.log(`✓ Successfully deleted ${catResult.deletedCount} categories`);
+    } else {
+      console.log('\n🔄 Resetting product counts on all categories...');
+      const updateResult = await ProductCategory.updateMany({}, { $set: { productCount: 0 } });
+      console.log(`✓ Updated ${updateResult.modifiedCount} categories productCount to 0`);
+    }
 
-    console.log('\n✅ All old products cleared successfully!');
+    console.log('\n✅ All old products and categories cleared successfully!');
     process.exit(0);
   } catch (error) {
     console.error('❌ Error clearing products:', error);
     process.exit(1);
   }
 }
+
 
 clearAllProducts();

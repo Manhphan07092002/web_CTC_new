@@ -2462,10 +2462,13 @@ async function main(): Promise<void> {
     if (RESET_ALL_PRODUCTS) {
       const result = await Product.deleteMany({});
       console.log(`🗑️  Đã xóa toàn bộ ${result.deletedCount} sản phẩm theo yêu cầu RESET_ALL_PRODUCTS=true.`);
+      const catResult = await ProductCategory.deleteMany({});
+      console.log(`🗑️  Đã xóa toàn bộ ${catResult.deletedCount} danh mục cũ theo yêu cầu.`);
     } else if (RESET_PRODUCTS) {
       const result = await Product.deleteMany({ seedSource: SEED_TAG });
       console.log(`🗑️  Đã xóa ${result.deletedCount} sản phẩm của seed ${SEED_TAG}.`);
     }
+
 
     for (const group of PRODUCT_CATALOG) {
       categoryIdBySlug.set(group.slug, await ensureCategoryPath(categoryPath(group.slug, group.category)));
