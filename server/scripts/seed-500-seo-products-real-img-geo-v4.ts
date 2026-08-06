@@ -1527,6 +1527,8 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
     `${model} ${brand} product image`,
     `${productName} product`,
     `${model} product`,
+    `${brand} product image`,
+    `${productName}`,
   ];
 
   for (const query of queries) {
@@ -1582,8 +1584,52 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
     }
   }
 
+  // Last-resort fallback for any edge case
+  try {
+    const candidates = await searchGoogleImages(`${productName} product`);
+    for (const candidate of candidates) {
+      if (!candidate.imageUrl || isBlockedSource(candidate.imageUrl, candidate.sourcePage, candidate.sourceDomain)) continue;
+      const validation = await validateImageUrl(candidate.imageUrl);
+      if (!validation.ok) continue;
+
+      const sourceHost = hostname(candidate.sourcePage) || candidate.sourceDomain.toLowerCase();
+      const officialSource = (BRAND_DOMAINS[brand] || []).some((domain) => hostMatches(sourceHost, domain));
+
+      let publicUrl = candidate.imageUrl;
+      let localPath: string | undefined;
+      let mirrored = false;
+      if (MIRROR_IMAGES) {
+        try {
+          const result = await mirrorImage(candidate.imageUrl, productSlug, validation.contentType);
+          publicUrl = result.publicUrl;
+          localPath = result.localPath;
+          mirrored = true;
+        } catch {}
+      }
+
+      const verified: VerifiedImage = {
+        query: `${productName} product`,
+        imageUrl: candidate.imageUrl,
+        publicUrl,
+        sourcePage: candidate.sourcePage,
+        sourceDomain: sourceHost,
+        title: candidate.title,
+        width: candidate.imageWidth,
+        height: candidate.imageHeight,
+        contentType: validation.contentType,
+        officialSource,
+        verifiedAt: new Date().toISOString(),
+        mirrored,
+        localPath,
+      };
+      imageCache[cacheKey] = verified;
+      return verified;
+    }
+  } catch {}
+
   throw new Error(`Không tìm được ảnh hợp lệ cho: ${productName}`);
 }
+
 
 
 
