@@ -14,7 +14,9 @@ import { useCart } from '../contexts/CartContext';
 import { getProductUrl } from '../utils/news-url-helper';
 
 import { calculatePriceWithVat, parseNumericPrice } from '../utils/priceUtils';
+import { getCategoryDescendantIds } from '../utils/categoryTreeHelper';
 import Pagination from '../components/Pagination';
+
 
 const Products: React.FC = () => {
   const { addToCart, openCartModal } = useCart();
@@ -90,24 +92,15 @@ const Products: React.FC = () => {
     if (selectedCategoryId) {
       const selectedCat = productCategories.find(c => c.id === selectedCategoryId);
       if (selectedCat) {
-        if (!selectedCat.parentId) {
-          // It's a parent category: include products in parent AND all its sub-categories
-          const subCatIds = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.id);
-          const subCatNames = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.name.toLowerCase());
-          
-          filtered = filtered.filter(p => 
-            p.categoryId === selectedCat.id || 
-            (p.categoryId && subCatIds.includes(p.categoryId)) ||
-            p.category?.toLowerCase() === selectedCat.name.toLowerCase() ||
-            (p.category && subCatNames.includes(p.category.toLowerCase()))
-          );
-        } else {
-          // It's a specific sub-category
-          filtered = filtered.filter(p => 
-            p.categoryId === selectedCat.id || 
-            p.category?.toLowerCase() === selectedCat.name.toLowerCase()
-          );
-        }
+        const descendantIds = getCategoryDescendantIds(selectedCat.id, productCategories);
+        const descendantNames = productCategories
+          .filter(c => descendantIds.includes(c.id))
+          .map(c => c.name.toLowerCase());
+
+        filtered = filtered.filter(p => 
+          (p.categoryId && descendantIds.includes(p.categoryId)) ||
+          (p.category && descendantNames.includes(p.category.toLowerCase()))
+        );
       }
     }
     // Fallback via activeCategoryKey
@@ -116,23 +109,18 @@ const Products: React.FC = () => {
         (c.slug || c.name.toLowerCase()) === activeCategoryKey.toLowerCase()
       );
       if (selectedCat) {
-        if (!selectedCat.parentId) {
-          const subCatIds = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.id);
-          const subCatNames = productCategories.filter(c => c.parentId === selectedCat.id).map(c => c.name.toLowerCase());
-          filtered = filtered.filter(p => 
-            p.categoryId === selectedCat.id || 
-            (p.categoryId && subCatIds.includes(p.categoryId)) ||
-            p.category?.toLowerCase() === selectedCat.name.toLowerCase() ||
-            (p.category && subCatNames.includes(p.category.toLowerCase()))
-          );
-        } else {
-          filtered = filtered.filter(p => 
-            p.categoryId === selectedCat.id || 
-            p.category?.toLowerCase() === selectedCat.name.toLowerCase()
-          );
-        }
+        const descendantIds = getCategoryDescendantIds(selectedCat.id, productCategories);
+        const descendantNames = productCategories
+          .filter(c => descendantIds.includes(c.id))
+          .map(c => c.name.toLowerCase());
+
+        filtered = filtered.filter(p => 
+          (p.categoryId && descendantIds.includes(p.categoryId)) ||
+          (p.category && descendantNames.includes(p.category.toLowerCase()))
+        );
       }
     }
+
 
     // Filter by Search
     if (searchQuery) {

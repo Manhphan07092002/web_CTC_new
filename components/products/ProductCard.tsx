@@ -56,11 +56,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.category}
               </span>
             )}
-            {product.stock === 0 && (
+            {(product.stockStatus === 'out_of_stock' || (product.stock === 0 && !product.contactPrice && product.stockStatus !== 'contact')) && (
               <span className="bg-red-500 text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs">
                 {t('common.out_of_stock')}
               </span>
             )}
+
           </div>
 
           {/* Discount Badge */}
