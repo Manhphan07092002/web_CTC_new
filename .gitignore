@@ -31,6 +31,10 @@ dist-ssr
 
 # User uploads
 uploads/
+public/uploads/
+server/.cache/
+.cache/
+
 
 # Exported data
 exports/
