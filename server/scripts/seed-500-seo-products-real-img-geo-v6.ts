@@ -1547,7 +1547,7 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
   const cacheKey = productSlug;
   const cached = imageCache[cacheKey];
 
-  if (cached && !REVALIDATE_CACHE) {
+  if (cached && !REVALIDATE_CACHE && !cached.query?.startsWith('fallback:') && !cached.imageUrl?.includes('unsplash')) {
     if (!cached.mirrored || !cached.localPath) return cached;
     try {
       const stat = await fs.stat(cached.localPath);
