@@ -51,6 +51,7 @@ services:
       - "4000:4000"
     volumes:
       - uploads_data:/app/uploads
+      - ./server/.cache:/app/server/.cache
     networks:
       - ctc_network
     deploy:
