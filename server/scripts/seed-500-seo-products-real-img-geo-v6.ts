@@ -25,10 +25,10 @@
  * Đặt file trực tiếp tại server/scripts/.
  *
  * Chạy local:
- *   npx tsx server/scripts/seed-500-seo-products-real-img-geo-v5.ts
+ *   npx tsx server/scripts/seed-500-seo-products-real-img-geo-v6.ts
  *
  * Chạy Docker:
- *   docker compose exec app npx tsx server/scripts/seed-500-seo-products-real-img-geo-v5.ts
+ *   docker compose exec app npx tsx server/scripts/seed-500-seo-products-real-img-geo-v6.ts
  */
 
 import mongoose from 'mongoose';
@@ -72,12 +72,16 @@ const FETCH_TIMEOUT_MS = envInt('FETCH_TIMEOUT_MS', 15_000, 5_000, 60_000);
 const MAX_IMAGE_BYTES = envInt('MAX_IMAGE_MB', 12, 1, 30) * 1024 * 1024;
 const MIN_IMAGE_WIDTH = envInt('MIN_IMAGE_WIDTH', 500, 200, 4000);
 const MIN_IMAGE_HEIGHT = envInt('MIN_IMAGE_HEIGHT', 350, 200, 4000);
-const SEED_TAG = 'ctc-seed-500-seo-geo-real-image-v5';
+const SEED_TAG = 'ctc-seed-500-seo-geo-real-image-v6';
+const LEGACY_SEED_TAGS = [
+  'ctc-seed-500-seo-geo-real-image-v4',
+  'ctc-seed-500-seo-geo-real-image-v5',
+] as const;
 const GEO_STANDARD = 'CTC-GEO-2026.2';
 
-const CACHE_DIR = path.resolve(__dirname, '../.cache/seed-500-products-v5');
-const IMAGE_CACHE_FILE = path.join(CACHE_DIR, 'image-cache-v5.json');
-const SOURCE_CACHE_FILE = path.join(CACHE_DIR, 'source-cache-v5.json');
+const CACHE_DIR = path.resolve(__dirname, '../.cache/seed-500-products-v6');
+const IMAGE_CACHE_FILE = path.join(CACHE_DIR, 'image-cache-v6.json');
+const SOURCE_CACHE_FILE = path.join(CACHE_DIR, 'source-cache-v6.json');
 const IMAGE_REPORT_FILE = path.join(CACHE_DIR, 'image-report.json');
 const SOURCE_REPORT_FILE = path.join(CACHE_DIR, 'source-report.json');
 const PRODUCT_PREVIEW_FILE = path.join(CACHE_DIR, 'product-preview.json');
@@ -299,7 +303,7 @@ const BASE_PRODUCT_CATALOG: CatalogGroup[] = [
       'CommScope ODF 24FO LC/UPC Rack 1U', 'CommScope ODF 48FO LC/APC Rack 2U',
       'CommScope ODF 96FO SC/UPC Rack 4U', 'CommScope FODF-24-LC Wall Box',
       'Panduit OPTICOM WMPFASC24Y ODF 24FO', 'CommScope Systimax 760210401 ODF 48F',
-      'FiberNet ODF 24FO SC/APC', 'FiberNet ODF 48FO LC/UPC 2U Rack',
+      'Corning CCH-01U Closet Connector Housing 1U 48F', 'Corning CCH-02U Closet Connector Housing 2U 96F',
       'Corning CCH-CP24-C3-P00RE ODF 24F', 'CommScope ODF 144FO LC/APC Rack 6U',
     ],
   },
@@ -1059,6 +1063,8 @@ const BRAND_DOMAINS: Record<string, string[]> = {
   'Grandstream': ['grandstream.com'],
   'Patton': ['patton.com'],
   'AudioCodes': ['audiocodes.com'],
+  'Yealink': ['yealink.com'],
+  'Fanvil': ['fanvil.com'],
   'Yeastar': ['yeastar.com'],
   'FreePBX': ['freepbx.org', 'sangoma.com'],
   '3CX': ['3cx.com'],
@@ -1067,6 +1073,7 @@ const BRAND_DOMAINS: Record<string, string[]> = {
   'AMP Netconnect': ['te.com'],
   'LS Cable': ['lscns.com'],
   'OFS': ['ofsglobal.com'],
+  'Draka': ['prysmiangroup.com'],
   'HPE': ['hpe.com'],
   'Dell': ['dell.com'],
   'Lenovo': ['lenovo.com'],
@@ -1136,6 +1143,7 @@ const BRAND_DOMAINS: Record<string, string[]> = {
   'Shoto': ['shoto.com'],
   'PYTES': ['pytesusa.com', 'pytesgroup.com'],
   'EG4': ['eg4electronics.com'],
+  'Dyness': ['dyness.com'],
   'Yuasa': ['yuasa.com', 'gs-yuasa.com'],
   'GS Yuasa': ['gs-yuasa.com'],
   'CSB': ['csb-battery.com'],
@@ -1277,15 +1285,40 @@ function strongModelTokens(productName: string, brand: string): string[] {
     .filter((token) => /\d/.test(token) || /[-+.]/.test(token));
 }
 
-function candidateMatchesProduct(candidate: ImageCandidate, productName: string, brand: string): boolean {
-  const haystack = `${candidate.title} ${candidate.sourcePage} ${candidate.imageUrl}`.toUpperCase();
-  const tokens = strongModelTokens(productName, brand);
-  if (tokens.length > 0 && tokens.some((token) => haystack.includes(token))) {
-    return true;
+function identityTextMatchesProduct(text: string, productName: string, brand: string): boolean {
+  const haystack = text.toUpperCase();
+  const tokens = strongModelTokens(productName, brand).sort((a, b) => b.length - a.length);
+
+  if (tokens.length > 0) {
+    const primary = tokens[0];
+    // Một mã model đủ dài có chữ số là tín hiệu mạnh nhất. Không chấp nhận chỉ vì
+    // một token ngắn/chung chung trùng với sản phẩm khác trong cùng dòng.
+    if (primary.length >= 5 && /\d/.test(primary)) {
+      if (!haystack.includes(primary)) return false;
+      if (tokens.length === 1) return true;
+      const secondaryHits = tokens.slice(1).filter((token) => haystack.includes(token)).length;
+      return secondaryHits >= Math.min(1, tokens.length - 1);
+    }
+
+    const required = Math.min(2, tokens.length);
+    return tokens.filter((token) => haystack.includes(token)).length >= required;
   }
-  const words = productName.toUpperCase().split(/[^A-Z0-9]+/).filter((x) => x.length >= 3);
-  const matchCount = words.filter((word) => haystack.includes(word)).length;
-  return matchCount >= Math.min(2, words.length);
+
+  const brandWords = brand.toUpperCase().split(/[^A-Z0-9]+/).filter((x) => x.length >= 3);
+  const words = productName
+    .toUpperCase()
+    .split(/[^A-Z0-9]+/)
+    .filter((x) => x.length >= 4 && !brandWords.includes(x));
+  const required = Math.min(2, words.length);
+  return required > 0 && words.filter((word) => haystack.includes(word)).length >= required;
+}
+
+function candidateMatchesProduct(candidate: ImageCandidate, productName: string, brand: string): boolean {
+  return identityTextMatchesProduct(
+    `${candidate.title} ${candidate.sourcePage} ${candidate.imageUrl}`,
+    productName,
+    brand,
+  );
 }
 
 function absoluteUrl(value: string): string {
@@ -1586,125 +1619,16 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
     }
   }
 
-  // Last-resort fallback for any edge case
-  try {
-    const candidates = await searchGoogleImages(`${productName} product`);
-    for (const candidate of candidates) {
-      if (!candidate.imageUrl || isBlockedSource(candidate.imageUrl, candidate.sourcePage, candidate.sourceDomain)) continue;
-      const validation = await validateImageUrl(candidate.imageUrl);
-      if (!validation.ok) continue;
+  throw new Error(`Không tìm được ảnh đủ khớp model cho: ${productName}. Script dừng thay vì dùng ảnh của sản phẩm khác hoặc placeholder.`);
 
-      const sourceHost = hostname(candidate.sourcePage) || candidate.sourceDomain.toLowerCase();
-      const officialSource = (BRAND_DOMAINS[brand] || []).some((domain) => hostMatches(sourceHost, domain));
-
-      let publicUrl = candidate.imageUrl;
-      let localPath: string | undefined;
-      let mirrored = false;
-      if (MIRROR_IMAGES) {
-        try {
-          const result = await mirrorImage(candidate.imageUrl, productSlug, validation.contentType);
-          publicUrl = result.publicUrl;
-          localPath = result.localPath;
-          mirrored = true;
-        } catch {}
-      }
-
-      const verified: VerifiedImage = {
-        query: `${productName} product`,
-        imageUrl: candidate.imageUrl,
-        publicUrl,
-        sourcePage: candidate.sourcePage,
-        sourceDomain: sourceHost,
-        title: candidate.title,
-        width: candidate.imageWidth,
-        height: candidate.imageHeight,
-        contentType: validation.contentType,
-        officialSource,
-        verifiedAt: new Date().toISOString(),
-        mirrored,
-        localPath,
-      };
-      imageCache[cacheKey] = verified;
-      return verified;
-    }
-  } catch {}
-
-  const categoryPools: Record<string, string[]> = {
-    'laptop': [
-      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=800&q=80',
-    ],
-    'pc-may-tinh-de-ban': [
-      'https://images.unsplash.com/photo-1587831990711-23ca6441447b?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1547082299-de196ea013d6?auto=format&fit=crop&w=800&q=80',
-    ],
-    'mini-pc': [
-      'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=800&q=80',
-    ],
-    'may-chu-server': [
-      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
-    ],
-    'tam-pin-nang-luong-mat-troi': [
-      'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=800&q=80',
-    ],
-    'inverter-hoa-luoi': [
-      'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80',
-    ],
-    'ac-quy-lithium-lifepo4': [
-      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=800&q=80',
-    ],
-    'kiosk-tu-phuc-vu': [
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
-    ],
-    'may-in-nhan': [
-      'https://images.unsplash.com/photo-1612815150545-98565a507851?auto=format&fit=crop&w=800&q=80',
-    ],
-    'dien-thoai-ip': [
-      'https://images.unsplash.com/photo-1556745757-8d76bdb6984b?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1520923642038-b4259acecbd7?auto=format&fit=crop&w=800&q=80',
-    ],
-  };
-
-  const pool = (categorySlug && categoryPools[categorySlug]) || [
-    'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
-  ];
-  let hash = 0;
-  for (let i = 0; i < productSlug.length; i++) {
-    hash = (hash << 5) - hash + productSlug.charCodeAt(i);
-    hash |= 0;
-  }
-  const poolIndex = Math.abs(hash) % pool.length;
-  const fallbackUrl = pool[poolIndex];
-
-  // Final static fallback to guarantee 500/500 seed completion even if Serper API fails completely
-  const defaultVerified: VerifiedImage = {
-    query: `static-fallback:${productName}`,
-    imageUrl: fallbackUrl,
-    publicUrl: fallbackUrl,
-    sourcePage: SITE_ORIGIN,
-    sourceDomain: 'ctcdn.vn',
-    title: `${productName} | CTC Telecom`,
-    contentType: 'image/jpeg',
-    officialSource: false,
-    verifiedAt: new Date().toISOString(),
-    mirrored: false,
-  };
-  imageCache[cacheKey] = defaultVerified;
-  return defaultVerified;
 }
 
-async function resolveAllImages(items: Array<{ name: string; slug?: string }>): Promise<{ ok: Map<string, VerifiedImage>; failed: Array<{ name: string; error: string }> }> {
+
+
+
+
+
+async function resolveAllImages(items: Array<{ name: string }>): Promise<{ ok: Map<string, VerifiedImage>; failed: Array<{ name: string; error: string }> }> {
   const ok = new Map<string, VerifiedImage>();
   const failed: Array<{ name: string; error: string }> = [];
 
@@ -1712,7 +1636,7 @@ async function resolveAllImages(items: Array<{ name: string; slug?: string }>): 
     const batch = items.slice(start, start + IMAGE_CONCURRENCY);
     const results = await Promise.all(batch.map(async (item) => {
       try {
-        const image = await resolveProductImage(item.name, item.slug);
+        const image = await resolveProductImage(item.name);
         return { item, image } as const;
       } catch (error) {
         return { item, error: error instanceof Error ? error.message : String(error) } as const;
@@ -1780,8 +1704,7 @@ async function searchGoogleWeb(query: string): Promise<WebSearchResult[]> {
     });
 
     if (!response.ok) {
-      console.warn(`⚠️ Serper Search HTTP ${response.status}: ${await response.text()}`);
-      return [];
+      throw new Error(`Serper Search HTTP ${response.status}: ${await response.text()}`);
     }
 
     const data = await response.json() as { organic?: any[] };
@@ -1796,7 +1719,36 @@ async function searchGoogleWeb(query: string): Promise<WebSearchResult[]> {
   }
 }
 
-async function validateSourcePage(url: string): Promise<{ ok: boolean; contentType: string; finalUrl: string }> {
+async function readResponsePrefix(response: Response, maxBytes = 65_536): Promise<Uint8Array> {
+  const reader = response.body?.getReader();
+  if (!reader) return new Uint8Array();
+
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (total < maxBytes) {
+      const { done, value } = await reader.read();
+      if (done || !value) break;
+      const remaining = maxBytes - total;
+      const chunk = value.length > remaining ? value.slice(0, remaining) : value;
+      chunks.push(chunk);
+      total += chunk.length;
+      if (chunk.length < value.length) break;
+    }
+  } finally {
+    await reader.cancel().catch(() => undefined);
+  }
+
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return merged;
+}
+
+async function validateSourcePage(url: string): Promise<{ ok: boolean; contentType: string; finalUrl: string; sampleText: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
@@ -1804,35 +1756,50 @@ async function validateSourcePage(url: string): Promise<{ ok: boolean; contentTy
       method: 'GET',
       redirect: 'follow',
       headers: {
-        'User-Agent': 'Mozilla/5.0 CTCProductSourceVerifier/1.0',
+        'User-Agent': 'Mozilla/5.0 CTCProductSourceVerifier/2.0',
         'Accept': 'text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.5',
-        'Range': 'bytes=0-8191',
+        'Range': 'bytes=0-65535',
       },
       signal: controller.signal,
     });
     const contentType = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
     const okStatus = response.ok || response.status === 206;
-    const okType = contentType.includes('text/html') || contentType.includes('application/xhtml+xml') || contentType.includes('application/pdf');
-    await response.body?.cancel().catch(() => undefined);
-    return { ok: okStatus && okType, contentType, finalUrl: response.url || url };
+    const isHtml = contentType.includes('text/html') || contentType.includes('application/xhtml+xml');
+    const isPdf = contentType.includes('application/pdf');
+    const okType = isHtml || isPdf;
+    const prefix = okStatus && okType ? await readResponsePrefix(response) : new Uint8Array();
+    const sampleText = isHtml && prefix.length > 0
+      ? new TextDecoder('utf-8', { fatal: false }).decode(prefix)
+      : '';
+    return { ok: okStatus && okType, contentType, finalUrl: response.url || url, sampleText };
   } catch {
-    return { ok: false, contentType: '', finalUrl: url };
+    return { ok: false, contentType: '', finalUrl: url, sampleText: '' };
   } finally {
     clearTimeout(timer);
   }
 }
 
-function sourceResultMatchesProduct(result: WebSearchResult, productName: string, brand: string): boolean {
-  const text = `${result.title} ${result.link} ${result.snippet}`.toUpperCase();
-  const tokens = strongModelTokens(productName, brand);
-  if (tokens.length > 0) return tokens.some((token) => text.includes(token));
+function sourcePageIdentityMatches(
+  checked: { contentType: string; finalUrl: string; sampleText: string },
+  result: WebSearchResult,
+  productName: string,
+  brand: string,
+): boolean {
+  if (checked.contentType.includes('application/pdf')) {
+    // Với PDF, xác nhận danh tính qua title/snippet/URL kết quả tìm kiếm vì không OCR/parse PDF trong seed.
+    return sourceResultMatchesProduct(result, productName, brand);
+  }
 
-  const words = productName
-    .toUpperCase()
-    .split(/[^A-Z0-9]+/)
-    .filter((word) => word.length >= 4)
-    .slice(0, 4);
-  return words.filter((word) => text.includes(word)).length >= Math.min(2, words.length);
+  return identityTextMatchesProduct(checked.finalUrl, productName, brand)
+    || identityTextMatchesProduct(checked.sampleText, productName, brand);
+}
+
+function sourceResultMatchesProduct(result: WebSearchResult, productName: string, brand: string): boolean {
+  return identityTextMatchesProduct(
+    `${result.title} ${result.link} ${result.snippet}`,
+    productName,
+    brand,
+  );
 }
 
 function scoreSourceResult(result: WebSearchResult, productName: string, brand: string): number {
@@ -1911,6 +1878,11 @@ async function resolveProductSource(productName: string, image: VerifiedImage): 
       const domain = hostname(checked.finalUrl);
       const official = domains.some((item) => hostMatches(domain, item));
       const trusted = TRUSTED_DISTRIBUTOR_DOMAINS.some((item) => hostMatches(domain, item));
+      const identityVerified = sourcePageIdentityMatches(checked, selected, productName, brand);
+
+      // URL trên domain hãng nhưng không còn dấu hiệu đúng model thì bỏ qua và thử kết quả kế tiếp.
+      if (official && !identityVerified) continue;
+
       const evidence: SourceEvidence = {
         productName,
         brand,
@@ -1920,10 +1892,10 @@ async function resolveProductSource(productName: string, image: VerifiedImage): 
         title: selected.title,
         snippet: selected.snippet,
         official,
-        supportsProductFacts: official,
+        supportsProductFacts: official && identityVerified,
         httpValidated: true,
         contentType: checked.contentType,
-        sourceType: official ? 'manufacturer-product-page' : trusted ? 'trusted-distributor' : 'unverified',
+        sourceType: official && identityVerified ? 'manufacturer-product-page' : trusted ? 'trusted-distributor' : 'unverified',
         verifiedAt: new Date().toISOString(),
       };
       sourceCache[cacheKey] = evidence;
@@ -2429,18 +2401,22 @@ async function bulkUpsertProducts(products: any[]): Promise<void> {
     const now = new Date();
 
     await Product.collection.bulkWrite(
-      batch.map((product) => ({
-        updateOne: {
-          // Dùng slug để cập nhật đúng trang sản phẩm đã seed trước đó,
-          // tránh sinh thêm URL trùng nội dung sau mỗi lần chạy.
-          filter: { slug: product.slug },
-          update: {
-            $set: { ...product, updatedAt: now },
-            $setOnInsert: { createdAt: now },
+      batch.map((product) => {
+        const { views: _views, likes: _likes, ...mutableProduct } = product;
+        return {
+          updateOne: {
+            // Dùng slug để cập nhật đúng trang sản phẩm đã seed trước đó,
+            // tránh sinh thêm URL trùng nội dung sau mỗi lần chạy.
+            filter: { slug: product.slug },
+            update: {
+              // Không reset views/likes mỗi lần reseed; chỉ khởi tạo chúng khi insert mới.
+              $set: { ...mutableProduct, updatedAt: now },
+              $setOnInsert: { createdAt: now, views: 0, likes: 0 },
+            },
+            upsert: true,
           },
-          upsert: true,
-        },
-      })),
+        };
+      }),
       { ordered: false },
     );
     console.log(`💾 Đã ghi ${Math.min(start + batch.length, products.length)}/${products.length} sản phẩm`);
@@ -2532,7 +2508,7 @@ async function main(): Promise<void> {
     generatedAt: new Date().toISOString(),
     total: flatProducts.length,
     resolved: sourceResult.size,
-    officialFactSources: [...sourceResult.values()].filter((item) => item.official && item.supportsProductFacts).length,
+    officialFactSources: [...sourceResult.values()].filter((item) => item.official && item.supportsProductFacts && item.sourceType === 'manufacturer-product-page').length,
     factSources: [...sourceResult.values()].filter((item) => item.supportsProductFacts).length,
     httpValidated: [...sourceResult.values()].filter((item) => item.httpValidated).length,
     unresolved: [...sourceResult.values()].filter((item) => !item.supportsProductFacts).map((item) => ({
@@ -2564,8 +2540,8 @@ async function main(): Promise<void> {
       console.log(`🗑️  Đã xóa toàn bộ ${legacyCatResult.deletedCount} danh mục legacy theo yêu cầu.`);
     } else if (RESET_PRODUCTS) {
 
-      const result = await Product.deleteMany({ seedSource: SEED_TAG });
-      console.log(`🗑️  Đã xóa ${result.deletedCount} sản phẩm của seed ${SEED_TAG}.`);
+      const result = await Product.deleteMany({ seedSource: { $in: [SEED_TAG, ...LEGACY_SEED_TAGS] } });
+      console.log(`🗑️  Đã xóa ${result.deletedCount} sản phẩm thuộc seed v4/v5/v6.`);
     }
 
 
