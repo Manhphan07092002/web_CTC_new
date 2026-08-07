@@ -51,7 +51,11 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 // =============================================================================
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://ctcdn.vn').replace(/\/$/, '');
-const SERPER_API_KEY = process.env.SERPER_API_KEY || '';
+let envSerperKey = process.env.SERPER_API_KEY || '4b8ee67e6857aed555f9fb74025d91d7fe800646';
+if (!envSerperKey || envSerperKey === 'dd5fbfffbf156ca25f9b5bfc60009da164fd0e2c') {
+  envSerperKey = '4b8ee67e6857aed555f9fb74025d91d7fe800646';
+}
+const SERPER_API_KEY = envSerperKey;
 
 const DRY_RUN = envBool('DRY_RUN', true);
 const VALIDATE_ONLY = envBool('VALIDATE_ONLY', false);
@@ -1428,6 +1432,8 @@ async function searchGoogleImages(query: string): Promise<ImageCandidate[]> {
     });
 
     if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      console.warn(`⚠️ Serper Images API error (HTTP ${response.status}): ${errText}`);
       return [];
     }
 
@@ -1625,7 +1631,70 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
 
   const group = PRODUCT_CATALOG.find((g) => g.products.includes(productName));
   const categorySlug = group ? group.slug : 'router';
-  const fallbackUrl = 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80';
+  const categoryPools: Record<string, string[]> = {
+    'laptop': [
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=800&q=80',
+    ],
+    'pc-may-tinh-de-ban': [
+      'https://images.unsplash.com/photo-1587831990711-23ca6441447b?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=800&q=80',
+    ],
+    'mini-pc': [
+      'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=800&q=80',
+    ],
+    'may-chu-server': [
+      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+    ],
+    'tam-pin-nang-luong-mat-troi': [
+      'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=800&q=80',
+    ],
+    'inverter-hoa-luoi': [
+      'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?auto=format&fit=crop&w=800&q=80',
+    ],
+    'ac-quy-lithium-lifepo4': [
+      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=800&q=80',
+    ],
+    'ac-quy-chi-vrla': [
+      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+    ],
+    'ac-quy-nuoc-traction': [
+      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+    ],
+    'kiosk-tu-phuc-vu': [
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+    ],
+    'may-in-nhan': [
+      'https://images.unsplash.com/photo-1612815150545-98565a507851?auto=format&fit=crop&w=800&q=80',
+    ],
+    'dien-thoai-ip': [
+      'https://images.unsplash.com/photo-1556745757-8d76bdb6984b?auto=format&fit=crop&w=800&q=80',
+    ],
+    'ip-pbx-tong-dai': [
+      'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
+    ],
+    'voip-gateway': [
+      'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
+    ],
+    'router': [
+      'https://images.unsplash.com/photo-1606904825846-647eb07f5be2?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
+    ],
+    'switch': [
+      'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+    ],
+    'wifi-access-point': [
+      'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
+    ],
+  };
+  const pool = categoryPools[categorySlug] || categoryPools['router'];
+  const fallbackUrl = pool[stableNumber(productName) % pool.length];
 
   const fallbackVerified: VerifiedImage = {
     query: `fallback:${categorySlug}`,
