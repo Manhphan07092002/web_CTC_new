@@ -33,6 +33,7 @@ dist-ssr
 uploads/
 public/uploads/
 server/.cache/
+!server/.cache/seed-500-products-v5/
 .cache/
 
 
