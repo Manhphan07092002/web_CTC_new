@@ -216,7 +216,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden my-8 max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden my-8 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-slate-900 via-primary to-secondary p-6 text-white relative flex-shrink-0">
           <button
@@ -277,20 +277,20 @@ Trả về JSON thuần (KHÔNG bọc markdown):
             <form onSubmit={handleGenerate} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
-                    Tên hoặc Quy mô Dự án <span className="text-emerald-600 font-bold lowercase">(tự động từ Link nếu để trống)</span>
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                    Tên hoặc Quy mô Dự án <span className="text-emerald-600 dark:text-emerald-400 font-bold lowercase">(tự động từ Link nếu để trống)</span>
                   </label>
                   <input
                     type="text"
                     value={projectTitle}
                     onChange={e => setProjectTitle(e.target.value)}
                     placeholder="VD: Điện mặt trời áp mái 1.2MWp KCN Quảng Ngãi"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                     <MapPin size={13} className="text-primary" /> Địa điểm thi công (Tùy chọn)
                   </label>
                   <input
@@ -298,14 +298,14 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     value={location}
                     onChange={e => setLocation(e.target.value)}
                     placeholder="VD: Đà Nẵng, Quảng Ngãi"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                     <Target size={13} className="text-primary" /> Từ khóa SEO Focus (Tự động nếu trống)
                   </label>
                   <input
@@ -313,12 +313,12 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     value={focusKeyword}
                     onChange={e => setFocusKeyword(e.target.value)}
                     placeholder="VD: điện mặt trời áp mái"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                     <Link2 size={13} className="text-primary" /> Link tham khảo Case Study dự án (Tùy chọn)
                   </label>
                   <input
@@ -326,9 +326,9 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                     value={referenceUrl}
                     onChange={e => setReferenceUrl(e.target.value)}
                     placeholder="https://..."
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
-                  <p className="text-[11px] text-emerald-600 font-bold mt-1">
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1">
                     🌐 AI sẽ tự động cào dữ liệu, trích xuất hình ảnh thực tế & nhúng video từ link này!
                   </p>
                 </div>
@@ -336,7 +336,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
                     Phong cách bài viết
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -344,7 +344,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                       type="button"
                       onClick={() => setStyle('technical')}
                       className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'technical' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        style === 'technical' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                       }`}
                     >
                       ⚙️ Kỹ thuật B2B
@@ -353,7 +353,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                       type="button"
                       onClick={() => setStyle('storytelling')}
                       className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'storytelling' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        style === 'storytelling' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                       }`}
                     >
                       📖 Case Study
@@ -362,7 +362,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                       type="button"
                       onClick={() => setStyle('roi')}
                       className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        style === 'roi' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        style === 'roi' ? 'bg-primary text-white border-primary shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                       }`}
                     >
                       💰 Hiệu quả ROI
@@ -371,7 +371,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
                     Độ sâu nội dung
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -379,7 +379,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                       type="button"
                       onClick={() => setTargetLength('standard')}
                       className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        targetLength === 'standard' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        targetLength === 'standard' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                       }`}
                     >
                       📝 Tiêu chuẩn (600-800 từ)
@@ -388,7 +388,7 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                       type="button"
                       onClick={() => setTargetLength('deep')}
                       className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                        targetLength === 'deep' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        targetLength === 'deep' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                       }`}
                     >
                       🚀 Chuyên sâu (900-1200 từ)
@@ -397,11 +397,11 @@ Trả về JSON thuần (KHÔNG bọc markdown):
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex justify-end gap-3">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                  className="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 >
                   Hủy
                 </button>
