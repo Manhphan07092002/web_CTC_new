@@ -1744,7 +1744,8 @@ async function searchGoogleWeb(query: string): Promise<WebSearchResult[]> {
     });
 
     if (!response.ok) {
-      throw new Error(`Serper Search HTTP ${response.status}: ${await response.text()}`);
+      console.warn(`⚠️ Serper Search HTTP ${response.status}: ${await response.text()}`);
+      return [];
     }
 
     const data = await response.json() as { organic?: any[] };
