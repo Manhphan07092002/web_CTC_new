@@ -7,13 +7,82 @@ export interface CategoryNode extends Category {
 }
 
 /**
+ * Normalizes category name for deduplication comparison (ignores case, accents, spaces, special chars)
+ */
+function normalizeCategoryKey(name: string): string {
+  if (!name) return '';
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9&]/g, '')
+    .trim();
+}
+
+/**
  * Builds a multi-level recursive category tree from flat array of categories
+ * Automatically deduplicates duplicate category names across parent levels
  */
 export function buildCategoryTree(categories: Category[]): CategoryNode[] {
-  const map = new Map<string, CategoryNode>();
+  if (!categories || categories.length === 0) return [];
 
-  // 1. Create nodes
+  // 1. Deduplicate flat categories list by parentId + normalized name
+  const idRedirectMap = new Map<string, string>();
+  const dupGroups = new Map<string, Category[]>();
+
   categories.forEach(cat => {
+    const parentKey = cat.parentId ? String(cat.parentId) : 'root';
+    const normName = normalizeCategoryKey(cat.name);
+    const groupKey = `${parentKey}:${normName}`;
+
+    if (!dupGroups.has(groupKey)) {
+      dupGroups.set(groupKey, []);
+    }
+    dupGroups.get(groupKey)!.push(cat);
+  });
+
+  const deduplicatedCategories: Category[] = [];
+
+  dupGroups.forEach((group) => {
+    if (group.length === 1) {
+      deduplicatedCategories.push(group[0]);
+    } else {
+      // Pick best category in group:
+      // 1. Highest productCount
+      // 2. Titlecase name (prefer 'Hạ Tầng...' over 'HẠ TẦNG...')
+      const best = group.slice().sort((a, b) => {
+        const countA = a.productCount || 0;
+        const countB = b.productCount || 0;
+        if (countA !== countB) return countB - countA;
+
+        const isAllCapsA = a.name === a.name.toUpperCase();
+        const isAllCapsB = b.name === b.name.toUpperCase();
+        if (isAllCapsA !== isAllCapsB) return isAllCapsA ? 1 : -1;
+
+        return 0;
+      })[0];
+
+      deduplicatedCategories.push(best);
+
+      group.forEach(cat => {
+        if (cat.id !== best.id) {
+          idRedirectMap.set(cat.id, best.id);
+        }
+      });
+    }
+  });
+
+  // Re-map parentId if it was redirected
+  const cleanCategories = deduplicatedCategories.map(cat => {
+    if (cat.parentId && idRedirectMap.has(String(cat.parentId))) {
+      return { ...cat, parentId: idRedirectMap.get(String(cat.parentId)) };
+    }
+    return cat;
+  });
+
+  // 2. Create nodes
+  const map = new Map<string, CategoryNode>();
+  cleanCategories.forEach(cat => {
     map.set(cat.id, {
       ...cat,
       level: 1,
@@ -24,7 +93,7 @@ export function buildCategoryTree(categories: Category[]): CategoryNode[] {
 
   const roots: CategoryNode[] = [];
 
-  // 2. Attach children to parents
+  // 3. Attach children to parents
   map.forEach(node => {
     if (node.parentId && map.has(node.parentId)) {
       const parentNode = map.get(node.parentId)!;
@@ -34,20 +103,52 @@ export function buildCategoryTree(categories: Category[]): CategoryNode[] {
     }
   });
 
-  // 3. Compute levels and parent chains recursively
+  // 4. Deduplicate roots if any root has duplicate normalized name across roots
+  const rootGroupMap = new Map<string, CategoryNode>();
+  roots.forEach(root => {
+    const key = normalizeCategoryKey(root.name);
+    if (!rootGroupMap.has(key)) {
+      rootGroupMap.set(key, root);
+    } else {
+      const existing = rootGroupMap.get(key)!;
+      existing.children.push(...root.children);
+      existing.productCount = (existing.productCount || 0) + (root.productCount || 0);
+      if (root.name !== root.name.toUpperCase() && existing.name === existing.name.toUpperCase()) {
+        existing.name = root.name;
+      }
+    }
+  });
+
+  const finalRoots = Array.from(rootGroupMap.values());
+
+  // 5. Compute levels and parent chains recursively
   function setLevelsAndChains(nodes: CategoryNode[], currentLevel: number, currentChain: Category[]) {
     nodes.forEach(node => {
       node.level = currentLevel;
       node.parentChain = [...currentChain, node];
+
       if (node.children.length > 0) {
+        const childMap = new Map<string, CategoryNode>();
+        node.children.forEach(child => {
+          const childKey = normalizeCategoryKey(child.name);
+          if (!childMap.has(childKey)) {
+            childMap.set(childKey, child);
+          } else {
+            const existingChild = childMap.get(childKey)!;
+            existingChild.children.push(...child.children);
+            existingChild.productCount = (existingChild.productCount || 0) + (child.productCount || 0);
+          }
+        });
+        node.children = Array.from(childMap.values());
         setLevelsAndChains(node.children, currentLevel + 1, node.parentChain);
       }
     });
   }
 
-  setLevelsAndChains(roots, 1, []);
-  return roots;
+  setLevelsAndChains(finalRoots, 1, []);
+  return finalRoots;
 }
+
 
 /**
  * Flatten tree into ordered array with indent prefix for <select> options

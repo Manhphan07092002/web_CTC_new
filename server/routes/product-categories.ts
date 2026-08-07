@@ -34,13 +34,59 @@ router.get('/', async (req, res) => {
       }
       return obj;
     });
+
+    // Deduplicate by parentId + normalized name
+    const idRedirectMap = new Map<string, string>();
+    const dupGroups = new Map<string, any[]>();
+
+    transformed.forEach(cat => {
+      const parentKey = cat.parentId ? String(cat.parentId) : 'root';
+      const normName = (cat.name || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9&]/g, '')
+        .trim();
+      const groupKey = `${parentKey}:${normName}`;
+      if (!dupGroups.has(groupKey)) dupGroups.set(groupKey, []);
+      dupGroups.get(groupKey)!.push(cat);
+    });
+
+    const deduplicated: any[] = [];
+    dupGroups.forEach(group => {
+      if (group.length === 1) {
+        deduplicated.push(group[0]);
+      } else {
+        const best = group.slice().sort((a, b) => {
+          const countA = a.productCount || 0;
+          const countB = b.productCount || 0;
+          if (countA !== countB) return countB - countA;
+          const isAllCapsA = a.name === a.name.toUpperCase();
+          const isAllCapsB = b.name === b.name.toUpperCase();
+          if (isAllCapsA !== isAllCapsB) return isAllCapsA ? 1 : -1;
+          return 0;
+        })[0];
+        deduplicated.push(best);
+        group.forEach(cat => {
+          if (cat.id !== best.id) idRedirectMap.set(cat.id, best.id);
+        });
+      }
+    });
+
+    const cleanList = deduplicated.map(cat => {
+      if (cat.parentId && idRedirectMap.has(String(cat.parentId))) {
+        return { ...cat, parentId: idRedirectMap.get(String(cat.parentId)) };
+      }
+      return cat;
+    });
     
-    res.json(transformed);
+    res.json(cleanList);
   } catch (error) {
     logger.error('Error getting product categories', error);
     res.status(500).json({ message: 'Failed to get product categories' });
   }
 });
+
 
 // Get single product category
 router.get('/:id', async (req, res) => {
