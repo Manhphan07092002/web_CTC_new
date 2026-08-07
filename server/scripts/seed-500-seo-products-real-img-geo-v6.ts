@@ -1722,7 +1722,7 @@ async function searchGoogleWeb(query: string): Promise<WebSearchResult[]> {
     });
 
     if (!response.ok) {
-      throw new Error(`Serper Search HTTP ${response.status}: ${await response.text()}`);
+      return [];
     }
 
     const data = await response.json() as { organic?: any[] };
@@ -1732,6 +1732,8 @@ async function searchGoogleWeb(query: string): Promise<WebSearchResult[]> {
       snippet: String(item.snippet || ''),
       position: Number(item.position) || index + 1,
     }));
+  } catch {
+    return [];
   } finally {
     clearTimeout(timer);
   }
