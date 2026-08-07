@@ -1399,9 +1399,11 @@ async function loadImageCache(): Promise<void> {
 }
 
 async function saveImageCache(): Promise<void> {
-  const temp = `${IMAGE_CACHE_FILE}.tmp`;
-  await fs.writeFile(temp, JSON.stringify(imageCache, null, 2), 'utf8');
-  await fs.rename(temp, IMAGE_CACHE_FILE);
+  try {
+    await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8');
+  } catch {
+    // Catch file write contention on Windows
+  }
 }
 
 // =============================================================================
@@ -1693,9 +1695,11 @@ async function loadSourceCache(): Promise<void> {
 }
 
 async function saveSourceCache(): Promise<void> {
-  const temp = `${SOURCE_CACHE_FILE}.tmp`;
-  await fs.writeFile(temp, JSON.stringify(sourceCache, null, 2), 'utf8');
-  await fs.rename(temp, SOURCE_CACHE_FILE);
+  try {
+    await fs.writeFile(SOURCE_CACHE_FILE, JSON.stringify(sourceCache, null, 2), 'utf8');
+  } catch {
+    // Catch file write contention on Windows
+  }
 }
 
 type WebSearchResult = {
