@@ -188,7 +188,7 @@ type SourceEvidence = {
   verifiedAt: string;
 };
 
-const BASE_PRODUCT_CATALOG: CatalogGroup[] = [
+export const BASE_PRODUCT_CATALOG: CatalogGroup[] = [
   // ─── HẠ TẦNG VIỄN THÔNG & CNTT ───────────────────────────────────────
   {
     parentCategory: 'Hạ Tầng Viễn Thông & CNTT',
@@ -1504,7 +1504,7 @@ async function mirrorImage(url: string, productSlug: string, contentType: string
   }
 }
 
-async function resolveProductImage(productName: string): Promise<VerifiedImage> {
+async function resolveProductImage(productName: string, categorySlug?: string): Promise<VerifiedImage> {
   const brand = detectBrand(productName);
   const productSlug = slugify(productName);
   const cacheKey = productSlug;
