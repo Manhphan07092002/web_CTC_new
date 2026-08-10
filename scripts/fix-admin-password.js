@@ -1,20 +1,25 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://admin:ctcadmin2024@127.0.0.1:27017/ctc_web_new?authSource=admin';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 
 async function fixAdminPassword() {
   try {
     console.log('Connecting to MongoDB...');
-    await mongoose.connect(MONGO_URI);
+    try {
+      await mongoose.connect(MONGO_URI);
+    } catch (e) {
+      console.warn('Fallback connecting without auth...');
+      await mongoose.connect('mongodb://127.0.0.1:27017/ctc_web_new');
+    }
     console.log('Connected to MongoDB');
 
     const db = mongoose.connection.db;
     const users = db.collection('users');
     
-    // Hash password properly
-    console.log('Hashing new password (CTC@2024)...');
-    const hash = await bcrypt.hash('CTC@2024', 10);
+    const newPassword = process.env.NEW_ADMIN_PASS || 'ctcadmin2024';
+    console.log(`Hashing new password (${newPassword})...`);
+    const hash = await bcrypt.hash(newPassword, 10);
     
     // Update or insert admin
     const result = await users.updateOne(
@@ -23,7 +28,10 @@ async function fixAdminPassword() {
         $set: { 
           password: hash,
           role: 'admin',
-          name: 'Super Admin'
+          name: 'Admin CTC',
+          failedLoginAttempts: 0,
+          isLocked: false,
+          lockUntil: null
         }
       },
       { upsert: true }
