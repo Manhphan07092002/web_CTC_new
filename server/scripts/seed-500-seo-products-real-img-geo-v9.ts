@@ -1566,6 +1566,10 @@ async function serperPost<T>(
         throw new SerperFatalError(`${lastMessage}. Kiểm tra API key / credits / quyền truy cập.`, response.status);
       }
 
+      if (response.status === 400) {
+        throw new Error(lastMessage);
+      }
+
       const retryable = response.status === 429 || response.status >= 500;
       if (response.status === 429) serperStats.rateLimited += 1;
       if (response.status >= 500) serperStats.serverErrors += 1;
@@ -1586,6 +1590,7 @@ async function serperPost<T>(
       throw new Error(lastMessage);
     } catch (error) {
       if (error instanceof SerperFatalError) throw error;
+      if (error instanceof Error && error.message.includes('HTTP 400')) throw error;
       lastMessage = error instanceof Error ? error.message : String(error);
       if (attempt < SERPER_MAX_RETRIES) {
         serperStats.retries += 1;
@@ -1732,17 +1737,16 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
     }
   }
 
-  const officialHint = (BRAND_DOMAINS[brand] || []).map((domain) => `site:${domain}`).join(' OR ');
   const model = extractModel(productName, brand);
   const identityTokens = strongModelTokens(productName, brand).slice(0, 2);
   const identityQuery = identityTokens.join(' ');
   const allQueries = [
-    `"${productName}" "${brand}" product image`,
-    identityQuery ? `"${brand}" "${identityTokens[0]}" product` : '',
-    identityTokens.length > 1 ? `"${brand}" "${identityTokens[0]}" "${identityTokens[1]}"` : '',
-    `"${model}" "${brand}" product image`,
-    officialHint ? `"${productName}" ${officialHint}` : '',
+    `${productName} ${brand} product image`,
+    identityQuery ? `${brand} ${identityTokens[0]} product image` : '',
+    identityTokens.length > 1 ? `${brand} ${identityTokens[0]} ${identityTokens[1]} product` : '',
+    `${model} ${brand} official product`,
     `${productName} datasheet image`,
+    `${productName}`,
   ].filter(Boolean);
   const queries = [...new Set(allQueries)].slice(0, SERPER_IMAGE_QUERY_LIMIT);
   const queryErrors: string[] = [];
@@ -2093,10 +2097,7 @@ async function resolveProductSource(productName: string, image: VerifiedImage): 
 
   if (RESOLVE_OFFICIAL_SOURCES && SERPER_API_KEY) {
     const domains = BRAND_DOMAINS[brand] || [];
-    const siteQuery = domains.length > 0
-      ? `(${domains.map((domain) => `site:${domain}`).join(' OR ')})`
-      : '';
-    const query = `"${model}" "${brand}" ${siteQuery} product datasheet`.trim();
+    const query = `${model} ${brand} official product datasheet`.trim();
     const results = await searchGoogleWeb(query);
     const ranked = results
       .map((result) => ({ result, score: scoreSourceResult(result, productName, brand) }))
