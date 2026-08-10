@@ -1321,42 +1321,37 @@ function strongModelTokens(productName: string, brand: string): string[] {
   const brandWords = new Set(brand.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean));
   return productName
     .toUpperCase()
-    .split(/[^A-Z0-9+./-]+/)
-    .map((token) => token.replace(/^[.\/-]+|[.\/-]+$/g, ''))
-    .filter((token) => token.length >= 2)
+    .split(/[^A-Z0-9+.-]+/)
+    .map((token) => token.replace(/^[.-]+|[.-]+$/g, ''))
+    .filter((token) => token.length >= 3)
     .filter((token) => !brandWords.has(token))
-    .filter((token) => /\d/.test(token))
-    .filter((token) => !isGenericSpecToken(token))
-    .sort((a, b) => modelTokenScore(b) - modelTokenScore(a));
-}
-
-function significantProductWords(productName: string, brand: string): string[] {
-  const brandWords = new Set(brand.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean));
-  const stop = new Set([
-    'PRODUCT','OFFICIAL','SERIES','INDUSTRIAL','ENTERPRISE','BUSINESS','BASIC','MANAGED','SMART','RACK','TOWER',
-    'ROUTER','SWITCH','GATEWAY','SERVER','LAPTOP','DESKTOP','WORKSTATION','MODULE','CABLE','PATCH','PANEL','PHONE',
-    'SOLAR','BATTERY','INVERTER','KIOSK','WIRELESS','ACCESS','POINT','THERMAL','LABEL','PRINTER','HYBRID','OUTDOOR','INDOOR',
-  ]);
-  return productName.toUpperCase().split(/[^A-Z0-9]+/)
-    .filter((w) => w.length >= 4 && !brandWords.has(w) && !stop.has(w) && !isGenericSpecToken(w));
+    .filter((token) => /\d/.test(token) || /[-+.]/.test(token));
 }
 
 function identityTextMatchesProduct(text: string, productName: string, brand: string): boolean {
   const haystack = text.toUpperCase();
-  const tokens = strongModelTokens(productName, brand);
+  const tokens = strongModelTokens(productName, brand).sort((a, b) => b.length - a.length);
 
-  // Với model có mã rõ ràng: chỉ cần khớp một trong 2 token nhận dạng mạnh nhất.
-  // Ưu tiên mã chữ+số (ZT411, C9300-48P-E, CS6W-570MS...) và tránh token cấu hình chung.
   if (tokens.length > 0) {
-    const primary = tokens.slice(0, Math.min(2, tokens.length));
-    if (primary.some((token) => haystack.includes(token))) return true;
+    const primary = tokens[0];
+    if (primary.length >= 5 && /\d/.test(primary)) {
+      if (!haystack.includes(primary)) return false;
+      if (tokens.length === 1) return true;
+      const secondaryHits = tokens.slice(1).filter((token) => haystack.includes(token)).length;
+      return secondaryHits >= Math.min(1, tokens.length - 1);
+    }
+
+    const required = Math.min(2, tokens.length);
+    return tokens.filter((token) => haystack.includes(token)).length >= required;
   }
 
-  // Sản phẩm có tên thương mại nhưng không có model rõ: yêu cầu ít nhất 2 từ đặc trưng.
-  const words = significantProductWords(productName, brand);
-  const unique = [...new Set(words)];
-  const required = unique.length >= 2 ? 2 : 1;
-  return unique.length > 0 && unique.filter((word) => haystack.includes(word)).length >= required;
+  const brandWords = brand.toUpperCase().split(/[^A-Z0-9]+/).filter((x) => x.length >= 3);
+  const words = productName
+    .toUpperCase()
+    .split(/[^A-Z0-9]+/)
+    .filter((x) => x.length >= 4 && !brandWords.includes(x));
+  const required = Math.min(2, words.length);
+  return required > 0 && words.filter((word) => haystack.includes(word)).length >= required;
 }
 
 function candidateMatchesProduct(candidate: ImageCandidate, productName: string, brand: string): boolean {
