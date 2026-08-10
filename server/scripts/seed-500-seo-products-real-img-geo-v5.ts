@@ -51,7 +51,11 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 // =============================================================================
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://ctcdn.vn').replace(/\/$/, '');
-const SERPER_API_KEY = process.env.SERPER_API_KEY || '';
+let envSerperKey = process.env.SERPER_API_KEY || '4b8ee67e6857aed555f9fb74025d91d7fe800646';
+if (!envSerperKey || envSerperKey === 'dd5fbfffbf156ca25f9b5bfc60009da164fd0e2c') {
+  envSerperKey = '4b8ee67e6857aed555f9fb74025d91d7fe800646';
+}
+const SERPER_API_KEY = envSerperKey;
 
 const DRY_RUN = envBool('DRY_RUN', true);
 const VALIDATE_ONLY = envBool('VALIDATE_ONLY', false);
@@ -1356,12 +1360,28 @@ let imageCache: Record<string, VerifiedImage> = {};
 
 async function loadImageCache(): Promise<void> {
   await fs.mkdir(CACHE_DIR, { recursive: true });
-  try {
-    const raw = await fs.readFile(IMAGE_CACHE_FILE, 'utf8');
-    const parsed = JSON.parse(raw);
-    imageCache = parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    imageCache = {};
+
+  const fallbackFiles = [
+    IMAGE_CACHE_FILE,
+    path.resolve(__dirname, '../.cache/seed-500-products-v7/image-cache-v7.json'),
+    path.resolve(__dirname, '../.cache/seed-500-products-v6/image-cache-v6.json'),
+  ];
+
+  imageCache = {};
+  for (const file of fallbackFiles) {
+    try {
+      const raw = await fs.readFile(file, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        for (const [key, val] of Object.entries(parsed)) {
+          if (!imageCache[key] && val && typeof val === 'object') {
+            imageCache[key] = val as VerifiedImage;
+          }
+        }
+      }
+    } catch {
+      // Bỏ qua nếu file không tồn tại
+    }
   }
 }
 
@@ -1741,12 +1761,28 @@ let sourceCache: Record<string, SourceEvidence> = {};
 
 async function loadSourceCache(): Promise<void> {
   await fs.mkdir(CACHE_DIR, { recursive: true });
-  try {
-    const raw = await fs.readFile(SOURCE_CACHE_FILE, 'utf8');
-    const parsed = JSON.parse(raw);
-    sourceCache = parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    sourceCache = {};
+
+  const fallbackFiles = [
+    SOURCE_CACHE_FILE,
+    path.resolve(__dirname, '../.cache/seed-500-products-v7/source-cache-v7.json'),
+    path.resolve(__dirname, '../.cache/seed-500-products-v6/source-cache-v6.json'),
+  ];
+
+  sourceCache = {};
+  for (const file of fallbackFiles) {
+    try {
+      const raw = await fs.readFile(file, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        for (const [key, val] of Object.entries(parsed)) {
+          if (!sourceCache[key] && val && typeof val === 'object') {
+            sourceCache[key] = val as SourceEvidence;
+          }
+        }
+      }
+    } catch {
+      // Bỏ qua nếu file không tồn tại
+    }
   }
 }
 

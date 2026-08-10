@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T08:23:07.034Z",
+  "generatedAt": "2026-08-10T07:48:09.641Z",
   "total": 500,
   "resolved": 500,
   "officialFactSources": 0,
@@ -7,7 +7,7 @@
   "httpValidated": 0,
   "unresolved": [
     {
-      "productName": "MikroTik CCR2004-1G-12S+2XS",
+      "productName": "MikroTik RB960PGS hEX PoE",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -19,25 +19,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik RB960PGS hEX PoE",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "MikroTik CCR1009-7G-1C-1S+",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik RB760iGS hEX S",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "MikroTik RB2011UiAS-2HnD-IN",
+      "productName": "MikroTik CCR2004-1G-12S+2XS",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -49,13 +37,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "MikroTik RB2011UiAS-2HnD-IN",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "MikroTik RB750Gr3 hEX",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "DrayTek Vigor 2925FN",
+      "productName": "MikroTik RB760iGS hEX S",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -79,7 +73,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "DrayTek Vigor 2962 Dual WAN",
+      "productName": "DrayTek Vigor 2925FN",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -103,13 +97,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco ISR4331/K9 Router",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "DrayTek Vigor 2866Lac",
+      "productName": "DrayTek Vigor 2962 Dual WAN",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -121,13 +109,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "DrayTek Vigor 2866Lac",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Cisco ISR4321/K9 Router",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link TL-R605 Omada",
+      "productName": "Cisco ISR4331/K9 Router",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -151,7 +145,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik RB1100AHx4 Dude",
+      "productName": "TP-Link TL-R605 Omada",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -175,7 +169,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik hEX Refresh E50UG",
+      "productName": "MikroTik RB1100AHx4 Dude",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -199,7 +193,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco Catalyst WS-C2960X-48FPD-L",
+      "productName": "MikroTik hEX Refresh E50UG",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -223,13 +217,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco SG550X-24P-K9 Stackable",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Cisco Catalyst C9200-24P-E",
+      "productName": "Cisco Catalyst WS-C2960X-48FPD-L",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -241,19 +229,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Cisco Catalyst C9200-24P-E",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Cisco SG350-28P-K9 Managed",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik CRS317-1G-16S+RM",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "MikroTik CRS326-24G-2S+RM",
+      "productName": "Cisco SG550X-24P-K9 Stackable",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -265,19 +253,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "MikroTik CRS326-24G-2S+RM",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "MikroTik CRS354-48G-4S+2Q+RM",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link TL-SG2428P Omada",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link TL-SG3452XP Omada JetStream",
+      "productName": "MikroTik CRS317-1G-16S+RM",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -289,13 +277,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "TP-Link TL-SG3452XP Omada JetStream",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "TP-Link TL-SG3428X Omada",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Ubiquiti UniFi USW-Pro-48-POE",
+      "productName": "TP-Link TL-SG2428P Omada",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -319,7 +313,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "D-Link DGS-3630-28PC Managed",
+      "productName": "Ubiquiti UniFi USW-Pro-48-POE",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -343,7 +337,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco CBS220-24FP-4X-EU",
+      "productName": "D-Link DGS-3630-28PC Managed",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "D-Link DGS-1210-28MP Smart",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -361,13 +361,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "D-Link DGS-1210-28MP Smart",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link TL-SG2008P JetStream",
+      "productName": "Cisco CBS220-24FP-4X-EU",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -379,19 +373,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco WS-C3750X-48PF-L",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "MikroTik CRS309-1G-8S+IN",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link TL-SG3428XPP-M2 Omada",
+      "productName": "Cisco WS-C3750X-48PF-L",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "TP-Link TL-SG2008P JetStream",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -415,7 +409,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik hAP ac3 RBD53iG-5HacD2HnD",
+      "productName": "TP-Link TL-SG3428XPP-M2 Omada",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -439,7 +433,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link EAP655-Wall AX3000",
+      "productName": "MikroTik hAP ac3 RBD53iG-5HacD2HnD",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "MikroTik wAP ac RBwAPG-5HacD2HnD",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -457,19 +457,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik wAP ac RBwAPG-5HacD2HnD",
+      "productName": "TP-Link EAP655-Wall AX3000",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
       "productName": "TP-Link EAP225-Outdoor",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link EAP265 HD AC1750",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -487,7 +481,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Ubiquiti UniFi U6-Pro WiFi6",
+      "productName": "TP-Link EAP265 HD AC1750",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -511,7 +505,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco CBW150AX WiFi 6",
+      "productName": "Ubiquiti UniFi U6-Pro WiFi6",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -535,13 +529,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Reyee RG-RAP6260(G) WiFi 6 Outdoor",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "MikroTik SXT Lite5 RBSXTG-5HPacD",
+      "productName": "Cisco CBW150AX WiFi 6",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -553,13 +541,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "MikroTik SXT Lite5 RBSXTG-5HPacD",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "MikroTik BaseBox 5 RBD25G-5HPacQD2HPnD",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link EAP783 Omada WiFi 7",
+      "productName": "Reyee RG-RAP6260(G) WiFi 6 Outdoor",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -583,6 +577,12 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "TP-Link EAP783 Omada WiFi 7",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Ubiquiti UniFi U7 Pro WiFi 7",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
@@ -595,19 +595,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco Catalyst CW9166I WiFi 6E",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "DrayTek VigorAP 1062C WiFi 6",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "DrayTek Vigor 2962 Dual WAN Balancer",
+      "productName": "Cisco Catalyst CW9166I WiFi 6E",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -631,13 +625,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Zyxel USG Flex 200H",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link TL-ER8411 Multi-WAN",
+      "productName": "DrayTek Vigor 2962 Dual WAN Balancer",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -655,13 +643,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik S-31DLC20D SFP 1.25G SM 20km",
+      "productName": "TP-Link TL-ER8411 Multi-WAN",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco Meraki MX68W Balancer",
+      "productName": "Zyxel USG Flex 200H",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -673,13 +661,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Cisco Meraki MX68W Balancer",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "MikroTik S-85DLC05D SFP 1.25G MM 550m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope SFP+ 10G-LR 10km SM",
+      "productName": "MikroTik S-31DLC20D SFP 1.25G SM 20km",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -703,13 +697,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco GLC-LH-SMD 1G SM 10km",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Cisco SFP-10G-SR Module",
+      "productName": "CommScope SFP+ 10G-LR 10km SM",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -721,19 +709,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Cisco SFP-10G-SR Module",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Cisco SFP-10G-LR Module",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Ubiquiti UFiber SFP+ 10G SM 10km",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link TL-SM311LS SFP 1G SM",
+      "productName": "Cisco GLC-LH-SMD 1G SM 10km",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -745,13 +733,25 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "TP-Link TL-SM311LS SFP 1G SM",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "TP-Link TL-SM5110-LR SFP+ 10G LR",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Cisco QSFP-40G-SR4 40GBASE-SR4",
+      "productName": "Ubiquiti UFiber SFP+ 10G SM 10km",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Finisar FTLF8524P2BNL SFP+ 10G SR",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -769,19 +769,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Finisar FTLF8524P2BNL SFP+ 10G SR",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "CommScope ODF 48FO LC/APC Rack 2U",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link SM5220-1M SFP+ Direct Attach Cable",
+      "productName": "Cisco QSFP-40G-SR4 40GBASE-SR4",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -793,13 +781,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "TP-Link SM5220-1M SFP+ Direct Attach Cable",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "CommScope ODF 24FO LC/UPC Rack 1U",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope Systimax 760210401 ODF 48F",
+      "productName": "CommScope ODF 48FO LC/APC Rack 2U",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -823,7 +817,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope ODF 144FO LC/APC Rack 6U",
+      "productName": "CommScope Systimax 760210401 ODF 48F",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -847,6 +841,12 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "CommScope ODF 144FO LC/APC Rack 6U",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Dinstar DAG2000-32S VoIP Gateway 32FXS",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
@@ -859,19 +859,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Dinstar DAG2000-8O 8FXO VoIP",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "Dinstar DAG2000-8S 8FXS VoIP",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dinstar MTG2000E 2E1 VoIP Gateway",
+      "productName": "Dinstar DAG2000-8O 8FXO VoIP",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -883,13 +877,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Dinstar UC2000-VE GSM VoIP Gateway 4G",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Dinstar MTG1000E E1/T1 VoIP Gateway",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dinstar UC2000-VE GSM VoIP Gateway 4G",
+      "productName": "Dinstar MTG2000E 2E1 VoIP Gateway",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -907,19 +907,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Grandstream GXW4504 PRI Gateway",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "Grandstream GXW4248 FXS 48-port Gateway",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dinstar CooVox U50 IP PBX 50 Users",
+      "productName": "Grandstream GXW4504 PRI Gateway",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -943,13 +937,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Grandstream UCM6304 IP PBX with FXO",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Dinstar CooVox U500 Enterprise IP PBX",
+      "productName": "Dinstar CooVox U50 IP PBX 50 Users",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -961,13 +949,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Dinstar CooVox U500 Enterprise IP PBX",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Grandstream UCM6302 IP PBX 500 Users",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "3CX Phone System 64SC License",
+      "productName": "Grandstream UCM6304 IP PBX with FXO",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -979,25 +973,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Asterisk-based FreePBX Server 200 User",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "Yeastar S412 Hybrid PBX 200 Users",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Grandstream GRP2601P IP Phone 2 SIP",
+      "productName": "Asterisk-based FreePBX Server 200 User",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dinstar C60S Color IP Phone",
+      "productName": "3CX Phone System 64SC License",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1009,19 +997,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Dinstar C60S Color IP Phone",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Dinstar C300 Basic SIP Phone",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Yealink T43U Color USB IP Phone",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Grandstream GRP2616 6-line IP Phone",
+      "productName": "Grandstream GRP2601P IP Phone 2 SIP",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1033,19 +1021,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Grandstream GRP2616 6-line IP Phone",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Yealink T31G IP Phone 2 SIP",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope GigaSPEED XL Cat6 UTP 305m",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Fanvil X4U Color IP Phone 12 DSS",
+      "productName": "Yealink T43U Color USB IP Phone",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1057,19 +1045,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Fanvil X4U Color IP Phone 12 DSS",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Fanvil H2U Basic Hotel IP Phone",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link TL-EC620E Cat6 UTP Reel 305m",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "CommScope SYSTIMAX Cat6A S/FTP 305m",
+      "productName": "CommScope GigaSPEED XL Cat6 UTP 305m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1081,19 +1069,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "CommScope SYSTIMAX Cat6A S/FTP 305m",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "CommScope Cat5e 305m UTP PVC",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "AMP Netconnect Cat6A STP 305m",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Panduit PUP6AOR Cat6A U/UTP 305m",
+      "productName": "TP-Link TL-EC620E Cat6 UTP Reel 305m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1105,19 +1093,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Panduit PUP6AOR Cat6A U/UTP 305m",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Belden DataTwist Cat6 UTP 305m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Panduit PUP6AX04OR Cat6A F/UTP",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "LS Cable Cat6 UTP 305m Vietnam Made",
+      "productName": "AMP Netconnect Cat6A STP 305m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1129,13 +1117,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "LS Cable Cat6 UTP 305m Vietnam Made",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "CommScope Cat7 S/FTP 305m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope LazrSPEED OM3 12FO 1m",
+      "productName": "Panduit PUP6AX04OR Cat6A F/UTP",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1159,7 +1153,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Corning ClearCurve OM4 12FO",
+      "productName": "CommScope LazrSPEED OM3 12FO 1m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1171,25 +1165,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope OPGW 24FO Overhead Cable 1km",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "CommScope ADSS 24FO G652D Span 100m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Panduit FLCJACKBLY Fiber LC Patch 3m",
+      "productName": "CommScope OPGW 24FO Overhead Cable 1km",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "OFS AllWave 96FO SM G652D",
+      "productName": "Corning ClearCurve OM4 12FO",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1201,19 +1189,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "OFS AllWave 96FO SM G652D",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "LS Cable SM-96FO G652D Indoor",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope Pigtail LC/UPC SM OS2 1m",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Corning 96FO OS2 G657A1 Tight Buffer",
+      "productName": "Panduit FLCJACKBLY Fiber LC Patch 3m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1225,13 +1213,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Corning 96FO OS2 G657A1 Tight Buffer",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "CommScope 8FO OM3 MMF Indoor Plenum",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope SYSTIMAX 48-port Cat6 2U",
+      "productName": "CommScope Pigtail LC/UPC SM OS2 1m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1255,13 +1249,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link TL-R48P-B Patch Panel 48-port",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Panduit CPP48WBLY 48-port Cat6 2U",
+      "productName": "CommScope SYSTIMAX 48-port Cat6 2U",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1273,13 +1261,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Panduit CPP48WBLY 48-port Cat6 2U",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "AMP Netconnect 24-port Cat5e 1U",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "HPE ProLiant DL380 Gen10 Plus 2U",
+      "productName": "TP-Link TL-R48P-B Patch Panel 48-port",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1291,19 +1285,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Belden REVConnect 24-port Cat6A",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "D-Link NPB-C6A24Y Cat6A 24-port",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dell PowerEdge R750 2U Rack Server",
+      "productName": "Belden REVConnect 24-port Cat6A",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "HPE ProLiant DL380 Gen10 Plus 2U",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1327,7 +1321,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Lenovo ThinkSystem SR650 V2 2U",
+      "productName": "Dell PowerEdge R750 2U Rack Server",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1351,7 +1345,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Supermicro AS-2124GQ-NART GPU Server",
+      "productName": "Lenovo ThinkSystem SR650 V2 2U",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1375,7 +1369,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Fujitsu PRIMERGY RX2540 M6 2U",
+      "productName": "Supermicro AS-2124GQ-NART GPU Server",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1399,13 +1393,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "IBM Power S1022 2-Socket Server",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "HPE ProLiant DL345 Gen10 Plus AMD",
+      "productName": "Fujitsu PRIMERGY RX2540 M6 2U",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1417,19 +1405,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "HPE ProLiant DL345 Gen10 Plus AMD",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "IBM Power S1022 2-Socket Server",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "HPE ProLiant DL380 Gen11 2U Rack Server",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Huawei FusionServer Pro 2288H V5",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Lenovo ThinkSystem SR650 V3 2U Server",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1441,19 +1429,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Lenovo ThinkSystem SR650 V3 2U Server",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Supermicro SYS-621C-TN12R 2U Server",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "HP ProDesk 400 G7 SFF Core i5",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Dell OptiPlex 5090 MFF Micro i7",
+      "productName": "Huawei FusionServer Pro 2288H V5",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1465,7 +1453,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Dell OptiPlex 5090 MFF Micro i7",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Dell OptiPlex 7090 Ultra i9 Gen11",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "HP ProDesk 400 G7 SFF Core i5",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1483,19 +1483,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Lenovo ThinkCentre M90t Tower i9",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "Lenovo ThinkCentre M70q Tiny Gen3",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dell Precision 3660 Tower Workstation",
+      "productName": "Lenovo ThinkCentre M90t Tower i9",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1519,7 +1513,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Dell OptiPlex 7010 SFF Plus",
+      "productName": "Dell Precision 3660 Tower Workstation",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1543,13 +1537,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "HP Elite Tower 800 G9 Desktop PC",
+      "productName": "Dell OptiPlex 7010 SFF Plus",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Acer Veriton X4 VX4710G",
+      "productName": "HP Elite Tower 800 G9 Desktop PC",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1567,7 +1561,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Minisforum EliteMini HX90 Ryzen 9",
+      "productName": "Acer Veriton X4 VX4710G",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1591,13 +1585,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Beelink EQ12 N100 Fanless Mini PC",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Zotac ZBOX QK7P3000 Quadro K3000M",
+      "productName": "Minisforum EliteMini HX90 Ryzen 9",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1609,13 +1597,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Beelink EQ12 N100 Fanless Mini PC",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Zotac ZBOX CI669 Nano Silent PC",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dell Latitude 7430 Core i7 vPro 14\"",
+      "productName": "Zotac ZBOX QK7P3000 Quadro K3000M",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1639,19 +1633,13 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Dell Latitude 7430 Core i7 vPro 14\"",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Dell Precision 5570 Workstation i9",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Lenovo ThinkPad X1 Carbon Gen10 i7",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "HP EliteBook 1040 G9 i7 vPro 14\"",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1663,7 +1651,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "ASUS ExpertBook B9 B9450CEA i7",
+      "productName": "HP EliteBook 1040 G9 i7 vPro 14\"",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Lenovo ThinkPad X1 Carbon Gen10 i7",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Lenovo ThinkPad T14s Gen3 AMD Ryzen7",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1681,13 +1681,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Lenovo ThinkPad T14s Gen3 AMD Ryzen7",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Acer TravelMate P4 TMP414-51",
+      "productName": "ASUS ExpertBook B9 B9450CEA i7",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1711,7 +1705,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Zebra GX430t Desktop Label Printer",
+      "productName": "Acer TravelMate P4 TMP414-51",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1723,19 +1717,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Zebra ZT610 Industrial 600dpi",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "Zebra ZT411 Industrial Thermal Label 300dpi",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Brother PT-E550WVP Label Printer WiFi",
+      "productName": "Zebra ZT610 Industrial 600dpi",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Zebra GX430t Desktop Label Printer",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1759,7 +1753,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Samsung KMA Series KM24A Interactive Kiosk",
+      "productName": "Brother PT-E550WVP Label Printer WiFi",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1783,13 +1777,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "NCR SelfServ 90 Kiosk",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Advantech UTC-520 Interactive Kiosk",
+      "productName": "Samsung KMA Series KM24A Interactive Kiosk",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1801,19 +1789,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Advantech UTC-520 Interactive Kiosk",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Posiflex Paragon TK-3200 Series Kiosk",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Elo Wallaby Self-Service Floor Stand 22-inch",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "AOPEN eTILE 22M-FB Interactive Kiosk",
+      "productName": "NCR SelfServ 90 Kiosk",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1825,13 +1813,25 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "AOPEN eTILE 22M-FB Interactive Kiosk",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Pyramid polytouch 32 Curve Kiosk",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Canadian Solar BiKu CS6W-540BB 540W",
+      "productName": "Elo Wallaby Self-Service Floor Stand 22-inch",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "PARTTEAM & OEMKIOSKS QTOUCH 32 Kiosk",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1849,13 +1849,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "PARTTEAM & OEMKIOSKS QTOUCH 32 Kiosk",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "LONGI Hi-MO 5m LR4-72HPH 450W",
+      "productName": "Canadian Solar BiKu CS6W-540BB 540W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1879,7 +1873,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Jinko Solar Cheetah HC JKM415M-54HL4-V",
+      "productName": "LONGI Hi-MO 5m LR4-72HPH 450W",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "LONGI Hi-MO 7 LR5-72HBD 620W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1897,13 +1897,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "LONGI Hi-MO 7 LR5-72HBD 620W",
+      "productName": "Jinko Solar Cheetah HC JKM415M-54HL4-V",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Trina Solar Honey Plus TSM-360DEG15H(II)",
+      "productName": "Jinko Solar Eagle JKM305PP-60",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1921,13 +1921,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Jinko Solar Eagle JKM305PP-60",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "JA Solar JAM72D30 565/MB 565W",
+      "productName": "Trina Solar Honey Plus TSM-360DEG15H(II)",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1939,19 +1933,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Risen Solar Titan RSM150-8-500BMDG",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "Risen Solar RSM40-8-410M MONO",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "REC Alpha Pro M 430W Series",
+      "productName": "Risen Solar Titan RSM150-8-500BMDG",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "JA Solar JAM72D30 565/MB 565W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1963,25 +1957,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "REC Alpha Pure-RX 410W",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "JA Solar DeepBlue 3.0 JAM72S30-545/MR",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "SunPower Maxeon 6 AC Module 420W",
+      "productName": "REC Alpha Pure-RX 410W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Q.CELLS Q.PEAK DUO BLK ML-G10+ 395W",
+      "productName": "REC Alpha Pro M 430W Series",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -1993,19 +1981,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Q.CELLS Q.PEAK DUO BLK ML-G10+ 395W",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "First Solar Series 7 TR1 420W CdTe",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Adani Solar ASM 580M-72 580W TOPCon",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Vikram Solar Somera 380W PERC",
+      "productName": "SunPower Maxeon 6 AC Module 420W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2017,19 +2005,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Vikram Solar Somera 380W PERC",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "VSUN VSUN545-144M 545W Mono",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Trina Solar Vertex TSM-DE21.08W 710W",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Canadian Solar BiKu CS3Y-445PB 445W Bifacial",
+      "productName": "Adani Solar ASM 580M-72 580W TOPCon",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2041,19 +2029,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Canadian Solar BiKu CS3Y-445PB 445W Bifacial",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "LONGI Hi-MO X LR5-72HGD 600W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "JA Solar DeepBlue 4.0 Pro JAM72D42-620/LB 620W",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "LONGi Hi-MO 7 LR5-72HGD-610M 610W",
+      "productName": "Trina Solar Vertex TSM-DE21.08W 710W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2065,19 +2053,25 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "LONGi Hi-MO 7 LR5-72HGD-610M 610W",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Trina Solar Vertex N TSM-NEG21C.20 695W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Canadian Solar TOPHiKu6 CS6.2-48TD 460W",
+      "productName": "JA Solar DeepBlue 4.0 Pro JAM72D42-620/LB 620W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Huawei SUN2000-8KTL-M1 8kW 3P",
+      "productName": "Canadian Solar TOPHiKu6 CS6.2-48TD 460W",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2095,7 +2089,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Huawei SUN2000-50KTL-M3 50kW 3P",
+      "productName": "Huawei SUN2000-8KTL-M1 8kW 3P",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2119,13 +2113,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "SMA Sunny Boy SB3.0-1AV-41 3kW",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Huawei SUN2000-185KTL-H1 185kW Central",
+      "productName": "Huawei SUN2000-50KTL-M3 50kW 3P",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2137,13 +2125,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Huawei SUN2000-185KTL-H1 185kW Central",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Huawei SUN2000-350KTL-H0 350kW",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "SMA Sunny Central SC 2500-EV 2500kW",
+      "productName": "SMA Sunny Boy SB3.0-1AV-41 3kW",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2167,7 +2161,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Sungrow SG30CX-P2 30kW",
+      "productName": "SMA Sunny Central SC 2500-EV 2500kW",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2191,19 +2185,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Sungrow SG250HX 250kW DC1500V",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Fronius Primo Gen24 6.0kW 1P",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Fronius Symo Gen24 Plus 8.0kW",
+      "productName": "Sungrow SG30CX-P2 30kW",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2215,7 +2197,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Growatt MID 33KTL3-X 33kW 3P",
+      "productName": "Sungrow SG250HX 250kW DC1500V",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Fronius Symo Gen24 Plus 8.0kW",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Fronius Primo Gen24 6.0kW 1P",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2239,13 +2233,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Sofar Solar 8.8KTL-X 8.8kW 3P",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Deye SUN-12K-SG04LP3 12kW Hybrid 3P",
+      "productName": "Growatt MID 33KTL3-X 33kW 3P",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2257,13 +2245,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Deye SUN-12K-SG04LP3 12kW Hybrid 3P",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Goodwe GW5048D-ES 5kW Hybrid Offgrid",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "SolarEdge SE10K Optimized 10kW",
+      "productName": "Sofar Solar 8.8KTL-X 8.8kW 3P",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2287,7 +2281,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "GoodWe GW100K-HT 100kW",
+      "productName": "SolarEdge SE10K Optimized 10kW",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2311,7 +2305,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Pylontech US3000C 48V 74Ah LiFePO4",
+      "productName": "GoodWe GW100K-HT 100kW",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2335,13 +2329,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "BYD Battery-Box Premium HVM 11.04kWh",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Pylontech H48074 48V 74Ah Rack Unit",
+      "productName": "Pylontech US3000C 48V 74Ah LiFePO4",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2353,13 +2341,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Pylontech H48074 48V 74Ah Rack Unit",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "BYD Battery-Box Premium HVS 7.7kWh",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Growatt GBLI6531 6.5kWh Lithium Pack",
+      "productName": "BYD Battery-Box Premium HVM 11.04kWh",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2383,7 +2377,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "SOL-ARK SK-48V100-L 100Ah LiFePO4 Rack",
+      "productName": "Growatt GBLI6531 6.5kWh Lithium Pack",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2407,7 +2401,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "PYTES E-BOX-48100R 48V 100Ah",
+      "productName": "SOL-ARK SK-48V100-L 100Ah LiFePO4 Rack",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2431,7 +2425,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Huawei LUNA2000-7-E1 7kWh Battery Module",
+      "productName": "PYTES E-BOX-48100R 48V 100Ah",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2455,7 +2449,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Yuasa NP65-12I 12V 65Ah VRLA",
+      "productName": "Huawei LUNA2000-7-E1 7kWh Battery Module",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2479,7 +2473,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "CSB EVX12200 12V 200Ah DeepCycle",
+      "productName": "Yuasa NP65-12I 12V 65Ah VRLA",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2503,13 +2497,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "GS Yuasa SWL1650 12V 165Ah",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Exide EP200 AGM 12V 200Ah",
+      "productName": "CSB EVX12200 12V 200Ah DeepCycle",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2521,13 +2509,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "Exide EP200 AGM 12V 200Ah",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Fiamm FG21202 12V 120Ah VRLA",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Vision 6FM200D 12V 200Ah GEL",
+      "productName": "GS Yuasa SWL1650 12V 165Ah",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2551,7 +2545,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Hoppecke OPzS 2V 800Ah Flooded",
+      "productName": "Vision 6FM200D 12V 200Ah GEL",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Ritar RA12-100 12V 100Ah VRLA AGM",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2569,13 +2569,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Ritar RA12-100 12V 100Ah VRLA AGM",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "Rolls Battery 4KS-21PS 4V 428Ah",
+      "productName": "Hoppecke OPzS 2V 800Ah Flooded",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2594,6 +2588,12 @@
     },
     {
       "productName": "Fiamm 2 SLA M 400 2V 400Ah",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Rolls Battery 4KS-21PS 4V 428Ah",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2623,7 +2623,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope TrueNet Cat6 1P Data Outlet",
+      "productName": "CommScope GigaSPEED XL Jack Module Cat6",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2641,19 +2641,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope GigaSPEED XL Jack Module Cat6",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "CommScope FOSC 450 Fiber Closure",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "CommScope SYSTIMAX 760 iD Cable",
+      "productName": "CommScope TrueNet Cat6 1P Data Outlet",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2665,13 +2653,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "CommScope SYSTIMAX 760 iD Cable",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "CommScope SpecTRAL SRS12A Fiber Rack",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dinstar CooVox U20 IP PBX Basic",
+      "productName": "CommScope FOSC 450 Fiber Closure",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2695,7 +2689,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "DrayTek Vigor 2926L 4G LTE Router",
+      "productName": "Dinstar CooVox U20 IP PBX Basic",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2719,7 +2713,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik CRS312-4C+8XG-RM 10G Switch",
+      "productName": "DrayTek Vigor 2926L 4G LTE Router",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2743,7 +2737,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik LHG 5 ac High Gain CPE",
+      "productName": "MikroTik CRS312-4C+8XG-RM 10G Switch",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2767,13 +2761,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "MikroTik wAP LTE kit 4G AP",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "MikroTik Groove A-52HPn Outdoor",
+      "productName": "MikroTik LHG 5 ac High Gain CPE",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2785,19 +2773,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "MikroTik Groove A-52HPn Outdoor",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "MikroTik RBGPE-TC OmniTIK 5HnD",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link TL-SG1048 48-Port Gigabit Rack",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link OC300 Omada Hardware Controller",
+      "productName": "MikroTik wAP LTE kit 4G AP",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2809,7 +2797,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "TP-Link OC300 Omada Hardware Controller",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "TP-Link OC200 Omada Software Controller",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "TP-Link TL-SG1048 48-Port Gigabit Rack",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2839,7 +2839,7 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope Cat6 RJ45 Modular Plug 8P8C",
+      "productName": "TP-Link TL-SX3016F 16-Port SFP+ 10G",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2851,31 +2851,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "TP-Link TL-SX3016F 16-Port SFP+ 10G",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "TP-Link TL-SX1008 8-Port 10G Unmanaged",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope MGS400 Cat6 UTP Information Outlet",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "CommScope Cat6 UTP Patch Cord 1m",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "CommScope MGS600 Cat6A Information Outlet",
+      "productName": "CommScope Cat6 RJ45 Modular Plug 8P8C",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2887,13 +2869,19 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope SC/APC Single-mode Pigtail 1m",
+      "productName": "CommScope MGS400 Cat6 UTP Information Outlet",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope Cat6A S/FTP Patch Cord 2m",
+      "productName": "CommScope MGS600 Cat6A Information Outlet",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "CommScope Cat6 UTP Patch Cord 1m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2905,13 +2893,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "CommScope Cat6A S/FTP Patch Cord 2m",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "CommScope LC/UPC Single-mode Pigtail 1m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "CommScope SC/APC Fast Connector",
+      "productName": "CommScope SC/APC Single-mode Pigtail 1m",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2935,6 +2929,12 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "CommScope SC/APC Fast Connector",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "CommScope LC/UPC Fast Connector",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
@@ -2947,25 +2947,13 @@
       "sourceType": "unverified"
     },
     {
-      "productName": "Panduit CJ688TGBU Cat6 Mini-Com Jack",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
       "productName": "CommScope FOSC 400A4 Fiber Optic Closure",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Dintek 1501-88027 Cat6 RJ45 Connector",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "TP-Link TL-SM321A BiDi SFP Module",
+      "productName": "Panduit CJ688TGBU Cat6 Mini-Com Jack",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -2977,19 +2965,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "TP-Link TL-SM321A BiDi SFP Module",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "TP-Link TL-SM321B BiDi SFP Module",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
     },
     {
-      "productName": "Corning OptiSnap SC/APC Fast Connector",
-      "url": "https://ctcdn.vn",
-      "domain": "ctcdn.vn",
-      "sourceType": "unverified"
-    },
-    {
-      "productName": "3M Scotchlok UY2 Connector",
+      "productName": "Dintek 1501-88027 Cat6 RJ45 Connector",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
@@ -3001,7 +2989,19 @@
       "sourceType": "unverified"
     },
     {
+      "productName": "3M Scotchlok UY2 Connector",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
       "productName": "Corning LC Uniboot Duplex Patch Cord OS2",
+      "url": "https://ctcdn.vn",
+      "domain": "ctcdn.vn",
+      "sourceType": "unverified"
+    },
+    {
+      "productName": "Corning OptiSnap SC/APC Fast Connector",
       "url": "https://ctcdn.vn",
       "domain": "ctcdn.vn",
       "sourceType": "unverified"
