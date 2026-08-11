@@ -52,6 +52,7 @@ services:
     volumes:
       - uploads_data:/app/uploads
       - ./server/.cache:/app/server/.cache
+      - ./server/scripts:/app/server/scripts
     networks:
       - ctc_network
     deploy:
