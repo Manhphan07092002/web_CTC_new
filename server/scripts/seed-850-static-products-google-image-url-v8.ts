@@ -2639,15 +2639,17 @@ async function loadImageCache(): Promise<void> {
 }
 
 export async function saveImageCache(): Promise<void> {
-  await fs.mkdir(path.dirname(IMAGE_CACHE_FILE), { recursive: true });
-  const temp = `${IMAGE_CACHE_FILE}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
-  await fs.writeFile(temp, JSON.stringify(imageCache, null, 2), 'utf8');
   try {
-    await fs.rename(temp, IMAGE_CACHE_FILE);
-  } catch {
-    await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8');
-    await fs.unlink(temp).catch(() => {});
-  }
+    await fs.mkdir(path.dirname(IMAGE_CACHE_FILE), { recursive: true });
+    const temp = `${IMAGE_CACHE_FILE}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
+    await fs.writeFile(temp, JSON.stringify(imageCache, null, 2), 'utf8');
+    try {
+      await fs.rename(temp, IMAGE_CACHE_FILE);
+    } catch {
+      await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8').catch(() => {});
+      await fs.unlink(temp).catch(() => {});
+    }
+  } catch {}
 }
 
 function sanitizeSerperQuery(query: string): string {
@@ -5823,10 +5825,19 @@ async function main(): Promise<void> {
 
 
     for (const group of ACTIVE_PRODUCT_CATALOG) {
-      categoryIdBySlug.set(
-        group.slug,
-        await ensureCategoryPath(categoryPath(group.slug, group.category), categorySeoByKey),
-      );
+      const baseCategoryPath = categoryPath(group.slug, group.category);
+      const leafCatId = await ensureCategoryPath(baseCategoryPath, categorySeoByKey);
+      categoryIdBySlug.set(group.slug, leafCatId);
+
+      // Tạo Cấp 4: Sub-menu Hãng sản xuất nằm trực tiếp dưới từng Danh mục Cấp 3
+      // (Ví dụ: Cáp mạng -> CommScope, Router -> MikroTik, Switch -> Cisco...)
+      for (const name of group.products) {
+        const brand = detectBrand(name);
+        const subBrandPath = [...baseCategoryPath, brand];
+        const subBrandCatId = await ensureCategoryPath(subBrandPath, categorySeoByKey);
+        const subBrandKey = `${group.slug}:${brand}`;
+        brandCategoryIdByName.set(subBrandKey, subBrandCatId);
+      }
     }
 
     await ensureCategoryPath([BRAND_MENU_ROOT], categorySeoByKey);
@@ -5848,6 +5859,8 @@ async function main(): Promise<void> {
 
     for (const name of group.products) {
       const brand = detectBrand(name);
+      const subBrandKey = `${group.slug}:${brand}`;
+      const brandSubCategoryId = brandCategoryIdByName.get(subBrandKey);
       const brandCategoryId = brandCategoryIdByName.get(brand);
       const partNumber = extractPartNumber(name, brand);
       const model = partNumber;
@@ -5874,9 +5887,9 @@ async function main(): Promise<void> {
         mpn: partNumber,
         category: pathNames[pathNames.length - 1],
         categoryLabel: pathNames[pathNames.length - 1].toUpperCase(),
-        categoryPath: pathNames,
-        categoryId,
-        categoryIds: [categoryId, brandCategoryId].filter(Boolean),
+        categoryPath: brandSubCategoryId ? [...pathNames, brand] : pathNames,
+        categoryId: brandSubCategoryId || categoryId,
+        categoryIds: [categoryId, brandSubCategoryId, brandCategoryId].filter(Boolean),
         brandCategoryId,
         brandCategorySlug: brandCategoryId ? `thuong-hieu-${slugify(brand)}` : null,
         brandCategoryPath: brandCategoryId ? [BRAND_MENU_ROOT, brand] : [],
