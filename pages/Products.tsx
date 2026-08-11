@@ -88,37 +88,40 @@ const Products: React.FC = () => {
   const getFilteredProducts = () => {
     let filtered = [...products];
 
-    // Filter by Category System (Parent + Sub-category aware)
+    // Filter by Category System (Parent + Sub-category aware & Brand sub-category aware)
+    let selectedCat = null;
     if (selectedCategoryId) {
-      const selectedCat = productCategories.find(c => c.id === selectedCategoryId);
-      if (selectedCat) {
-        const descendantIds = getCategoryDescendantIds(selectedCat.id, productCategories);
-        const descendantNames = productCategories
-          .filter(c => descendantIds.includes(c.id))
-          .map(c => c.name.toLowerCase());
-
-        filtered = filtered.filter(p => 
-          (p.categoryId && descendantIds.includes(p.categoryId)) ||
-          (p.category && descendantNames.includes(p.category.toLowerCase()))
-        );
-      }
-    }
-    // Fallback via activeCategoryKey
-    else if (activeCategoryKey !== 'all') {
-      const selectedCat = productCategories.find(c => 
+      selectedCat = productCategories.find(c => c.id === selectedCategoryId);
+    } else if (activeCategoryKey !== 'all') {
+      selectedCat = productCategories.find(c => 
+        c.id === activeCategoryKey ||
         (c.slug || c.name.toLowerCase()) === activeCategoryKey.toLowerCase()
       );
-      if (selectedCat) {
-        const descendantIds = getCategoryDescendantIds(selectedCat.id, productCategories);
-        const descendantNames = productCategories
-          .filter(c => descendantIds.includes(c.id))
-          .map(c => c.name.toLowerCase());
+    }
 
-        filtered = filtered.filter(p => 
-          (p.categoryId && descendantIds.includes(p.categoryId)) ||
-          (p.category && descendantNames.includes(p.category.toLowerCase()))
-        );
-      }
+    if (selectedCat) {
+      const descendantIds = getCategoryDescendantIds(selectedCat.id, productCategories);
+      const descendantNames = productCategories
+        .filter(c => descendantIds.includes(c.id))
+        .map(c => c.name.toLowerCase());
+      const targetCatNameLower = selectedCat.name.toLowerCase().trim();
+
+      filtered = filtered.filter(p => {
+        // 1. Direct or descendant categoryId match
+        if (p.categoryId && descendantIds.includes(String(p.categoryId))) return true;
+
+        // 2. CategoryIds array match (for products linked to multiple category levels/brands)
+        if (Array.isArray((p as any).categoryIds) && (p as any).categoryIds.some((id: any) => descendantIds.includes(String(id)))) return true;
+
+        // 3. Category string or categoryPath match
+        if (p.category && descendantNames.includes(p.category.toLowerCase())) return true;
+        if (Array.isArray((p as any).categoryPath) && (p as any).categoryPath.some((cp: any) => descendantNames.includes(String(cp).toLowerCase()))) return true;
+
+        // 4. Brand match (when selected category is a Brand sub-category like Belden, CommScope, Cisco...)
+        if (p.brand && (p.brand.toLowerCase() === targetCatNameLower || descendantNames.includes(p.brand.toLowerCase()))) return true;
+
+        return false;
+      });
     }
 
 
