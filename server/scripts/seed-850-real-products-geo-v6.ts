@@ -2059,6 +2059,7 @@ function sanitizeSerperQuery(query: string): string {
     .replace(/inurl:/gi, ' ')
     .replace(/intitle:/gi, ' ')
     .replace(/\b(OR|AND)\b/g, ' ')
+    .replace(/(^|\s)-+/g, ' ')
     .replace(/["\/::\[\]()\\+]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -2075,18 +2076,19 @@ async function searchGoogleImages(query: string): Promise<ImageCandidate[]> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
+    const q = sanitizeSerperQuery(query);
     const response = await fetch('https://google.serper.dev/images', {
       method: 'POST',
       headers: {
         'X-API-KEY': SERPER_API_KEY,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ q: sanitizeSerperQuery(query), gl: 'vn', hl: 'vi', num: SERPER_RESULTS }),
+      body: JSON.stringify({ q, gl: 'vn', hl: 'vi', num: SERPER_RESULTS }),
       signal: controller.signal,
     });
 
     if (!response.ok) {
-      throw new Error(`Serper Images HTTP ${response.status}: ${await response.text()}`);
+      throw new Error(`Serper Images HTTP ${response.status} (q="${q}"): ${await response.text()}`);
     }
 
     const data = await response.json() as { images?: any[] };
@@ -2465,18 +2467,19 @@ async function searchGoogleWeb(query: string, resultCount = 10): Promise<WebSear
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
+    const q = sanitizeSerperQuery(query);
     const response = await fetch('https://google.serper.dev/search', {
       method: 'POST',
       headers: {
         'X-API-KEY': SERPER_API_KEY,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ q: sanitizeSerperQuery(query), gl: 'vn', hl: 'vi', num: Math.min(20, Math.max(1, resultCount)) }),
+      body: JSON.stringify({ q, gl: 'vn', hl: 'vi', num: Math.min(20, Math.max(1, resultCount)) }),
       signal: controller.signal,
     });
 
     if (!response.ok) {
-      throw new Error(`Serper Search HTTP ${response.status}: ${await response.text()}`);
+      throw new Error(`Serper Search HTTP ${response.status} (q="${q}"): ${await response.text()}`);
     }
 
     const data = await response.json() as { organic?: any[] };
