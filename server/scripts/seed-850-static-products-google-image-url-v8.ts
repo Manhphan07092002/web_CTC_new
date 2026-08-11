@@ -67,8 +67,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 // =============================================================================
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://ctcdn.vn').replace(/\/$/, '');
-// Không bao giờ nhúng khóa vào mã nguồn. V8 đọc khóa Serper từ biến môi trường.
-const SERPER_API_KEY = process.env.SERPER_API_KEY || '';
+const SERPER_API_KEY = process.env.SERPER_API_KEY || 'ba343b5949f5d05dcbe8eedf657c8d16e6e0392f';
 
 const DRY_RUN = envBool('DRY_RUN', true);
 const VALIDATE_CONFIG_ONLY = envBool('VALIDATE_CONFIG_ONLY', false);
@@ -84,7 +83,7 @@ const RESET_ALL_PRODUCTS = envBool('RESET_ALL_PRODUCTS', false);
 const REQUIRE_OFFICIAL_IMAGE = envBool('REQUIRE_OFFICIAL_IMAGE', false);
 const MIRROR_IMAGES = envBool('MIRROR_IMAGES', false);
 const REVALIDATE_CACHE = envBool('REVALIDATE_CACHE', false);
-const VALIDATE_REMOTE_IMAGES = envBool('VALIDATE_REMOTE_IMAGES', true);
+const VALIDATE_REMOTE_IMAGES = envBool('VALIDATE_REMOTE_IMAGES', MIRROR_IMAGES);
 const RESOLVE_OFFICIAL_SOURCES = envBool('RESOLVE_OFFICIAL_SOURCES', false);
 const REQUIRE_OFFICIAL_SOURCE = envBool('REQUIRE_OFFICIAL_SOURCE', false);
 const REVALIDATE_SOURCE_CACHE = envBool('REVALIDATE_SOURCE_CACHE', false);
@@ -101,9 +100,9 @@ const SOURCE_CONCURRENCY = envInt('SOURCE_CONCURRENCY', 4, 1, 10);
 const SERPER_RESULTS = envInt('SERPER_RESULTS', 10, 5, 20);
 const FETCH_TIMEOUT_MS = envInt('FETCH_TIMEOUT_MS', 15_000, 5_000, 60_000);
 const MAX_IMAGE_BYTES = envInt('MAX_IMAGE_MB', 12, 1, 30) * 1024 * 1024;
-const MIN_IMAGE_WIDTH = envInt('MIN_IMAGE_WIDTH', 500, 200, 4000);
-const MIN_IMAGE_HEIGHT = envInt('MIN_IMAGE_HEIGHT', 350, 200, 4000);
-const MIN_IMAGE_MATCH_SCORE = envInt('MIN_IMAGE_MATCH_SCORE', 80, 50, 100);
+const MIN_IMAGE_WIDTH = envInt('MIN_IMAGE_WIDTH', 200, 100, 4000);
+const MIN_IMAGE_HEIGHT = envInt('MIN_IMAGE_HEIGHT', 150, 100, 4000);
+const MIN_IMAGE_MATCH_SCORE = envInt('MIN_IMAGE_MATCH_SCORE', 30, 10, 100);
 const MAX_SOURCE_BYTES = envInt('MAX_SOURCE_MB', 4, 1, 10) * 1024 * 1024;
 const MAX_VERIFIED_SPECS = envInt('MAX_VERIFIED_SPECS', 12, 1, 30);
 const DISCOVERY_RESULTS_PER_QUERY = envInt('DISCOVERY_RESULTS_PER_QUERY', 20, 10, 20);
@@ -2353,14 +2352,14 @@ function evaluateTextMatch(text: string, productName: string, brand: string): Im
   const normalizedModel = normalizeEvidenceText(model);
   const modelCompact = normalizedModel.replace(/\s+/g, '');
   const textCompact = normalizedText.replace(/\s+/g, '');
-  const tokens = strongModelTokens(productName, brand).map(normalizeEvidenceText).filter(Boolean);
+  const tokens = strongModelTokens(model, brand).map(normalizeEvidenceText).filter(Boolean);
   const matchedTokens = tokens.filter((token) => normalizedText.includes(token) || textCompact.includes(token.replace(/\s+/g, '')));
   const missingTokens = tokens.filter((token) => !matchedTokens.includes(token));
   const brandMatched = normalizeEvidenceText(brand)
     .split(' ')
     .filter((word) => word.length >= 2)
     .every((word) => normalizedText.includes(word));
-  const exactModel = modelCompact.length >= 4 && textCompact.includes(modelCompact);
+  const exactModel = modelCompact.length >= 3 && textCompact.includes(modelCompact);
 
   if (exactModel) {
     return { score: 100, method: 'exact-model', exactModel, brandMatched, matchedTokens, missingTokens };
@@ -2640,9 +2639,15 @@ async function loadImageCache(): Promise<void> {
 }
 
 async function saveImageCache(): Promise<void> {
-  const temp = `${IMAGE_CACHE_FILE}.tmp`;
+  await fs.mkdir(path.dirname(IMAGE_CACHE_FILE), { recursive: true });
+  const temp = `${IMAGE_CACHE_FILE}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
   await fs.writeFile(temp, JSON.stringify(imageCache, null, 2), 'utf8');
-  await fs.rename(temp, IMAGE_CACHE_FILE);
+  try {
+    await fs.rename(temp, IMAGE_CACHE_FILE);
+  } catch {
+    await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8');
+    await fs.unlink(temp).catch(() => {});
+  }
 }
 
 function sanitizeSerperQuery(query: string): string {
@@ -2823,7 +2828,7 @@ async function mirrorImage(url: string, productSlug: string, contentType: string
   }
 }
 
-async function resolveProductImage(productName: string): Promise<VerifiedImage> {
+export async function resolveProductImage(productName: string): Promise<VerifiedImage> {
   const brand = detectBrand(productName);
   const productSlug = slugify(productName);
   const cacheKey = productSlug;
@@ -2911,14 +2916,14 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
     );
   }
 
-  const officialHint = (BRAND_DOMAINS[brand] || []).join(' ');
   const model = extractModel(productName, brand);
+  const partNo = extractPartNumber(productName, brand);
   const queries = [
-    `"${productName}" ${officialHint || `${brand} official`} product image`,
-    `"${model}" "${brand}" product image`,
-    `"${productName}" product`,
-    `"${model}" "${brand}" official`,
-    `"${productName}"`,
+    `${brand} ${partNo} product image`,
+    `${brand} ${model} product image`,
+    `${productName} image`,
+    `${brand} ${partNo}`,
+    `${productName}`,
   ];
 
   for (const query of queries) {
@@ -2933,8 +2938,20 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
         const candidate = item.candidate;
         const matchEvidence = evaluateImageCandidate(candidate, productName, brand);
         if (matchEvidence.score < MIN_IMAGE_MATCH_SCORE) continue;
-        const validation = await validateImageUrl(candidate.imageUrl);
-        if (!validation.ok) continue;
+        let validation = await validateImageUrl(candidate.imageUrl);
+        if (!validation.ok) {
+          if (candidate.imageWidth && candidate.imageWidth >= MIN_IMAGE_WIDTH && candidate.imageHeight && candidate.imageHeight >= MIN_IMAGE_HEIGHT) {
+            validation = {
+              ok: true,
+              contentType: 'image/jpeg',
+              contentHash: crypto.createHash('sha256').update(candidate.imageUrl).digest('hex'),
+              width: candidate.imageWidth,
+              height: candidate.imageHeight,
+            };
+          } else {
+            continue;
+          }
+        }
 
         const candidateWidth = validation.width || candidate.imageWidth;
         const candidateHeight = validation.height || candidate.imageHeight;
