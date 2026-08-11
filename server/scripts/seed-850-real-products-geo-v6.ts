@@ -2052,6 +2052,16 @@ async function saveImageCache(): Promise<void> {
   await fs.rename(temp, IMAGE_CACHE_FILE);
 }
 
+function sanitizeSerperQuery(query: string): string {
+  return query
+    .replace(/\bsite:/gi, '')
+    .replace(/\bfiletype:/gi, '')
+    .replace(/\b(OR|AND)\b/g, ' ')
+    .replace(/[()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 // =============================================================================
 // Google Images qua Serper và kiểm chứng ảnh
 // =============================================================================
@@ -2069,7 +2079,7 @@ async function searchGoogleImages(query: string): Promise<ImageCandidate[]> {
         'X-API-KEY': SERPER_API_KEY,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ q: query, gl: 'vn', hl: 'vi', num: SERPER_RESULTS }),
+      body: JSON.stringify({ q: sanitizeSerperQuery(query), gl: 'vn', hl: 'vi', num: SERPER_RESULTS }),
       signal: controller.signal,
     });
 
@@ -2299,7 +2309,7 @@ async function resolveProductImage(productName: string): Promise<VerifiedImage> 
     }
   }
 
-  const officialHint = (BRAND_DOMAINS[brand] || []).map((domain) => `site:${domain}`).join(' OR ');
+  const officialHint = (BRAND_DOMAINS[brand] || []).join(' ');
   const model = extractModel(productName, brand);
   const queries = [
     `"${productName}" ${officialHint || `${brand} official`} product image`,
@@ -2459,7 +2469,7 @@ async function searchGoogleWeb(query: string, resultCount = 10): Promise<WebSear
         'X-API-KEY': SERPER_API_KEY,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ q: query, gl: 'vn', hl: 'vi', num: Math.min(20, Math.max(1, resultCount)) }),
+      body: JSON.stringify({ q: sanitizeSerperQuery(query), gl: 'vn', hl: 'vi', num: Math.min(20, Math.max(1, resultCount)) }),
       signal: controller.signal,
     });
 
@@ -2885,7 +2895,7 @@ async function discoverCategory(targetItem: CategoryTarget, excludedIdentities: 
   for (const job of searchJobs) {
     if (selected.size >= targetItem.quota || discoveryQueryCount >= MAX_DISCOVERY_QUERIES) break;
     discoveryQueryCount += 1;
-    const query = `site:${job.domain} ${job.term} product model specifications`;
+    const query = `${job.domain} ${job.term} product model specifications`;
     const results = await searchGoogleWeb(query, DISCOVERY_RESULTS_PER_QUERY);
     for (const result of results) searchResults.push({ brand: job.brand, result });
   }
@@ -3143,13 +3153,11 @@ async function resolveProductEvidence(productName: string, image: VerifiedImage)
     candidates.push({ title: image.title, link: image.sourcePage, snippet: 'Nguồn trang chứa ảnh chính hãng.', position: 0 });
   }
   if (RESOLVE_OFFICIAL_SOURCES && SERPER_API_KEY) {
-    const siteQuery = domains.length > 0
-      ? `(${domains.map((domain) => `site:${domain}`).join(' OR ')})`
-      : '';
+    const domainQuery = domains.length > 0 ? domains.join(' ') : '';
     const queries = [
-      `"${model}" "${brand}" ${siteQuery} product specifications`.trim(),
+      `"${model}" "${brand}" ${domainQuery} product specifications`.trim(),
       ...(SEPARATE_DATASHEET_SEARCH
-        ? [`"${model}" "${brand}" ${siteQuery} datasheet filetype:pdf`]
+        ? [`"${model}" "${brand}" ${domainQuery} datasheet pdf`]
         : []),
     ];
     const resultSets = await Promise.all(queries.map(searchGoogleWeb));
