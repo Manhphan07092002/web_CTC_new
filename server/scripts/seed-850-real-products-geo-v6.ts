@@ -2054,10 +2054,12 @@ async function saveImageCache(): Promise<void> {
 
 function sanitizeSerperQuery(query: string): string {
   return query
-    .replace(/\bsite:/gi, '')
-    .replace(/\bfiletype:/gi, '')
+    .replace(/site:/gi, ' ')
+    .replace(/filetype:/gi, ' ')
+    .replace(/inurl:/gi, ' ')
+    .replace(/intitle:/gi, ' ')
     .replace(/\b(OR|AND)\b/g, ' ')
-    .replace(/[()]/g, ' ')
+    .replace(/["\/::\[\]()\\+]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
