@@ -133,7 +133,6 @@ const Products: React.FC = () => {
       const bLower = brandParam.toLowerCase().trim();
       filtered = filtered.filter(p => 
         (p.brand && p.brand.toLowerCase().includes(bLower)) ||
-        (p.manufacturer && p.manufacturer.toLowerCase().includes(bLower)) ||
         (p.name && p.name.toLowerCase().includes(bLower))
       );
     }
