@@ -80,6 +80,7 @@ const SERPER_ENABLED = ENABLE_SERPER && Boolean(SERPER_API_KEY);
 const PLAYWRIGHT_FALLBACK = envBool('PLAYWRIGHT_FALLBACK', false);
 const RESET_PRODUCTS = envBool('RESET_PRODUCTS', false);
 const RESET_ALL_PRODUCTS = envBool('RESET_ALL_PRODUCTS', false);
+const CLEANUP_LEGACY_GLOBAL_BRAND_MENU = envBool('CLEANUP_LEGACY_GLOBAL_BRAND_MENU', true);
 const REQUIRE_OFFICIAL_IMAGE = envBool('REQUIRE_OFFICIAL_IMAGE', false);
 const MIRROR_IMAGES = envBool('MIRROR_IMAGES', false);
 const REVALIDATE_CACHE = envBool('REVALIDATE_CACHE', false);
@@ -2639,17 +2640,15 @@ async function loadImageCache(): Promise<void> {
 }
 
 export async function saveImageCache(): Promise<void> {
+  await fs.mkdir(path.dirname(IMAGE_CACHE_FILE), { recursive: true });
+  const temp = `${IMAGE_CACHE_FILE}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
+  await fs.writeFile(temp, JSON.stringify(imageCache, null, 2), 'utf8');
   try {
-    await fs.mkdir(path.dirname(IMAGE_CACHE_FILE), { recursive: true });
-    const temp = `${IMAGE_CACHE_FILE}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
-    await fs.writeFile(temp, JSON.stringify(imageCache, null, 2), 'utf8');
-    try {
-      await fs.rename(temp, IMAGE_CACHE_FILE);
-    } catch {
-      await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8').catch(() => {});
-      await fs.unlink(temp).catch(() => {});
-    }
-  } catch {}
+    await fs.rename(temp, IMAGE_CACHE_FILE);
+  } catch {
+    await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8');
+    await fs.unlink(temp).catch(() => {});
+  }
 }
 
 function sanitizeSerperQuery(query: string): string {
@@ -5076,6 +5075,9 @@ type CategorySeoPayload = {
   suggestedNewsTopics: string[];
   structuredData: Record<string, unknown>;
   reviewedAt: string;
+  menuType?: 'product-category' | 'brand';
+  brandFilter?: string;
+  productCategorySlug?: string;
 };
 
 function pathStartsWith(pathNames: string[], prefix: string[]): boolean {
@@ -5089,28 +5091,10 @@ function categorySeoKey(pathNames: string[]): string {
 function buildCategorySeo(pathNames: string[]): CategorySeoPayload {
   const name = pathNames[pathNames.length - 1];
   const slug = slugify(name);
-  let brandFilter: string | null = null;
-  let descendantGroups = ACTIVE_PRODUCT_CATALOG.filter((group) => pathStartsWith(categoryPath(group.slug, group.category), pathNames));
-
-  if (descendantGroups.length === 0) {
-    descendantGroups = ACTIVE_PRODUCT_CATALOG.filter((group) => {
-      const fullPath = categoryPath(group.slug, group.category);
-      if (pathNames.length === fullPath.length + 1 && pathStartsWith(pathNames, fullPath)) {
-        const brandCandidate = pathNames[pathNames.length - 1];
-        if (group.products.some((productName) => detectBrand(productName) === brandCandidate)) {
-          brandFilter = brandCandidate;
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
+  const descendantGroups = ACTIVE_PRODUCT_CATALOG.filter((group) => pathStartsWith(categoryPath(group.slug, group.category), pathNames));
   if (descendantGroups.length === 0) throw new Error(`Không có sản phẩm con cho category: ${pathNames.join(' > ')}`);
 
-  const allProducts = descendantGroups.flatMap((group) => 
-    brandFilter ? group.products.filter((p) => detectBrand(p) === brandFilter) : group.products
-  );
+  const allProducts = descendantGroups.flatMap((group) => group.products);
   const brands = [...new Set(allProducts.map(detectBrand))].slice(0, 8);
   const leafNames = [...new Set(descendantGroups.map((group) => categoryPath(group.slug, group.category).at(-1)!))];
   const applications = [...new Set(descendantGroups.flatMap((group) => categoryProfile(group.slug).applications))].slice(0, 6);
@@ -5145,10 +5129,23 @@ function buildCategorySeo(pathNames: string[]): CategorySeoPayload {
   const nextLevelNames = [...new Set(descendantGroups
     .map((group) => categoryPath(group.slug, group.category)[pathNames.length])
     .filter(Boolean))];
-  const relatedCategories = nextLevelNames.map((childName) => ({
+  const relatedCategories: Array<{ name: string; url: string }> = nextLevelNames.map((childName) => ({
     name: childName,
     url: `${SITE_ORIGIN}/products/category/${slugify(childName)}`,
   }));
+  // Khi đang ở đúng category lá, thêm hãng sản xuất làm cấp con tiếp theo:
+  // Cáp mạng -> CommScope/Panduit..., Router -> MikroTik/DrayTek...
+  const leafGroups = descendantGroups.filter((group) =>
+    categoryPath(group.slug, group.category).join(' > ') === pathNames.join(' > '),
+  );
+  for (const group of leafGroups) {
+    for (const brand of buildGroupBrandProductMap(group).keys()) {
+      relatedCategories.push({
+        name: brand,
+        url: `${SITE_ORIGIN}/products/category/${group.slug}-${slugify(brand)}`,
+      });
+    }
+  }
 
   const faq = [
     {
@@ -5266,119 +5263,98 @@ function buildCategorySeo(pathNames: string[]): CategorySeoPayload {
   };
 }
 
-const BRAND_MENU_ROOT = 'Thương Hiệu';
-
-function buildBrandProductMap(): Map<string, string[]> {
+function buildGroupBrandProductMap(group: CatalogGroup): Map<string, string[]> {
   const result = new Map<string, string[]>();
-  for (const group of ACTIVE_PRODUCT_CATALOG) {
-    for (const productName of group.products) {
-      const brand = detectBrand(productName);
-      // Chỉ tạo submenu cho brand đã có allow-list domain chính hãng. Những
-      // tên không nhận diện chắc chắn không bị biến thành một "hãng" giả.
-      if (!(BRAND_DOMAINS[brand] || []).length) continue;
-      const products = result.get(brand) || [];
-      products.push(productName);
-      result.set(brand, products);
-    }
+  for (const productName of group.products) {
+    const brand = detectBrand(productName);
+    // Chỉ tạo submenu cho brand đã có allow-list domain chính hãng. Những
+    // tên không nhận diện chắc chắn không bị biến thành một "hãng" giả.
+    if (!(BRAND_DOMAINS[brand] || []).length) continue;
+    const products = result.get(brand) || [];
+    products.push(productName);
+    result.set(brand, products);
   }
   return new Map([...result.entries()].sort(([a], [b]) => a.localeCompare(b, 'vi')));
 }
 
 function buildBrandCategorySeo(
-  brand: string | null,
-  brandProducts: Map<string, string[]>,
+  group: CatalogGroup,
+  brand: string,
+  allProducts: string[],
 ): CategorySeoPayload {
-  const isRoot = !brand;
-  const name = brand || BRAND_MENU_ROOT;
-  const pathNames = isRoot ? [BRAND_MENU_ROOT] : [BRAND_MENU_ROOT, brand!];
-  const slug = isRoot ? 'thuong-hieu' : `thuong-hieu-${slugify(brand!)}`;
-  const allBrands = [...brandProducts.keys()];
-  const allProducts = isRoot
-    ? [...brandProducts.values()].flat()
-    : brandProducts.get(brand!) || [];
-  if (allProducts.length === 0) throw new Error(`Không có sản phẩm cho brand menu: ${name}`);
+  const basePath = categoryPath(group.slug, group.category);
+  const pathNames = [...basePath, brand];
+  const name = `${group.category} ${brand}`;
+  const slug = `${group.slug}-${slugify(brand)}`;
+  if (allProducts.length === 0) throw new Error(`Không có sản phẩm cho submenu ${group.category} > ${brand}`);
 
   const reviewedAt = new Date().toISOString();
   const canonicalPath = `/products/category/${slug}`;
   const canonicalUrl = `${SITE_ORIGIN}${canonicalPath}`;
-  const focusKeyword = isRoot ? 'thương hiệu thiết bị chính hãng' : `${brand} chính hãng`;
-  const h1 = isRoot ? 'Thương Hiệu Thiết Bị CTC Cung Cấp' : `${brand} Chính Hãng`;
-  const metaTitle = clip(isRoot
-    ? 'Thương Hiệu Thiết Bị Chính Hãng | CTC'
-    : `${brand} Chính Hãng | Sản Phẩm & Báo Giá CTC`, 60);
-  const metaDescription = clip(isRoot
-    ? `Tra cứu sản phẩm theo ${allBrands.length} thương hiệu trong catalog CTC. Xem đúng model, mã sản phẩm, hình ảnh và yêu cầu tư vấn báo giá.`
-    : `Danh mục sản phẩm ${brand} tại CTC gồm ${allProducts.length} model có mã sản phẩm riêng. Xem sản phẩm nổi bật và nhận tư vấn báo giá.`, 158);
+  const focusKeyword = `${group.category} ${brand} chính hãng`;
+  const h1 = `${group.category} ${brand} Chính Hãng`;
+  const metaTitle = clip(`${group.category} ${brand} Chính Hãng | CTC`, 60);
+  const metaDescription = clip(
+    `Danh mục ${group.category} hãng ${brand} tại CTC gồm ${allProducts.length} model có mã sản phẩm riêng. Xem sản phẩm và nhận tư vấn báo giá.`,
+    158,
+  );
 
-  const introParagraphs = isRoot ? [
-    `Danh mục ${BRAND_MENU_ROOT} giúp khách hàng tra cứu catalog CTC theo nhà sản xuất thay vì phải đi lần lượt qua từng nhóm thiết bị. Hệ thống hiện nhận diện ${allBrands.length} thương hiệu có domain chính hãng trong allow-list và liên kết ${allProducts.length} sản phẩm tĩnh. Mỗi sản phẩm vẫn giữ nguyên danh mục kỹ thuật ban đầu; nhánh thương hiệu chỉ bổ sung một đường điều hướng song song để người dùng tìm model nhanh hơn.`,
-    `Các submenu được tạo từ dữ liệu brand đã chuẩn hóa của từng sản phẩm. Script không lấy hai từ đầu của tên hàng để tự tạo một hãng mới nếu brand chưa có trong danh sách domain chính hãng. Cách làm này hạn chế các mục sai như tên dòng sản phẩm, loại thiết bị, kích thước hoặc công nghệ bị hiểu nhầm thành thương hiệu.`,
-    `Khi mở một thương hiệu, người dùng có thể xem các model đang có trong catalog, mã sản phẩm hoặc part number, danh mục kỹ thuật và liên kết tới trang chi tiết. Một model chỉ được seed một lần trong cơ sở dữ liệu; submenu thương hiệu tham chiếu tới sản phẩm hiện có nên không tạo URL sản phẩm trùng và không làm thay đổi category chính.`,
-    `Danh sách thương hiệu không mặc định khẳng định CTC còn tồn kho, là nhà phân phối độc quyền hoặc áp dụng cùng một chính sách bảo hành cho mọi model. Giá bán vẫn ở trạng thái Liên hệ và được xác nhận theo cấu hình, số lượng, thời điểm, địa điểm giao hàng cùng điều kiện thương mại trong báo giá.`,
-    `Để lựa chọn chính xác, khách hàng nên đi theo một trong hai hướng: chọn danh mục kỹ thuật trước rồi lọc theo hãng, hoặc mở submenu thương hiệu rồi chọn đúng model. Ở cả hai hướng, mã sản phẩm là thông tin quan trọng để tránh nhầm giữa các phiên bản có tên gần giống nhưng khác cấu hình, khu vực phân phối hoặc revision.`,
-    `CTC khuyến nghị gửi model dự kiến, số lượng, yêu cầu tích hợp, thời gian cần hàng và địa điểm giao nhận khi liên hệ. Hệ thống internal link được tổ chức theo luồng Brand → Product → Contact, đồng thời giữ nguyên luồng News → Category → Product → Contact để hỗ trợ cả trải nghiệm người dùng và SEO.`
-  ] : [
-    `${brand} là một submenu thương hiệu trong hệ thống sản phẩm CTC, hiện liên kết ${allProducts.length} model thuộc catalog tĩnh. Trang này giúp người dùng tập trung vào đúng nhà sản xuất, đối chiếu tên model và mã sản phẩm trước khi mở trang chi tiết. Các sản phẩm vẫn thuộc danh mục kỹ thuật gốc; việc bổ sung brand menu không nhân bản dữ liệu và không tạo thêm URL sản phẩm.`,
-    `Brand ${brand} được nhận diện từ trường thương hiệu đã chuẩn hóa và phải có domain chính hãng trong allow-list của script. Quy tắc này nhằm ngăn tên series, thông số, chuẩn kết nối hoặc loại thiết bị bị tạo thành submenu sai. Mã sản phẩm của từng model được lưu đồng thời ở code, SKU, model, part number và MPN thay vì dùng mã CTC tự sinh.`,
-    `Danh sách ${brand} trên website phục vụ mục đích tra cứu catalog và yêu cầu báo giá. Việc một model xuất hiện không mặc định xác nhận tồn kho, thời gian giao hàng, quyền phân phối, thông số chi tiết hoặc thời hạn bảo hành. Những thông tin này cần được đối chiếu theo đúng model và tài liệu áp dụng tại thời điểm báo giá.`,
-    `Khi so sánh các model ${brand}, khách hàng nên kiểm tra part number, thế hệ sản phẩm, khả năng tương thích, chuẩn kết nối, điều kiện môi trường và yêu cầu triển khai. Hai sản phẩm cùng series hoặc có hình thức gần giống vẫn có thể khác cấu hình. Vì vậy trang chi tiết luôn hiển thị factual boundary khi chưa có datasheet hoặc specification đã xác minh.`,
-    `Ảnh sản phẩm được tìm riêng theo tên và model qua Google Images, sau đó kiểm tra URL, định dạng, kích thước, mức độ khớp model và fingerprint. Website lưu URL ảnh gốc thay vì dùng một ảnh chung cho toàn bộ thương hiệu. Nếu ảnh không đạt tiêu chí, sản phẩm được ghi vào báo cáo lỗi thay vì nhận ảnh placeholder hoặc ảnh của model khác.`,
-    `Để nhận tư vấn ${brand}, khách hàng nên gửi đúng part number, số lượng, hệ thống cần tích hợp, yêu cầu kỹ thuật, tiến độ và địa điểm giao hàng. Từ submenu này, người dùng có thể đi trực tiếp tới từng sản phẩm rồi chuyển sang trang liên hệ, tạo hành trình Brand → Product → Contact rõ ràng.`
+  const introParagraphs = [
+    `${brand} là submenu hãng sản xuất nằm trực tiếp dưới danh mục ${group.category} trong hệ thống sản phẩm CTC. Trang hiện liên kết ${allProducts.length} model ${group.category} thuộc thương hiệu ${brand}, giúp người dùng lọc đúng nhà sản xuất sau khi đã chọn nhóm thiết bị. Cấu trúc điều hướng là ${basePath.join(' → ')} → ${brand}, đúng với cây danh mục đang hiển thị trong trang quản trị.`,
+    `Submenu ${brand} được tạo từ trường brand đã chuẩn hóa của từng sản phẩm và chỉ xuất hiện khi hãng có domain chính thức trong allow-list. Script không lấy kích thước, công nghệ, series hoặc hai từ đầu bất kỳ của tên sản phẩm để tự tạo hãng. Quy tắc này giúp hạn chế submenu sai và giữ cho cây danh mục dễ quản lý khi seed lại nhiều lần.`,
+    `Mỗi sản phẩm chỉ được upsert một lần theo slug. Sản phẩm vẫn giữ category chính là ${group.category}, đồng thời nhận thêm brandCategoryId trỏ tới ${group.category} → ${brand}. Vì vậy trang danh mục cha vẫn đếm đủ sản phẩm, submenu hãng đếm đúng các model ${brand}, còn URL sản phẩm không bị nhân bản hoặc phát sinh duplicate content.`,
+    `Mã sản phẩm của từng model được lưu ở code, SKU, model, part number và MPN. CTC không dùng mã tuần tự tự đặt để thay cho part number của hãng. Khi so sánh các model ${brand}, khách hàng nên kiểm tra đúng mã hàng, revision, khả năng tương thích và tài liệu kỹ thuật thay vì chỉ dựa vào tên series hoặc hình thức bên ngoài.`,
+    `Danh sách ${group.category} ${brand} phục vụ tra cứu catalog và yêu cầu báo giá; không mặc định xác nhận tồn kho, thời gian giao hàng, quyền phân phối hay thời hạn bảo hành. Ảnh được tìm riêng theo tên và model qua Google Images, sau đó kiểm tra URL, định dạng, kích thước, mức độ khớp model và fingerprint trước khi lưu URL ảnh gốc.`,
+    `Để nhận tư vấn ${group.category} ${brand}, khách hàng nên gửi đúng part number, số lượng, hệ thống cần tích hợp, yêu cầu kỹ thuật, tiến độ và địa điểm giao nhận. Internal link của submenu đi theo luồng Category → Brand → Product → Contact, đồng thời vẫn giữ luồng News → Category → Product → Contact cho chiến lược SEO tổng thể.`
   ];
   const intro = introParagraphs.join('\n\n');
   const wordCount = intro.split(/\s+/).filter(Boolean).length;
   if (wordCount < 300 || wordCount > 600) {
-    throw new Error(`Brand Category SEO ${name} phải 300–600 từ, hiện có ${wordCount} từ.`);
+    throw new Error(`Brand Category SEO ${group.category} > ${brand} phải 300–600 từ, hiện có ${wordCount} từ.`);
   }
 
   const featuredProducts = allProducts.slice(0, 12).map((productName) => ({
     name: productName,
     url: `${SITE_ORIGIN}/products/${slugify(productName)}`,
   }));
-  const relatedCategories = isRoot
-    ? allBrands.map((item) => ({
-      name: item,
-      url: `${SITE_ORIGIN}/products/category/thuong-hieu-${slugify(item)}`,
-    }))
-    : [];
+  const relatedCategories: Array<{ name: string; url: string }> = [];
   const faq = [
     {
-      question: isRoot ? 'Có thể tìm sản phẩm theo thương hiệu không?' : `CTC có những sản phẩm ${brand} nào?`,
-      answer: isRoot
-        ? `Có. Menu ${BRAND_MENU_ROOT} liên kết ${allBrands.length} hãng đã nhận diện chắc chắn trong catalog.`
-        : `Trang hiện liên kết ${allProducts.length} model ${brand}; danh sách được lấy từ catalog sản phẩm tĩnh đang seed.`,
+      question: `CTC có những sản phẩm ${group.category} ${brand} nào?`,
+      answer: `Submenu hiện liên kết ${allProducts.length} model ${group.category} hãng ${brand} trong catalog tĩnh.`,
     },
     {
-      question: isRoot ? 'Sản phẩm có bị nhân bản khi thêm menu hãng không?' : `Mã sản phẩm ${brand} được lưu như thế nào?`,
-      answer: isRoot
-        ? 'Không. Mỗi sản phẩm chỉ có một URL; category chính và submenu hãng cùng tham chiếu tới bản ghi đó.'
-        : 'Code, SKU, model, part number và MPN sử dụng mã model/part number đã khai báo, không dùng mã CTC tự sinh.',
+      question: `Mã sản phẩm ${brand} được lưu như thế nào?`,
+      answer: 'Code, SKU, model, part number và MPN sử dụng mã model/part number đã khai báo, không dùng mã CTC tự sinh.',
     },
     {
-      question: `Giá sản phẩm ${isRoot ? 'theo thương hiệu' : brand} được xác định thế nào?`,
+      question: `Giá ${group.category} ${brand} được xác định thế nào?`,
       answer: 'Giá để ở trạng thái Liên hệ và được xác nhận theo model, số lượng, thời điểm, cấu hình cùng điều kiện giao hàng.',
     },
     {
-      question: `Làm sao nhận tư vấn sản phẩm ${isRoot ? 'đúng hãng' : brand}?`,
+      question: `Làm sao nhận tư vấn ${group.category} ${brand}?`,
       answer: 'Gửi model hoặc yêu cầu kỹ thuật, số lượng, hệ thống cần tích hợp, tiến độ và địa điểm giao nhận cho CTC.',
     },
   ];
   const productLinksHtml = featuredProducts.map((item) => `<li><a href="${escapeHtml(item.url)}">${escapeHtml(item.name)}</a></li>`).join('');
-  const brandLinksHtml = relatedCategories.map((item) => `<li><a href="${escapeHtml(item.url)}">${escapeHtml(item.name)}</a></li>`).join('');
   const faqHtml = faq.map((item) => `<div class="faq-item"><h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p></div>`).join('');
   const seoContent = `
 <article class="category-seo-content brand-category-seo" data-category-path="${escapeHtml(pathNames.join(' > '))}">
   <header><h1>${escapeHtml(h1)}</h1></header>
   ${introParagraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('\n  ')}
-  ${isRoot ? `<section><h2>Danh sách thương hiệu</h2><ul>${brandLinksHtml}</ul></section>` : ''}
-  <section><h2>Sản phẩm nổi bật</h2><ul>${productLinksHtml}</ul></section>
+  <section><h2>Sản phẩm ${escapeHtml(group.category)} ${escapeHtml(brand)} nổi bật</h2><ul>${productLinksHtml}</ul></section>
   <section><h2>Nhận tư vấn và báo giá</h2><p><a href="${SITE_ORIGIN}/contact">Liên hệ CTC</a> và gửi đúng model, số lượng cùng yêu cầu kỹ thuật.</p></section>
   <section class="category-faq"><h2>Câu hỏi thường gặp</h2>${faqHtml}</section>
 </article>`.trim();
   const breadcrumbItems = [
     { '@type': 'ListItem', position: 1, name: 'Sản phẩm', item: `${SITE_ORIGIN}/products` },
-    { '@type': 'ListItem', position: 2, name: BRAND_MENU_ROOT, item: `${SITE_ORIGIN}/products/category/thuong-hieu` },
-    ...(!isRoot ? [{ '@type': 'ListItem', position: 3, name: brand!, item: canonicalUrl }] : []),
+    ...basePath.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 2,
+      name: item,
+      item: `${SITE_ORIGIN}/products/category/${index === basePath.length - 1 ? group.slug : slugify(item)}`,
+    })),
+    { '@type': 'ListItem', position: basePath.length + 2, name: brand, item: canonicalUrl },
   ];
   const structuredData = {
     '@context': 'https://schema.org',
@@ -5429,11 +5405,16 @@ function buildBrandCategorySeo(
     faq,
     featuredProducts,
     relatedCategories,
-    suggestedNewsTopics: isRoot
-      ? ['Cách chọn thương hiệu thiết bị cho doanh nghiệp', 'So sánh thương hiệu theo từng nhóm sản phẩm']
-      : [`Cách chọn sản phẩm ${brand}`, `So sánh các dòng sản phẩm ${brand}`, `Checklist báo giá ${brand}`],
+    suggestedNewsTopics: [
+      `Cách chọn ${group.category} ${brand}`,
+      `So sánh các model ${group.category} ${brand}`,
+      `Checklist báo giá ${group.category} ${brand}`,
+    ],
     structuredData,
     reviewedAt,
+    menuType: 'brand',
+    brandFilter: brand,
+    productCategorySlug: group.slug,
   };
 }
 
@@ -5445,20 +5426,13 @@ function buildAllCategorySeo(): Map<string, CategorySeoPayload> {
       const prefix = fullPath.slice(0, depth);
       paths.set(categorySeoKey(prefix), prefix);
     }
-    // Đăng ký toàn bộ danh mục Cấp 4 (Sub-menu Hãng sản xuất)
-    for (const name of group.products) {
-      const brand = detectBrand(name);
-      const subBrandPath = [...fullPath, brand];
-      paths.set(categorySeoKey(subBrandPath), subBrandPath);
-    }
   }
   const result = new Map([...paths.entries()].map(([key, pathNames]) => [key, buildCategorySeo(pathNames)]));
-  const brandProducts = buildBrandProductMap();
-  const rootSeo = buildBrandCategorySeo(null, brandProducts);
-  result.set(categorySeoKey(rootSeo.pathNames), rootSeo);
-  for (const brand of brandProducts.keys()) {
-    const seo = buildBrandCategorySeo(brand, brandProducts);
-    result.set(categorySeoKey(seo.pathNames), seo);
+  for (const group of ACTIVE_PRODUCT_CATALOG) {
+    for (const [brand, products] of buildGroupBrandProductMap(group)) {
+      const seo = buildBrandCategorySeo(group, brand, products);
+      result.set(categorySeoKey(seo.pathNames), seo);
+    }
   }
   return result;
 }
@@ -5487,13 +5461,10 @@ async function ensureCategory(
   categorySeoByKey: Map<string, CategorySeoPayload>,
 ): Promise<mongoose.Types.ObjectId> {
   const name = pathNames[pathNames.length - 1];
-  let categorySeo = categorySeoByKey.get(categorySeoKey(pathNames));
-  if (!categorySeo) {
-    categorySeo = buildCategorySeo(pathNames);
-  }
+  const categorySeo = categorySeoByKey.get(categorySeoKey(pathNames));
+  if (!categorySeo) throw new Error(`Thiếu Category SEO cho ${pathNames.join(' > ')}`);
   const slug = categorySeo.slug;
-  const isBrandRoot = pathNames.length === 1 && pathNames[0] === BRAND_MENU_ROOT;
-  const isBrandLeaf = pathNames.length === 2 && pathNames[0] === BRAND_MENU_ROOT;
+  const isBrandLeaf = categorySeo.menuType === 'brand';
   const category = await ProductCategory.findOneAndUpdate(
     { slug },
     {
@@ -5531,8 +5502,9 @@ async function ensureCategory(
           contentReviewedAt: categorySeo.reviewedAt,
         },
         parentId: parentId || undefined,
-        menuType: isBrandRoot ? 'brand-root' : isBrandLeaf ? 'brand' : 'product-category',
-        brandFilter: isBrandLeaf ? name : undefined,
+        menuType: isBrandLeaf ? 'brand' : 'product-category',
+        brandFilter: isBrandLeaf ? categorySeo.brandFilter : undefined,
+        productCategorySlug: isBrandLeaf ? categorySeo.productCategorySlug : undefined,
         menuGroup: isBrandLeaf
           ? (slugify(name).charAt(0).match(/[a-z]/) ? slugify(name).charAt(0).toUpperCase() : '#')
           : undefined,
@@ -5610,12 +5582,6 @@ async function updateCategoryCounts(): Promise<void> {
   for (const category of categories) {
     if ((category as any).menuType === 'brand') {
       const productCount = await Product.countDocuments({ brandCategoryId: category._id });
-      await ProductCategory.updateOne({ _id: category._id }, { $set: { productCount } });
-      continue;
-    }
-    if ((category as any).menuType === 'brand-root') {
-      const brandCategoryIds = collectDescendants(category._id as mongoose.Types.ObjectId).slice(1);
-      const productCount = await Product.countDocuments({ brandCategoryId: { $in: brandCategoryIds } });
       await ProductCategory.updateOne({ _id: category._id }, { $set: { productCount } });
       continue;
     }
@@ -5701,7 +5667,9 @@ async function main(): Promise<void> {
 
   if (VALIDATE_ONLY) {
     const brandCount = new Set(flatProducts.map((item) => detectBrand(item.name))).size;
+    const brandSubmenuCount = [...categorySeoByKey.values()].filter((item) => item.menuType === 'brand').length;
     console.log(`✅ Catalog hợp lệ: ${flatProducts.length} sản phẩm, ${ACTIVE_PRODUCT_CATALOG.length} danh mục lá, ${categorySeoByKey.size} category landing, ${brandCount} thương hiệu nhận diện.`);
+    console.log(`✅ Submenu hãng theo category: ${brandSubmenuCount} (ví dụ Cáp mạng → CommScope).`);
     console.log(`✅ Part number hợp lệ và duy nhất: ${partNumberReport.valid}/${partNumberReport.total}.`);
     console.log(`📄 Báo cáo Part number: ${PART_NUMBER_REPORT_FILE}`);
     console.log(`📄 Báo cáo Category SEO: ${CATEGORY_REPORT_FILE}`);
@@ -5829,7 +5797,7 @@ async function main(): Promise<void> {
   }
 
   const categoryIdBySlug = new Map<string, mongoose.Types.ObjectId>();
-  const brandCategoryIdByName = new Map<string, mongoose.Types.ObjectId>();
+  const brandCategoryIdByKey = new Map<string, mongoose.Types.ObjectId>();
   const prepared: any[] = [];
 
   if (!DRY_RUN) {
@@ -5849,33 +5817,37 @@ async function main(): Promise<void> {
       console.log(`🗑️  Đã xóa ${result.deletedCount} sản phẩm của seed ${SEED_TAG}.`);
     }
 
-
-    for (const group of ACTIVE_PRODUCT_CATALOG) {
-      const baseCategoryPath = categoryPath(group.slug, group.category);
-      const leafCatId = await ensureCategoryPath(baseCategoryPath, categorySeoByKey);
-      categoryIdBySlug.set(group.slug, leafCatId);
-
-      // Tạo Cấp 4: Sub-menu Hãng sản xuất nằm trực tiếp dưới từng Danh mục Cấp 3
-      // (Ví dụ: Cáp mạng -> CommScope, Router -> MikroTik, Switch -> Cisco...)
-      for (const name of group.products) {
-        const brand = detectBrand(name);
-        const subBrandPath = [...baseCategoryPath, brand];
-        const subBrandCatId = await ensureCategoryPath(subBrandPath, categorySeoByKey);
-        const subBrandKey = `${group.slug}:${brand}`;
-        brandCategoryIdByName.set(subBrandKey, subBrandCatId);
+    if (CLEANUP_LEGACY_GLOBAL_BRAND_MENU) {
+      // Dọn đúng nhánh "Thương Hiệu" độc lập do bản trước tạo. Không xóa
+      // submenu hãng mới vì chúng nằm dưới category sản phẩm tương ứng.
+      const obsoleteBrandCategories = await ProductCategory.deleteMany({
+        $or: [
+          { menuType: 'brand-root' },
+          { menuType: 'brand', 'categoryPath.0': 'Thương Hiệu' },
+        ],
+      });
+      if (obsoleteBrandCategories.deletedCount > 0) {
+        console.log(`🧹 Đã dọn ${obsoleteBrandCategories.deletedCount} category hãng thuộc nhánh Thương Hiệu cũ.`);
       }
     }
 
-    await ensureCategoryPath([BRAND_MENU_ROOT], categorySeoByKey);
-    let brandMenuOrder = 1;
-    for (const brand of buildBrandProductMap().keys()) {
-      const brandCategoryId = await ensureCategoryPath([BRAND_MENU_ROOT, brand], categorySeoByKey);
-      brandCategoryIdByName.set(brand, brandCategoryId);
-      await ProductCategory.updateOne(
-        { _id: brandCategoryId },
-        { $set: { order: brandMenuOrder, menuOrder: brandMenuOrder } },
+
+    for (const group of ACTIVE_PRODUCT_CATALOG) {
+      const pathNames = categoryPath(group.slug, group.category);
+      categoryIdBySlug.set(
+        group.slug,
+        await ensureCategoryPath(pathNames, categorySeoByKey),
       );
-      brandMenuOrder += 1;
+      let brandMenuOrder = 1;
+      for (const brand of buildGroupBrandProductMap(group).keys()) {
+        const brandCategoryId = await ensureCategoryPath([...pathNames, brand], categorySeoByKey);
+        brandCategoryIdByKey.set(`${group.slug}::${brand}`, brandCategoryId);
+        await ProductCategory.updateOne(
+          { _id: brandCategoryId },
+          { $set: { order: brandMenuOrder, menuOrder: brandMenuOrder } },
+        );
+        brandMenuOrder += 1;
+      }
     }
   }
 
@@ -5885,9 +5857,7 @@ async function main(): Promise<void> {
 
     for (const name of group.products) {
       const brand = detectBrand(name);
-      const subBrandKey = `${group.slug}:${brand}`;
-      const brandSubCategoryId = brandCategoryIdByName.get(subBrandKey);
-      const brandCategoryId = brandCategoryIdByName.get(brand);
+      const brandCategoryId = brandCategoryIdByKey.get(`${group.slug}::${brand}`);
       const partNumber = extractPartNumber(name, brand);
       const model = partNumber;
       const image = imageResult.ok.get(name);
@@ -5913,12 +5883,12 @@ async function main(): Promise<void> {
         mpn: partNumber,
         category: pathNames[pathNames.length - 1],
         categoryLabel: pathNames[pathNames.length - 1].toUpperCase(),
-        categoryPath: brandSubCategoryId ? [...pathNames, brand] : pathNames,
-        categoryId: brandSubCategoryId || categoryId,
-        categoryIds: [categoryId, brandSubCategoryId, brandCategoryId].filter(Boolean),
+        categoryPath: pathNames,
+        categoryId,
+        categoryIds: [categoryId, brandCategoryId].filter(Boolean),
         brandCategoryId,
-        brandCategorySlug: brandCategoryId ? `thuong-hieu-${slugify(brand)}` : null,
-        brandCategoryPath: brandCategoryId ? [BRAND_MENU_ROOT, brand] : [],
+        brandCategorySlug: brandCategoryId ? `${group.slug}-${slugify(brand)}` : null,
+        brandCategoryPath: brandCategoryId ? [...pathNames, brand] : [],
         description: content.description,
         shortDescription: content.shortDescription,
         specifications: content.specifications.length > 0
