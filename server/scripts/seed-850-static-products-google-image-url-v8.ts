@@ -5089,10 +5089,28 @@ function categorySeoKey(pathNames: string[]): string {
 function buildCategorySeo(pathNames: string[]): CategorySeoPayload {
   const name = pathNames[pathNames.length - 1];
   const slug = slugify(name);
-  const descendantGroups = ACTIVE_PRODUCT_CATALOG.filter((group) => pathStartsWith(categoryPath(group.slug, group.category), pathNames));
+  let brandFilter: string | null = null;
+  let descendantGroups = ACTIVE_PRODUCT_CATALOG.filter((group) => pathStartsWith(categoryPath(group.slug, group.category), pathNames));
+
+  if (descendantGroups.length === 0) {
+    descendantGroups = ACTIVE_PRODUCT_CATALOG.filter((group) => {
+      const fullPath = categoryPath(group.slug, group.category);
+      if (pathNames.length === fullPath.length + 1 && pathStartsWith(pathNames, fullPath)) {
+        const brandCandidate = pathNames[pathNames.length - 1];
+        if (group.products.some((productName) => detectBrand(productName) === brandCandidate)) {
+          brandFilter = brandCandidate;
+          return true;
+        }
+      }
+      return false;
+    });
+  }
+
   if (descendantGroups.length === 0) throw new Error(`Không có sản phẩm con cho category: ${pathNames.join(' > ')}`);
 
-  const allProducts = descendantGroups.flatMap((group) => group.products);
+  const allProducts = descendantGroups.flatMap((group) => 
+    brandFilter ? group.products.filter((p) => detectBrand(p) === brandFilter) : group.products
+  );
   const brands = [...new Set(allProducts.map(detectBrand))].slice(0, 8);
   const leafNames = [...new Set(descendantGroups.map((group) => categoryPath(group.slug, group.category).at(-1)!))];
   const applications = [...new Set(descendantGroups.flatMap((group) => categoryProfile(group.slug).applications))].slice(0, 6);
@@ -5427,6 +5445,12 @@ function buildAllCategorySeo(): Map<string, CategorySeoPayload> {
       const prefix = fullPath.slice(0, depth);
       paths.set(categorySeoKey(prefix), prefix);
     }
+    // Đăng ký toàn bộ danh mục Cấp 4 (Sub-menu Hãng sản xuất)
+    for (const name of group.products) {
+      const brand = detectBrand(name);
+      const subBrandPath = [...fullPath, brand];
+      paths.set(categorySeoKey(subBrandPath), subBrandPath);
+    }
   }
   const result = new Map([...paths.entries()].map(([key, pathNames]) => [key, buildCategorySeo(pathNames)]));
   const brandProducts = buildBrandProductMap();
@@ -5463,8 +5487,10 @@ async function ensureCategory(
   categorySeoByKey: Map<string, CategorySeoPayload>,
 ): Promise<mongoose.Types.ObjectId> {
   const name = pathNames[pathNames.length - 1];
-  const categorySeo = categorySeoByKey.get(categorySeoKey(pathNames));
-  if (!categorySeo) throw new Error(`Thiếu Category SEO cho ${pathNames.join(' > ')}`);
+  let categorySeo = categorySeoByKey.get(categorySeoKey(pathNames));
+  if (!categorySeo) {
+    categorySeo = buildCategorySeo(pathNames);
+  }
   const slug = categorySeo.slug;
   const isBrandRoot = pathNames.length === 1 && pathNames[0] === BRAND_MENU_ROOT;
   const isBrandLeaf = pathNames.length === 2 && pathNames[0] === BRAND_MENU_ROOT;
