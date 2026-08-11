@@ -14,7 +14,7 @@ import { useCart } from '../contexts/CartContext';
 import { getProductUrl } from '../utils/news-url-helper';
 
 import { calculatePriceWithVat, parseNumericPrice } from '../utils/priceUtils';
-import { getCategoryDescendantIds } from '../utils/categoryTreeHelper';
+import { getCategoryDescendantIds, getCategoryParentChain } from '../utils/categoryTreeHelper';
 import Pagination from '../components/Pagination';
 
 
@@ -38,14 +38,23 @@ const Products: React.FC = () => {
   const [showMobileCatDrawer, setShowMobileCatDrawer] = useState(false);
 
   // Technical Filters States
-  const [techFilters, setTechFilters] = useState({
-    minPrice: '',
-    maxPrice: '',
+  const [techFilters, setTechFilters] = useState<{
+    minPrice?: string;
+    maxPrice?: string;
+    minPower: string;
+    maxPower: string;
+    minEff: string;
+    maxEff: string;
+  }>({
     minPower: '',
     maxPower: '',
     minEff: '',
     maxEff: ''
   });
+  const [sortBy, setSortBy] = useState<'default' | 'price_asc' | 'price_desc' | 'name_asc'>('default');
+
+  // Drawer mobile state
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
 
   // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
@@ -104,21 +113,47 @@ const Products: React.FC = () => {
       const descendantNames = productCategories
         .filter(c => descendantIds.includes(c.id))
         .map(c => c.name.toLowerCase());
+
+      const parentChain = getCategoryParentChain(selectedCat.id, productCategories);
+      const parentCatNames = parentChain
+        .filter(c => c.id !== selectedCat!.id)
+        .map(c => c.name.toLowerCase());
+      const parentCatIds = parentChain
+        .filter(c => c.id !== selectedCat!.id)
+        .map(c => c.id);
+
       const targetCatNameLower = selectedCat.name.toLowerCase().trim();
 
       filtered = filtered.filter(p => {
-        // 1. Direct or descendant categoryId match
-        if (p.categoryId && descendantIds.includes(String(p.categoryId))) return true;
+        const pCatIdStr = p.categoryId ? String(p.categoryId) : '';
+        const pCatIdsStr = Array.isArray((p as any).categoryIds) ? (p as any).categoryIds.map(String) : [];
+        const pCatNameLower = (p.category || '').toLowerCase();
+        const pCatPathLower = Array.isArray((p as any).categoryPath) ? (p as any).categoryPath.map((cp: any) => String(cp).toLowerCase()) : [];
+        const pBrandLower = (p.brand || '').toLowerCase().trim();
 
-        // 2. CategoryIds array match (for products linked to multiple category levels/brands)
-        if (Array.isArray((p as any).categoryIds) && (p as any).categoryIds.some((id: any) => descendantIds.includes(String(id)))) return true;
+        // 1. Explicit ID match with selectedCat or its descendants
+        if (pCatIdStr && descendantIds.includes(pCatIdStr)) return true;
+        if (pCatIdsStr.some((id: string) => descendantIds.includes(id))) return true;
 
-        // 3. Category string or categoryPath match
-        if (p.category && descendantNames.includes(p.category.toLowerCase())) return true;
-        if (Array.isArray((p as any).categoryPath) && (p as any).categoryPath.some((cp: any) => descendantNames.includes(String(cp).toLowerCase()))) return true;
+        // 2. Explicit Category Name or CategoryPath match with selectedCat
+        if (pCatNameLower && descendantNames.includes(pCatNameLower) && pCatNameLower === targetCatNameLower) return true;
+        if (pCatPathLower.includes(targetCatNameLower)) {
+          if (parentCatNames.length === 0 || pCatPathLower.some((cp: string) => parentCatNames.includes(cp))) return true;
+        }
 
-        // 4. Brand match (when selected category is a Brand sub-category like Belden, CommScope, Cisco...)
-        if (p.brand && (p.brand.toLowerCase() === targetCatNameLower || descendantNames.includes(p.brand.toLowerCase()))) return true;
+        // 3. Brand + Parent Category Match
+        // (For Brand sub-categories under a category, e.g. Cisco under Switch, Belden under Cáp mạng)
+        if (pBrandLower === targetCatNameLower) {
+          if (parentCatNames.length === 0) return true; // Top-level brand page
+
+          const matchesParentCategory = 
+            (pCatIdStr && parentCatIds.includes(pCatIdStr)) ||
+            pCatIdsStr.some((id: string) => parentCatIds.includes(id)) ||
+            (pCatNameLower && parentCatNames.includes(pCatNameLower)) ||
+            pCatPathLower.some((cp: string) => parentCatNames.includes(cp));
+
+          if (matchesParentCategory) return true;
+        }
 
         return false;
       });
