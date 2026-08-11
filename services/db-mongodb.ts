@@ -120,7 +120,7 @@ const findProductDoc = async (idParam: string) => {
   if (keywords.length > 0) {
     const allProducts = await Product.find({ isDeleted: { $ne: true } }).select('_id id slug name').lean();
     const matched = allProducts.find(p => {
-      const pSlug = (p.slug || '').toLowerCase();
+      const pSlug = (String((p as any).slug || '')).toLowerCase();
       return keywords.filter(k => pSlug.includes(k)).length >= Math.min(2, keywords.length);
     });
     if (matched) return await Product.findById(matched._id);
@@ -279,7 +279,7 @@ export const db = {
       if (keywords.length > 0) {
         const allProjects = await Project.find().select('_id id slug title name').lean();
         const matched = allProjects.find(p => {
-          const pSlug = (p.slug || '').toLowerCase();
+          const pSlug = (String((p as any).slug || '')).toLowerCase();
           return keywords.filter(k => pSlug.includes(k)).length >= Math.min(2, keywords.length);
         });
         if (matched) {
