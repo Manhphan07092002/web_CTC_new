@@ -5246,6 +5246,177 @@ function buildCategorySeo(pathNames: string[]): CategorySeoPayload {
   };
 }
 
+const BRAND_MENU_ROOT = 'Thương Hiệu';
+
+function buildBrandProductMap(): Map<string, string[]> {
+  const result = new Map<string, string[]>();
+  for (const group of ACTIVE_PRODUCT_CATALOG) {
+    for (const productName of group.products) {
+      const brand = detectBrand(productName);
+      // Chỉ tạo submenu cho brand đã có allow-list domain chính hãng. Những
+      // tên không nhận diện chắc chắn không bị biến thành một "hãng" giả.
+      if (!(BRAND_DOMAINS[brand] || []).length) continue;
+      const products = result.get(brand) || [];
+      products.push(productName);
+      result.set(brand, products);
+    }
+  }
+  return new Map([...result.entries()].sort(([a], [b]) => a.localeCompare(b, 'vi')));
+}
+
+function buildBrandCategorySeo(
+  brand: string | null,
+  brandProducts: Map<string, string[]>,
+): CategorySeoPayload {
+  const isRoot = !brand;
+  const name = brand || BRAND_MENU_ROOT;
+  const pathNames = isRoot ? [BRAND_MENU_ROOT] : [BRAND_MENU_ROOT, brand!];
+  const slug = isRoot ? 'thuong-hieu' : `thuong-hieu-${slugify(brand!)}`;
+  const allBrands = [...brandProducts.keys()];
+  const allProducts = isRoot
+    ? [...brandProducts.values()].flat()
+    : brandProducts.get(brand!) || [];
+  if (allProducts.length === 0) throw new Error(`Không có sản phẩm cho brand menu: ${name}`);
+
+  const reviewedAt = new Date().toISOString();
+  const canonicalPath = `/products/category/${slug}`;
+  const canonicalUrl = `${SITE_ORIGIN}${canonicalPath}`;
+  const focusKeyword = isRoot ? 'thương hiệu thiết bị chính hãng' : `${brand} chính hãng`;
+  const h1 = isRoot ? 'Thương Hiệu Thiết Bị CTC Cung Cấp' : `${brand} Chính Hãng`;
+  const metaTitle = clip(isRoot
+    ? 'Thương Hiệu Thiết Bị Chính Hãng | CTC'
+    : `${brand} Chính Hãng | Sản Phẩm & Báo Giá CTC`, 60);
+  const metaDescription = clip(isRoot
+    ? `Tra cứu sản phẩm theo ${allBrands.length} thương hiệu trong catalog CTC. Xem đúng model, mã sản phẩm, hình ảnh và yêu cầu tư vấn báo giá.`
+    : `Danh mục sản phẩm ${brand} tại CTC gồm ${allProducts.length} model có mã sản phẩm riêng. Xem sản phẩm nổi bật và nhận tư vấn báo giá.`, 158);
+
+  const introParagraphs = isRoot ? [
+    `Danh mục ${BRAND_MENU_ROOT} giúp khách hàng tra cứu catalog CTC theo nhà sản xuất thay vì phải đi lần lượt qua từng nhóm thiết bị. Hệ thống hiện nhận diện ${allBrands.length} thương hiệu có domain chính hãng trong allow-list và liên kết ${allProducts.length} sản phẩm tĩnh. Mỗi sản phẩm vẫn giữ nguyên danh mục kỹ thuật ban đầu; nhánh thương hiệu chỉ bổ sung một đường điều hướng song song để người dùng tìm model nhanh hơn.`,
+    `Các submenu được tạo từ dữ liệu brand đã chuẩn hóa của từng sản phẩm. Script không lấy hai từ đầu của tên hàng để tự tạo một hãng mới nếu brand chưa có trong danh sách domain chính hãng. Cách làm này hạn chế các mục sai như tên dòng sản phẩm, loại thiết bị, kích thước hoặc công nghệ bị hiểu nhầm thành thương hiệu.`,
+    `Khi mở một thương hiệu, người dùng có thể xem các model đang có trong catalog, mã sản phẩm hoặc part number, danh mục kỹ thuật và liên kết tới trang chi tiết. Một model chỉ được seed một lần trong cơ sở dữ liệu; submenu thương hiệu tham chiếu tới sản phẩm hiện có nên không tạo URL sản phẩm trùng và không làm thay đổi category chính.`,
+    `Danh sách thương hiệu không mặc định khẳng định CTC còn tồn kho, là nhà phân phối độc quyền hoặc áp dụng cùng một chính sách bảo hành cho mọi model. Giá bán vẫn ở trạng thái Liên hệ và được xác nhận theo cấu hình, số lượng, thời điểm, địa điểm giao hàng cùng điều kiện thương mại trong báo giá.`,
+    `Để lựa chọn chính xác, khách hàng nên đi theo một trong hai hướng: chọn danh mục kỹ thuật trước rồi lọc theo hãng, hoặc mở submenu thương hiệu rồi chọn đúng model. Ở cả hai hướng, mã sản phẩm là thông tin quan trọng để tránh nhầm giữa các phiên bản có tên gần giống nhưng khác cấu hình, khu vực phân phối hoặc revision.`,
+    `CTC khuyến nghị gửi model dự kiến, số lượng, yêu cầu tích hợp, thời gian cần hàng và địa điểm giao nhận khi liên hệ. Hệ thống internal link được tổ chức theo luồng Brand → Product → Contact, đồng thời giữ nguyên luồng News → Category → Product → Contact để hỗ trợ cả trải nghiệm người dùng và SEO.`
+  ] : [
+    `${brand} là một submenu thương hiệu trong hệ thống sản phẩm CTC, hiện liên kết ${allProducts.length} model thuộc catalog tĩnh. Trang này giúp người dùng tập trung vào đúng nhà sản xuất, đối chiếu tên model và mã sản phẩm trước khi mở trang chi tiết. Các sản phẩm vẫn thuộc danh mục kỹ thuật gốc; việc bổ sung brand menu không nhân bản dữ liệu và không tạo thêm URL sản phẩm.`,
+    `Brand ${brand} được nhận diện từ trường thương hiệu đã chuẩn hóa và phải có domain chính hãng trong allow-list của script. Quy tắc này nhằm ngăn tên series, thông số, chuẩn kết nối hoặc loại thiết bị bị tạo thành submenu sai. Mã sản phẩm của từng model được lưu đồng thời ở code, SKU, model, part number và MPN thay vì dùng mã CTC tự sinh.`,
+    `Danh sách ${brand} trên website phục vụ mục đích tra cứu catalog và yêu cầu báo giá. Việc một model xuất hiện không mặc định xác nhận tồn kho, thời gian giao hàng, quyền phân phối, thông số chi tiết hoặc thời hạn bảo hành. Những thông tin này cần được đối chiếu theo đúng model và tài liệu áp dụng tại thời điểm báo giá.`,
+    `Khi so sánh các model ${brand}, khách hàng nên kiểm tra part number, thế hệ sản phẩm, khả năng tương thích, chuẩn kết nối, điều kiện môi trường và yêu cầu triển khai. Hai sản phẩm cùng series hoặc có hình thức gần giống vẫn có thể khác cấu hình. Vì vậy trang chi tiết luôn hiển thị factual boundary khi chưa có datasheet hoặc specification đã xác minh.`,
+    `Ảnh sản phẩm được tìm riêng theo tên và model qua Google Images, sau đó kiểm tra URL, định dạng, kích thước, mức độ khớp model và fingerprint. Website lưu URL ảnh gốc thay vì dùng một ảnh chung cho toàn bộ thương hiệu. Nếu ảnh không đạt tiêu chí, sản phẩm được ghi vào báo cáo lỗi thay vì nhận ảnh placeholder hoặc ảnh của model khác.`,
+    `Để nhận tư vấn ${brand}, khách hàng nên gửi đúng part number, số lượng, hệ thống cần tích hợp, yêu cầu kỹ thuật, tiến độ và địa điểm giao hàng. Từ submenu này, người dùng có thể đi trực tiếp tới từng sản phẩm rồi chuyển sang trang liên hệ, tạo hành trình Brand → Product → Contact rõ ràng.`
+  ];
+  const intro = introParagraphs.join('\n\n');
+  const wordCount = intro.split(/\s+/).filter(Boolean).length;
+  if (wordCount < 300 || wordCount > 600) {
+    throw new Error(`Brand Category SEO ${name} phải 300–600 từ, hiện có ${wordCount} từ.`);
+  }
+
+  const featuredProducts = allProducts.slice(0, 12).map((productName) => ({
+    name: productName,
+    url: `${SITE_ORIGIN}/products/${slugify(productName)}`,
+  }));
+  const relatedCategories = isRoot
+    ? allBrands.map((item) => ({
+      name: item,
+      url: `${SITE_ORIGIN}/products/category/thuong-hieu-${slugify(item)}`,
+    }))
+    : [];
+  const faq = [
+    {
+      question: isRoot ? 'Có thể tìm sản phẩm theo thương hiệu không?' : `CTC có những sản phẩm ${brand} nào?`,
+      answer: isRoot
+        ? `Có. Menu ${BRAND_MENU_ROOT} liên kết ${allBrands.length} hãng đã nhận diện chắc chắn trong catalog.`
+        : `Trang hiện liên kết ${allProducts.length} model ${brand}; danh sách được lấy từ catalog sản phẩm tĩnh đang seed.`,
+    },
+    {
+      question: isRoot ? 'Sản phẩm có bị nhân bản khi thêm menu hãng không?' : `Mã sản phẩm ${brand} được lưu như thế nào?`,
+      answer: isRoot
+        ? 'Không. Mỗi sản phẩm chỉ có một URL; category chính và submenu hãng cùng tham chiếu tới bản ghi đó.'
+        : 'Code, SKU, model, part number và MPN sử dụng mã model/part number đã khai báo, không dùng mã CTC tự sinh.',
+    },
+    {
+      question: `Giá sản phẩm ${isRoot ? 'theo thương hiệu' : brand} được xác định thế nào?`,
+      answer: 'Giá để ở trạng thái Liên hệ và được xác nhận theo model, số lượng, thời điểm, cấu hình cùng điều kiện giao hàng.',
+    },
+    {
+      question: `Làm sao nhận tư vấn sản phẩm ${isRoot ? 'đúng hãng' : brand}?`,
+      answer: 'Gửi model hoặc yêu cầu kỹ thuật, số lượng, hệ thống cần tích hợp, tiến độ và địa điểm giao nhận cho CTC.',
+    },
+  ];
+  const productLinksHtml = featuredProducts.map((item) => `<li><a href="${escapeHtml(item.url)}">${escapeHtml(item.name)}</a></li>`).join('');
+  const brandLinksHtml = relatedCategories.map((item) => `<li><a href="${escapeHtml(item.url)}">${escapeHtml(item.name)}</a></li>`).join('');
+  const faqHtml = faq.map((item) => `<div class="faq-item"><h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p></div>`).join('');
+  const seoContent = `
+<article class="category-seo-content brand-category-seo" data-category-path="${escapeHtml(pathNames.join(' > '))}">
+  <header><h1>${escapeHtml(h1)}</h1></header>
+  ${introParagraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('\n  ')}
+  ${isRoot ? `<section><h2>Danh sách thương hiệu</h2><ul>${brandLinksHtml}</ul></section>` : ''}
+  <section><h2>Sản phẩm nổi bật</h2><ul>${productLinksHtml}</ul></section>
+  <section><h2>Nhận tư vấn và báo giá</h2><p><a href="${SITE_ORIGIN}/contact">Liên hệ CTC</a> và gửi đúng model, số lượng cùng yêu cầu kỹ thuật.</p></section>
+  <section class="category-faq"><h2>Câu hỏi thường gặp</h2>${faqHtml}</section>
+</article>`.trim();
+  const breadcrumbItems = [
+    { '@type': 'ListItem', position: 1, name: 'Sản phẩm', item: `${SITE_ORIGIN}/products` },
+    { '@type': 'ListItem', position: 2, name: BRAND_MENU_ROOT, item: `${SITE_ORIGIN}/products/category/thuong-hieu` },
+    ...(!isRoot ? [{ '@type': 'ListItem', position: 3, name: brand!, item: canonicalUrl }] : []),
+  ];
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${canonicalUrl}#webpage`,
+        url: canonicalUrl,
+        name: metaTitle,
+        headline: h1,
+        description: metaDescription,
+        inLanguage: 'vi-VN',
+        dateModified: reviewedAt,
+        mainEntity: { '@id': `${canonicalUrl}#items` },
+        breadcrumb: { '@id': `${canonicalUrl}#breadcrumb` },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${canonicalUrl}#items`,
+        numberOfItems: allProducts.length,
+        itemListElement: featuredProducts.map((item, index) => ({
+          '@type': 'ListItem', position: index + 1, name: item.name, url: item.url,
+        })),
+      },
+      { '@type': 'BreadcrumbList', '@id': `${canonicalUrl}#breadcrumb`, itemListElement: breadcrumbItems },
+      {
+        '@type': 'FAQPage',
+        '@id': `${canonicalUrl}#faq`,
+        mainEntity: faq.map((item) => ({
+          '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer },
+        })),
+      },
+    ],
+  };
+  return {
+    name,
+    slug,
+    pathNames,
+    h1,
+    intro,
+    seoContent,
+    wordCount,
+    metaTitle,
+    metaDescription,
+    canonicalPath,
+    canonicalUrl,
+    focusKeyword,
+    faq,
+    featuredProducts,
+    relatedCategories,
+    suggestedNewsTopics: isRoot
+      ? ['Cách chọn thương hiệu thiết bị cho doanh nghiệp', 'So sánh thương hiệu theo từng nhóm sản phẩm']
+      : [`Cách chọn sản phẩm ${brand}`, `So sánh các dòng sản phẩm ${brand}`, `Checklist báo giá ${brand}`],
+    structuredData,
+    reviewedAt,
+  };
+}
+
 function buildAllCategorySeo(): Map<string, CategorySeoPayload> {
   const paths = new Map<string, string[]>();
   for (const group of ACTIVE_PRODUCT_CATALOG) {
@@ -5255,7 +5426,15 @@ function buildAllCategorySeo(): Map<string, CategorySeoPayload> {
       paths.set(categorySeoKey(prefix), prefix);
     }
   }
-  return new Map([...paths.entries()].map(([key, pathNames]) => [key, buildCategorySeo(pathNames)]));
+  const result = new Map([...paths.entries()].map(([key, pathNames]) => [key, buildCategorySeo(pathNames)]));
+  const brandProducts = buildBrandProductMap();
+  const rootSeo = buildBrandCategorySeo(null, brandProducts);
+  result.set(categorySeoKey(rootSeo.pathNames), rootSeo);
+  for (const brand of brandProducts.keys()) {
+    const seo = buildBrandCategorySeo(brand, brandProducts);
+    result.set(categorySeoKey(seo.pathNames), seo);
+  }
+  return result;
 }
 
 // =============================================================================
@@ -5282,9 +5461,11 @@ async function ensureCategory(
   categorySeoByKey: Map<string, CategorySeoPayload>,
 ): Promise<mongoose.Types.ObjectId> {
   const name = pathNames[pathNames.length - 1];
-  const slug = slugify(name);
   const categorySeo = categorySeoByKey.get(categorySeoKey(pathNames));
   if (!categorySeo) throw new Error(`Thiếu Category SEO cho ${pathNames.join(' > ')}`);
+  const slug = categorySeo.slug;
+  const isBrandRoot = pathNames.length === 1 && pathNames[0] === BRAND_MENU_ROOT;
+  const isBrandLeaf = pathNames.length === 2 && pathNames[0] === BRAND_MENU_ROOT;
   const category = await ProductCategory.findOneAndUpdate(
     { slug },
     {
@@ -5314,12 +5495,20 @@ async function ensureCategory(
           focusKeyword: categorySeo.focusKeyword,
           canonicalPath: categorySeo.canonicalPath,
           canonicalUrl: categorySeo.canonicalUrl,
-          robotsIndex: true,
+          // Brand chỉ có 1–2 model vẫn xuất hiện trong menu nhưng noindex để
+          // tránh tạo hàng loạt landing page quá mỏng.
+          robotsIndex: !isBrandLeaf || categorySeo.featuredProducts.length >= 3,
           robotsFollow: true,
           contentWordCount: categorySeo.wordCount,
           contentReviewedAt: categorySeo.reviewedAt,
         },
         parentId: parentId || undefined,
+        menuType: isBrandRoot ? 'brand-root' : isBrandLeaf ? 'brand' : 'product-category',
+        brandFilter: isBrandLeaf ? name : undefined,
+        menuGroup: isBrandLeaf
+          ? (slugify(name).charAt(0).match(/[a-z]/) ? slugify(name).charAt(0).toUpperCase() : '#')
+          : undefined,
+        menuUrl: categorySeo.canonicalPath,
         isActive: true,
         order,
       },
@@ -5368,7 +5557,7 @@ async function bulkUpsertProducts(products: any[]): Promise<void> {
 }
 
 async function updateCategoryCounts(): Promise<void> {
-  const categories = await ProductCategory.find({}).select('_id parentId').lean();
+  const categories = await ProductCategory.find({}).select('_id parentId menuType brandFilter').lean();
   const children = new Map<string, mongoose.Types.ObjectId[]>();
 
   for (const category of categories) {
@@ -5391,6 +5580,17 @@ async function updateCategoryCounts(): Promise<void> {
   };
 
   for (const category of categories) {
+    if ((category as any).menuType === 'brand') {
+      const productCount = await Product.countDocuments({ brandCategoryId: category._id });
+      await ProductCategory.updateOne({ _id: category._id }, { $set: { productCount } });
+      continue;
+    }
+    if ((category as any).menuType === 'brand-root') {
+      const brandCategoryIds = collectDescendants(category._id as mongoose.Types.ObjectId).slice(1);
+      const productCount = await Product.countDocuments({ brandCategoryId: { $in: brandCategoryIds } });
+      await ProductCategory.updateOne({ _id: category._id }, { $set: { productCount } });
+      continue;
+    }
     const categoryIds = collectDescendants(category._id as mongoose.Types.ObjectId);
     const productCount = await Product.countDocuments({ categoryId: { $in: categoryIds } });
     await ProductCategory.updateOne({ _id: category._id }, { $set: { productCount } });
@@ -5601,6 +5801,7 @@ async function main(): Promise<void> {
   }
 
   const categoryIdBySlug = new Map<string, mongoose.Types.ObjectId>();
+  const brandCategoryIdByName = new Map<string, mongoose.Types.ObjectId>();
   const prepared: any[] = [];
 
   if (!DRY_RUN) {
@@ -5627,6 +5828,18 @@ async function main(): Promise<void> {
         await ensureCategoryPath(categoryPath(group.slug, group.category), categorySeoByKey),
       );
     }
+
+    await ensureCategoryPath([BRAND_MENU_ROOT], categorySeoByKey);
+    let brandMenuOrder = 1;
+    for (const brand of buildBrandProductMap().keys()) {
+      const brandCategoryId = await ensureCategoryPath([BRAND_MENU_ROOT, brand], categorySeoByKey);
+      brandCategoryIdByName.set(brand, brandCategoryId);
+      await ProductCategory.updateOne(
+        { _id: brandCategoryId },
+        { $set: { order: brandMenuOrder, menuOrder: brandMenuOrder } },
+      );
+      brandMenuOrder += 1;
+    }
   }
 
   for (const group of ACTIVE_PRODUCT_CATALOG) {
@@ -5635,6 +5848,7 @@ async function main(): Promise<void> {
 
     for (const name of group.products) {
       const brand = detectBrand(name);
+      const brandCategoryId = brandCategoryIdByName.get(brand);
       const partNumber = extractPartNumber(name, brand);
       const model = partNumber;
       const image = imageResult.ok.get(name);
@@ -5662,6 +5876,10 @@ async function main(): Promise<void> {
         categoryLabel: pathNames[pathNames.length - 1].toUpperCase(),
         categoryPath: pathNames,
         categoryId,
+        categoryIds: [categoryId, brandCategoryId].filter(Boolean),
+        brandCategoryId,
+        brandCategorySlug: brandCategoryId ? `thuong-hieu-${slugify(brand)}` : null,
+        brandCategoryPath: brandCategoryId ? [BRAND_MENU_ROOT, brand] : [],
         description: content.description,
         shortDescription: content.shortDescription,
         specifications: content.specifications.length > 0
