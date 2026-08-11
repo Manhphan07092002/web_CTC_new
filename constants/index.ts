@@ -29,6 +29,26 @@ export const NAV_LINKS = [
       { name: 'PHỤ KIỆN LẮP ĐẶT', path: '/products?cat=accessories' }
     ]
   },
+  { 
+    name: 'Thương hiệu', 
+    path: '/products', 
+    key: 'brands',
+    submenu: [
+      { name: 'CISCO SYSTEMS', path: '/products?brand=Cisco' },
+      { name: 'MIKROTIK', path: '/products?brand=MikroTik' },
+      { name: 'DRAYTEK', path: '/products?brand=DrayTek' },
+      { name: 'COMMSCOPE', path: '/products?brand=CommScope' },
+      { name: 'CANADIAN SOLAR', path: '/products?brand=Canadian%20Solar' },
+      { name: 'HUAWEI SOLAR', path: '/products?brand=Huawei' },
+      { name: 'SUNGROW', path: '/products?brand=Sungrow' },
+      { name: 'YUASA BATTERY', path: '/products?brand=Yuasa' },
+      { name: 'CSB BATTERY', path: '/products?brand=CSB' },
+      { name: 'TROJAN BATTERY', path: '/products?brand=Trojan' },
+      { name: 'APC BY SCHNEIDER', path: '/products?brand=APC' },
+      { name: 'DELL / HPE', path: '/products?brand=Dell' },
+      { name: 'TẤT CẢ THƯƠNG HIỆU', path: '/products' }
+    ]
+  },
   { name: 'Dự án', path: '/projects', key: 'projects' },
   { name: 'Tin tức', path: '/news', key: 'news' },
   { name: 'Tài liệu', path: '/resources', key: 'resources' },

@@ -127,6 +127,17 @@ const Products: React.FC = () => {
       filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
 
+    // Filter by Brand / Thương hiệu
+    const brandParam = searchParams.get('brand');
+    if (brandParam) {
+      const bLower = brandParam.toLowerCase().trim();
+      filtered = filtered.filter(p => 
+        (p.brand && p.brand.toLowerCase().includes(bLower)) ||
+        (p.manufacturer && p.manufacturer.toLowerCase().includes(bLower)) ||
+        (p.name && p.name.toLowerCase().includes(bLower))
+      );
+    }
+
     // Filter by Price with VAT (VNĐ)
     if (techFilters.minPrice && !isNaN(Number(techFilters.minPrice))) {
       const minP = Number(techFilters.minPrice);

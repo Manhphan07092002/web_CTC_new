@@ -13,6 +13,7 @@ const translations: Record<Language, Translations> = {
       about: 'Giới thiệu',
       solutions: 'Giải pháp',
       products: 'Sản phẩm',
+      brands: 'Thương hiệu',
       projects: 'Dự án',
       news: 'Tin tức',
       resources: 'Tài liệu',
