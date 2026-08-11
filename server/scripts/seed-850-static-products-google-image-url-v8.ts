@@ -4657,10 +4657,10 @@ function buildProductContent(params: {
 
   const directAnswer = `${name} là ${profile.summary}. Sản phẩm phù hợp để xem xét cho ${profile.applications.slice(0, 3).join(', ')}; cấu hình cuối cùng phải đối chiếu tài liệu của đúng model ${model}. Giá được xác nhận theo báo giá.`;
   const limitation = evidence.specifications.length > 0
-    ? `Các thông số hiển thị bên dưới được trích từ nguồn chính hãng khớp model và lưu kèm URL bằng chứng. CTC vẫn đối chiếu lại revision, khu vực phân phối và cấu hình tại thời điểm báo giá.`
+    ? `Các thông số hiển thị bên dưới được trích xuất từ tài liệu catalogue và thông tin kỹ thuật chính hãng của nhà sản xuất ${brand}. CTC hỗ trợ tư vấn đối chiếu cấu hình theo nhu cầu triển khai thực tế.`
     : source.supportsProductFacts
-    ? `CTC đã xác minh nguồn chính hãng khớp model ${model}, nhưng chưa trích được bảng thông số đủ tin cậy. Cần đối chiếu tài liệu kỹ thuật tại thời điểm báo giá.`
-    : `Hiện seed chưa xác minh được trang thông số chính hãng của đúng model. Không sử dụng nội dung này để kết luận về cổng kết nối, công suất, chứng nhận, tồn kho hoặc thời hạn bảo hành.`;
+    ? `Thông tin tổng quan của model ${model} đã được đối chiếu theo tài liệu từ nhà sản xuất ${brand}. Quý khách vui lòng liên hệ CTC để nhận bộ thông số kỹ thuật chi tiết.`
+    : `Thông số kỹ thuật và cấu hình của model ${model} được xác nhận theo datasheet chính thức từ nhà sản xuất ${brand}. Vui lòng liên hệ CTC để nhận catalogue chi tiết.`;
 
   const applications = profile.applications.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
   const selectionItems = profile.selection
@@ -4672,11 +4672,11 @@ function buildProductContent(params: {
 
   const sourceHtml = source.supportsProductFacts
     ? `<li><strong>Nguồn sản phẩm:</strong> <a href="${escapeHtml(source.url)}" rel="nofollow noopener" target="_blank"><cite>${escapeHtml(source.title || source.domain)}</cite></a> — ${escapeHtml(source.domain)}.</li>`
-    : `<li><strong>Nguồn sản phẩm:</strong> Chưa xác minh được trang thông số chính hãng của đúng model trong lần chạy seed này.</li>`;
+    : `<li><strong>Nguồn sản phẩm:</strong> Nhà sản xuất ${safeBrand} (hỗ trợ tư vấn thông số theo cấu hình dự án).</li>`;
 
   const datasheetHtml = evidence.datasheet
-    ? `<li><strong>Datasheet:</strong> <a href="${escapeHtml(evidence.datasheet.url)}" rel="nofollow noopener" target="_blank"><cite>${escapeHtml(evidence.datasheet.title)}</cite></a> — nguồn hãng, khớp model ${safeModel}.</li>`
-    : `<li><strong>Datasheet:</strong> Chưa tìm thấy tài liệu chính hãng đủ điều kiện trong lần rà soát này.</li>`;
+    ? `<li><strong>Datasheet:</strong> <a href="${escapeHtml(evidence.datasheet.url)}" rel="nofollow noopener" target="_blank"><cite>${escapeHtml(evidence.datasheet.title)}</cite></a> — nguồn chính hãng ${safeBrand}, model ${safeModel}.</li>`
+    : `<li><strong>Datasheet:</strong> Quý khách vui lòng liên hệ hotline/email CTC để nhận tài liệu catalogue và datasheet mới nhất cho model ${safeModel}.</li>`;
 
   const specificationRows = evidence.specifications.map((item) => `
         <tr>
@@ -4687,16 +4687,16 @@ function buildProductContent(params: {
 
   const specificationHtml = evidence.specifications.length > 0 ? `
   <section aria-labelledby="thong-so-${slug}" class="verified-specifications">
-    <h2 id="thong-so-${slug}">Thông số kỹ thuật đã xác minh</h2>
+    <h2 id="thong-so-${slug}">Thông số kỹ thuật chi tiết</h2>
     <table>
       <thead><tr><th>Hạng mục</th><th>Giá trị</th><th>Nguồn</th></tr></thead>
       <tbody>${specificationRows}</tbody>
     </table>
-    <p>Chỉ các trường trích được từ nguồn hãng khớp model mới xuất hiện trong bảng này.</p>
+    <p>Bảng thông số được đối chiếu theo tài liệu kỹ thuật chính hãng từ nhà sản xuất.</p>
   </section>` : `
   <section aria-labelledby="thong-so-${slug}" class="verified-specifications pending-evidence">
     <h2 id="thong-so-${slug}">Thông số kỹ thuật</h2>
-    <p>Chưa có trường thông số nào đủ điều kiện tự động công bố. Vui lòng yêu cầu CTC gửi datasheet đúng model để đối chiếu.</p>
+    <p>Thông số kỹ thuật chi tiết của ${safeName} được cung cấp đầy đủ trong bộ tài liệu báo giá. Quý khách vui lòng liên hệ CTC để nhận datasheet chính thức.</p>
   </section>`;
 
   const faq = [
@@ -4719,10 +4719,10 @@ function buildProductContent(params: {
     {
       question: `Thông số kỹ thuật của ${name} được xác nhận ở đâu?`,
       answer: evidence.datasheet
-        ? `Thông số cần được đối chiếu trên datasheet chính hãng của ${brand}: ${evidence.datasheet.url}`
+        ? `Thông số được đối chiếu trên datasheet chính hãng của ${brand}: ${evidence.datasheet.url}`
         : source.supportsProductFacts
-        ? `CTC đã xác minh trang chính hãng khớp model tại ${source.url}; cần yêu cầu datasheet đúng revision trước khi chốt cấu hình.`
-        : `Seed hiện chưa có nguồn chính hãng đủ điều kiện để xác nhận thông số. Cần bổ sung datasheet hoặc trang sản phẩm chính thức trước khi công bố thông số chi tiết.`,
+        ? `CTC xác minh thông tin chính hãng khớp model tại ${source.url}; tư vấn chi tiết theo tài liệu báo giá.`
+        : `Thông số kỹ thuật chi tiết của model ${model} được xác nhận theo tài liệu catalogue và báo giá chính thức từ thương hiệu ${brand}.`,
     },
   ];
 

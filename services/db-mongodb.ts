@@ -67,8 +67,9 @@ const toPlainObject = <T>(doc: any): T => {
 // Helper to find Product document by ObjectId, id, slug, or hash
 const findProductDoc = async (idParam: string) => {
   if (!idParam) return null;
-  const cleanParam = idParam.replace(/\.html$/i, '');
+  const cleanParam = idParam.replace(/\.html$/i, '').trim();
 
+  // 1. Direct ObjectId match
   if (mongoose.Types.ObjectId.isValid(cleanParam)) {
     try {
       const itemById = await Product.findById(cleanParam);
@@ -76,35 +77,56 @@ const findProductDoc = async (idParam: string) => {
     } catch (_) {}
   }
 
-  const parts = cleanParam.split('-');
-  const possibleHash = parts[parts.length - 1];
-  const baseSlug = parts.slice(0, -1).join('-');
-
-  if (possibleHash && possibleHash.length === 24 && mongoose.Types.ObjectId.isValid(possibleHash)) {
-    try {
-      const itemByHash = await Product.findById(possibleHash);
-      if (itemByHash) return itemByHash;
-    } catch (_) {}
-  }
-
+  // 2. Direct Slug / Code / SKU / MPN / ID match
   let item = await Product.findOne({
     $or: [
       { id: cleanParam },
       { slug: cleanParam },
-      { slug: baseSlug },
-      { id: possibleHash }
+      { code: cleanParam },
+      { sku: cleanParam },
+      { mpn: cleanParam },
+      { model: cleanParam }
     ]
   });
+  if (item) return item;
 
-  if (!item && possibleHash && possibleHash.length >= 4) {
-    const allItems = await Product.find({ isDeleted: { $ne: true } });
-    item = allItems.find(p => {
-      const fullId = String(p._id || (p as any).id);
-      return fullId.endsWith(possibleHash) || fullId.includes(possibleHash);
-    }) || null;
+  // 3. Strip legacy hex hash suffix (e.g. -94451c64, -cf813af8, -00003025)
+  const strippedSlug = cleanParam.replace(/-[a-f0-9]{4,12}$/i, '');
+  if (strippedSlug && strippedSlug !== cleanParam) {
+    item = await Product.findOne({
+      $or: [
+        { id: strippedSlug },
+        { slug: strippedSlug },
+        { code: strippedSlug },
+        { sku: strippedSlug },
+        { model: strippedSlug }
+      ]
+    });
+    if (item) return item;
   }
 
-  return item;
+  // 4. Regex prefix matching on slug
+  const parts = (strippedSlug || cleanParam).split('-');
+  const prefixSlug = parts.slice(0, Math.min(parts.length, 4)).join('-');
+  if (prefixSlug && prefixSlug.length >= 4) {
+    item = await Product.findOne({
+      slug: new RegExp('^' + prefixSlug.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i')
+    });
+    if (item) return item;
+  }
+
+  // 5. Keyword fallback search
+  const keywords = (strippedSlug || cleanParam).split('-').filter(k => k.length >= 3);
+  if (keywords.length > 0) {
+    const allProducts = await Product.find({ isDeleted: { $ne: true } }).select('_id id slug name').lean();
+    const matched = allProducts.find(p => {
+      const pSlug = (p.slug || '').toLowerCase();
+      return keywords.filter(k => pSlug.includes(k)).length >= Math.min(2, keywords.length);
+    });
+    if (matched) return await Product.findById(matched._id);
+  }
+
+  return null;
 };
 
 
@@ -211,42 +233,62 @@ export const db = {
     
     getById: async (idParam: string) => {
       if (!idParam) return null;
-      const cleanParam = idParam.replace(/\.html$/i, '');
+      const cleanParam = idParam.replace(/\.html$/i, '').trim();
 
-      try {
-        const itemById = await Project.findById(cleanParam);
-        if (itemById) return toPlainObject<IProject>(itemById);
-      } catch (_) {}
-
-      const parts = cleanParam.split('-');
-      const possibleHash = parts[parts.length - 1];
-      const baseSlug = parts.slice(0, -1).join('-');
-
-      if (possibleHash && possibleHash.length === 24) {
+      // 1. Direct ObjectId match
+      if (mongoose.Types.ObjectId.isValid(cleanParam)) {
         try {
-          const itemByHash = await Project.findById(possibleHash);
-          if (itemByHash) return toPlainObject<IProject>(itemByHash);
+          const itemById = await Project.findById(cleanParam);
+          if (itemById) return toPlainObject<IProject>(itemById);
         } catch (_) {}
       }
 
+      // 2. Direct Slug / ID match
       let project = await Project.findOne({
         $or: [
           { id: cleanParam },
-          { slug: cleanParam },
-          { slug: baseSlug },
-          { id: possibleHash }
+          { slug: cleanParam }
         ]
       });
+      if (project) return toPlainObject<IProject>(project);
 
-      if (!project && possibleHash && possibleHash.length >= 4) {
-        const allItems = await Project.find();
-        project = allItems.find(p => {
-          const fullId = String(p._id || (p as any).id);
-          return fullId.endsWith(possibleHash) || fullId.includes(possibleHash);
-        }) || null;
+      // 3. Strip legacy hex hash suffix (e.g. -cf813af8, -00003025)
+      const strippedSlug = cleanParam.replace(/-[a-f0-9]{4,12}$/i, '');
+      if (strippedSlug && strippedSlug !== cleanParam) {
+        project = await Project.findOne({
+          $or: [
+            { id: strippedSlug },
+            { slug: strippedSlug }
+          ]
+        });
+        if (project) return toPlainObject<IProject>(project);
       }
 
-      return project ? toPlainObject<IProject>(project) : null;
+      // 4. Regex prefix matching on project slug
+      const parts = (strippedSlug || cleanParam).split('-');
+      const prefixSlug = parts.slice(0, Math.min(parts.length, 4)).join('-');
+      if (prefixSlug && prefixSlug.length >= 4) {
+        project = await Project.findOne({
+          slug: new RegExp('^' + prefixSlug.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i')
+        });
+        if (project) return toPlainObject<IProject>(project);
+      }
+
+      // 5. Keyword fallback search
+      const keywords = (strippedSlug || cleanParam).split('-').filter(k => k.length >= 3);
+      if (keywords.length > 0) {
+        const allProjects = await Project.find().select('_id id slug title name').lean();
+        const matched = allProjects.find(p => {
+          const pSlug = (p.slug || '').toLowerCase();
+          return keywords.filter(k => pSlug.includes(k)).length >= Math.min(2, keywords.length);
+        });
+        if (matched) {
+          const doc = await Project.findById(matched._id);
+          if (doc) return toPlainObject<IProject>(doc);
+        }
+      }
+
+      return null;
     },
     
     add: async (data: Partial<IProject>) => {
