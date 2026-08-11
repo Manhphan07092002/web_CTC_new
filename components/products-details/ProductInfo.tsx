@@ -115,9 +115,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
             Tình trạng:
           </span>
           <div className="flex items-center gap-2">
-            <span className={`w-2.5 h-2.5 rounded-full ${stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
-            <span className={stock > 0 ? 'text-emerald-600 dark:text-emerald-400 font-medium text-sm sm:text-base' : 'text-red-600 dark:text-red-400 font-medium text-sm sm:text-base'}>
-              {stock > 0 ? t('common.in_stock') || 'Còn hàng' : t('common.out_of_stock') || 'Hết hàng'}
+            <span className={`w-2.5 h-2.5 rounded-full ${stock > 0 || product.stockStatus === 'in_stock' || product.stockStatus === 'contact' ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+            <span className={stock > 0 || product.stockStatus === 'in_stock' || product.stockStatus === 'contact' ? 'text-emerald-600 dark:text-emerald-400 font-medium text-sm sm:text-base' : 'text-red-600 dark:text-red-400 font-medium text-sm sm:text-base'}>
+              {stock > 0 || product.stockStatus === 'in_stock' || product.stockStatus === 'contact' ? t('common.in_stock') || 'Còn hàng' : t('common.out_of_stock') || 'Hết hàng'}
             </span>
           </div>
         </div>
