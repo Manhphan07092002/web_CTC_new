@@ -63,7 +63,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://ctcdn.vn').replace(/\/$/, '');
 // Ưu tiên khóa trong môi trường; dùng khóa nhúng làm fallback theo cấu hình triển khai CTC.
-const SERPER_API_KEY = process.env.SERPER_API_KEY || 'ba343b5949f5d05dcbe8eedf657c8d16e6e0392f';
+const SERPER_API_KEY = process.env.SERPER_API_KEY || 'a96c6eaceef8fccf545499af080538ad47127271';
 
 const DRY_RUN = envBool('DRY_RUN', true);
 const VALIDATE_CONFIG_ONLY = envBool('VALIDATE_CONFIG_ONLY', false);
