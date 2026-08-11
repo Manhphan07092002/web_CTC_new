@@ -3007,7 +3007,7 @@ export async function resolveProductImage(productName: string): Promise<Verified
   }
 
   const officialDomain = (BRAND_DOMAINS[brand] || [])[0] || `${brand.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
-  const fallbackUrl = `https://${officialDomain}/assets/products/${productSlug}.jpg`;
+  const fallbackUrl = 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800';
   const fallbackVerified: VerifiedImage = {
     query: 'official-brand-fallback-url',
     imageUrl: fallbackUrl,

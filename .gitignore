@@ -34,6 +34,7 @@ uploads/
 public/uploads/
 server/.cache/
 !server/.cache/seed-500-products-v5/
+!server/.cache/seed-850-products-v8-static/
 .cache/
 
 

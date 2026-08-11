@@ -1,0 +1,905 @@
+{
+  "generatedAt": "2026-08-11T05:34:46.959Z",
+  "total": 63,
+  "categories": [
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT"
+      ],
+      "h1": "Hạ Tầng Viễn Thông & CNTT Chính Hãng",
+      "wordCount": 576,
+      "metaTitle": "Hạ Tầng Viễn Thông & CNTT Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 59,
+      "metaDescriptionLength": 153,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ha-tang-vien-thong-cntt",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 4
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị mạng"
+      ],
+      "h1": "Thiết bị mạng Chính Hãng",
+      "wordCount": 557,
+      "metaTitle": "Thiết bị mạng Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 47,
+      "metaDescriptionLength": 156,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-mang",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 4
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị mạng",
+        "Router"
+      ],
+      "h1": "Router Chính Hãng",
+      "wordCount": 517,
+      "metaTitle": "Router Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 40,
+      "metaDescriptionLength": 119,
+      "canonicalUrl": "https://ctcdn.vn/products/category/router",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị mạng",
+        "Switch"
+      ],
+      "h1": "Switch Chính Hãng",
+      "wordCount": 519,
+      "metaTitle": "Switch Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 40,
+      "metaDescriptionLength": 119,
+      "canonicalUrl": "https://ctcdn.vn/products/category/switch",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị mạng",
+        "Wi-Fi / Access Point"
+      ],
+      "h1": "Wi-Fi / Access Point Chính Hãng",
+      "wordCount": 529,
+      "metaTitle": "Wi-Fi / Access Point Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 54,
+      "metaDescriptionLength": 147,
+      "canonicalUrl": "https://ctcdn.vn/products/category/wi-fi-access-point",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị mạng",
+        "Thiết bị cân bằng tải"
+      ],
+      "h1": "Thiết bị cân bằng tải Chính Hãng",
+      "wordCount": 531,
+      "metaTitle": "Thiết bị cân bằng tải Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 55,
+      "metaDescriptionLength": 149,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-can-bang-tai",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị truyền dẫn quang"
+      ],
+      "h1": "Thiết bị truyền dẫn quang Chính Hãng",
+      "wordCount": 545,
+      "metaTitle": "Thiết bị truyền dẫn quang Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 59,
+      "metaDescriptionLength": 157,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-truyen-dan-quang",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 2
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị truyền dẫn quang",
+        "SFP Module Quang"
+      ],
+      "h1": "SFP Module Quang Chính Hãng",
+      "wordCount": 525,
+      "metaTitle": "SFP Module Quang Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 50,
+      "metaDescriptionLength": 139,
+      "canonicalUrl": "https://ctcdn.vn/products/category/sfp-module-quang",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Thiết bị truyền dẫn quang",
+        "ODF Tủ Phân Phối Quang"
+      ],
+      "h1": "ODF Tủ Phân Phối Quang Chính Hãng",
+      "wordCount": 527,
+      "metaTitle": "ODF Tủ Phân Phối Quang Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 151,
+      "canonicalUrl": "https://ctcdn.vn/products/category/odf-tu-phan-phoi-quang",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Tổng đài và VoIP"
+      ],
+      "h1": "Tổng đài và VoIP Chính Hãng",
+      "wordCount": 554,
+      "metaTitle": "Tổng đài và VoIP Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 50,
+      "metaDescriptionLength": 155,
+      "canonicalUrl": "https://ctcdn.vn/products/category/tong-dai-va-voip",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 3
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Tổng đài và VoIP",
+        "VoIP Gateway"
+      ],
+      "h1": "VoIP Gateway Chính Hãng",
+      "wordCount": 517,
+      "metaTitle": "VoIP Gateway Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 46,
+      "metaDescriptionLength": 131,
+      "canonicalUrl": "https://ctcdn.vn/products/category/voip-gateway",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Tổng đài và VoIP",
+        "IP PBX Tổng Đài"
+      ],
+      "h1": "IP PBX Tổng Đài Chính Hãng",
+      "wordCount": 533,
+      "metaTitle": "IP PBX Tổng Đài Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 49,
+      "metaDescriptionLength": 137,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ip-pbx-tong-dai",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Tổng đài và VoIP",
+        "Điện thoại IP"
+      ],
+      "h1": "Điện thoại IP Chính Hãng",
+      "wordCount": 521,
+      "metaTitle": "Điện thoại IP Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 47,
+      "metaDescriptionLength": 133,
+      "canonicalUrl": "https://ctcdn.vn/products/category/dien-thoai-ip",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Hạ tầng cáp và kết nối"
+      ],
+      "h1": "Hạ tầng cáp và kết nối Chính Hãng",
+      "wordCount": 546,
+      "metaTitle": "Hạ tầng cáp và kết nối Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 156,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ha-tang-cap-va-ket-noi",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 4
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Hạ tầng cáp và kết nối",
+        "Cáp mạng"
+      ],
+      "h1": "Cáp mạng Chính Hãng",
+      "wordCount": 518,
+      "metaTitle": "Cáp mạng Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 42,
+      "metaDescriptionLength": 123,
+      "canonicalUrl": "https://ctcdn.vn/products/category/cap-mang",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Hạ tầng cáp và kết nối",
+        "Cáp quang"
+      ],
+      "h1": "Cáp quang Chính Hãng",
+      "wordCount": 521,
+      "metaTitle": "Cáp quang Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 43,
+      "metaDescriptionLength": 125,
+      "canonicalUrl": "https://ctcdn.vn/products/category/cap-quang",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Hạ tầng cáp và kết nối",
+        "Patch Panel"
+      ],
+      "h1": "Patch Panel Chính Hãng",
+      "wordCount": 520,
+      "metaTitle": "Patch Panel Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 45,
+      "metaDescriptionLength": 129,
+      "canonicalUrl": "https://ctcdn.vn/products/category/patch-panel",
+      "featuredProductLinks": 10,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Hạ Tầng Viễn Thông & CNTT",
+        "Hạ tầng cáp và kết nối",
+        "Phụ kiện kết nối"
+      ],
+      "h1": "Phụ kiện kết nối Chính Hãng",
+      "wordCount": 531,
+      "metaTitle": "Phụ kiện kết nối Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 50,
+      "metaDescriptionLength": 139,
+      "canonicalUrl": "https://ctcdn.vn/products/category/phu-kien-ket-noi",
+      "featuredProductLinks": 10,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT"
+      ],
+      "h1": "Thiết Bị CNTT Chính Hãng",
+      "wordCount": 549,
+      "metaTitle": "Thiết Bị CNTT Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 47,
+      "metaDescriptionLength": 156,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-cntt",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 20
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy chủ Server"
+      ],
+      "h1": "Máy chủ Server Chính Hãng",
+      "wordCount": 518,
+      "metaTitle": "Máy chủ Server Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 48,
+      "metaDescriptionLength": 135,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-chu-server",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "PC Máy tính để bàn"
+      ],
+      "h1": "PC Máy tính để bàn Chính Hãng",
+      "wordCount": 525,
+      "metaTitle": "PC Máy tính để bàn Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 52,
+      "metaDescriptionLength": 143,
+      "canonicalUrl": "https://ctcdn.vn/products/category/pc-may-tinh-de-ban",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Mini PC"
+      ],
+      "h1": "Mini PC Chính Hãng",
+      "wordCount": 509,
+      "metaTitle": "Mini PC Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 41,
+      "metaDescriptionLength": 121,
+      "canonicalUrl": "https://ctcdn.vn/products/category/mini-pc",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Laptop"
+      ],
+      "h1": "Laptop Chính Hãng",
+      "wordCount": 511,
+      "metaTitle": "Laptop Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 40,
+      "metaDescriptionLength": 119,
+      "canonicalUrl": "https://ctcdn.vn/products/category/laptop",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy trạm Workstation"
+      ],
+      "h1": "Máy trạm Workstation Chính Hãng",
+      "wordCount": 524,
+      "metaTitle": "Máy trạm Workstation Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 54,
+      "metaDescriptionLength": 147,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-tram-workstation",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy tính All-in-One"
+      ],
+      "h1": "Máy tính All-in-One Chính Hãng",
+      "wordCount": 526,
+      "metaTitle": "Máy tính All-in-One Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 53,
+      "metaDescriptionLength": 145,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-tinh-all-in-one",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Màn hình máy tính"
+      ],
+      "h1": "Màn hình máy tính Chính Hãng",
+      "wordCount": 533,
+      "metaTitle": "Màn hình máy tính Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 51,
+      "metaDescriptionLength": 141,
+      "canonicalUrl": "https://ctcdn.vn/products/category/man-hinh-may-tinh",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy in & thiết bị in"
+      ],
+      "h1": "Máy in & thiết bị in Chính Hãng",
+      "wordCount": 538,
+      "metaTitle": "Máy in & thiết bị in Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 54,
+      "metaDescriptionLength": 147,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-in-thiet-bi-in",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy in nhãn"
+      ],
+      "h1": "Máy in nhãn Chính Hãng",
+      "wordCount": 516,
+      "metaTitle": "Máy in nhãn Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 45,
+      "metaDescriptionLength": 129,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-in-nhan",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy quét mã vạch"
+      ],
+      "h1": "Máy quét mã vạch Chính Hãng",
+      "wordCount": 531,
+      "metaTitle": "Máy quét mã vạch Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 50,
+      "metaDescriptionLength": 139,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-quet-ma-vach",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Thiết bị POS"
+      ],
+      "h1": "Thiết bị POS Chính Hãng",
+      "wordCount": 528,
+      "metaTitle": "Thiết bị POS Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 46,
+      "metaDescriptionLength": 131,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-pos",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Kiosk tự phục vụ"
+      ],
+      "h1": "Kiosk tự phục vụ Chính Hãng",
+      "wordCount": 527,
+      "metaTitle": "Kiosk tự phục vụ Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 50,
+      "metaDescriptionLength": 139,
+      "canonicalUrl": "https://ctcdn.vn/products/category/kiosk-tu-phuc-vu",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy tính công nghiệp"
+      ],
+      "h1": "Máy tính công nghiệp Chính Hãng",
+      "wordCount": 534,
+      "metaTitle": "Máy tính công nghiệp Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 54,
+      "metaDescriptionLength": 147,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-tinh-cong-nghiep",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Thiết bị lưu trữ"
+      ],
+      "h1": "Thiết bị lưu trữ Chính Hãng",
+      "wordCount": 535,
+      "metaTitle": "Thiết bị lưu trữ Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 50,
+      "metaDescriptionLength": 139,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-luu-tru",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "UPS & thiết bị Data Center"
+      ],
+      "h1": "UPS & thiết bị Data Center Chính Hãng",
+      "wordCount": 544,
+      "metaTitle": "UPS & thiết bị Data Center Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 60,
+      "metaDescriptionLength": 155,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ups-thiet-bi-data-center",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Tủ Rack & phụ kiện"
+      ],
+      "h1": "Tủ Rack & phụ kiện Chính Hãng",
+      "wordCount": 539,
+      "metaTitle": "Tủ Rack & phụ kiện Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 52,
+      "metaDescriptionLength": 143,
+      "canonicalUrl": "https://ctcdn.vn/products/category/tu-rack-phu-kien",
+      "featuredProductLinks": 10,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát"
+      ],
+      "h1": "Hệ thống Camera giám sát Chính Hãng",
+      "wordCount": 588,
+      "metaTitle": "Hệ thống Camera giám sát Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 58,
+      "metaDescriptionLength": 154,
+      "canonicalUrl": "https://ctcdn.vn/products/category/he-thong-camera-giam-sat",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 8
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Camera IP"
+      ],
+      "h1": "Camera IP Chính Hãng",
+      "wordCount": 530,
+      "metaTitle": "Camera IP Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 43,
+      "metaDescriptionLength": 125,
+      "canonicalUrl": "https://ctcdn.vn/products/category/camera-ip",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Camera Analog / HDCVI / HDTVI"
+      ],
+      "h1": "Camera Analog / HDCVI / HDTVI Chính Hãng",
+      "wordCount": 545,
+      "metaTitle": "Camera Analog / HDCVI / HDTVI Chính Hãng | Tư Vấn & Báo…",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 157,
+      "canonicalUrl": "https://ctcdn.vn/products/category/camera-analog-hdcvi-hdtvi",
+      "featuredProductLinks": 8,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Camera PTZ"
+      ],
+      "h1": "Camera PTZ Chính Hãng",
+      "wordCount": 532,
+      "metaTitle": "Camera PTZ Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 44,
+      "metaDescriptionLength": 127,
+      "canonicalUrl": "https://ctcdn.vn/products/category/camera-ptz",
+      "featuredProductLinks": 6,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Camera Wi-Fi"
+      ],
+      "h1": "Camera Wi-Fi Chính Hãng",
+      "wordCount": 532,
+      "metaTitle": "Camera Wi-Fi Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 46,
+      "metaDescriptionLength": 131,
+      "canonicalUrl": "https://ctcdn.vn/products/category/camera-wi-fi",
+      "featuredProductLinks": 6,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Camera AI"
+      ],
+      "h1": "Camera AI Chính Hãng",
+      "wordCount": 531,
+      "metaTitle": "Camera AI Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 43,
+      "metaDescriptionLength": 125,
+      "canonicalUrl": "https://ctcdn.vn/products/category/camera-ai",
+      "featuredProductLinks": 8,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Đầu ghi hình NVR"
+      ],
+      "h1": "Đầu ghi hình NVR Chính Hãng",
+      "wordCount": 537,
+      "metaTitle": "Đầu ghi hình NVR Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 50,
+      "metaDescriptionLength": 139,
+      "canonicalUrl": "https://ctcdn.vn/products/category/dau-ghi-hinh-nvr",
+      "featuredProductLinks": 8,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Đầu ghi hình DVR / XVR"
+      ],
+      "h1": "Đầu ghi hình DVR / XVR Chính Hãng",
+      "wordCount": 545,
+      "metaTitle": "Đầu ghi hình DVR / XVR Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 151,
+      "canonicalUrl": "https://ctcdn.vn/products/category/dau-ghi-hinh-dvr-xvr",
+      "featuredProductLinks": 5,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Hệ thống Camera giám sát",
+        "Phụ kiện Camera"
+      ],
+      "h1": "Phụ kiện Camera Chính Hãng",
+      "wordCount": 532,
+      "metaTitle": "Phụ kiện Camera Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 49,
+      "metaDescriptionLength": 137,
+      "canonicalUrl": "https://ctcdn.vn/products/category/phu-kien-camera",
+      "featuredProductLinks": 4,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Thiết bị hội nghị truyền hình"
+      ],
+      "h1": "Thiết bị hội nghị truyền hình Chính Hãng",
+      "wordCount": 540,
+      "metaTitle": "Thiết bị hội nghị truyền hình Chính Hãng | Tư Vấn & Báo…",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 157,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-hoi-nghi-truyen-hinh",
+      "featuredProductLinks": 8,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Máy chiếu & thiết bị trình chiếu"
+      ],
+      "h1": "Máy chiếu & thiết bị trình chiếu Chính Hãng",
+      "wordCount": 543,
+      "metaTitle": "Máy chiếu & thiết bị trình chiếu Chính Hãng | Tư Vấn & Báo…",
+      "metaTitleLength": 59,
+      "metaDescriptionLength": 156,
+      "canonicalUrl": "https://ctcdn.vn/products/category/may-chieu-thiet-bi-trinh-chieu",
+      "featuredProductLinks": 8,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Thiết Bị CNTT",
+        "Thiết bị ngoại vi"
+      ],
+      "h1": "Thiết bị ngoại vi Chính Hãng",
+      "wordCount": 533,
+      "metaTitle": "Thiết bị ngoại vi Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 51,
+      "metaDescriptionLength": 141,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-ngoai-vi",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời"
+      ],
+      "h1": "Năng Lượng Mặt Trời Chính Hãng",
+      "wordCount": 584,
+      "metaTitle": "Năng Lượng Mặt Trời Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 53,
+      "metaDescriptionLength": 154,
+      "canonicalUrl": "https://ctcdn.vn/products/category/nang-luong-mat-troi",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 11
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Tấm pin năng lượng mặt trời"
+      ],
+      "h1": "Tấm pin năng lượng mặt trời Chính Hãng",
+      "wordCount": 541,
+      "metaTitle": "Tấm pin năng lượng mặt trời Chính Hãng | Tư Vấn & Báo Giá…",
+      "metaTitleLength": 58,
+      "metaDescriptionLength": 157,
+      "canonicalUrl": "https://ctcdn.vn/products/category/tam-pin-nang-luong-mat-troi",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Bộ hòa lưới Inverter"
+      ],
+      "h1": "Bộ hòa lưới Inverter Chính Hãng",
+      "wordCount": 529,
+      "metaTitle": "Bộ hòa lưới Inverter Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 54,
+      "metaDescriptionLength": 147,
+      "canonicalUrl": "https://ctcdn.vn/products/category/bo-hoa-luoi-inverter",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Inverter Hybrid"
+      ],
+      "h1": "Inverter Hybrid Chính Hãng",
+      "wordCount": 524,
+      "metaTitle": "Inverter Hybrid Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 49,
+      "metaDescriptionLength": 137,
+      "canonicalUrl": "https://ctcdn.vn/products/category/inverter-hybrid",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Bộ tối ưu công suất – Optimizer"
+      ],
+      "h1": "Bộ tối ưu công suất – Optimizer Chính Hãng",
+      "wordCount": 542,
+      "metaTitle": "Bộ tối ưu công suất – Optimizer Chính Hãng | Tư Vấn & Báo…",
+      "metaTitleLength": 58,
+      "metaDescriptionLength": 157,
+      "canonicalUrl": "https://ctcdn.vn/products/category/bo-toi-uu-cong-suat-optimizer",
+      "featuredProductLinks": 10,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Tủ điện năng lượng mặt trời"
+      ],
+      "h1": "Tủ điện năng lượng mặt trời Chính Hãng",
+      "wordCount": 544,
+      "metaTitle": "Tủ điện năng lượng mặt trời Chính Hãng | Tư Vấn & Báo Giá…",
+      "metaTitleLength": 58,
+      "metaDescriptionLength": 157,
+      "canonicalUrl": "https://ctcdn.vn/products/category/tu-dien-nang-luong-mat-troi",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Thiết bị bảo vệ điện mặt trời"
+      ],
+      "h1": "Thiết bị bảo vệ điện mặt trời Chính Hãng",
+      "wordCount": 549,
+      "metaTitle": "Thiết bị bảo vệ điện mặt trời Chính Hãng | Tư Vấn & Báo…",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 157,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-bao-ve-dien-mat-troi",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Cáp & đầu nối Solar"
+      ],
+      "h1": "Cáp & đầu nối Solar Chính Hãng",
+      "wordCount": 539,
+      "metaTitle": "Cáp & đầu nối Solar Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 53,
+      "metaDescriptionLength": 145,
+      "canonicalUrl": "https://ctcdn.vn/products/category/cap-dau-noi-solar",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Hệ khung giá đỡ Solar"
+      ],
+      "h1": "Hệ khung giá đỡ Solar Chính Hãng",
+      "wordCount": 536,
+      "metaTitle": "Hệ khung giá đỡ Solar Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 55,
+      "metaDescriptionLength": 149,
+      "canonicalUrl": "https://ctcdn.vn/products/category/he-khung-gia-do-solar",
+      "featuredProductLinks": 10,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Thiết bị giám sát & đo đếm"
+      ],
+      "h1": "Thiết bị giám sát & đo đếm Chính Hãng",
+      "wordCount": 547,
+      "metaTitle": "Thiết bị giám sát & đo đếm Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 60,
+      "metaDescriptionLength": 155,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-giam-sat-do-dem",
+      "featuredProductLinks": 8,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Công tơ & thiết bị đo điện"
+      ],
+      "h1": "Công tơ & thiết bị đo điện Chính Hãng",
+      "wordCount": 543,
+      "metaTitle": "Công tơ & thiết bị đo điện Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 60,
+      "metaDescriptionLength": 155,
+      "canonicalUrl": "https://ctcdn.vn/products/category/cong-to-thiet-bi-do-dien",
+      "featuredProductLinks": 5,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Năng Lượng Mặt Trời",
+        "Thiết bị vệ sinh tấm pin"
+      ],
+      "h1": "Thiết bị vệ sinh tấm pin Chính Hãng",
+      "wordCount": 540,
+      "metaTitle": "Thiết bị vệ sinh tấm pin Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 58,
+      "metaDescriptionLength": 155,
+      "canonicalUrl": "https://ctcdn.vn/products/category/thiet-bi-ve-sinh-tam-pin",
+      "featuredProductLinks": 5,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Ắc Quy Và Lưu Trữ Điện"
+      ],
+      "h1": "Ắc Quy Và Lưu Trữ Điện Chính Hãng",
+      "wordCount": 554,
+      "metaTitle": "Ắc Quy Và Lưu Trữ Điện Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 153,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ac-quy-va-luu-tru-dien",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 3
+    },
+    {
+      "path": [
+        "Ắc Quy Và Lưu Trữ Điện",
+        "Ắc quy Lithium LiFePO4"
+      ],
+      "h1": "Ắc quy Lithium LiFePO4 Chính Hãng",
+      "wordCount": 523,
+      "metaTitle": "Ắc quy Lithium LiFePO4 Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 56,
+      "metaDescriptionLength": 151,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ac-quy-lithium-lifepo4",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Ắc Quy Và Lưu Trữ Điện",
+        "Ắc quy chì VRLA / AGM"
+      ],
+      "h1": "Ắc quy chì VRLA / AGM Chính Hãng",
+      "wordCount": 534,
+      "metaTitle": "Ắc quy chì VRLA / AGM Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 55,
+      "metaDescriptionLength": 149,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ac-quy-chi-vrla-agm",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    },
+    {
+      "path": [
+        "Ắc Quy Và Lưu Trữ Điện",
+        "Ắc quy nước Traction"
+      ],
+      "h1": "Ắc quy nước Traction Chính Hãng",
+      "wordCount": 527,
+      "metaTitle": "Ắc quy nước Traction Chính Hãng | Tư Vấn & Báo Giá CTC",
+      "metaTitleLength": 54,
+      "metaDescriptionLength": 147,
+      "canonicalUrl": "https://ctcdn.vn/products/category/ac-quy-nuoc-traction",
+      "featuredProductLinks": 12,
+      "relatedCategoryLinks": 0
+    }
+  ]
+}
