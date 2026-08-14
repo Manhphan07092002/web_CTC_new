@@ -18,13 +18,23 @@ const SITE_URL = process.env.SITE_URL || 'https://ctcdn.vn';
 
 // Favicon fallback route
 router.get('/favicon.ico', (req, res) => {
-  const publicFavicon = path.join(process.cwd(), 'public', 'favicon.svg');
-  if (fs.existsSync(publicFavicon)) {
-    return res.sendFile(publicFavicon);
+  const publicFaviconIco = path.join(process.cwd(), 'public', 'favicon.ico');
+  if (fs.existsSync(publicFaviconIco)) {
+    res.header('Content-Type', 'image/x-icon');
+    res.header('Cache-Control', 'public, max-age=86400');
+    return res.sendFile(publicFaviconIco);
   }
-  const distFavicon = path.join(process.cwd(), 'dist', 'favicon.svg');
-  if (fs.existsSync(distFavicon)) {
-    return res.sendFile(distFavicon);
+  const distFaviconIco = path.join(process.cwd(), 'dist', 'favicon.ico');
+  if (fs.existsSync(distFaviconIco)) {
+    res.header('Content-Type', 'image/x-icon');
+    res.header('Cache-Control', 'public, max-age=86400');
+    return res.sendFile(distFaviconIco);
+  }
+  const publicFaviconSvg = path.join(process.cwd(), 'public', 'favicon.svg');
+  if (fs.existsSync(publicFaviconSvg)) {
+    res.header('Content-Type', 'image/svg+xml');
+    res.header('Cache-Control', 'public, max-age=86400');
+    return res.sendFile(publicFaviconSvg);
   }
   res.status(204).end();
 });

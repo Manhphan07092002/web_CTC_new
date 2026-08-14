@@ -38,10 +38,7 @@ services:
       mongo:
         condition: service_healthy
     env_file:
-      - path: .env
-        required: false
-      - path: .env.local
-        required: false
+      - .env
     environment:
       NODE_ENV: production
       PORT: 4000

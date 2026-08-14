@@ -328,7 +328,7 @@ export function createSeoInjectMiddleware(distPath: string) {
           "telephone": "+84-915-059-666",
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu",
+            "streetAddress": "50B Nguyễn Du, Phường Hải Châu",
             "addressLocality": "Đà Nẵng",
             "addressCountry": "VN"
           },

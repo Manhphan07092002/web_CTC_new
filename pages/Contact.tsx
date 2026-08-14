@@ -24,7 +24,7 @@ const Contact: React.FC = () => {
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "50B Nguyễn Du",
-        "addressLocality": "Hải Châu",
+        "addressLocality": "Phường Hải Châu",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
@@ -50,7 +50,7 @@ const Contact: React.FC = () => {
 
       <SEO 
         title={t('contact.title') || 'Liên Hệ Với CTC'} 
-        description="Liên hệ Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) - Hotline 0915 059 666. Địa chỉ 50B Nguyễn Du, Hải Châu, Đà Nẵng."
+        description="Liên hệ Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC) - Hotline 0915 059 666. Địa chỉ 50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam."
         schema={contactSchema}
       />
 

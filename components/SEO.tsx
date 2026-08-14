@@ -72,12 +72,12 @@ export const COMPANY_INFO = {
   website: 'https://ctcdn.vn',
   address: {
     street: '50B Nguyễn Du',
-    ward: 'Phường Thạch Thang',
+    ward: 'Phường Hải Châu',
     district: 'Hải Châu',
     city: 'Đà Nẵng',
     postalCode: '550000',
     country: 'VN',
-    full: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng'
+    full: '50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam'
   },
   geo: {
     latitude: 16.0759,
@@ -112,7 +112,7 @@ const SEO: React.FC<SEOProps> = ({
   const fullTitle = title.includes(siteBrand) ? title : `${title} | ${siteBrand}`;
   
   // Favicon URLs & Dynamic Rounded Favicon from Admin Settings
-  const rawFavicon = settings.favicon || settings.logoHeader || settings.logo || settings.logoFooter || '/favicon.svg';
+  const rawFavicon = settings.favicon || settings.logoHeader || settings.logo || settings.logoFooter || '/favicon-48x48.png';
   const [processedFavicon, setProcessedFavicon] = useState<string>(rawFavicon);
 
   useEffect(() => {

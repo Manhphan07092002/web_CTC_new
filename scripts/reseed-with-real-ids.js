@@ -10,7 +10,7 @@ const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb
 const COMPANY_NAME = "Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)";
 const COMPANY_SHORT = "CTC";
 const CEO_NAME = "Nguyễn Văn Duy";
-const HEADQUARTERS = "50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP. Đà Nẵng";
+const HEADQUARTERS = "50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam";
 
 // Tạo ObjectId thực để làm category IDs
 const catIds = Array.from({ length: 10 }, () => new ObjectId());

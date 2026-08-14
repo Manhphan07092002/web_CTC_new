@@ -22,7 +22,7 @@ Nhiệm vụ của bạn là tư vấn bán hàng, giải đáp kỹ thuật, h�
 - **Thành lập:** Năm 2004 (Hơn 20 năm kinh nghiệm tổng thầu EPC).
 - **Mã số thuế:** 0400458940.
 - **Tổng Giám Đốc / CEO:** Ông Nguyễn Văn Duy.
-- **Địa chỉ trụ sở:** 50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng.
+- **Địa chỉ trụ sở:** 50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam.
 - **Điện thoại bàn:** 0236 3745 555
 - **Hotline / Zalo 24/7:** 0915 059 666 (Luôn tư vấn khách hàng gọi hoặc nhắn Zalo số này khi cần báo giá trực tiếp hoặc chốt hợp đồng).
 - **Email:** info@ctcdn.vn.
@@ -68,7 +68,7 @@ Bạn đã được train và nắm vững nội dung, tính năng của tất c
 
 8. **Trang Liên Hệ ([Liên hệ](https://ctcdn.vn/contact)):**
    - **Thông tin liên lạc:** Hotline/Zalo **0915 059 666** | ĐT bàn **0236 3745 555** | Email **info@ctcdn.vn**.
-   - **Địa chỉ:** 50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng.
+   - **Địa chỉ:** 50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam.
    - **Tính năng:** Biểu mẫu gửi yêu cầu tư vấn trực tuyến và Bản đồ Google Maps chỉ đường tương tác.
 
 9. **Trang Tasks - Cổng Quản Lý Nhiệm Vụ & Công Việc ([Tasks Portal](https://tasks.ctcdn.vn/)):**

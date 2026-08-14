@@ -40,7 +40,7 @@ const About: React.FC = () => {
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "50B Nguyễn Du",
-        "addressLocality": "Hải Châu",
+        "addressLocality": "Phường Hải Châu",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"

@@ -171,7 +171,7 @@ const Home: React.FC = () => {
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "50B Nguyễn Du",
-        "addressLocality": "Hải Châu",
+        "addressLocality": "Phường Hải Châu",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
@@ -225,7 +225,7 @@ const Home: React.FC = () => {
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "50B Nguyễn Du",
-        "addressLocality": "Hải Châu",
+        "addressLocality": "Phường Hải Châu",
         "addressRegion": "Đà Nẵng",
         "postalCode": "550000",
         "addressCountry": "VN"
@@ -356,7 +356,7 @@ const Home: React.FC = () => {
   organizationSchema.address = {
     '@type': 'PostalAddress',
     streetAddress: '50B Nguyễn Du',
-    addressLocality: 'Phường Thạch Thang, Hải Châu',
+    addressLocality: 'Phường Hải Châu',
     addressRegion: 'Đà Nẵng',
     postalCode: '550000',
     addressCountry: 'VN'

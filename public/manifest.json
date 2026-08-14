@@ -1,16 +1,21 @@
 {
-  "short_name": "CTC Solar",
-  "name": "Trần Lê Electricity & Solar Energy",
-  "description": "Nhà thầu EPC, Xây lắp điện và Giải pháp Năng lượng tái tạo hàng đầu Việt Nam",
+  "short_name": "CTC",
+  "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)",
+  "description": "Nhà thầu EPC Điện mặt trời, Hạ tầng viễn thông & Thiết bị mạng doanh nghiệp",
   "icons": [
     {
-      "src": "/uploads/images/1784512875227-666761004.JPG",
-      "type": "image/jpeg",
-      "sizes": "192x192 512x512"
+      "src": "/favicon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": "/",
-  "background_color": "#ffffff",
+  "background_color": "#060d1d",
   "theme_color": "#007CB9",
   "display": "standalone",
   "orientation": "portrait"

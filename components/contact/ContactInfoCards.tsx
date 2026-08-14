@@ -51,10 +51,10 @@ const ContactInfoCards: React.FC = () => {
       glowColor: 'bg-emerald-500/20',
       title: getLangText(language, { vi: 'Trụ Sở Đà Nẵng', en: 'Da Nang HQ', ko: '다낭 본사', ja: 'ダナン本社', zh: '岘港总部', de: 'Da Nang Hauptsitz' }),
       primaryText: '50B Nguyễn Du',
-      secondaryText: 'Hải Châu, Đà Nẵng',
+      secondaryText: 'Phường Hải Châu, TP Đà Nẵng',
       actionText: getLangText(language, { vi: 'Xem bản đồ', en: 'View Map', ko: '지도 보기', ja: '地図を見る', zh: '查看地图', de: 'Karte anzeigen' }),
       actionUrl: 'https://maps.google.com/?q=50B+Nguyen+Du+Hai+Chau+Da+Nang',
-      copyText: '50B Nguyễn Du, Hải Châu, Đà Nẵng'
+      copyText: '50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam'
     },
     {
       badge: getLangText(language, { vi: 'LỊCH LÀM VIỆC', en: 'WORKING HOURS', ko: '근무 시간', ja: '営業時間', zh: '工作时间', de: 'ARBEITSZEITEN' }),

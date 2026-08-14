@@ -584,7 +584,7 @@ const SettingsSchema = new Schema<ISettings>({
   appleTouchIcon: { type: String, default: '' },
   email: { type: String, required: true, default: 'info@ctcdn.vn' },
   phone: { type: String, required: true, default: '0915 059 666' },
-  address: { type: String, required: true, default: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng' },
+  address: { type: String, required: true, default: '50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam' },
   facebook: String,
   instagram: String,
   youtube: String,

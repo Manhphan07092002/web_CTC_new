@@ -1153,7 +1153,7 @@ const OrdersManagement: React.FC = () => {
             <div className="flex justify-between items-start border-b border-gray-200 pb-4">
               <div>
                 <h2 className="text-2xl font-black text-primary">CÔNG TY CP XÂY LẮP BƯU ĐIỆN MIỀN TRUNG (CTC)</h2>
-                <p className="text-xs text-gray-500">Địa chỉ: 50B Nguyễn Du, Phường Thạch Thang, Q. Hải Châu, TP Đà Nẵng</p>
+                <p className="text-xs text-gray-500">Địa chỉ: 50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam</p>
                 <p className="text-xs text-gray-500">Hotline: 0915 059 666 | Email: info@ctcdn.vn</p>
               </div>
               <div className="text-right">

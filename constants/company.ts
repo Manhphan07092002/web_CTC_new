@@ -29,15 +29,15 @@ export const COMPANY = {
   // Địa chỉ
   address: {
     street: '50B Nguyễn Du',
-    ward: 'Phường Thạch Thang',
+    ward: 'Phường Hải Châu',
     district: 'Hải Châu',
     city: 'Đà Nẵng',
     province: 'Đà Nẵng',
     postalCode: '550000',
     country: 'VN',
     countryName: 'Việt Nam',
-    full: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
-    short: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng'
+    full: '50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam',
+    short: '50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng'
   },
   
   // Tọa độ

@@ -13,12 +13,12 @@ const COMPANY_PHONE = '+84 236 3745 555';
 const COMPANY_EMAIL = 'info@ctcdn.vn';
 const COMPANY_ADDRESS = {
   street: '50B Nguyễn Du',
-  ward: '',
+  ward: 'Phường Hải Châu',
   district: 'Hải Châu', 
   city: 'Đà Nẵng',
   postalCode: '550000',
   country: 'VN',
-  full: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng'
+  full: '50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam'
 };
 
 // ==================== LOCAL BUSINESS SCHEMA ====================

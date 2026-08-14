@@ -42,7 +42,7 @@ const translations: Record<Language, Translations> = {
       solutions_title: 'Giải pháp',
       contact_title: 'Liên hệ',
       desc: 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC). Doanh nghiệp hàng đầu trong lĩnh vực xây lắp và năng lượng tái tạo.',
-      address: '50B Nguyễn Du, Phường Thạch Thang, Quận Hải Châu, TP Đà Nẵng',
+      address: '50B Nguyễn Du, Phường Hải Châu, TP Đà Nẵng, Việt Nam',
       copyright: '© 2026 CTC. Bảo lưu mọi quyền.'
     },
     common: {
