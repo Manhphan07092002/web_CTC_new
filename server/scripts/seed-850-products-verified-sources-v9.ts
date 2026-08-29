@@ -309,10 +309,11 @@ const BRAND_DOMAINS: Record<string, string[]> = {
 
 // Khóa chặt bộ lọc Blacklist - Chặn đứng 100% các sàn bán lẻ rác, MXH và trang tổng hợp
 const BLOCKED_SOURCE_DOMAINS = [
-  'shopee.', 'lazada.', 'tiki.vn', 'sendo.vn', 'aliexpress.', 'amazon.', 'ebay.',
-  'vatgia.com', 'websosanh.vn', 'chotot.com', 'meta.vn', 'pico.vn', 'dienmayxanh.com',
-  'mediamart.vn', 'nguyenkim.com', 'fptshop.com.vn', 'thegioididong.com', 'cellphones.com.vn',
-  'facebook.com', 'pinterest.com', 'instagram.com', 'tiktok.com', 'youtube.com',
+  'shopee', 'lazada', 'tiki.vn', 'sendo.vn', 'slatic.net', 'alicdn', 'aliexpress', 'alibaba',
+  'amazon.', 'ebay.', 'vatgia.com', 'websosanh', 'chotot.com', 'meta.vn', 'pico.vn',
+  'dienmayxanh.com', 'mediamart.vn', 'nguyenkim.com', 'fptshop.com.vn', 'thegioididong.com',
+  'cellphones.com.vn', 'sosanhgia', 'muaban', 'nhattao', '5giay', 'enbac',
+  'facebook.com', 'fbcdn', 'fbsbx', 'pinterest.com', 'instagram.com', 'tiktok.com', 'youtube.com',
   'encrypted-tbn', 'gstatic.com', 'google.com'
 ];
 
@@ -1535,12 +1536,6 @@ function hostMatches(host: string, domain: string): boolean {
   const normalized = domain.toLowerCase().replace(/^www\./, '');
   return host === normalized || host.endsWith(`.${normalized}`);
 }
-
-const BLOCKED_SOURCE_DOMAINS = [
-  'shopee', 'lazada', 'tiki', 'sendo', 'slatic.net', 'alicdn', 'aliexpress', 'alibaba',
-  'facebook', 'instagram', 'fbcdn', 'fbsbx', 'pinterest', 'tiktok', 'youtube',
-  'chotot', 'vatgia', 'websosanh', 'sosanhgia', 'muaban', 'nhattao', '5giay', 'enbac'
-];
 
 function isBlockedSource(...values: string[]): boolean {
   const text = values.join(' ').toLowerCase();
