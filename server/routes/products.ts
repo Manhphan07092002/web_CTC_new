@@ -13,15 +13,27 @@ const getLanguage = (req: any): SupportedLanguage => {
   return SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage) ? lang as SupportedLanguage : 'vi';
 };
 
+// Clear product cache
+router.all('/clear-cache', (req, res) => {
+  try {
+    cacheService.delStartWith('products:');
+    res.json({ success: true, message: 'Product cache cleared successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to clear product cache' });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
-    const { categoryId } = req.query;
+    const { categoryId, refresh } = req.query;
     const lang = getLanguage(req);
     const cacheKey = `products:list:${categoryId || 'all'}:${lang}`;
     
-    const cachedData = cacheService.get<any[]>(cacheKey);
-    if (cachedData) {
-      return res.json(cachedData);
+    if (refresh !== 'true') {
+      const cachedData = cacheService.get<any[]>(cacheKey);
+      if (cachedData && cachedData.length > 0) {
+        return res.json(cachedData);
+      }
     }
 
     let products = await db.products.getAll();
@@ -36,7 +48,9 @@ router.get('/', async (req, res) => {
       products = applyTranslationsToArray(products, [...TRANSLATION_FIELDS.product], lang);
     }
     
-    cacheService.set(cacheKey, products, 300); // 5 min TTL
+    if (products.length > 0) {
+      cacheService.set(cacheKey, products, 300); // 5 min TTL
+    }
     res.json(products);
   } catch (error) {
     logger.error('Error getting products', error);

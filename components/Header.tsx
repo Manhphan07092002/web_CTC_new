@@ -929,7 +929,7 @@ const Header: React.FC = () => {
               height="56"
               className={`header-logo ${getLogoClass()}`} 
               loading="eager"
-              fetchPriority="high"
+              {...({ fetchpriority: "high" } as any)}
             />
           </Link>
 

@@ -1460,6 +1460,38 @@ function clip(value: string, max: number): string {
   return `${cut.replace(/\s+\S*$/, '')}…`;
 }
 
+const VI_PREFIXES = [
+  /^biến\s+tần\s+hòa\s+lưới\s+(thông\s+minh\s+)?/i,
+  /^biến\s+tần\s+hybrid\s+(thông\s+minh\s+)?/i,
+  /^biến\s+tần\s+lưu\s+trữ\s+/i,
+  /^bộ\s+hòa\s+lưới\s+inverter\s+/i,
+  /^tấm\s+pin\s+(năng\s+lượng\s+mặt\s+trời\s+|solar\s+)?/i,
+  /^pin\s+lưu\s+trữ\s+lithium\s+(lifepo4\s+)?/i,
+  /^ắc\s+quy\s+(chì\s+|lithium\s+|nước\s+|vrla\s+|agm\s+|gel\s+)?(viễn\s+thông\s+|ups\s+)?/i,
+  /^máy\s+chủ\s+server\s+/i,
+  /^máy\s+tính\s+(để\s+bàn\s+|all-in-one\s+|mini\s+pc\s+|workstation\s+)?/i,
+  /^màn\s+hình\s+máy\s+tính\s+/i,
+  /^máy\s+in\s+(nhãn\s+|laser\s+|đa\s+năng\s+)?/i,
+  /^máy\s+quét\s+mã\s+vạch\s+/i,
+  /^kiosk\s+(tra\s+cứu\s+thông\s+tin\s+|lấy\s+số\s+tự\s+động\s+|đánh\s+giá\s+hài\s+lòng\s+)?(dịch\s+vụ\s+công\s+)?/i,
+  /^tủ\s+mạng\s+(tmc\s+rack\s+|wallmount\s+|server\s+rack\s+|outdoor\s+)?/i,
+  /^tủ\s+server\s+rack\s+/i,
+  /^router\s+(cân\s+bằng\s+tải\s+|wifi\s+|vpn\s+)?/i,
+  /^switch\s+(chia\s+mạng\s+|quản\s+lý\s+|poe\s+)?/i,
+  /^cáp\s+mạng\s+(chống\s+nhiễu\s+)?/i,
+  /^đầu\s+ghi\s+hình\s+(nvr\s+|dvr\s+|xvr\s+)?/i,
+  /^camera\s+(ip\s+|ptz\s+|ai\s+|wifi\s+|quan\s+sát\s+)?/i,
+  /^thiết\s+bị\s+(lưu\s+trữ\s+nas\s+|pos\s+|hội\s+nghị\s+|bảo\s+vệ\s+|cân\s+bằng\s+tải\s+)?/i
+];
+
+function cleanProductName(raw: string): string {
+  let s = raw.trim();
+  for (const re of VI_PREFIXES) {
+    s = s.replace(re, '');
+  }
+  return s.trim();
+}
+
 function detectBrand(productName: string): string {
   const normalized = productName.toLowerCase();
   for (const brand of BRAND_PREFIXES) {
@@ -1471,16 +1503,19 @@ function detectBrand(productName: string): string {
 }
 
 function extractModel(productName: string, brand: string): string {
-  // Tìm các token model có số hoặc ký tự đặc biệt
-  const tokens = productName
-    .replace(new RegExp(`^${brand}\\s*`, 'i'), '')
-    .split(/\s+/)
-    .filter(t => /\d/.test(t) || /^[A-Z0-9-]+$/i.test(t));
+  const cleaned = cleanProductName(productName);
+  const tokens = cleaned.split(/\s+/);
   
-  if (tokens.length >= 1) {
-    return tokens.slice(0, 2).join(' ');
+  const codeTokens = tokens.filter(t => (/[0-9]/.test(t) && /[a-zA-Z]/.test(t)) || /^[A-Z0-9-]{3,}$/.test(t));
+  if (codeTokens.length > 0) {
+    const nonPowerTokens = codeTokens.filter(t => !/^(1Pha|3Pha|\d+kW|\d+W|\d+Ah|\d+V|\d+MPPT|\d+Port|\d+U|\d+TB)$/i.test(t));
+    if (nonPowerTokens.length > 0) {
+      return nonPowerTokens.slice(0, 2).join(' ');
+    }
+    return codeTokens[0];
   }
-  return productName.split(/\s+/).slice(1, 3).join(' ') || productName;
+
+  return tokens.slice(0, 3).join(' ');
 }
 
 function extractPartNumber(productName: string, brand: string): string {
@@ -1500,6 +1535,12 @@ function hostMatches(host: string, domain: string): boolean {
   const normalized = domain.toLowerCase().replace(/^www\./, '');
   return host === normalized || host.endsWith(`.${normalized}`);
 }
+
+const BLOCKED_SOURCE_DOMAINS = [
+  'shopee', 'lazada', 'tiki', 'sendo', 'slatic.net', 'alicdn', 'aliexpress', 'alibaba',
+  'facebook', 'instagram', 'fbcdn', 'fbsbx', 'pinterest', 'tiktok', 'youtube',
+  'chotot', 'vatgia', 'websosanh', 'sosanhgia', 'muaban', 'nhattao', '5giay', 'enbac'
+];
 
 function isBlockedSource(...values: string[]): boolean {
   const text = values.join(' ').toLowerCase();
@@ -1558,23 +1599,33 @@ function evaluateImageCandidate(candidate: ImageCandidate, productName: string, 
 function buildTargetedSerperQuery(productName: string, group: CatalogGroup): string {
   const brand = detectBrand(productName);
   const model = extractModel(productName, brand);
+  const negativeFilters = '-watch -band -strap -wristband -vong-tay -dong-ho -case -cover -phone -earbuds -shopee -lazada -tiki';
   
-  // Tối ưu Query cho 6 nguồn xác thực
+  // Tối ưu Query cho 6 nguồn xác thực kèm từ khóa phủ định chống nhầm phụ kiện tiêu dùng
   switch (group.sourceKey) {
     case 'dhcsolar':
-      return `"${model}" site:dhcsolar.com OR site:canadiansolar.com OR site:growatt.com OR site:huawei.com OR site:sungrowpower.com OR site:deyeinverter.com OR site:pylontech.com.cn`;
+      if (brand.toLowerCase().includes('huawei')) {
+        return `"${model}" Huawei Inverter site:dhcsolar.com OR site:solar.huawei.com OR site:huawei.com ${negativeFilters}`;
+      }
+      if (brand.toLowerCase().includes('growatt')) {
+        return `"${model}" Growatt Inverter site:dhcsolar.com OR site:growatt.com ${negativeFilters}`;
+      }
+      if (brand.toLowerCase().includes('deye')) {
+        return `"${model}" Deye Inverter site:dhcsolar.com OR site:deyeinverter.com ${negativeFilters}`;
+      }
+      return `"${model}" ${brand} site:dhcsolar.com OR site:canadiansolar.com OR site:growatt.com OR site:sungrowpower.com OR site:pylontech.com.cn ${negativeFilters}`;
     case 'lelong':
-      return `"${model}" site:lelong.com.vn OR site:longbattery.com OR site:kunglong.com`;
+      return `"${model}" site:lelong.com.vn OR site:longbattery.com OR site:kunglong.com ${negativeFilters}`;
     case 'anphat_draytek':
-      return `"${model}" site:anphat.vn OR site:draytek.com.vn OR site:dintek.com.tw OR site:totolink.vn`;
+      return `"${model}" site:anphat.vn OR site:draytek.com.vn OR site:dintek.com.tw OR site:totolink.vn ${negativeFilters}`;
     case 'anphatpc':
-      return `"${model}" site:anphatpc.com.vn OR site:dell.com OR site:hp.com OR site:lenovo.com OR site:synology.com OR site:hikvision.com`;
+      return `"${model}" ${brand} site:anphatpc.com.vn OR site:dell.com OR site:hp.com OR site:lenovo.com OR site:synology.com OR site:hikvision.com ${negativeFilters}`;
     case 'comq':
-      return `"${model}" site:comq.vn`;
+      return `"${model}" site:comq.vn ${negativeFilters}`;
     case 'tmcrack':
-      return `"${model}" site:tmcrack.vn OR site:tmc.vn`;
+      return `"${model}" site:tmcrack.vn OR site:tmc.vn ${negativeFilters}`;
     default:
-      return `${brand} ${model} official product image`;
+      return `${brand} ${model} official product image ${negativeFilters}`;
   }
 }
 
