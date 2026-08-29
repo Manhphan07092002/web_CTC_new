@@ -85,10 +85,12 @@ ReviewSchema.index({ rating: -1, createdAt: -1 });
 // Product Schema
 export interface IProduct extends BaseDocument {
   name: string;
+  slug?: string;
   category: string; // Keep for backward compatibility
   categoryId?: mongoose.Types.ObjectId; // Reference to ProductCategory
   categoryLabel?: string; // Nhãn category hiển thị (VD: "INVERTER")
   code?: string; // Mã sản phẩm (VD: "TL-G5199a")
+  sku?: string;
   description: string;
   shortDescription?: string; // Mô tả ngắn
   specifications?: string; // Chi tiết kỹ thuật
@@ -117,6 +119,11 @@ export interface IProduct extends BaseDocument {
   likes?: number; // Lượt thích
   shares?: number; // Lượt chia sẻ
   focusKeyword?: string; // Từ khóa SEO Focus
+  seo?: any;
+  geo?: any;
+  faq?: any;
+  structuredData?: any;
+  seedSource?: string;
   // Multi-language translations
   translations?: TranslationsMap<ProductTranslation>;
 }
@@ -132,10 +139,12 @@ const ReviewSubSchema = new Schema<IReview>({
 
 const ProductSchema = new Schema<IProduct>({
   name: { type: String, required: true },
+  slug: { type: String, index: true },
   category: { type: String, required: true },
   categoryId: { type: Schema.Types.ObjectId, ref: 'ProductCategory' }, // Reference to ProductCategory
   categoryLabel: String,
   code: String,
+  sku: String,
   description: { type: String, required: true },
   shortDescription: String,
   specifications: String,
@@ -164,9 +173,14 @@ const ProductSchema = new Schema<IProduct>({
   likes: { type: Number, default: 0 },
   shares: { type: Number, default: 0 },
   focusKeyword: { type: String, default: '' },
+  seo: Schema.Types.Mixed,
+  geo: Schema.Types.Mixed,
+  faq: Schema.Types.Mixed,
+  structuredData: Schema.Types.Mixed,
+  seedSource: String,
   // Multi-language translations
   translations: createTranslationSchema()
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
 // Product Indexes for fast querying & filtering
 ProductSchema.index({ category: 1, isDeleted: 1 });
