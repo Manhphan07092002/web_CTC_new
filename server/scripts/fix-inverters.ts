@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGO_URI = 'mongodb://127.0.0.1:27017/ctc_web_new';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 
 async function fixInverters() {
   await mongoose.connect(MONGO_URI);
