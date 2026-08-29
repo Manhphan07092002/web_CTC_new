@@ -27,6 +27,11 @@ import { Product, ProductCategory, Category } from '../models/index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Đảm bảo Product Schema tắt strict mode kể cả khi chạy trong container Docker cũ
+if (Product && Product.schema) {
+  Product.schema.set('strict', false);
+}
+
 dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
@@ -2207,7 +2212,8 @@ async function main() {
     },
   }));
 
-  const result = await Product.bulkWrite(bulkOps);
+  const productCollection = mongoose.connection.db!.collection('products');
+  const result = await productCollection.bulkWrite(bulkOps);
   console.log(`✅ Kết quả MongoDB: Upserted=${result.upsertedCount}, Modified=${result.modifiedCount}, Matched=${result.matchedCount}`);
 
   // Cập nhật số lượng sản phẩm cho các danh mục
