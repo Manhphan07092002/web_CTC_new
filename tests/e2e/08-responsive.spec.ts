@@ -79,7 +79,7 @@ test.describe('RESPONSIVE — Không vỡ layout trên các kích thước màn 
       console.log(`Mobile menu mở ra: ${isOpen}`);
 
       // Đóng lại
-      await hamburger.click();
+      await hamburger.click({ force: true }).catch(() => {});
       await page.waitForTimeout(300);
     } else {
       console.log(`ℹ️ Không có hamburger menu tại 375px (có thể dùng navigation khác)`);

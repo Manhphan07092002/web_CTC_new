@@ -119,14 +119,20 @@ router.get('/slug/:slug', async (req, res) => {
 // Create product category
 router.post('/', async (req, res) => {
   try {
-    const { name, description, icon, color, image, order, parentId } = req.body;
+    const { name, description, icon, color, image, order, parentId } = req.body || {};
     
-    if (!name || !name.trim()) {
+    if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ message: 'Tên danh mục không được để trống' });
     }
 
+    // Sanitize HTML tags to prevent XSS
+    const cleanName = name.replace(/<[^>]*>?/gm, '').trim();
+    if (!cleanName) {
+      return res.status(400).json({ message: 'Tên danh mục không hợp lệ' });
+    }
+
     // Generate slug from name
-    const slug = generateSlug(name);
+    const slug = generateSlug(cleanName);
     
     // Check if slug already exists
     const existing = await ProductCategory.findOne({ slug });
@@ -137,16 +143,16 @@ router.post('/', async (req, res) => {
     // Auto-translate category safely
     let translations = {};
     try {
-      const translatedData = await translateCategory({ name, description });
+      const translatedData = await translateCategory({ name: cleanName, description });
       translations = translatedData?.translations || {};
     } catch (e) {
-      logger.warn('Translation skipped for category:', name);
+      logger.warn('Translation skipped for category:', cleanName);
     }
     
     const cleanParentId = parentId && String(parentId).trim() ? String(parentId).trim() : undefined;
 
     const category = new ProductCategory({
-      name: name.trim(),
+      name: cleanName,
       slug,
       description: description || '',
       icon: icon || '📂',
@@ -231,6 +237,14 @@ router.delete('/:id', async (req, res) => {
     if (category.productCount && category.productCount > 0) {
       return res.status(400).json({ 
         message: 'Cannot delete category with products. Please reassign products first.' 
+      });
+    }
+
+    // Check if category has child categories
+    const childCount = await ProductCategory.countDocuments({ parentId: req.params.id });
+    if (childCount > 0) {
+      return res.status(400).json({ 
+        message: 'Không thể xóa danh mục đang có danh mục con. Vui lòng chuyển hoặc xóa danh mục con trước.' 
       });
     }
     

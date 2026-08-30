@@ -16,7 +16,7 @@ const getLanguage = (req: any): SupportedLanguage => {
 // Clear product cache
 router.all('/clear-cache', (req, res) => {
   try {
-    cacheService.delStartWith('products:');
+    cacheService.invalidatePattern('products:');
     res.json({ success: true, message: 'Product cache cleared successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to clear product cache' });
@@ -25,11 +25,12 @@ router.all('/clear-cache', (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const { categoryId, refresh } = req.query;
+    const { categoryId, refresh, search, q, minPrice, maxPrice, page, limit } = req.query;
     const lang = getLanguage(req);
+    const hasFilter = Boolean(search || q || minPrice !== undefined || maxPrice !== undefined || page !== undefined || limit !== undefined);
     const cacheKey = `products:list:${categoryId || 'all'}:${lang}`;
     
-    if (refresh !== 'true') {
+    if (refresh !== 'true' && !hasFilter) {
       const cachedData = cacheService.get<any[]>(cacheKey);
       if (cachedData && cachedData.length > 0) {
         return res.json(cachedData);
@@ -42,15 +43,53 @@ router.get('/', async (req, res) => {
     if (categoryId && typeof categoryId === 'string') {
       products = products.filter(p => p.categoryId?.toString() === categoryId);
     }
+
+    // Filter by search / q keyword
+    const searchKeyword = (search || q) as string;
+    if (searchKeyword && typeof searchKeyword === 'string' && searchKeyword.trim()) {
+      const kw = searchKeyword.trim().toLowerCase();
+      products = products.filter(p => {
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.shortDescription || p.description || '').toLowerCase();
+        const sku = (p.sku || '').toLowerCase();
+        const brand = (p.brand || '').toLowerCase();
+        return name.includes(kw) || desc.includes(kw) || sku.includes(kw) || brand.includes(kw);
+      });
+    }
+
+    // Filter by price range
+    if (minPrice !== undefined && minPrice !== '') {
+      const min = Number(minPrice);
+      if (!isNaN(min)) {
+        products = products.filter(p => Number(p.price || 0) >= min);
+      }
+    }
+    if (maxPrice !== undefined && maxPrice !== '') {
+      const max = Number(maxPrice);
+      if (!isNaN(max)) {
+        products = products.filter(p => Number(p.price || 0) <= max);
+      }
+    }
     
     // Apply translations if not Vietnamese
     if (lang !== 'vi') {
       products = applyTranslationsToArray(products, [...TRANSLATION_FIELDS.product], lang);
     }
     
-    if (products.length > 0) {
+    if (products.length > 0 && !hasFilter) {
       cacheService.set(cacheKey, products, 300); // 5 min TTL
     }
+
+    // Pagination
+    if (limit !== undefined && limit !== '') {
+      const lim = parseInt(limit as string, 10);
+      if (!isNaN(lim) && lim > 0) {
+        const pNum = parseInt(page as string, 10) || 1;
+        const offset = Math.max(0, (pNum - 1) * lim);
+        products = products.slice(offset, offset + lim);
+      }
+    }
+
     res.json(products);
   } catch (error) {
     logger.error('Error getting products', error);
@@ -125,17 +164,22 @@ router.post('/', async (req, res) => {
       await category.save();
     }
     
-    // Auto-translate product to all languages
-    const translatedData = await translateProduct({
+    // Auto-translate product to all languages safely
+    let translatedData: any = {
       ...productData,
       categoryId,
       category: categoryName
-    });
+    };
+    try {
+      translatedData = await translateProduct(translatedData);
+    } catch (e) {
+      logger.warn('Product translation skipped:', e);
+    }
     
     const created = await db.products.add(translatedData);
     cacheService.invalidatePattern('products:');
     
-    logger.info('Product created with translations:', created.id);
+    logger.info('Product created:', created.id);
     res.status(201).json(created);
   } catch (error) {
     logger.error('Error creating product', error);
@@ -145,8 +189,13 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    // Auto-translate updated content
-    const translatedData = await translateProduct(req.body);
+    // Auto-translate updated content safely
+    let translatedData: any = req.body;
+    try {
+      translatedData = await translateProduct(req.body);
+    } catch (e) {
+      logger.warn('Product translation skipped on update:', e);
+    }
     
     const updated = await db.products.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'Product not found' });

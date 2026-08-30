@@ -6,7 +6,7 @@
  * ================================================================
  */
 import { test, expect } from '@playwright/test';
-import { apiGet, apiPost, apiPut, apiDelete } from './helpers';
+import { apiGet, apiPost, apiPut, apiDelete, API_URL } from './helpers';
 
 test.describe('API — Xử lý lỗi chuẩn', () => {
 
@@ -56,7 +56,7 @@ test.describe('API — Xử lý lỗi chuẩn', () => {
     // Gọi endpoint protected
     const protectedEndpoints = ['/users', '/product-categories'];
     for (const ep of protectedEndpoints) {
-      const res = await page.request.get(`http://localhost:4000/api${ep}`);
+      const res = await page.request.get(`${API_URL}/api${ep}`);
       const status = res.status();
       console.log(`Unauthenticated GET ${ep}: HTTP ${status}`);
       // Endpoint public có thể trả 200, endpoint admin phải trả 401
@@ -80,7 +80,7 @@ test.describe('API — Xử lý lỗi chuẩn', () => {
   });
 
   test('API-008: Dữ liệu JSON không hợp lệ trả 400', async ({ page }) => {
-    const res = await page.request.post('http://localhost:4000/api/product-categories', {
+    const res = await page.request.post(`${API_URL}/api/product-categories`, {
       headers: { 'Content-Type': 'application/json' },
       data: '{ invalid json }',
     });

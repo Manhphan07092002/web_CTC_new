@@ -56,3 +56,8 @@ ctcdb_extracted/
 /categories.json
 server/scripts/catMap.json
 sqlpackage*/
+
+# Playwright test artifacts
+playwright-report/
+playwright/.auth/
+test-results/

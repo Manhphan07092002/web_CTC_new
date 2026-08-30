@@ -7,8 +7,8 @@
 import { test, expect } from '@playwright/test';
 
 const PAGES = [
-  { name: 'Trang chủ',       url: '/',          titleContains: 'CTCDN' },
-  { name: 'Sản phẩm',        url: '/products',  titleContains: 'Sản phẩm' },
+  { name: 'Trang chủ',       url: '/',          titleContains: 'CTC' },
+  { name: 'Sản phẩm',        url: '/products',  titleContains: 'CTC' },
   { name: 'Dự án',           url: '/projects',  titleContains: 'Dự án' },
   { name: 'Tin tức',         url: '/news',      titleContains: 'Tin tức' },
   { name: 'Tài liệu',        url: '/resources', titleContains: 'Tài liệu' },

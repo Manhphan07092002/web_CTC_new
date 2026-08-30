@@ -63,10 +63,15 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    // Auto-translate project
-    const translatedData = await translateProject(req.body);
+    // Auto-translate project safely
+    let translatedData = req.body;
+    try {
+      translatedData = await translateProject(req.body);
+    } catch (e) {
+      console.warn('Project translation skipped:', e);
+    }
     const created = await db.projects.add(translatedData);
-    console.log('Project created with translations:', created.id);
+    console.log('Project created:', created.id);
     res.status(201).json(created);
   } catch (error) {
     console.error('Error creating project', error);
@@ -76,8 +81,13 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    // Auto-translate updated content
-    const translatedData = await translateProject(req.body);
+    // Auto-translate updated content safely
+    let translatedData = req.body;
+    try {
+      translatedData = await translateProject(req.body);
+    } catch (e) {
+      console.warn('Project translation skipped on update:', e);
+    }
     const updated = await db.projects.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'Project not found' });
     console.log('Project updated with translations:', req.params.id);

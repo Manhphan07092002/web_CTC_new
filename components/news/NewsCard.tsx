@@ -16,8 +16,8 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
   if (viewMode === 'list') {
     // 1 Hàng 1 Tin Tức (List View Mode - Horizontal Layout)
     return (
-      <div 
-        className="flex flex-col md:flex-row bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group"
+      <article 
+        className="news-card flex flex-col md:flex-row bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group"
         onClick={onClick}
       >
         {/* Image Container on Left */}
@@ -78,14 +78,14 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
             </span>
           </div>
         </div>
-      </div>
+      </article>
     );
   }
 
   // 3 Cột (Grid View Mode - Vertical Layout)
   return (
-    <div 
-      className="flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group"
+    <article 
+      className="news-card flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group"
       onClick={onClick}
     >
       <div className="h-48 overflow-hidden relative">
@@ -134,7 +134,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, onClick, viewMode = 'list' })
           <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

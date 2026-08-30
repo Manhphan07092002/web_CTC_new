@@ -12,9 +12,33 @@ export const ADMIN_URL = `${BASE_URL}/admin`;
 
 // ─── API Helpers ─────────────────────────────────────────────────
 
+let cachedToken: string | null = null;
+export function getAuthToken(): string {
+  if (cachedToken) return cachedToken;
+  try {
+    const fs = require('fs');
+    if (fs.existsSync('playwright/.auth/token.txt')) {
+      cachedToken = fs.readFileSync('playwright/.auth/token.txt', 'utf-8').trim();
+    }
+  } catch {}
+  return cachedToken || '';
+}
+
+function getHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const token = getAuthToken();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json', ...extra };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+    headers['x-auth-token'] = token;
+  }
+  return headers;
+}
+
 /** Gọi API GET và trả về JSON */
 export async function apiGet(page: Page, path: string) {
-  const res = await page.request.get(`${API_URL}/api${path}`);
+  const res = await page.request.get(`${API_URL}/api${path}`, {
+    headers: getHeaders(),
+  });
   return { status: res.status(), body: await res.json().catch(() => null) };
 }
 
@@ -22,7 +46,7 @@ export async function apiGet(page: Page, path: string) {
 export async function apiPost(page: Page, path: string, data: object) {
   const res = await page.request.post(`${API_URL}/api${path}`, {
     data,
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
   });
   return { status: res.status(), body: await res.json().catch(() => null) };
 }
@@ -31,14 +55,16 @@ export async function apiPost(page: Page, path: string, data: object) {
 export async function apiPut(page: Page, path: string, data: object) {
   const res = await page.request.put(`${API_URL}/api${path}`, {
     data,
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
   });
   return { status: res.status(), body: await res.json().catch(() => null) };
 }
 
 /** Gọi API DELETE */
 export async function apiDelete(page: Page, path: string) {
-  const res = await page.request.delete(`${API_URL}/api${path}`);
+  const res = await page.request.delete(`${API_URL}/api${path}`, {
+    headers: getHeaders(),
+  });
   return { status: res.status(), body: await res.json().catch(() => null) };
 }
 

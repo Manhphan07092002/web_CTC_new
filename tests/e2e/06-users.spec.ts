@@ -5,7 +5,7 @@
  * ================================================================
  */
 import { test, expect } from '@playwright/test';
-import { apiGet, apiPost, apiPut, apiDelete, ts } from './helpers';
+import { apiGet, apiPost, apiPut, apiDelete, ts, API_URL } from './helpers';
 
 const label = ts();
 let createdUserId = '';
@@ -105,7 +105,7 @@ test.describe('USER — Bảo mật & Phân quyền API', () => {
     const context = await browser.newContext({ storageState: { cookies: [], origins: [] } });
     const page = await context.newPage();
 
-    const res = await page.request.get('http://localhost:4000/api/users');
+    const res = await page.request.get(`${API_URL}/api/users`);
     expect(res.status(), 'API users cần auth').toBeGreaterThanOrEqual(401);
     await context.close();
   });

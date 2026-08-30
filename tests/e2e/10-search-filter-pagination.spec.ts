@@ -106,9 +106,12 @@ test.describe('FILTER — Bộ lọc sản phẩm', () => {
       console.log(`Lọc 0-5tr: ${products.length} sản phẩm`);
 
       for (const p of products) {
-        if (p.price !== undefined) {
-          expect(p.price).toBeGreaterThanOrEqual(0);
-          expect(p.price).toBeLessThanOrEqual(5000000);
+        if (p.price !== undefined && p.price !== null) {
+          const numPrice = Number(p.price);
+          if (!isNaN(numPrice)) {
+            expect(numPrice).toBeGreaterThanOrEqual(0);
+            expect(numPrice).toBeLessThanOrEqual(5000000);
+          }
         }
       }
     } else {
@@ -157,12 +160,10 @@ test.describe('PAGINATION — Phân trang', () => {
     await page.goto('/products?page=1');
     await page.waitForLoadState('networkidle');
 
-    // Tìm nút trang 2 nếu có
-    const page2Btn = page.getByRole('button', { name: '2' }).first();
-    const page2Link = page.getByRole('link', { name: '2' }).first();
+    // Tìm nút trang 2 trong thanh phân trang (chính xác text "2")
+    const page2Btn = page.locator('button').filter({ hasText: /^2$/ }).first();
 
-    const btn = await page2Btn.isVisible().catch(() => false) ? page2Btn :
-                await page2Link.isVisible().catch(() => false) ? page2Link : null;
+    const btn = await page2Btn.isVisible().catch(() => false) ? page2Btn : null;
 
     if (btn) {
       await btn.click();

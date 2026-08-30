@@ -138,24 +138,27 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     fetchUserPermissions();
   }, [isAuthenticated, user?.email]);
 
+  const isAdmin = userPermission?.roleId?.name === 'super_admin' || (user as any)?.role === 'admin';
+
   // Permission check functions
   const hasPermission = (permissionName: string): boolean => {
     // Super admin has all permissions
-    if (userPermission?.roleId?.name === 'super_admin') return true;
+    if (isAdmin) return true;
     return permissions.includes(permissionName);
   };
 
   const hasAnyPermission = (permissionNames: string[]): boolean => {
-    if (userPermission?.roleId?.name === 'super_admin') return true;
+    if (isAdmin) return true;
     return permissionNames.some(p => permissions.includes(p));
   };
 
   const hasAllPermissions = (permissionNames: string[]): boolean => {
-    if (userPermission?.roleId?.name === 'super_admin') return true;
+    if (isAdmin) return true;
     return permissionNames.every(p => permissions.includes(p));
   };
 
   const hasMinRoleLevel = (minLevel: number): boolean => {
+    if (isAdmin) return true;
     const currentLevel = userPermission?.roleId?.level || 0;
     return currentLevel >= minLevel;
   };

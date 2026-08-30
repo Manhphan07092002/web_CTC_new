@@ -559,6 +559,14 @@ export function createSeoInjectMiddleware(distPath: string) {
 
         if (!product) {
           try {
+            product = await Product.findOne({ slug: param, isDeleted: { $ne: true } })
+              .select('_id name slug shortDescription description price brand category images')
+              .lean();
+          } catch (e) {}
+        }
+
+        if (!product) {
+          try {
             product = await Product.findById(param).select('name slug shortDescription description price brand category images').lean();
           } catch (e) {}
         }
@@ -646,6 +654,14 @@ export function createSeoInjectMiddleware(distPath: string) {
 
         if (!project) {
           try {
+            project = await Project.findOne({ slug: param, isDeleted: { $ne: true } })
+              .select('title slug description location client')
+              .lean();
+          } catch (e) {}
+        }
+
+        if (!project) {
+          try {
             project = await Project.findById(param).select('title slug description location client').lean();
           } catch (e) {}
         }
@@ -701,6 +717,14 @@ export function createSeoInjectMiddleware(distPath: string) {
           try {
             const allNews = await News.find({}).select('_id title slug excerpt content author createdAt').lean();
             news = allNews.find(n => (n._id || '').toString().endsWith(hashMatch[1]));
+          } catch (e) {}
+        }
+
+        if (!news) {
+          try {
+            news = await News.findOne({ slug: param })
+              .select('title slug excerpt content author createdAt')
+              .lean();
           } catch (e) {}
         }
 

@@ -82,6 +82,13 @@ class CacheService {
   }
 
   /**
+   * Alias for invalidatePattern
+   */
+  delStartWith(prefixPattern: string): number {
+    return this.invalidatePattern(prefixPattern);
+  }
+
+  /**
    * Clear all cache entries
    */
   flush(): void {

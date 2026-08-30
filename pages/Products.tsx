@@ -57,7 +57,10 @@ const Products: React.FC = () => {
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
 
   // Pagination States
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    const p = parseInt(searchParams.get('page') || '1', 10);
+    return isNaN(p) || p < 1 ? 1 : p;
+  });
   const itemsPerPage = 12; // 3x4 grid
 
   const { t, language } = useLanguage();
@@ -238,6 +241,11 @@ const Products: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(page));
+      return next;
+    });
     // Smooth scroll down to catalog header when changing pages
     const catalogHeader = document.getElementById('product-catalog');
     if (catalogHeader) {

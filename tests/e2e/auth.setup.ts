@@ -39,4 +39,13 @@ setup('Authenticate as admin', async ({ page }) => {
   // Lưu auth state
   await page.context().storageState({ path: AUTH_FILE });
   console.log(`✅ Auth state saved → ${AUTH_FILE}`);
+
+  // Lưu JWT token từ localStorage ra file để dùng cho các API calls trực tiếp
+  const token = await page.evaluate(() => {
+    return localStorage.getItem('auth_token') || localStorage.getItem('token') || '';
+  });
+  if (token) {
+    fs.writeFileSync(path.join(authDir, 'token.txt'), token, 'utf-8');
+    console.log(`✅ Auth token saved → ${path.join(authDir, 'token.txt')}`);
+  }
 });

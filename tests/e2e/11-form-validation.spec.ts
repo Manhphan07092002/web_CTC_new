@@ -6,7 +6,7 @@
  * ================================================================
  */
 import { test, expect } from '@playwright/test';
-import { apiGet, apiPost, apiDelete, ts } from './helpers';
+import { apiGet, apiPost, apiDelete, ts, API_URL } from './helpers';
 
 const label = ts();
 
@@ -156,7 +156,7 @@ test.describe('FORM — Upload ảnh', () => {
 
   test('UPLOAD-001: API upload endpoint tồn tại', async ({ page }) => {
     // Test với file rỗng để xem endpoint có tồn tại không
-    const res = await page.request.post('http://localhost:4000/api/uploads', {
+    const res = await page.request.post(`${API_URL}/api/uploads`, {
       multipart: {
         // Gửi request rỗng để check endpoint
       },
@@ -170,7 +170,7 @@ test.describe('FORM — Upload ảnh', () => {
     // Tạo file .exe giả
     const maliciousFile = Buffer.from('MZ\x90\x00' + 'A'.repeat(100));
 
-    const res = await page.request.post('http://localhost:4000/api/uploads', {
+    const res = await page.request.post(`${API_URL}/api/uploads`, {
       multipart: {
         file: {
           name: 'malicious.exe',
