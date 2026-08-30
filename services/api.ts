@@ -215,16 +215,28 @@ export const api = {
     }),
     incrementView: (id: string) => fetchAPI<{ success: boolean }>(`/news/${id}/view`, { method: 'POST' }),
     incrementLike: (id: string) => fetchAPI<{ success: boolean }>(`/news/${id}/like`, { method: 'POST' }),
-    getComments: (id: string) => fetchAPI<any[]>(`/news/${id}/comments`),
-    addComment: (id: string, data: { name: string; email?: string; content: string }) => fetchAPI<any>(`/news/${id}/comments`, {
+    getComments: (id: string, options?: { email?: string; userId?: string }) => {
+      const params = new URLSearchParams();
+      if (options?.email) params.set('email', options.email);
+      if (options?.userId) params.set('userId', options.userId);
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return fetchAPI<any[]>(`/news/${id}/comments${query}`);
+    },
+    addComment: (id: string, data: { name: string; email: string; content: string; parentId?: string; replyToName?: string }) => fetchAPI<any>(`/news/${id}/comments`, {
       method: 'POST',
       body: JSON.stringify(data)
     }),
-    likeComment: (commentId: string) => fetchAPI<{ success: boolean }>(`/news/comments/${commentId}/like`, { method: 'POST' }),
-    getAdminComments: () => fetchAPI<any[]>('/news/comments/admin/all'),
-    replyComment: (commentId: string, reply: string) => fetchAPI<any>(`/news/comments/${commentId}/reply`, {
+    likeComment: (commentId: string, data: { email?: string; userId?: string }) => fetchAPI<{ success: boolean; isLiked: boolean; likes: number }>(`/news/comments/${commentId}/like`, { 
       method: 'POST',
-      body: JSON.stringify({ reply })
+      body: JSON.stringify(data)
+    }),
+    getAdminComments: () => fetchAPI<any[]>('/news/comments/admin/all'),
+    replyComment: (commentId: string, reply: string, repliedBy?: any) => fetchAPI<any>(`/news/comments/${commentId}/reply`, {
+      method: 'POST',
+      body: JSON.stringify({ reply, repliedBy })
+    }),
+    deleteReply: (commentId: string) => fetchAPI<any>(`/news/comments/${commentId}/reply`, {
+      method: 'DELETE'
     }),
     deleteComment: (commentId: string) => fetchAPI<void>(`/news/comments/${commentId}`, {
       method: 'DELETE'

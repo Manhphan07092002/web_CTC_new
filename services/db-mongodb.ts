@@ -9,6 +9,7 @@ import {
   Project,
   News,
   NewsComment,
+  CommentLike,
   Testimonial,
   Partner,
   User,
@@ -469,7 +470,7 @@ export const db = {
 
   // ==================== COMMENTS ====================
   comments: {
-    getByNewsId: async (idParam: string) => {
+    getByNewsId: async (idParam: string, options?: { email?: string; userId?: string }) => {
       if (!idParam) return [];
       try {
         const newsItem = await db.news.getById(idParam);
@@ -486,10 +487,87 @@ export const db = {
           .sort({ createdAt: 1 })
           .lean();
 
-        return items.map(doc => {
+        // Get list of liked comment IDs for the current user/guest if provided
+        const likedCommentIds = new Set<string>();
+        if (options?.email || options?.userId) {
+          const userEmail = options.email?.trim().toLowerCase();
+          const userId = options.userId;
+          const identifiers: string[] = [];
+          if (userId) identifiers.push(`user:${userId}`);
+          if (userEmail) identifiers.push(`email:${userEmail}`);
+
+          if (identifiers.length > 0) {
+            const userLikes = await CommentLike.find({ identifier: { $in: identifiers } }).lean();
+            for (const ul of userLikes) {
+              likedCommentIds.add(String(ul.commentId));
+            }
+          }
+        }
+
+        // Map and format all documents
+        const allComments = items.map(doc => {
           const realId = doc._id ? doc._id.toString() : '';
-          return { ...doc, _id: realId, id: realId };
+          return {
+            ...doc,
+            _id: realId,
+            id: realId,
+            likes: doc.likes || 0,
+            isLiked: likedCommentIds.has(realId),
+            replies: [] as any[]
+          };
         });
+
+        // Separate root comments and child comments
+        const rootComments: any[] = [];
+        const childComments: any[] = [];
+        const commentMap = new Map<string, any>();
+
+        for (const c of allComments) {
+          commentMap.set(c.id, c);
+          if (!c.parentId) {
+            rootComments.push(c);
+          } else {
+            childComments.push(c);
+          }
+        }
+
+        // Attach child comments to their root comment (Level 2)
+        for (const child of childComments) {
+          const rootTarget = child.rootId 
+            ? commentMap.get(String(child.rootId)) 
+            : commentMap.get(String(child.parentId));
+
+          if (rootTarget) {
+            rootTarget.replies.push(child);
+          } else {
+            rootComments.push(child);
+          }
+        }
+
+        // Backward compatibility for legacy reply field on root comment
+        for (const root of rootComments) {
+          if (root.reply && !root.replies.some((r: any) => r.isAdminReply)) {
+            const adminReplyId = `${root.id}_admin_reply`;
+            root.replies.unshift({
+              _id: adminReplyId,
+              id: adminReplyId,
+              newsId: root.newsId,
+              parentId: root.id,
+              rootId: root.id,
+              name: root.repliedBy?.name || root.replyAuthor || 'Administrator',
+              email: root.repliedBy?.email || 'admin@ctcdn.vn',
+              content: typeof root.reply === 'object' && root.reply ? (root.reply as any).content : root.reply,
+              isAdminReply: true,
+              repliedBy: root.repliedBy || { name: root.replyAuthor || 'Administrator', role: 'admin' },
+              repliedAt: root.repliedAt || root.updatedAt,
+              createdAt: root.repliedAt || root.updatedAt,
+              likes: 0,
+              isLiked: likedCommentIds.has(adminReplyId)
+            });
+          }
+        }
+
+        return rootComments;
       } catch (err) {
         console.error('Error getting comments:', err);
         return [];
@@ -515,9 +593,52 @@ export const db = {
       }
     },
 
-    add: async (data: { newsId: string; name: string; email?: string; content: string }) => {
+    add: async (data: { 
+      newsId: string; 
+      name: string; 
+      email: string; 
+      content: string; 
+      parentId?: string | null; 
+      replyToName?: string;
+      isAdminReply?: boolean;
+      repliedBy?: any;
+    }) => {
+      let rootId = null;
+      let finalParentId = null;
+      let finalReplyToName = data.replyToName;
+
+      if (data.parentId) {
+        finalParentId = data.parentId;
+        // Check if parent comment is a synthetic admin reply (e.g. "..._admin_reply")
+        if (typeof data.parentId === 'string' && data.parentId.endsWith('_admin_reply')) {
+          const actualRootId = data.parentId.replace('_admin_reply', '');
+          rootId = actualRootId;
+          finalParentId = actualRootId;
+        } else {
+          try {
+            const parentDoc = await NewsComment.findById(data.parentId).lean();
+            if (parentDoc) {
+              rootId = parentDoc.rootId || parentDoc._id;
+              if (!finalReplyToName) {
+                finalReplyToName = parentDoc.name;
+              }
+            }
+          } catch (e) {
+            console.error('Error resolving parent comment:', e);
+          }
+        }
+      }
+
       const comment = new NewsComment({
-        ...data,
+        newsId: data.newsId,
+        parentId: finalParentId,
+        rootId: rootId,
+        replyToName: finalReplyToName,
+        isAdminReply: !!data.isAdminReply,
+        repliedBy: data.repliedBy,
+        name: data.name.trim(),
+        email: data.email.trim().toLowerCase(),
+        content: data.content.trim(),
         avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random&color=fff&size=64`,
         isApproved: true,
         likes: 0,
@@ -525,15 +646,75 @@ export const db = {
       await comment.save();
       const obj = comment.toObject({ flattenMaps: true });
       const realId = obj._id ? obj._id.toString() : '';
-      return { ...obj, _id: realId, id: realId };
+      return { ...obj, _id: realId, id: realId, likes: 0, replies: [] };
     },
 
-    likeComment: async (commentId: string) => {
-      await NewsComment.findByIdAndUpdate(commentId, { $inc: { likes: 1 } });
+    toggleLike: async (commentId: string, identifier: { email?: string; userId?: any }) => {
+      const userEmail = identifier.email?.trim().toLowerCase();
+      const userId = identifier.userId;
+
+      if (!userEmail && !userId) {
+        throw new Error('Vui lòng cung cấp email hoặc userId để thực hiện thích');
+      }
+
+      const isSynthetic = typeof commentId === 'string' && commentId.endsWith('_admin_reply');
+      const actualCommentId = isSynthetic ? commentId.replace('_admin_reply', '') : commentId;
+
+      const userKey = userId ? `user:${userId}` : `email:${userEmail}`;
+
+      const existingLike = await CommentLike.findOne({ commentId, identifier: userKey });
+
+      let isLiked = false;
+      let newLikes = 0;
+
+      if (existingLike) {
+        // Unlike
+        await CommentLike.findByIdAndDelete(existingLike._id);
+        if (!isSynthetic) {
+          const updated = await NewsComment.findByIdAndUpdate(
+            actualCommentId,
+            { $inc: { likes: -1 } },
+            { new: true }
+          );
+          newLikes = Math.max(0, updated?.likes || 0);
+          if (updated && updated.likes < 0) {
+            await NewsComment.findByIdAndUpdate(actualCommentId, { likes: 0 });
+          }
+        }
+        isLiked = false;
+      } else {
+        // Like
+        await CommentLike.create({
+          commentId,
+          identifier: userKey,
+          userId: userId || undefined,
+          email: userEmail || undefined
+        });
+        if (!isSynthetic) {
+          const updated = await NewsComment.findByIdAndUpdate(
+            actualCommentId,
+            { $inc: { likes: 1 } },
+            { new: true }
+          );
+          newLikes = updated?.likes || 1;
+        } else {
+          newLikes = 1;
+        }
+        isLiked = true;
+      }
+
+      if (isSynthetic) {
+        newLikes = await CommentLike.countDocuments({ commentId });
+      }
+
+      return { isLiked, likes: newLikes };
     },
 
     delete: async (commentId: string) => {
       const result = await NewsComment.findByIdAndDelete(commentId);
+      // Delete child replies and likes
+      await NewsComment.deleteMany({ $or: [{ parentId: commentId }, { rootId: commentId }] });
+      await CommentLike.deleteMany({ commentId });
       return !!result;
     },
 
@@ -545,13 +726,70 @@ export const db = {
       });
     },
 
-    replyComment: async (commentId: string, replyText: string) => {
+    replyComment: async (commentId: string, replyText: string, repliedBy?: { id?: any; name: string; email?: string; avatar?: string; role?: string }) => {
+      const trimmed = (replyText || '').trim();
+      let updated;
+      if (!trimmed) {
+        // If reply is empty, unset reply fields on root comment and delete child admin replies
+        updated = await NewsComment.findByIdAndUpdate(
+          commentId,
+          { $unset: { reply: 1, replyAuthor: 1, repliedAt: 1, repliedBy: 1 } },
+          { new: true }
+        ).lean();
+        await NewsComment.deleteMany({ parentId: commentId, isAdminReply: true });
+      } else {
+        const authorName = repliedBy?.name || 'Administrator';
+        updated = await NewsComment.findByIdAndUpdate(
+          commentId,
+          {
+            reply: trimmed,
+            replyAuthor: authorName,
+            repliedBy: repliedBy || { name: authorName },
+            repliedAt: new Date()
+          },
+          { new: true }
+        ).lean();
+
+        // Also ensure child comment exists for this admin reply
+        const existingChild = await NewsComment.findOne({ parentId: commentId, isAdminReply: true });
+        if (existingChild) {
+          await NewsComment.findByIdAndUpdate(existingChild._id, {
+            content: trimmed,
+            name: authorName,
+            repliedBy: repliedBy || { name: authorName },
+            repliedAt: new Date()
+          });
+        } else if (updated) {
+          await NewsComment.create({
+            newsId: updated.newsId,
+            parentId: commentId,
+            rootId: commentId,
+            isAdminReply: true,
+            name: authorName,
+            email: repliedBy?.email || 'admin@ctcdn.vn',
+            content: trimmed,
+            repliedBy: repliedBy || { name: authorName },
+            repliedAt: new Date(),
+            likes: 0,
+            isApproved: true
+          });
+        }
+      }
+      if (!updated) return null;
+      const realId = updated._id ? updated._id.toString() : '';
+      return { ...updated, _id: realId, id: realId };
+    },
+
+    deleteReply: async (commentId: string) => {
       const updated = await NewsComment.findByIdAndUpdate(
         commentId,
-        { reply: replyText },
+        { $unset: { reply: 1, replyAuthor: 1, repliedAt: 1, repliedBy: 1 } },
         { new: true }
       ).lean();
-      return updated;
+      await NewsComment.deleteMany({ parentId: commentId, isAdminReply: true });
+      if (!updated) return null;
+      const realId = updated._id ? updated._id.toString() : '';
+      return { ...updated, _id: realId, id: realId };
     },
 
     toggleApproval: async (commentId: string, isApproved: boolean) => {

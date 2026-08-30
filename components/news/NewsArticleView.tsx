@@ -4,10 +4,11 @@ import {
   Calendar, Tag, Share2, Clock, Check, User, ArrowRight, 
   Phone, MessageSquare, Printer, Bookmark, Eye, Type, 
   ThumbsUp, BookOpen, ListOrdered, Volume2, VolumeX, Play, Pause,
-  Send, MessageCircle, ShieldCheck
+  Send, MessageCircle, ShieldCheck, CornerDownRight, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../../contexts/SettingsContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 
 interface NewsArticleViewProps {
@@ -17,15 +18,32 @@ interface NewsArticleViewProps {
 interface ReaderComment {
   id: string;
   name: string;
+  email?: string;
+  avatar?: string;
   avatarBg: string;
   time: string;
   content: string;
   likes: number;
+  isLiked?: boolean;
+  parentId?: string | null;
+  rootId?: string | null;
+  replyToName?: string;
+  isAdminReply?: boolean;
+  replies?: ReaderComment[];
   reply?: string;
+  replyAuthor?: string;
+  repliedAt?: string;
+  repliedBy?: {
+    id?: any;
+    name?: string;
+    avatar?: string;
+    role?: string;
+  };
 }
 
 export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
   const { settings } = useSettings();
+  const { user, isAuthenticated } = useAuth();
   const logoSrc = settings?.logoHeader || settings?.logo || '/uploads/images/logo/logodo.png';
   
   const articleId = (news as any)._id || news.id;
@@ -49,36 +67,83 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
   const [speechRate, setSpeechRate] = useState<number>(1.0);
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
 
-  // Reader Comments State (Dynamic 100% from Database)
+  // Reader Comments State (Dynamic 100% from Database - No Login Required)
   const [comments, setComments] = useState<ReaderComment[]>([]);
   const [newCommentName, setNewCommentName] = useState('');
+  const [newCommentEmail, setNewCommentEmail] = useState('');
   const [newCommentText, setNewCommentText] = useState('');
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [submittingComment, setSubmittingComment] = useState(false);
 
-  // Fetch real comments from database
-  useEffect(() => {
-    const articleId = (news as any)._id || news.id;
-    if (articleId) {
-      api.news.getComments(articleId).then(data => {
+  // Guest Persistent Identification & Reply States
+  const [savedGuestEmail, setSavedGuestEmail] = useState<string>(() => localStorage.getItem('ctc_comment_email') || '');
+  const [savedGuestName, setSavedGuestName] = useState<string>(() => localStorage.getItem('ctc_comment_name') || '');
+
+  // Prompt Modal when Guest likes for the first time without email
+  const [likeEmailModal, setLikeEmailModal] = useState<{ isOpen: boolean; commentId: string | null }>({ isOpen: false, commentId: null });
+  const [likeEmailInput, setLikeEmailInput] = useState('');
+  const [likeEmailError, setLikeEmailError] = useState('');
+
+  // Inline Reply Form States
+  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
+  const [replyName, setReplyName] = useState('');
+  const [replyEmail, setReplyEmail] = useState('');
+  const [replyContent, setReplyContent] = useState('');
+  const [replyError, setReplyError] = useState<string | null>(null);
+  const [submittingReply, setSubmittingReply] = useState(false);
+
+  // Helper to map comment data recursively
+  const mapCommentData = (c: any): ReaderComment => ({
+    id: c._id || c.id,
+    name: c.name,
+    email: c.email,
+    avatar: c.avatar,
+    avatarBg: 'bg-primary',
+    time: c.createdAt ? new Date(c.createdAt).toLocaleDateString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }) : 'Mới gửi',
+    content: c.content,
+    likes: c.likes || 0,
+    isLiked: !!c.isLiked,
+    parentId: c.parentId,
+    rootId: c.rootId,
+    replyToName: c.replyToName,
+    isAdminReply: !!c.isAdminReply,
+    reply: typeof c.reply === 'object' && c.reply ? c.reply.content : c.reply,
+    replyAuthor: c.replyAuthor || (typeof c.reply === 'object' && c.reply?.repliedBy ? c.reply.repliedBy.name : (c.repliedBy?.name || 'Administrator')),
+    repliedBy: typeof c.reply === 'object' && c.reply?.repliedBy ? c.reply.repliedBy : c.repliedBy,
+    repliedAt: typeof c.reply === 'object' && c.reply?.repliedAt ? c.reply.repliedAt : c.repliedAt,
+    replies: Array.isArray(c.replies) ? c.replies.map(mapCommentData) : []
+  });
+
+  const loadComments = () => {
+    const artId = (news as any)._id || news.id;
+    if (artId) {
+      const activeEmail = (isAuthenticated && user ? user.email : savedGuestEmail) || undefined;
+      const activeUserId = (isAuthenticated && user ? (user.id || (user as any)._id) : undefined);
+      api.news.getComments(artId, { email: activeEmail, userId: activeUserId }).then(data => {
         if (Array.isArray(data)) {
-          setComments(data.map((c: any) => ({
-            id: c._id || c.id,
-            name: c.name,
-            avatarBg: 'bg-primary',
-            time: c.createdAt ? new Date(c.createdAt).toLocaleDateString('vi-VN', {
-              hour: '2-digit',
-              minute: '2-digit',
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            }) : 'Mới gửi',
-            content: c.content,
-            likes: c.likes || 0,
-            reply: c.reply
-          })));
+          setComments(data.map(mapCommentData));
         }
       }).catch(err => console.error('Error loading comments:', err));
     }
-  }, [news]);
+  };
+
+  // Fetch real comments from database
+  useEffect(() => {
+    loadComments();
+    if (savedGuestName && !newCommentName) {
+      setNewCommentName(savedGuestName);
+    }
+    if (savedGuestEmail && !newCommentEmail) {
+      setNewCommentEmail(savedGuestEmail);
+    }
+  }, [news, savedGuestEmail, user]);
 
   // Scroll Progress Listener
   useEffect(() => {
@@ -144,28 +209,319 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCommentName.trim() || !newCommentText.trim()) return;
+    setCommentError(null);
+
+    const trimmedName = newCommentName.trim();
+    const trimmedEmail = newCommentEmail.trim().toLowerCase();
+    const trimmedContent = newCommentText.trim();
+
+    if (!trimmedName) {
+      setCommentError('Vui lòng nhập họ và tên của bạn.');
+      return;
+    }
+
+    if (!trimmedEmail) {
+      setCommentError('Vui lòng nhập email của bạn.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setCommentError('Email không hợp lệ. Vui lòng nhập đúng định dạng (ví dụ: abc@gmail.com).');
+      return;
+    }
+
+    if (!trimmedContent) {
+      setCommentError('Vui lòng nhập nội dung ý kiến thảo luận.');
+      return;
+    }
 
     const articleId = (news as any)._id || news.id;
+    setSubmittingComment(true);
     try {
       const added = await api.news.addComment(articleId, {
-        name: newCommentName.trim(),
-        content: newCommentText.trim()
+        name: trimmedName,
+        email: trimmedEmail,
+        content: trimmedContent
       });
+
+      localStorage.setItem('ctc_comment_email', trimmedEmail);
+      localStorage.setItem('ctc_comment_name', trimmedName);
+      setSavedGuestEmail(trimmedEmail);
+      setSavedGuestName(trimmedName);
+
       const newEntry: ReaderComment = {
         id: added._id || added.id || Date.now().toString(),
-        name: added.name || newCommentName.trim(),
+        name: added.name || trimmedName,
+        email: added.email || trimmedEmail,
         avatarBg: 'bg-primary',
         time: 'Vừa xong',
-        content: added.content || newCommentText.trim(),
-        likes: 0
+        content: added.content || trimmedContent,
+        likes: 0,
+        isLiked: false,
+        replies: []
       };
       setComments([newEntry, ...comments]);
       setNewCommentText('');
-    } catch (err) {
+      setCommentError(null);
+    } catch (err: any) {
       console.error('Error submitting comment:', err);
+      setCommentError(err?.message || 'Lỗi khi gửi bình luận. Vui lòng thử lại.');
+    } finally {
+      setSubmittingComment(false);
     }
   };
+
+  // Like Toggle Logic (Optimistic UI & Anti-duplicate)
+  const handleToggleLike = async (commentId: string) => {
+    const activeEmail = (isAuthenticated && user ? user.email : savedGuestEmail)?.trim();
+    const activeUserId = isAuthenticated && user ? (user.id || (user as any)._id) : undefined;
+
+    // If guest has no saved email, prompt for email once
+    if (!activeUserId && !activeEmail) {
+      setLikeEmailModal({ isOpen: true, commentId });
+      setLikeEmailInput('');
+      setLikeEmailError('');
+      return;
+    }
+
+    await executeLikeToggle(commentId, activeEmail, activeUserId);
+  };
+
+  const executeLikeToggle = async (commentId: string, email?: string, userId?: string) => {
+    const updateLikesTree = (list: ReaderComment[]): ReaderComment[] => {
+      return list.map(item => {
+        if (item.id === commentId) {
+          const currentlyLiked = !!item.isLiked;
+          return {
+            ...item,
+            isLiked: !currentlyLiked,
+            likes: currentlyLiked ? Math.max(0, item.likes - 1) : item.likes + 1
+          };
+        }
+        if (item.replies && item.replies.length > 0) {
+          return {
+            ...item,
+            replies: updateLikesTree(item.replies)
+          };
+        }
+        return item;
+      });
+    };
+
+    // Optimistic UI update
+    setComments(prev => updateLikesTree(prev));
+
+    try {
+      const res = await api.news.likeComment(commentId, { email, userId });
+      if (res && typeof res.likes === 'number') {
+        const syncServerResult = (list: ReaderComment[]): ReaderComment[] => {
+          return list.map(item => {
+            if (item.id === commentId) {
+              return {
+                ...item,
+                isLiked: res.isLiked,
+                likes: res.likes
+              };
+            }
+            if (item.replies && item.replies.length > 0) {
+              return {
+                ...item,
+                replies: syncServerResult(item.replies)
+              };
+            }
+            return item;
+          });
+        };
+        setComments(prev => syncServerResult(prev));
+      }
+    } catch (err) {
+      console.error('Error toggling like:', err);
+      // Revert if error
+      setComments(prev => updateLikesTree(prev));
+    }
+  };
+
+  const handleConfirmLikeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const trimmed = likeEmailInput.trim().toLowerCase();
+    if (!trimmed) {
+      setLikeEmailError('Vui lòng nhập email của bạn.');
+      return;
+    }
+    if (!emailRegex.test(trimmed)) {
+      setLikeEmailError('Email không hợp lệ. Vui lòng nhập đúng định dạng (ví dụ: abc@gmail.com).');
+      return;
+    }
+
+    localStorage.setItem('ctc_comment_email', trimmed);
+    setSavedGuestEmail(trimmed);
+    const targetId = likeEmailModal.commentId;
+    setLikeEmailModal({ isOpen: false, commentId: null });
+
+    if (targetId) {
+      await executeLikeToggle(targetId, trimmed, undefined);
+    }
+  };
+
+  // Reply Form Handlers
+  const handleOpenReplyForm = (targetComment: ReaderComment) => {
+    if (activeReplyId === targetComment.id) {
+      setActiveReplyId(null);
+    } else {
+      setActiveReplyId(targetComment.id);
+      setReplyName(savedGuestName || (isAuthenticated && user ? user.name : ''));
+      setReplyEmail(savedGuestEmail || (isAuthenticated && user ? user.email : ''));
+      setReplyContent('');
+      setReplyError(null);
+    }
+  };
+
+  const handleSubmitReply = async (e: React.FormEvent, targetComment: ReaderComment, rootCommentId: string) => {
+    e.preventDefault();
+    setReplyError(null);
+
+    const trimmedName = replyName.trim();
+    const trimmedEmail = replyEmail.trim().toLowerCase();
+    const trimmedContent = replyContent.trim();
+
+    if (!trimmedName) {
+      setReplyError('Vui lòng nhập họ và tên của bạn.');
+      return;
+    }
+    if (!trimmedEmail) {
+      setReplyError('Vui lòng nhập email của bạn.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setReplyError('Email không hợp lệ. Vui lòng nhập đúng định dạng (ví dụ: abc@gmail.com).');
+      return;
+    }
+    if (!trimmedContent) {
+      setReplyError('Vui lòng nhập nội dung phản hồi.');
+      return;
+    }
+
+    setSubmittingReply(true);
+    const artId = (news as any)._id || news.id;
+    try {
+      const added = await api.news.addComment(artId, {
+        name: trimmedName,
+        email: trimmedEmail,
+        content: trimmedContent,
+        parentId: targetComment.id,
+        replyToName: targetComment.name
+      });
+
+      localStorage.setItem('ctc_comment_email', trimmedEmail);
+      localStorage.setItem('ctc_comment_name', trimmedName);
+      setSavedGuestEmail(trimmedEmail);
+      setSavedGuestName(trimmedName);
+
+      const newReplyItem: ReaderComment = {
+        id: added._id || added.id || Date.now().toString(),
+        name: added.name || trimmedName,
+        email: added.email || trimmedEmail,
+        avatarBg: 'bg-primary',
+        time: 'Vừa xong',
+        content: added.content || trimmedContent,
+        likes: 0,
+        isLiked: false,
+        parentId: targetComment.id,
+        replyToName: targetComment.name,
+        replies: []
+      };
+
+      setComments(prev => prev.map(c => {
+        if (c.id === rootCommentId) {
+          return {
+            ...c,
+            replies: [...(c.replies || []), newReplyItem]
+          };
+        }
+        return c;
+      }));
+
+      setActiveReplyId(null);
+      setReplyContent('');
+      setReplyError(null);
+    } catch (err: any) {
+      console.error('Error submitting reply:', err);
+      setReplyError(err?.message || 'Lỗi khi gửi phản hồi. Vui lòng thử lại.');
+    } finally {
+      setSubmittingReply(false);
+    }
+  };
+
+  const renderInlineReplyForm = (targetComment: ReaderComment, rootCommentId: string) => (
+    <form 
+      onSubmit={e => handleSubmitReply(e, targetComment, rootCommentId)} 
+      className="p-4 rounded-2xl bg-sky-50/50 dark:bg-gray-800/90 border border-sky-200 dark:border-sky-900/60 space-y-3 mt-2 shadow-inner"
+    >
+      <div className="flex items-center justify-between text-xs pb-1.5 border-b border-sky-200/60 dark:border-gray-700">
+        <span className="font-bold text-primary dark:text-sky-400 flex items-center gap-1.5">
+          <CornerDownRight size={14} /> Trả lời <span className="underline">@{targetComment.name}</span>
+        </span>
+        <button
+          type="button"
+          onClick={() => setActiveReplyId(null)}
+          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-semibold flex items-center gap-1"
+        >
+          <X size={13} /> Đóng
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <input
+          type="text"
+          required
+          placeholder="Họ và tên của bạn..."
+          value={replyName}
+          onChange={e => { setReplyName(e.target.value); setReplyError(null); }}
+          className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:border-primary"
+        />
+        <input
+          type="email"
+          required
+          placeholder="Email của bạn..."
+          value={replyEmail}
+          onChange={e => { setReplyEmail(e.target.value); setReplyError(null); }}
+          className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:border-primary"
+        />
+      </div>
+
+      <textarea
+        required
+        rows={2}
+        placeholder="Viết phản hồi của bạn..."
+        value={replyContent}
+        onChange={e => { setReplyContent(e.target.value); setReplyError(null); }}
+        className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-primary placeholder-gray-400"
+      />
+
+      {replyError && (
+        <div className="text-xs text-red-600 dark:text-red-400 font-semibold px-2.5 py-1.5 bg-red-50 dark:bg-red-950/40 rounded-lg border border-red-200 dark:border-red-900 flex items-center gap-1.5">
+          <span>⚠️</span>
+          <span>{replyError}</span>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between pt-1">
+        <span className="text-[11px] text-gray-400 hidden sm:inline">
+          Email được bảo mật và dùng cho phản hồi tiếp theo.
+        </span>
+        <button
+          type="submit"
+          disabled={submittingReply}
+          className="px-4 py-2 bg-primary hover:bg-secondary text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors ml-auto disabled:opacity-50"
+        >
+          <Send size={12} /> {submittingReply ? 'Đang gửi...' : 'Gửi trả lời'}
+        </button>
+      </div>
+    </form>
+  );
 
   const readingTimeMinutes = Math.max(2, Math.ceil(((news.content || news.excerpt || '').length) / 500));
 
@@ -524,35 +880,62 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
           <div className="pt-8 border-t border-gray-100 dark:border-gray-700/70 space-y-6">
             <h3 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
               <MessageCircle className="text-primary" size={20} />
-              Ý kiến độc giả ({comments.length})
+              Ý kiến độc giả ({comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0)})
             </h3>
 
-            {/* Comment Input Form */}
-            <form onSubmit={handleAddComment} className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-700/40 border border-gray-100 dark:border-gray-700 space-y-3">
+            {/* Comment Input Form - Public Reader (No Login Required) */}
+            <form onSubmit={handleAddComment} className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700/80 space-y-3.5 shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Họ và tên của bạn..." 
-                  value={newCommentName}
-                  onChange={e => setNewCommentName(e.target.value)}
-                  className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:border-primary"
-                />
+                <div>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="Họ và tên của bạn..." 
+                    value={newCommentName}
+                    onChange={e => { setNewCommentName(e.target.value); if (commentError) setCommentError(null); }}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:border-primary placeholder-gray-400"
+                  />
+                </div>
+                <div>
+                  <input 
+                    type="email" 
+                    required
+                    placeholder="Email của bạn..." 
+                    value={newCommentEmail}
+                    onChange={e => { setNewCommentEmail(e.target.value); if (commentError) setCommentError(null); }}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:border-primary placeholder-gray-400"
+                  />
+                </div>
               </div>
+
               <textarea 
                 required
                 rows={3}
                 placeholder="Viết ý kiến thảo luận của bạn về bài viết này..."
                 value={newCommentText}
-                onChange={e => setNewCommentText(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-primary"
+                onChange={e => { setNewCommentText(e.target.value); if (commentError) setCommentError(null); }}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-primary placeholder-gray-400 transition-colors"
               />
-              <button 
-                type="submit"
-                className="px-5 py-2.5 bg-primary hover:bg-secondary text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 transition-colors ml-auto"
-              >
-                <Send size={14} /> Gửi ý kiến
-              </button>
+
+              {commentError && (
+                <div className="text-xs text-red-600 dark:text-red-400 font-semibold px-3 py-2 bg-red-50 dark:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-800 flex items-center gap-1.5">
+                  <span>⚠️</span>
+                  <span>{commentError}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-gray-400 hidden sm:inline">
+                  Ý kiến của bạn sẽ được hiển thị công khai. Email sẽ được bảo mật.
+                </span>
+                <button 
+                  type="submit"
+                  disabled={submittingComment}
+                  className="px-5 py-2.5 bg-primary hover:bg-secondary text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 transition-colors ml-auto disabled:opacity-50"
+                >
+                  <Send size={14} /> {submittingComment ? 'Đang gửi...' : 'Gửi ý kiến'}
+                </button>
+              </div>
             </form>
 
             {/* Comments List */}
@@ -563,31 +946,202 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
             ) : (
               <div className="space-y-4">
                 {comments.map(c => (
-                  <div key={c.id} className="p-4 rounded-2xl bg-white dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 space-y-2">
+                  <div key={c.id} className="p-5 rounded-2xl bg-white dark:bg-gray-800/70 border border-gray-100 dark:border-gray-700/80 space-y-3 shadow-sm transition-all">
+                    {/* Comment Author & Date */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className={`w-8 h-8 rounded-full ${c.avatarBg || 'bg-primary'} text-white font-extrabold text-xs flex items-center justify-center shadow-sm uppercase`}>
-                          {(c.name || 'U').charAt(0)}
-                        </div>
+                        {c.avatar ? (
+                          <img 
+                            src={c.avatar} 
+                            alt={c.name} 
+                            className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
+                          />
+                        ) : (
+                          <div className={`w-9 h-9 rounded-full ${c.avatarBg || 'bg-primary'} text-white font-extrabold text-xs flex items-center justify-center shadow-sm uppercase`}>
+                            {(c.name || 'U').charAt(0)}
+                          </div>
+                        )}
                         <div>
-                          <span className="font-extrabold text-xs text-gray-900 dark:text-white">{c.name}</span>
-                          <span className="text-[11px] text-gray-400 block">{c.time}</span>
+                          <span className="font-extrabold text-xs text-gray-900 dark:text-white block">{c.name}</span>
+                          <span className="text-[11px] text-gray-400 font-medium block">{c.time}</span>
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed font-medium pl-10">
+
+                    {/* Content */}
+                    <p className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed font-medium pl-11">
                       {c.content}
                     </p>
 
-                    {/* CTC Reply */}
-                    {c.reply && (
-                      <div className="ml-8 mt-3 p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-xs space-y-1">
-                        <div className="flex items-center gap-1.5 text-primary font-bold">
-                          <ShieldCheck size={14} /> Phản hồi từ Ban Biên Tập CTC
-                        </div>
-                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {c.reply}
-                        </p>
+                    {/* Action Buttons: Like & Reply for Root Comment */}
+                    <div className="flex items-center gap-3 pl-11 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleLike(c.id)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
+                          c.isLiked
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-primary dark:hover:text-sky-400'
+                        }`}
+                      >
+                        <ThumbsUp size={13} className={c.isLiked ? 'fill-white' : ''} />
+                        <span>{c.isLiked ? 'Đã thích' : 'Thích'} ({c.likes || 0})</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenReplyForm(c)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-primary dark:hover:text-sky-400 transition-all"
+                      >
+                        <CornerDownRight size={13} />
+                        <span>Trả lời</span>
+                      </button>
+                    </div>
+
+                    {/* Inline Reply Form for Root Comment */}
+                    {activeReplyId === c.id && (
+                      <div className="pl-11 pt-1">
+                        {renderInlineReplyForm(c, c.id)}
+                      </div>
+                    )}
+
+                    {/* Level 2: Nested Replies (Admin Reply & Reader Replies) */}
+                    {c.replies && c.replies.length > 0 && (
+                      <div className="space-y-3 pt-2">
+                        {c.replies.map(reply => {
+                          if (reply.isAdminReply) {
+                            // Phản hồi từ Ban Biên Tập CTC
+                            return (
+                              <div key={reply.id} className="ml-6 sm:ml-11 p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900/60 text-xs space-y-2.5 shadow-sm">
+                                <div className="flex items-center gap-1.5 text-primary dark:text-sky-400 font-extrabold text-xs">
+                                  <ShieldCheck size={16} className="text-primary dark:text-sky-400 flex-shrink-0" />
+                                  <span>Phản hồi từ Ban Biên Tập CTC</span>
+                                </div>
+
+                                <div className="pl-4 border-l-2 border-primary/20 dark:border-sky-500/30 ml-1.5 space-y-2">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-extrabold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                      {reply.repliedBy?.avatar ? (
+                                        <img
+                                          src={reply.repliedBy.avatar}
+                                          alt={reply.name}
+                                          className="w-4 h-4 rounded-full inline-block object-cover border border-sky-400"
+                                        />
+                                      ) : (
+                                        <span className="text-primary dark:text-sky-400">👤</span>
+                                      )}
+                                      {reply.repliedBy?.name || reply.name || 'Administrator'}
+                                    </span>
+                                    <span className="text-[10px] font-bold px-1.5 py-0.2 bg-primary/10 text-primary dark:text-sky-300 rounded border border-primary/20">
+                                      Quản trị viên
+                                    </span>
+                                    {reply.repliedAt && (
+                                      <span className="text-[11px] text-gray-400">
+                                        • {new Date(reply.repliedAt).toLocaleString('vi-VN')}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <p className="text-gray-800 dark:text-gray-200 leading-relaxed font-medium text-xs">
+                                    {reply.content}
+                                  </p>
+
+                                  {/* Action Buttons for Admin Reply */}
+                                  <div className="flex items-center gap-2.5 pt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleToggleLike(reply.id)}
+                                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-xs transition-all ${
+                                        reply.isLiked
+                                          ? 'bg-blue-600 text-white shadow-sm'
+                                          : 'text-gray-600 dark:text-gray-300 hover:bg-sky-100 dark:hover:bg-sky-900/50 hover:text-primary dark:hover:text-sky-300'
+                                      }`}
+                                    >
+                                      <ThumbsUp size={12} className={reply.isLiked ? 'fill-white' : ''} />
+                                      <span>{reply.isLiked ? 'Đã thích' : 'Thích'} ({reply.likes || 0})</span>
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => handleOpenReplyForm(reply)}
+                                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-xs text-gray-600 dark:text-gray-300 hover:bg-sky-100 dark:hover:bg-sky-900/50 hover:text-primary dark:hover:text-sky-300 transition-all"
+                                    >
+                                      <CornerDownRight size={12} />
+                                      <span>Trả lời</span>
+                                    </button>
+                                  </div>
+
+                                  {/* Inline Reply Form for Admin Reply */}
+                                  {activeReplyId === reply.id && (
+                                    <div className="pt-2">
+                                      {renderInlineReplyForm(reply, c.id)}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          } else {
+                            // Câu trả lời của Độc giả (cấp 2)
+                            return (
+                              <div key={reply.id} className="ml-6 sm:ml-11 p-4 rounded-2xl bg-gray-50/90 dark:bg-gray-900/50 border border-gray-200/80 dark:border-gray-700/80 text-xs space-y-2 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-extrabold text-[11px] flex items-center justify-center uppercase">
+                                      {(reply.name || 'U').charAt(0)}
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="font-extrabold text-xs text-gray-900 dark:text-white">{reply.name}</span>
+                                        {reply.replyToName && (
+                                          <span className="text-[11px] text-primary dark:text-sky-400 font-semibold flex items-center gap-0.5">
+                                            <span>↳</span> <span>@{reply.replyToName}</span>
+                                          </span>
+                                        )}
+                                      </div>
+                                      <span className="text-[10px] text-gray-400 font-medium">{reply.time}</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <p className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed font-medium pl-9">
+                                  {reply.content}
+                                </p>
+
+                                {/* Action Buttons for Reader Reply */}
+                                <div className="flex items-center gap-2.5 pl-9 pt-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleLike(reply.id)}
+                                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-xs transition-all ${
+                                      reply.isLiked
+                                        ? 'bg-blue-600 text-white shadow-sm'
+                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-sky-400'
+                                    }`}
+                                  >
+                                    <ThumbsUp size={12} className={reply.isLiked ? 'fill-white' : ''} />
+                                    <span>{reply.isLiked ? 'Đã thích' : 'Thích'} ({reply.likes || 0})</span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenReplyForm(reply)}
+                                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-sky-400 transition-all"
+                                  >
+                                    <CornerDownRight size={12} />
+                                    <span>Trả lời</span>
+                                  </button>
+                                </div>
+
+                                {/* Inline Reply Form for Reader Reply */}
+                                {activeReplyId === reply.id && (
+                                  <div className="pl-9 pt-2">
+                                    {renderInlineReplyForm(reply, c.id)}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                        })}
                       </div>
                     )}
                   </div>
@@ -595,6 +1149,65 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
               </div>
             )}
           </div>
+
+          {/* Modal Nhập Email để Like (Dành cho khách chưa có email) */}
+          {likeEmailModal.isOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+              <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-extrabold text-sm text-gray-900 dark:text-white flex items-center gap-2">
+                    <ThumbsUp size={16} className="text-primary dark:text-sky-400" />
+                    Nhập email để thích bình luận
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => setLikeEmailModal({ isOpen: false, commentId: null })}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Email được dùng để ghi nhận lượt thích duy nhất và không bị trùng lặp. Bạn chỉ cần nhập một lần duy nhất.
+                </p>
+
+                <form onSubmit={handleConfirmLikeEmail} className="space-y-3">
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    placeholder="Email của bạn (ví dụ: name@example.com)..."
+                    value={likeEmailInput}
+                    onChange={e => { setLikeEmailInput(e.target.value); setLikeEmailError(''); }}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:border-primary"
+                  />
+
+                  {likeEmailError && (
+                    <div className="text-xs text-red-600 dark:text-red-400 font-semibold px-2 py-1 bg-red-50 dark:bg-red-950/40 rounded border border-red-200 dark:border-red-900">
+                      ⚠️ {likeEmailError}
+                    </div>
+                  )}
+
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setLikeEmailModal({ isOpen: false, commentId: null })}
+                      className="px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-xl bg-primary hover:bg-secondary text-white font-bold text-xs shadow-md transition-colors"
+                    >
+                      Xác nhận thích
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
           {/* CTC Expert Author & Consultation Card (Corporate Ocean Blue) */}
           <div className="bg-gradient-to-br from-sky-600 via-blue-800 to-slate-950 rounded-3xl p-6 sm:p-8 text-white shadow-2xl flex flex-col md:flex-row items-center gap-6 border border-sky-400/20 relative overflow-hidden group">

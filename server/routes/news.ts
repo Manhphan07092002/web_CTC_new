@@ -179,7 +179,11 @@ router.post('/:id/like', async (req, res) => {
 router.get('/:id/comments', async (req, res) => {
   try {
     const { id } = req.params;
-    const comments = await db.comments.getByNewsId(id);
+    const { email, userId } = req.query;
+    const comments = await db.comments.getByNewsId(id, {
+      email: typeof email === 'string' ? email : undefined,
+      userId: typeof userId === 'string' ? userId : undefined,
+    });
     res.json(comments);
   } catch (error) {
     console.error('Error fetching comments:', error);
@@ -190,15 +194,28 @@ router.get('/:id/comments', async (req, res) => {
 router.post('/:id/comments', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, content } = req.body;
-    if (!name || !content) {
-      return res.status(400).json({ message: 'Name and content are required' });
+    const { name, email, content, parentId, replyToName } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Vui lòng nhập họ và tên của bạn' });
     }
+    if (!email || !email.trim()) {
+      return res.status(400).json({ message: 'Vui lòng nhập email của bạn' });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      return res.status(400).json({ message: 'Email không hợp lệ. Vui lòng nhập đúng định dạng (ví dụ: name@example.com)' });
+    }
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: 'Vui lòng nhập nội dung ý kiến thảo luận' });
+    }
+
     const newComment = await db.comments.add({
       newsId: id,
       name: name.trim(),
-      email: email ? email.trim() : '',
-      content: content.trim()
+      email: email.trim().toLowerCase(),
+      content: content.trim(),
+      parentId: parentId || null,
+      replyToName: replyToName ? replyToName.trim() : undefined
     });
     res.status(201).json(newComment);
   } catch (error) {
@@ -210,11 +227,23 @@ router.post('/:id/comments', async (req, res) => {
 router.post('/comments/:commentId/like', async (req, res) => {
   try {
     const { commentId } = req.params;
-    await db.comments.likeComment(commentId);
-    res.json({ success: true });
-  } catch (error) {
+    const { email, userId } = req.body;
+
+    if (!email && !userId) {
+      return res.status(400).json({ message: 'Vui lòng cung cấp email hoặc đăng nhập để thích bình luận' });
+    }
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        return res.status(400).json({ message: 'Email không hợp lệ để ghi nhận lượt thích' });
+      }
+    }
+
+    const result = await db.comments.toggleLike(commentId, { email, userId });
+    res.json({ success: true, ...result });
+  } catch (error: any) {
     console.error('Error liking comment:', error);
-    res.status(500).json({ message: 'Failed to like comment' });
+    res.status(500).json({ message: error?.message || 'Failed to like comment' });
   }
 });
 
@@ -232,13 +261,23 @@ router.get('/comments/admin/all', async (req, res) => {
 router.post('/comments/:commentId/reply', async (req, res) => {
   try {
     const { commentId } = req.params;
-    const { reply } = req.body;
-    if (!reply) return res.status(400).json({ message: 'Reply content required' });
-    const updated = await db.comments.replyComment(commentId, reply.trim());
+    const { reply, repliedBy } = req.body;
+    const updated = await db.comments.replyComment(commentId, reply || '', repliedBy);
     res.json(updated);
   } catch (error) {
     console.error('Error replying comment:', error);
     res.status(500).json({ message: 'Failed to reply comment' });
+  }
+});
+
+router.delete('/comments/:commentId/reply', async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const updated = await db.comments.deleteReply(commentId);
+    res.json(updated);
+  } catch (error) {
+    console.error('Error deleting reply:', error);
+    res.status(500).json({ message: 'Failed to delete reply' });
   }
 });
 

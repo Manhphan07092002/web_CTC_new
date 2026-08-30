@@ -376,27 +376,72 @@ NewsSchema.index({ viewCount: -1 });
 // ==================== NEWS COMMENT MODEL ====================
 export interface INewsComment extends BaseDocument {
   newsId: any;                        // Reference to News (ObjectId or String)
-  name: string;                       // Tên người bình luận
-  email?: string;                     // Email (không hiển thị)
+  parentId?: any;                     // ID của comment cha (null nếu là bình luận gốc)
+  rootId?: any;                       // ID của bình luận gốc (để gom nhóm 2 tầng)
+  replyToId?: any;                    // ID của comment/reply được bấm trả lời
+  replyToName?: string;               // Tên người được trả lời (vd: Administrator, Mạnh)
+  name: string;                       // Tên người bình luận (độc giả hoặc admin)
+  email: string;                      // Email (bắt buộc, có validation)
   content: string;                    // Nội dung bình luận
   avatar?: string;                    // Avatar URL (tự tạo từ tên)
-  likes?: number;                     // Lượt thích bình luận
-  isApproved?: boolean;               // Admin duyệt bình luận
-  replyTo?: any;                      // Reply bình luận khác
+  likes: number;                      // Lượt thích bình luận
+  isApproved: boolean;                // Admin duyệt bình luận
+  isAdminReply?: boolean;             // True nếu là phản hồi từ Ban Biên Tập CTC
+  replyTo?: any;                      // Legacy reference
+  userId?: any;                       // Optional reference
+  reply?: string;                     // Nội dung phản hồi từ Ban Biên Tập CTC (legacy)
+  replyAuthor?: string;               // Tên người phản hồi (legacy)
+  repliedAt?: Date;                   // Thời gian phản hồi
+  repliedBy?: {                       // Thông tin tài khoản Admin phản hồi
+    id?: any;
+    name?: string;
+    email?: string;
+    avatar?: string;
+    role?: string;
+  };
 }
 
 const NewsCommentSchema = new Schema<INewsComment>({
   newsId: { type: Schema.Types.Mixed, required: true },
+  parentId: { type: Schema.Types.Mixed, default: null },
+  rootId: { type: Schema.Types.Mixed, default: null },
+  replyToId: { type: Schema.Types.Mixed },
+  replyToName: { type: String },
   name: { type: String, required: true },
-  email: { type: String },
+  email: { type: String, required: true },
   content: { type: String, required: true },
   avatar: { type: String },
   likes: { type: Number, default: 0 },
   isApproved: { type: Boolean, default: true }, // auto-approve
+  isAdminReply: { type: Boolean, default: false },
   replyTo: { type: Schema.Types.Mixed },
+  userId: { type: Schema.Types.Mixed },
+  reply: { type: String },
+  replyAuthor: { type: String },
+  repliedAt: { type: Date },
+  repliedBy: { type: Schema.Types.Mixed },
 }, { timestamps: true });
 
 NewsCommentSchema.index({ newsId: 1, createdAt: -1 });
+NewsCommentSchema.index({ newsId: 1, parentId: 1, createdAt: 1 });
+NewsCommentSchema.index({ rootId: 1 });
+
+// ==================== COMMENT LIKE MODEL ====================
+export interface ICommentLike extends BaseDocument {
+  commentId: any;
+  identifier: string; // 'user:<id>' or 'email:<email>'
+  userId?: any;
+  email?: string;
+}
+
+const CommentLikeSchema = new Schema<ICommentLike>({
+  commentId: { type: Schema.Types.Mixed, required: true },
+  identifier: { type: String, required: true },
+  userId: { type: Schema.Types.Mixed },
+  email: { type: String },
+}, { timestamps: true });
+
+CommentLikeSchema.index({ commentId: 1, identifier: 1 }, { unique: true });
 
 // Testimonial Schema
 export interface ITestimonial extends BaseDocument {
@@ -656,6 +701,7 @@ export const ProjectCategory = mongoose.model<IProjectCategory>('ProjectCategory
 export const Project = mongoose.model<IProject>('Project', ProjectSchema);
 export const News = mongoose.model<INewsItem>('News', NewsSchema);
 export const NewsComment = mongoose.model<INewsComment>('NewsComment', NewsCommentSchema);
+export const CommentLike = mongoose.model<ICommentLike>('CommentLike', CommentLikeSchema);
 export const Testimonial = mongoose.model<ITestimonial>('Testimonial', TestimonialSchema);
 export const Partner = mongoose.model<IPartner>('Partner', PartnerSchema);
 export const User = mongoose.model<IUser>('User', UserSchema);
