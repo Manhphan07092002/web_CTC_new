@@ -341,16 +341,8 @@ const CategoryManagement: React.FC = () => {
     });
   };
 
-  // Set of node IDs that are expanded
+  // Set of node IDs that are expanded (Mặc định thu gọn tất cả để giao diện gọn gàng)
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-
-  // Mặc định mở các danh mục chính Level 1 khi tải xong danh mục
-  useEffect(() => {
-    if (categories.length > 0) {
-      const parentIds = categories.filter(c => !c.parentId).map(c => c.id);
-      setExpandedNodes(new Set(parentIds));
-    }
-  }, [categories, activeTab]);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
