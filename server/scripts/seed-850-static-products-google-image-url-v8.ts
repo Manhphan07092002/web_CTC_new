@@ -5812,9 +5812,8 @@ async function main(): Promise<void> {
       const legacyCatResult = await Category.deleteMany({});
       console.log(`🗑️  Đã xóa toàn bộ ${legacyCatResult.deletedCount} danh mục legacy theo yêu cầu.`);
     } else if (RESET_PRODUCTS) {
-
-      const result = await Product.deleteMany({ seedSource: SEED_TAG });
-      console.log(`🗑️  Đã xóa ${result.deletedCount} sản phẩm của seed ${SEED_TAG}.`);
+      const result = await Product.deleteMany({});
+      console.log(`🗑️  Đã xóa sạch toàn bộ ${result.deletedCount} sản phẩm cũ trước khi nạp mới.`);
     }
 
     if (CLEANUP_LEGACY_GLOBAL_BRAND_MENU) {
