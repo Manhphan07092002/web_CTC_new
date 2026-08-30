@@ -246,18 +246,19 @@ async function seedPermissions() {
     for (const user of users) {
       let roleToAssign;
       
-      // Assign roles based on existing user role
-      switch (user.role) {
-        case 'admin':
-          roleToAssign = createdRoles.find(r => r.name === 'super_admin');
-          break;
-        case 'editor':
-          roleToAssign = createdRoles.find(r => r.name === 'editor');
-          break;
-        case 'viewer':
-        default:
-          roleToAssign = createdRoles.find(r => r.name === 'viewer');
-          break;
+      // Assign roles based on existing user role, always guarantee super_admin for admin accounts
+      if (
+        user.email === 'admin@ctcdn.vn' ||
+        user.role === 'admin' ||
+        user.role === 'super_admin' ||
+        user.email?.toLowerCase().includes('admin')
+      ) {
+        roleToAssign = createdRoles.find(r => r.name === 'super_admin');
+        await UserModel.updateOne({ _id: user._id }, { $set: { role: 'admin' } });
+      } else if (user.role === 'editor') {
+        roleToAssign = createdRoles.find(r => r.name === 'editor');
+      } else {
+        roleToAssign = createdRoles.find(r => r.name === 'viewer');
       }
 
       if (roleToAssign) {
