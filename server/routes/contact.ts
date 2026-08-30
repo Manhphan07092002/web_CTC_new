@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import { Contact, Notification } from '../../models';
 import { EmailService } from '../../services/email-service';
 
@@ -153,10 +154,15 @@ router.post('/submit', contactRateLimiter, honeypotCheck, validateContactInput, 
 // Update contact status (Admin only)
 router.patch('/:id/status', async (req, res) => {
   try {
+    const { id } = req.params;
+    if (!id || id === 'undefined' || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID liên hệ không hợp lệ' });
+    }
+
     const { status, notes } = req.body;
     
     const contact = await Contact.findByIdAndUpdate(
-      req.params.id,
+      id,
       { status, notes },
       { new: true }
     );

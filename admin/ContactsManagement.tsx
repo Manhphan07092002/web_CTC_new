@@ -43,13 +43,18 @@ const ContactsManagement: React.FC = () => {
       setLoading(true);
       const response = await fetch(`${API_BASE}/contact`);
       const data = await response.json();
-      // Ensure data is an array
+      // Ensure data is an array and map id from _id
+      const normalize = (list: any[]) => list.map(c => ({
+        ...c,
+        id: c.id || c._id || String(c._id || '')
+      }));
+
       if (Array.isArray(data)) {
-        setContacts(data);
+        setContacts(normalize(data));
       } else if (data && Array.isArray(data.data)) {
-        setContacts(data.data);
+        setContacts(normalize(data.data));
       } else if (data && Array.isArray(data.contacts)) {
-        setContacts(data.contacts);
+        setContacts(normalize(data.contacts));
       } else {
         setContacts([]);
         console.warn('API response is not an array:', data);
@@ -64,6 +69,10 @@ const ContactsManagement: React.FC = () => {
   };
 
   const updateStatus = async (id: string, status: string, notes?: string) => {
+    if (!id || id === 'undefined') {
+      console.warn('updateStatus: Invalid contact ID', id);
+      return;
+    }
     try {
       const response = await fetch(`${API_BASE}/contact/${id}/status`, {
         method: 'PATCH',
@@ -389,7 +398,7 @@ const ContactsManagement: React.FC = () => {
                   ].map(({ status, label, className }) => (
                     <button
                       key={status}
-                      onClick={() => updateStatus(selectedContact.id, status as any)}
+                      onClick={() => updateStatus(selectedContact.id || (selectedContact as any)._id, status as any)}
                       className={`px-4 py-3 rounded-lg transition-colors font-medium cursor-pointer ${className}`}
                     >
                       {label}
