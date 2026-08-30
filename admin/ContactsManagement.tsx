@@ -110,8 +110,15 @@ const ContactsManagement: React.FC = () => {
     const contact = deleteConfirm.contact;
     if (!contact) return;
 
+    const contactId = contact.id || (contact as any)._id;
+    if (!contactId || contactId === 'undefined') {
+      console.warn('handleConfirmDelete: Invalid contact ID', contactId);
+      setDeleteConfirm({ isOpen: false, contact: null });
+      return;
+    }
+
     try {
-      const response = await fetch(`${API_BASE}/contact/${contact.id}`, {
+      const response = await fetch(`${API_BASE}/contact/${contactId}`, {
         method: 'DELETE'
       });
 

@@ -251,11 +251,19 @@ app.use('/uploads', express.static(uploadsPath, {
 
 // Fallback for missing uploads image files (prevents broken image 404s)
 app.use('/uploads', (req, res, next) => {
-  if (req.path.match(/\.(webp|png|jpg|jpeg|gif|svg)$/i)) {
+  if (req.path.match(/\.(webp|png|jpg|jpeg|gif|svg|ico)$/i)) {
+    const defaultProduct = path.join(process.cwd(), 'uploads', 'images', 'default-product.webp');
+    if (fs.existsSync(defaultProduct)) {
+      return res.sendFile(defaultProduct);
+    }
     const fallbackPath = path.join(process.cwd(), 'uploads', 'images', 'default-news.webp');
     if (fs.existsSync(fallbackPath)) {
       return res.sendFile(fallbackPath);
     }
+    // Return embedded SVG placeholder if disk image is missing
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return res.send('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1e293b"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#94a3b8">CTC Solar</text></svg>');
   }
   next();
 });

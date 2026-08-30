@@ -587,23 +587,37 @@ const Overview: React.FC = () => {
               <Link to="/admin/content?tab=products" className="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline">Xem tất cả</Link>
             </div>
             <div className="space-y-3">
-              {statistics.topPerformers.products?.map((product: any, idx: number) => (
-                <div key={`top-product-${idx}-${product._id || product.id}`} className="bg-white dark:bg-slate-800 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
-                  <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-950/60 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
-                    #{idx + 1}
+              {statistics.topPerformers.products?.map((product: any, idx: number) => {
+                const safeProductImg = (!product.image || typeof product.image !== 'string' || product.image.startsWith('x-raw-image:'))
+                  ? 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="%231e293b"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="10" fill="%2394a3b8">CTC</text></svg>'
+                  : product.image;
+
+                return (
+                  <div key={`top-product-${idx}-${product._id || product.id}`} className="bg-white dark:bg-slate-800 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
+                    <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-950/60 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
+                      #{idx + 1}
+                    </div>
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
+                      <img
+                        src={safeProductImg}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="%231e293b"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="10" fill="%2394a3b8">CTC</text></svg>';
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-gray-800 dark:text-white line-clamp-1">{product.name}</h4>
+                      <p className="text-sm text-gray-500 dark:text-slate-400">{product.category}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-blue-600 dark:text-blue-400">{product.price?.toLocaleString('vi-VN')}đ</p>
+                    </div>
                   </div>
-                  <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-800 dark:text-white line-clamp-1">{product.name}</h4>
-                    <p className="text-sm text-gray-500 dark:text-slate-400">{product.category}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-blue-600 dark:text-blue-400">{product.price?.toLocaleString('vi-VN')}đ</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -619,23 +633,37 @@ const Overview: React.FC = () => {
               <Link to="/admin/content?tab=projects" className="text-green-600 dark:text-emerald-400 text-sm font-bold hover:underline">Xem tất cả</Link>
             </div>
             <div className="space-y-3">
-              {statistics.topPerformers.projects?.map((project: any, idx: number) => (
-                <div key={`top-project-${idx}-${project._id || project.id}`} className="bg-white dark:bg-slate-800 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
-                  <div className="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-emerald-950/60 rounded-full flex items-center justify-center text-green-600 dark:text-emerald-400 font-bold text-lg">
-                    #{idx + 1}
+              {statistics.topPerformers.projects?.map((project: any, idx: number) => {
+                const safeProjectImg = (!project.image || typeof project.image !== 'string' || project.image.startsWith('x-raw-image:'))
+                  ? 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="%231e293b"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="10" fill="%2394a3b8">CTC</text></svg>'
+                  : project.image;
+
+                return (
+                  <div key={`top-project-${idx}-${project._id || project.id}`} className="bg-white dark:bg-slate-800 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all">
+                    <div className="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-emerald-950/60 rounded-full flex items-center justify-center text-green-600 dark:text-emerald-400 font-bold text-lg">
+                      #{idx + 1}
+                    </div>
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
+                      <img
+                        src={safeProjectImg}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="%231e293b"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="10" fill="%2394a3b8">CTC</text></svg>';
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-gray-800 dark:text-white line-clamp-1">{project.title}</h4>
+                      <p className="text-sm text-gray-500 dark:text-slate-400">{project.location}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-green-600 dark:text-emerald-400">{project.capacity}</p>
+                    </div>
                   </div>
-                  <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-800 dark:text-white line-clamp-1">{project.title}</h4>
-                    <p className="text-sm text-gray-500 dark:text-slate-400">{project.location}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-green-600 dark:text-emerald-400">{project.capacity}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

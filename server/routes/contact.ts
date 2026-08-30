@@ -181,7 +181,12 @@ router.patch('/:id/status', async (req, res) => {
 // Delete contact (Admin only)
 router.delete('/:id', async (req, res) => {
   try {
-    const contact = await Contact.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    if (!id || id === 'undefined' || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID liên hệ không hợp lệ' });
+    }
+
+    const contact = await Contact.findByIdAndDelete(id);
     if (!contact) {
       return res.status(404).json({ error: 'Contact not found' });
     }

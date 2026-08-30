@@ -38,7 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Image Section - aspect ratio uniform for all screen sizes */}
       <div className="w-full aspect-square relative bg-gray-100 dark:bg-gray-900 overflow-hidden flex items-center justify-center">
         <img
-          src={product.image || placeholderImage}
+          src={(!product.image || typeof product.image !== 'string' || product.image.startsWith('x-raw-image:')) ? placeholderImage : product.image}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
