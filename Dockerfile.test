@@ -1,0 +1,27 @@
+# ============================================================
+# Dockerfile.test — Image Playwright để chạy E2E test
+# ============================================================
+# Build: docker build -f Dockerfile.test -t ctc-playwright .
+# ============================================================
+
+FROM mcr.microsoft.com/playwright:v1.47.0-jammy
+
+WORKDIR /app
+
+# ── Copy package files trước để tận dụng Docker layer cache ─
+COPY package.json package-lock.json ./
+
+# Chỉ cài devDependencies cần thiết (playwright + typescript)
+RUN npm ci --include=dev 2>/dev/null || npm install --legacy-peer-deps
+
+# ── Copy toàn bộ source (tests, config, helpers) ────────────
+COPY playwright.config.ts ./
+COPY tsconfig.json ./
+COPY tests/ ./tests/
+
+# ── Playwright browsers đã được cài sẵn trong base image ────
+# Đường dẫn: /ms-playwright (set PLAYWRIGHT_BROWSERS_PATH)
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+# ── Mặc định chạy toàn bộ test suite ───────────────────────
+CMD ["npx", "playwright", "test", "--project=chromium-desktop", "--reporter=html,list"]

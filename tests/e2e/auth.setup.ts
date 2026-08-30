@@ -10,7 +10,7 @@ import path from 'path';
 import fs from 'fs';
 
 const ADMIN_EMAIL    = process.env.TEST_ADMIN_EMAIL    || 'admin@ctcdn.vn';
-const ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD || 'Admin@123';
+const ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD || 'Ctcdn.vn@123';
 const AUTH_FILE      = 'playwright/.auth/admin.json';
 
 setup('Authenticate as admin', async ({ page }) => {
@@ -21,11 +21,17 @@ setup('Authenticate as admin', async ({ page }) => {
   }
 
   await page.goto('/admin/login');
+  await page.waitForLoadState('networkidle');
 
-  // Điền form đăng nhập
-  await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
-  await page.getByLabel(/mật khẩu|password/i).fill(ADMIN_PASSWORD);
+  // Điền form đăng nhập — form dùng placeholder, không dùng <label for>
+  const emailInput = page.locator('input[type="email"], input[placeholder*="admin"], input[placeholder*="email"], input[placeholder*="@"]').first();
+  await emailInput.fill(ADMIN_EMAIL);
+
+  const passInput = page.locator('input[type="password"]').first();
+  await passInput.fill(ADMIN_PASSWORD);
+
   await page.getByRole('button', { name: /đăng nhập|login/i }).click();
+
 
   // Chờ redirect về dashboard
   await expect(page).toHaveURL(/admin/, { timeout: 15_000 });

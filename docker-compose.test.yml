@@ -1,0 +1,50 @@
+# ============================================================
+# docker-compose.test.yml  — Chạy E2E Playwright test trên server
+# ============================================================
+# Sử dụng:
+#   docker compose -f docker-compose.test.yml up --abort-on-container-exit
+#   docker compose -f docker-compose.test.yml down -v
+# ============================================================
+
+services:
+
+  # ── Chờ app chính sẵn sàng rồi chạy test ──────────────────
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: ctc_playwright
+    # Kết nối vào network của ứng dụng đang chạy
+    networks:
+      - ctc_network
+    environment:
+      # Trỏ vào container app và nginx đang chạy
+      TEST_BASE_URL: ${TEST_BASE_URL:-http://nginx:80}
+      TEST_API_URL: ${TEST_API_URL:-http://app:4000}
+      TEST_ADMIN_EMAIL: ${TEST_ADMIN_EMAIL:-admin@ctcdn.vn}
+      TEST_ADMIN_PASSWORD: ${TEST_ADMIN_PASSWORD:-Ctcdn.vn@123}
+      # Playwright headless bắt buộc trong container
+      CI: "true"
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    volumes:
+      # Mount kết quả test ra ngoài để xem báo cáo
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
+    # Chạy toàn bộ test suite
+    command: >
+      sh -c "
+        echo '⏳ Chờ app sẵn sàng...' &&
+        until wget -q --spider http://app:4000/health 2>/dev/null; do
+          echo '  ... app chưa sẵn sàng, thử lại sau 3s';
+          sleep 3;
+        done &&
+        echo '✅ App đã sẵn sàng! Bắt đầu chạy test...' &&
+        npx playwright test --project=chromium-desktop --reporter=html,list
+      "
+    # Container thoát với exit code của playwright (0=pass, 1=fail)
+    restart: "no"
+
+networks:
+  ctc_network:
+    external: true
+    name: ctc_network

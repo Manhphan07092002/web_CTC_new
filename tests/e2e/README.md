@@ -106,7 +106,7 @@ npm run test:api         # API Errors & Performance
 | `TEST_BASE_URL` | `http://localhost:3000` | URL frontend |
 | `TEST_API_URL` | `http://localhost:4000` | URL backend API |
 | `TEST_ADMIN_EMAIL` | `admin@ctcdn.vn` | Email admin để login |
-| `TEST_ADMIN_PASSWORD` | `Admin@123` | Mật khẩu admin |
+| `TEST_ADMIN_PASSWORD` | `Ctcdn.vn@123` | Mật khẩu admin |
 
 ```bash
 # Ví dụ: test trên VPS staging
