@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Tag, Grid, Layers, FolderOpen, CornerDownRight, FolderPlus, FolderTree } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Tag, Grid, Layers, FolderOpen, CornerDownRight, FolderPlus, FolderTree, ChevronDown, ChevronRight, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { PermissionGate } from '../contexts/PermissionContext';
@@ -9,6 +9,8 @@ import { Category } from '../types';
 
 interface CategoryTreeItemProps {
   node: CategoryNode;
+  expandedNodes: Set<string>;
+  toggleNode: (nodeId: string) => void;
   onAddSub: (parentId: string) => void;
   onEdit: (cat: Category) => void;
   onDelete: (cat: Category) => void;
@@ -17,24 +19,53 @@ interface CategoryTreeItemProps {
 
 const RecursiveCategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
   node,
+  expandedNodes,
+  toggleNode,
   onAddSub,
   onEdit,
   onDelete,
   getItemCountLabel
 }) => {
-  const hasChildren = node.children && node.children.length > 0;
+  const hasChildren = Boolean(node.children && node.children.length > 0);
+  const isExpanded = expandedNodes.has(node.id);
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-3 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+    <div className="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-2.5 border border-slate-200/80 dark:border-slate-700/60 transition-all">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xs font-bold text-sky-500 font-mono">
-            {node.level === 2 ? '↳' : node.level === 3 ? '└ ↳' : '└ └ ↳'}
-          </span>
+        <div 
+          onClick={() => hasChildren && toggleNode(node.id)}
+          className={`flex items-center gap-1.5 min-w-0 flex-1 select-none ${hasChildren ? 'cursor-pointer group' : ''}`}
+        >
+          {/* Toggle Chevron for items with children */}
+          {hasChildren ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleNode(node.id);
+              }}
+              className="p-1 -ml-1 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 rounded-md hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              title={isExpanded ? 'Thu gọn danh mục con' : 'Bấm để mở rộng danh mục con'}
+            >
+              {isExpanded ? (
+                <ChevronDown size={15} className="text-sky-500 font-bold transition-transform" />
+              ) : (
+                <ChevronRight size={15} className="text-slate-400 group-hover:text-sky-500 transition-transform" />
+              )}
+            </button>
+          ) : (
+            <span className="text-xs font-bold text-slate-300 dark:text-slate-600 font-mono w-4 text-center">
+              {node.level === 2 ? '↳' : node.level === 3 ? '└' : '•'}
+            </span>
+          )}
+
           <span className="text-sm flex-shrink-0">{node.icon || '📁'}</span>
+          
           <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="font-bold text-xs text-gray-800 dark:text-gray-100 truncate">{node.name}</h4>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h4 className={`font-bold text-xs text-gray-800 dark:text-gray-100 truncate ${hasChildren ? 'group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors' : ''}`}>
+                {node.name}
+              </h4>
               <span className={`text-[9px] px-1.5 py-0.2 rounded font-black uppercase ${
                 node.level === 2 ? 'bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300' :
                 node.level === 3 ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' :
@@ -42,6 +73,11 @@ const RecursiveCategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
               }`}>
                 Cấp {node.level}
               </span>
+              {hasChildren && (
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium bg-slate-200/70 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                  {node.children.length} danh mục con {isExpanded ? '▼' : '▶'}
+                </span>
+              )}
             </div>
             <span className="text-[10px] text-gray-400 font-mono block truncate">{node.slug}</span>
           </div>
@@ -78,13 +114,15 @@ const RecursiveCategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
         </div>
       </div>
 
-      {/* Recursive children rendering for Level 3, 4 */}
-      {hasChildren && (
-        <div className="pl-3 sm:pl-4 pt-1 space-y-2 border-l-2 border-slate-200/80 dark:border-slate-700/50">
+      {/* Recursive children rendering ONLY when expanded */}
+      {hasChildren && isExpanded && (
+        <div className="pl-3 sm:pl-4 pt-1.5 space-y-2 border-l-2 border-slate-200/80 dark:border-slate-700/50 mt-1">
           {node.children.map(childNode => (
             <RecursiveCategoryTreeItem
               key={childNode.id}
               node={childNode}
+              expandedNodes={expandedNodes}
+              toggleNode={toggleNode}
               onAddSub={onAddSub}
               onEdit={onEdit}
               onDelete={onDelete}
@@ -303,6 +341,38 @@ const CategoryManagement: React.FC = () => {
     });
   };
 
+  // Set of node IDs that are expanded
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+
+  // Mặc định mở các danh mục chính Level 1 khi tải xong danh mục
+  useEffect(() => {
+    if (categories.length > 0) {
+      const parentIds = categories.filter(c => !c.parentId).map(c => c.id);
+      setExpandedNodes(new Set(parentIds));
+    }
+  }, [categories, activeTab]);
+
+  const toggleNode = (nodeId: string) => {
+    setExpandedNodes(prev => {
+      const next = new Set(prev);
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    const allIds = new Set(categories.map(c => c.id));
+    setExpandedNodes(allIds);
+  };
+
+  const collapseAll = () => {
+    setExpandedNodes(new Set());
+  };
+
   const tabs = [
     { id: 'product' as CategoryType, label: 'Sản phẩm', icon: Grid },
     { id: 'project' as CategoryType, label: 'Dự án', icon: Tag },
@@ -333,17 +403,33 @@ const CategoryManagement: React.FC = () => {
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Phân cấp danh mục chính & danh mục con cho sản phẩm, dự án, tin tức</p>
         </div>
-        <PermissionGate permission="manage_product_categories">
-          <div className="flex gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={expandAll}
+            className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer border border-slate-200/60 dark:border-slate-700"
+            title="Mở rộng toàn bộ cây danh mục"
+          >
+            <ChevronsUpDown size={14} className="text-sky-500" />
+            <span>Mở rộng tất cả</span>
+          </button>
+          <button
+            onClick={collapseAll}
+            className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer border border-slate-200/60 dark:border-slate-700"
+            title="Thu gọn toàn bộ cây danh mục"
+          >
+            <ChevronsDownUp size={14} className="text-amber-500" />
+            <span>Thu gọn tất cả</span>
+          </button>
+          <PermissionGate permission="manage_product_categories">
             <button
               onClick={() => handleAdd('')}
-              className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 shadow-sm transition-colors"
+              className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-secondary font-medium flex items-center gap-2 shadow-sm transition-colors text-sm cursor-pointer"
             >
               <Plus size={18} />
               Thêm danh mục chính
             </button>
-          </div>
-        </PermissionGate>
+          </PermissionGate>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -389,6 +475,9 @@ const CategoryManagement: React.FC = () => {
           {/* Parent Categories Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {buildCategoryTree(categories).map((parentCategory) => {
+              const isCardExpanded = expandedNodes.has(parentCategory.id);
+              const childrenCount = parentCategory.children?.length || 0;
+
               return (
                 <div
                   key={parentCategory.id}
@@ -402,7 +491,7 @@ const CategoryManagement: React.FC = () => {
                   <div>
                     {/* Header line */}
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div
                           className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-xs"
                           style={{ backgroundColor: parentCategory.color || '#3B82F6' }}
@@ -410,7 +499,7 @@ const CategoryManagement: React.FC = () => {
                           {parentCategory.icon || '📂'}
                         </div>
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base truncate" title={parentCategory.name}>
                               {parentCategory.name}
                             </h3>
@@ -426,7 +515,7 @@ const CategoryManagement: React.FC = () => {
                         <PermissionGate permission="manage_product_categories">
                           <button
                             onClick={() => handleAdd(parentCategory.id)}
-                            className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold"
+                            className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold cursor-pointer"
                             title="Thêm danh mục con vào đây"
                           >
                             <FolderPlus size={16} />
@@ -434,14 +523,14 @@ const CategoryManagement: React.FC = () => {
                           </button>
                           <button
                             onClick={() => handleEdit(parentCategory)}
-                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer"
                             title="Sửa danh mục chính"
                           >
                             <Edit size={16} />
                           </button>
                           <button
                             onClick={() => handleDeleteClick(parentCategory)}
-                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors cursor-pointer"
                             title="Xóa danh mục chính"
                           >
                             <Trash2 size={16} />
@@ -456,37 +545,57 @@ const CategoryManagement: React.FC = () => {
                       </p>
                     )}
 
-                    {/* Sub categories recursive tree list */}
-                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2">
-                      <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">
-                        <span className="flex items-center gap-1">
-                          <CornerDownRight size={13} className="text-primary" />
-                          Danh mục con ({parentCategory.children?.length || 0})
+                    {/* Sub categories recursive tree list with Accordion header */}
+                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+                      <div 
+                        onClick={() => toggleNode(parentCategory.id)}
+                        className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 p-2 -mx-2 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-700/50 cursor-pointer select-none transition-colors group mb-2"
+                        title={isCardExpanded ? 'Bấm để thu gọn danh mục con' : 'Bấm để mở rộng danh mục con'}
+                      >
+                        <span className="flex items-center gap-2">
+                          {isCardExpanded ? (
+                            <ChevronDown size={16} className="text-primary font-bold transition-transform" />
+                          ) : (
+                            <ChevronRight size={16} className="text-slate-400 group-hover:text-primary transition-transform" />
+                          )}
+                          <span className="font-bold text-gray-800 dark:text-gray-100">
+                            Danh mục con ({childrenCount})
+                          </span>
+                          <span className="text-[10px] text-gray-400 font-normal">
+                            {isCardExpanded ? '• Bấm để thu gọn' : '• Bấm để xem chi tiết'}
+                          </span>
                         </span>
                         <button
-                          onClick={() => handleAdd(parentCategory.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAdd(parentCategory.id);
+                          }}
                           className="text-primary hover:underline text-[11px] font-bold cursor-pointer"
                         >
                           + Thêm mới
                         </button>
                       </div>
 
-                      {(!parentCategory.children || parentCategory.children.length === 0) ? (
-                        <p className="text-xs italic text-gray-400 dark:text-gray-500 py-1">
-                          Chưa có danh mục con. Bấm "+ Danh mục con" để chia nhỏ danh mục này.
-                        </p>
-                      ) : (
-                        <div className="space-y-2">
-                          {parentCategory.children.map((subNode) => (
-                            <RecursiveCategoryTreeItem
-                              key={subNode.id}
-                              node={subNode}
-                              onAddSub={handleAdd}
-                              onEdit={handleEdit}
-                              onDelete={handleDeleteClick}
-                              getItemCountLabel={getItemCountLabel}
-                            />
-                          ))}
+                      {isCardExpanded && (
+                        <div className="space-y-2 animate-in fade-in duration-200">
+                          {(!parentCategory.children || parentCategory.children.length === 0) ? (
+                            <p className="text-xs italic text-gray-400 dark:text-gray-500 py-2 pl-2">
+                              Chưa có danh mục con. Bấm "+ Danh mục con" để chia nhỏ danh mục này.
+                            </p>
+                          ) : (
+                            parentCategory.children.map((subNode) => (
+                              <RecursiveCategoryTreeItem
+                                key={subNode.id}
+                                node={subNode}
+                                expandedNodes={expandedNodes}
+                                toggleNode={toggleNode}
+                                onAddSub={handleAdd}
+                                onEdit={handleEdit}
+                                onDelete={handleDeleteClick}
+                                getItemCountLabel={getItemCountLabel}
+                              />
+                            ))
+                          )}
                         </div>
                       )}
                     </div>
