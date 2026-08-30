@@ -4,7 +4,7 @@
 # Build: docker build -f Dockerfile.test -t ctc-playwright .
 # ============================================================
 
-FROM mcr.microsoft.com/playwright:v1.47.0-jammy
+FROM mcr.microsoft.com/playwright:v1.62.1-jammy
 
 WORKDIR /app
 
@@ -13,6 +13,7 @@ COPY package.json package-lock.json ./
 
 # Chỉ cài devDependencies cần thiết (playwright + typescript)
 RUN npm ci --include=dev 2>/dev/null || npm install --legacy-peer-deps
+RUN npx playwright install chromium
 
 # ── Copy toàn bộ source (tests, config, helpers) ────────────
 COPY playwright.config.ts ./
