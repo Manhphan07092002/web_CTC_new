@@ -334,7 +334,7 @@ const Products: React.FC = () => {
   return (
     <div className="w-full pb-0 animate-fade-in bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 transition-colors duration-300 pt-28 md:pt-36">
       <SEO
-        title={`${getCurrentCategoryName()} - Thiết Bị Viễn Thông, CNTT & Solar | CTC`}
+        title={`Sản phẩm - ${getCurrentCategoryName()} | Thiết Bị Viễn Thông, CNTT & Solar | CTC`}
         description={`Cung cấp ${getCurrentCategoryName()} chính hãng, hiệu suất cao, đạt chứng chỉ CO/CQ. Bảo hành dài hạn 12-36 tháng, tư vấn & báo giá ưu đãi tại CTC Telecom.`}
         keywords={`${getCurrentCategoryName()}, router MikroTik, router DrayTek, switch PoE, Wi-Fi 6, SFP, ODF, VoIP Gateway Dinstar, inverter Huawei, inverter Sungrow, tấm pin Canadian Solar, LONGI TOPCon, ắc quy Lithium 48V-100Ah, ắc quy viễn thông, UPS APC, thiết bị mạng Đà Nẵng, CTC Telecom`}
         schema={{
@@ -373,7 +373,7 @@ const Products: React.FC = () => {
               <ChevronRight size={14} className="mx-1.5 flex-shrink-0" />
               <Link to="/products" className="hover:text-primary transition-colors flex-shrink-0">{t('nav.products')}</Link>
               <ChevronRight size={14} className="mx-1.5 flex-shrink-0" />
-              <span className="text-primary font-bold uppercase truncate max-w-[200px] sm:max-w-none">{getCurrentCategoryName()}</span>
+              <h1 className="text-primary font-bold uppercase truncate max-w-[200px] sm:max-w-none inline">Sản phẩm - {getCurrentCategoryName()}</h1>
             </div>
 
             <div className="lg:hidden flex items-center gap-2">

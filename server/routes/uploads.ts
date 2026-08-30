@@ -102,8 +102,17 @@ const upload = multer({
 
 import { optimizeUploadedImage } from '../utils/image-optimizer';
 
-// Upload single or multiple files (max 5)
-router.post('/images', upload.array('files', 5), async (req, res) => {
+const handleUpload = (req: any, res: any, next: any) => {
+  upload.any()(req, res, (err: any) => {
+    if (err) {
+      return res.status(400).json({ message: err.message || 'Lỗi tải lên tệp tin' });
+    }
+    next();
+  });
+};
+
+// Upload single or multiple files (supports POST / and POST /images)
+router.post(['/', '/images'], handleUpload, async (req, res) => {
   const files = (req as any).files as Express.Multer.File[] | undefined;
 
   if (!files || files.length === 0) {
@@ -132,6 +141,8 @@ router.post('/images', upload.array('files', 5), async (req, res) => {
   res.json({
     message: `Uploaded ${files.length} file(s) successfully`,
     files: results,
+    url: results[0]?.url,
+    webpUrl: results[0]?.webpUrl,
   });
 });
 

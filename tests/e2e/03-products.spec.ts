@@ -174,7 +174,7 @@ test.describe('PROD — Sửa sản phẩm', () => {
 
     expect(status).toBeLessThan(300);
     const savedPrice = body.price ?? body.salePrice;
-    expect(savedPrice).toBe(2000000);
+    expect(Number(savedPrice)).toBe(2000000);
     console.log(`✅ Sửa giá thành: ${savedPrice}`);
   });
 

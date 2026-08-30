@@ -330,6 +330,7 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/ai', aiWriterRouter);
 app.use('/api/ai/product', productWriterRouter);
+app.use('/api/uploads', uploadsRouter);
 
 // ============================================
 // HEALTH CHECK ENDPOINT (Docker healthcheck)

@@ -72,13 +72,14 @@ const findProductDoc = async (idParam: string) => {
   // 1. Direct ObjectId match
   if (mongoose.Types.ObjectId.isValid(cleanParam)) {
     try {
-      const itemById = await Product.findById(cleanParam);
+      const itemById = await Product.findOne({ _id: cleanParam, isDeleted: { $ne: true } });
       if (itemById) return itemById;
     } catch (_) {}
   }
 
   // 2. Direct Slug / Code / SKU / MPN / ID match
   let item = await Product.findOne({
+    isDeleted: { $ne: true },
     $or: [
       { id: cleanParam },
       { slug: cleanParam },

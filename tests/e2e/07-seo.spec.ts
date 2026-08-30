@@ -21,8 +21,10 @@ test.describe('SEO — Meta tags & Cấu trúc trang', () => {
 
   for (const p of SEO_PAGES) {
     test(`SEO — ${p.name}: title và meta description`, async ({ page }) => {
-      await page.goto(p.url);
-      await page.waitForLoadState('networkidle');
+      await page.goto(p.url, { timeout: 30000 });
+      // Dùng domcontentloaded thay networkidle để tránh timeout trên trang có background polling
+      await page.waitForLoadState('domcontentloaded');
+      await page.waitForTimeout(1500);
 
       // Title
       const title = await page.title();
@@ -44,7 +46,8 @@ test.describe('SEO — Meta tags & Cấu trúc trang', () => {
 
   test('SEO — Open Graph tags trên trang chủ', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(1000);
 
     const ogTitle = await page.$eval(
       'meta[property="og:title"]',

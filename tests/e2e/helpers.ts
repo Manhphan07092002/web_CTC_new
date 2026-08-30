@@ -5,23 +5,36 @@
  */
 import { Page, expect } from '@playwright/test';
 
+import fs from 'fs';
+import path from 'path';
+
 // ─── Constants ───────────────────────────────────────────────────
 export const BASE_URL  = process.env.TEST_BASE_URL  || 'http://localhost:3000';
-export const API_URL   = process.env.TEST_API_URL   || 'http://localhost:4000';
+export const API_URL   = process.env.TEST_API_URL   || 'http://127.0.0.1:4000';
 export const ADMIN_URL = `${BASE_URL}/admin`;
 
 // ─── API Helpers ─────────────────────────────────────────────────
 
-let cachedToken: string | null = null;
 export function getAuthToken(): string {
-  if (cachedToken) return cachedToken;
   try {
-    const fs = require('fs');
-    if (fs.existsSync('playwright/.auth/token.txt')) {
-      cachedToken = fs.readFileSync('playwright/.auth/token.txt', 'utf-8').trim();
+    const tokenFile = path.resolve(process.cwd(), 'playwright/.auth/token.txt');
+    if (fs.existsSync(tokenFile)) {
+      const val = fs.readFileSync(tokenFile, 'utf-8').trim();
+      if (val) return val;
     }
   } catch {}
-  return cachedToken || '';
+
+  try {
+    const adminJsonPath = path.resolve(process.cwd(), 'playwright/.auth/admin.json');
+    if (fs.existsSync(adminJsonPath)) {
+      const data = JSON.parse(fs.readFileSync(adminJsonPath, 'utf-8'));
+      const ls = data.origins?.[0]?.localStorage || [];
+      const item = ls.find((x: any) => x.name === 'token' || x.name === 'auth_token');
+      if (item?.value) return item.value;
+    }
+  } catch {}
+
+  return '';
 }
 
 function getHeaders(extra: Record<string, string> = {}): Record<string, string> {

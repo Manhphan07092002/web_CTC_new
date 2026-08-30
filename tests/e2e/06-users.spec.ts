@@ -152,13 +152,13 @@ test.describe('USER — Trang quản lý người dùng (UI)', () => {
 
   test('USER-UI-01: Trang /admin/users tải thành công', async ({ page }) => {
     const res = await page.goto('/admin/users');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     expect(res?.status()).toBeLessThan(400);
   });
 
   test('USER-UI-02: Form tạo user validation hoạt động', async ({ page }) => {
     await page.goto('/admin/users');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const addBtn = page.getByRole('button', { name: /thêm|add|tạo/i }).first();
     if (!await addBtn.isVisible().catch(() => false)) {

@@ -7,9 +7,9 @@ const spaFallbackPlugin = () => ({
   name: 'spa-fallback-plugin',
   configureServer(server: any) {
     server.middlewares.use((req: any, res: any, next: any) => {
-      const url = req.url || '';
+      const url = req.url?.split('?')[0] || '';
       const acceptsHtml = req.headers.accept?.includes('text/html');
-      if (req.method === 'GET' && acceptsHtml && !url.startsWith('/api') && !url.includes('.ts') && !url.includes('.js') && !url.includes('.css') && !url.includes('.png') && !url.includes('.jpg') && !url.includes('.svg') && !url.includes('.json')) {
+      if (req.method === 'GET' && acceptsHtml && !url.startsWith('/api') && !path.extname(url)) {
         req.url = '/index.html';
       }
       next();

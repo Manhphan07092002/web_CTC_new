@@ -704,6 +704,8 @@ const CategoryManagement: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  id="category-name"
+                  name="name"
                   required
                   value={formData.name}
                   onChange={(e) => handleNameChange(e.target.value)}

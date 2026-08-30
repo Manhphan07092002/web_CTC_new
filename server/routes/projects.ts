@@ -61,12 +61,42 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+const generateSlug = (text: string): string => {
+  return (text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
 router.post('/', async (req, res) => {
   try {
+    const data = { ...req.body };
+    if (!data.slug && data.title) {
+      data.slug = `${generateSlug(data.title)}-${Date.now().toString(36)}`;
+    }
+    if (!data.capacity) {
+      data.capacity = 'Tiêu chuẩn';
+    }
+    if (!data.completionDate) {
+      data.completionDate = data.completedYear ? String(data.completedYear) : new Date().getFullYear().toString();
+    }
+    if (!data.image) {
+      data.image = '/assets/images/default-project.jpg';
+    }
+    if (!data.description) {
+      data.description = data.title || 'Dự án';
+    }
+    if (!data.location) {
+      data.location = 'Việt Nam';
+    }
+
     // Auto-translate project safely
-    let translatedData = req.body;
+    let translatedData = data;
     try {
-      translatedData = await translateProject(req.body);
+      translatedData = await translateProject(data);
     } catch (e) {
       console.warn('Project translation skipped:', e);
     }

@@ -104,7 +104,7 @@ const ProductsHero: React.FC = () => {
 
             {/* Title */}
             <h1 className="prod-title mb-3">
-              Vật tư & Thiết bị năng lượng
+              Sản phẩm & Thiết bị năng lượng
             </h1>
 
             {/* Simple description */}

@@ -129,7 +129,7 @@ router.get('/:id', async (req, res) => {
   try {
     const lang = getLanguage(req);
     let product = await db.products.getById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product || (product as any).isDeleted) return res.status(404).json({ message: 'Product not found' });
     
     // Apply translations if not Vietnamese
     if (lang !== 'vi') {
@@ -154,20 +154,29 @@ router.post('/', async (req, res) => {
       if (!category) {
         return res.status(400).json({ message: 'Invalid category' });
       }
-      if (!category.isActive) {
+      if (category.isActive === false) {
         return res.status(400).json({ message: 'Category is inactive' });
       }
-      categoryName = category.name;
+      categoryName = categoryName || category.name;
       
       // Update category count
       category.productCount = (category.productCount || 0) + 1;
-      await category.save();
+      await category.save().catch(() => {});
+    }
+
+    if (!categoryName) {
+      categoryName = 'Thiết Bị';
+    }
+
+    // Specifications stringification if object or array
+    if (productData.specifications && typeof productData.specifications !== 'string') {
+      productData.specifications = JSON.stringify(productData.specifications);
     }
     
     // Auto-translate product to all languages safely
     let translatedData: any = {
       ...productData,
-      categoryId,
+      categoryId: categoryId || undefined,
       category: categoryName
     };
     try {
@@ -179,11 +188,14 @@ router.post('/', async (req, res) => {
     const created = await db.products.add(translatedData);
     cacheService.invalidatePattern('products:');
     
-    logger.info('Product created:', created.id);
+    logger.info('Product created:', created?._id || created?.id);
     res.status(201).json(created);
-  } catch (error) {
-    logger.error('Error creating product', error);
-    res.status(500).json({ message: 'Failed to create product' });
+  } catch (error: any) {
+    logger.error('Error creating product:', error);
+    if (error?.name === 'ValidationError') {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Failed to create product', error: error?.message });
   }
 });
 

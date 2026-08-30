@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 
 const PAGES = [
   { name: 'Trang chủ',       url: '/',          titleContains: 'CTC' },
-  { name: 'Sản phẩm',        url: '/products',  titleContains: 'CTC' },
+  { name: 'Sản phẩm',        url: '/products',  titleContains: 'Sản phẩm' },
   { name: 'Dự án',           url: '/projects',  titleContains: 'Dự án' },
   { name: 'Tin tức',         url: '/news',      titleContains: 'Tin tức' },
   { name: 'Tài liệu',        url: '/resources', titleContains: 'Tài liệu' },
@@ -35,16 +35,18 @@ test.describe('NAV — Điều hướng & Menu chính', () => {
     test(`NAV — Truy cập ${p.name} (${p.url})`, async ({ page }) => {
       const res = await page.goto(p.url);
       expect(res?.status(), `${p.url} nên trả 200`).toBeLessThan(400);
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
 
       if (p.titleContains) {
-        // Title hoặc H1 phải chứa từ khóa
-        const hasTitle = (await page.title()).includes(p.titleContains);
-        const h1 = page.locator('h1').first();
-        const hasH1  = await h1.isVisible().then(v =>
-          v ? h1.textContent().then(t => t?.includes(p.titleContains) ?? false) : false
-        );
-        expect(hasTitle || hasH1, `Trang ${p.url} cần có "${p.titleContains}"`).toBeTruthy();
+        // Title hoặc H1 phải chứa từ khóa (chờ React / Helmet render)
+        await expect.poll(async () => {
+          const title = await page.title();
+          const h1Text = await page.locator('h1').allInnerTexts().then(arr => arr.join(' ')).catch(() => '');
+          return title.includes(p.titleContains) || h1Text.includes(p.titleContains);
+        }, {
+          message: `Trang ${p.url} cần có "${p.titleContains}" trong title hoặc h1`,
+          timeout: 7000,
+        }).toBeTruthy();
       }
     });
   }
