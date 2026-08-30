@@ -481,29 +481,50 @@ const CategoryManagement: React.FC = () => {
                   style={{ borderLeftColor: parentCategory.color || '#3B82F6', borderLeftWidth: '5px' }}
                 >
                   <div>
-                    {/* Header line */}
-                    <div className="flex items-start justify-between mb-3">
+                    {/* Header line - Clickable to expand/collapse */}
+                    <div 
+                      onClick={() => toggleNode(parentCategory.id)}
+                      className="flex items-start justify-between mb-3 p-2 -m-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors cursor-pointer select-none group"
+                    >
                       <div className="flex items-center gap-3 min-w-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleNode(parentCategory.id);
+                          }}
+                          className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700/60 hover:bg-primary/20 flex items-center justify-center text-slate-500 hover:text-primary transition-colors flex-shrink-0"
+                          title={isCardExpanded ? 'Thu gọn danh mục con' : 'Bấm để mở rộng danh mục con'}
+                        >
+                          {isCardExpanded ? (
+                            <ChevronDown size={18} className="text-primary font-bold transition-transform" />
+                          ) : (
+                            <ChevronRight size={18} className="text-slate-400 group-hover:text-primary transition-transform" />
+                          )}
+                        </button>
                         <div
-                          className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-xs"
+                          className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-xs"
                           style={{ backgroundColor: parentCategory.color || '#3B82F6' }}
                         >
                           {parentCategory.icon || '📂'}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base truncate" title={parentCategory.name}>
+                            <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base truncate group-hover:text-primary transition-colors" title={parentCategory.name}>
                               {parentCategory.name}
                             </h3>
                             <span className="text-[10px] uppercase tracking-wider bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-black">
-                              Danh mục chính
+                              Cấp 1
+                            </span>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-full">
+                              {childrenCount} danh mục con {isCardExpanded ? '▼' : '▶'}
                             </span>
                           </div>
                           <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">{parentCategory.slug}</p>
                         </div>
                       </div>
 
-                      <div className="flex gap-1 flex-shrink-0">
+                      <div className="flex gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                         <PermissionGate permission="manage_product_categories">
                           <button
                             onClick={() => handleAdd(parentCategory.id)}
@@ -511,7 +532,7 @@ const CategoryManagement: React.FC = () => {
                             title="Thêm danh mục con vào đây"
                           >
                             <FolderPlus size={16} />
-                            <span className="hidden sm:inline">+ Danh mục con</span>
+                            <span className="hidden sm:inline">+ Cấp 2</span>
                           </button>
                           <button
                             onClick={() => handleEdit(parentCategory)}
@@ -532,13 +553,13 @@ const CategoryManagement: React.FC = () => {
                     </div>
 
                     {parentCategory.description && (
-                      <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-gray-600 dark:text-gray-300 my-3 line-clamp-2 leading-relaxed">
                         {parentCategory.description}
                       </p>
                     )}
 
                     {/* Sub categories recursive tree list with Accordion header */}
-                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+                    <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
                       <div 
                         onClick={() => toggleNode(parentCategory.id)}
                         className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 p-2 -mx-2 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-700/50 cursor-pointer select-none transition-colors group mb-2"
@@ -554,7 +575,7 @@ const CategoryManagement: React.FC = () => {
                             Danh mục con ({childrenCount})
                           </span>
                           <span className="text-[10px] text-gray-400 font-normal">
-                            {isCardExpanded ? '• Bấm để thu gọn' : '• Bấm để xem chi tiết'}
+                            {isCardExpanded ? '• Bấm để thu gọn' : '• Bấm để mở rộng Cấp 2'}
                           </span>
                         </span>
                         <button
