@@ -290,18 +290,43 @@ router.post('/', requireAdmin, async (req, res) => {
   try {
     const userData = { ...req.body };
     
+    if (!userData.name || !userData.name.trim()) {
+      return res.status(400).json({ message: 'Họ và tên không được để trống' });
+    }
+
+    if (!userData.email || !userData.email.trim()) {
+      return res.status(400).json({ message: 'Email không được để trống' });
+    }
+
+    const normalizedEmail = userData.email.trim().toLowerCase();
+    userData.email = normalizedEmail;
+
+    // Check if user with this email already exists
+    const existing = await db.users.getByEmail(normalizedEmail);
+    if (existing) {
+      return res.status(400).json({ message: 'Email này đã được sử dụng bởi tài khoản khác' });
+    }
+
+    // Set default role if not provided
+    if (!userData.role) {
+      userData.role = 'viewer';
+    }
+
     // Validate password strength
-    if (userData.password) {
+    if (userData.password && userData.password.trim()) {
       const validation = validatePasswordStrength(userData.password);
       if (!validation.isValid) {
         return res.status(400).json({ 
-          message: 'Password does not meet requirements',
+          message: 'Mật khẩu không đáp ứng yêu cầu bảo mật',
           errors: validation.errors 
         });
       }
       
       // Hash password before storing
       userData.password = await hashPassword(userData.password);
+    } else {
+      // Default password if not specified
+      userData.password = await hashPassword('Admin@123');
     }
     
     logger.info('Creating user with data:', { ...userData, password: '***' });
@@ -311,9 +336,12 @@ router.post('/', requireAdmin, async (req, res) => {
     // Don't send password back
     const { password, ...sanitized } = created as any;
     res.status(201).json(sanitized);
-  } catch (error) {
-    logger.error('Error creating user', error);
-    res.status(500).json({ message: 'Failed to create user' });
+  } catch (error: any) {
+    logger.error('Error creating user:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Email này đã tồn tại trong hệ thống' });
+    }
+    res.status(500).json({ message: error.message || 'Lỗi khi tạo tài khoản' });
   }
 });
 

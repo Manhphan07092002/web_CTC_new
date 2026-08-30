@@ -121,39 +121,51 @@ router.post('/', async (req, res) => {
   try {
     const { name, description, icon, color, image, order, parentId } = req.body;
     
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Tên danh mục không được để trống' });
+    }
+
     // Generate slug from name
     const slug = generateSlug(name);
     
     // Check if slug already exists
     const existing = await ProductCategory.findOne({ slug });
     if (existing) {
-      return res.status(400).json({ message: 'Category with this name already exists' });
+      return res.status(400).json({ message: 'Danh mục với tên này đã tồn tại' });
     }
     
-    // Auto-translate category
-    const translatedData = await translateCategory({ name, description });
+    // Auto-translate category safely
+    let translations = {};
+    try {
+      const translatedData = await translateCategory({ name, description });
+      translations = translatedData?.translations || {};
+    } catch (e) {
+      logger.warn('Translation skipped for category:', name);
+    }
     
+    const cleanParentId = parentId && String(parentId).trim() ? String(parentId).trim() : undefined;
+
     const category = new ProductCategory({
-      name,
+      name: name.trim(),
       slug,
-      description,
-      icon,
-      color,
-      image,
-      order: order || 0,
-      parentId,
+      description: description || '',
+      icon: icon || '📂',
+      color: color || '#3B82F6',
+      image: image || '',
+      order: Number(order) || 0,
+      parentId: cleanParentId,
       isActive: true,
       productCount: 0,
-      translations: translatedData.translations
+      translations
     });
     
     await category.save();
     apiCache.delByPrefix('/api/product-categories');
-    logger.info('Product category created with translations:', category.id);
+    logger.info('Product category created:', category.id);
     res.status(201).json(category);
-  } catch (error) {
-    logger.error('Error creating product category', error);
-    res.status(500).json({ message: 'Failed to create product category' });
+  } catch (error: any) {
+    logger.error('Error creating product category:', error);
+    res.status(500).json({ message: error.message || 'Lỗi khi tạo danh mục sản phẩm' });
   }
 });
 

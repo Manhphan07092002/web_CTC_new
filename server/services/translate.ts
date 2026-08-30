@@ -280,63 +280,78 @@ export async function translateNews(newsData: any): Promise<any> {
  * Auto-translate testimonial fields
  */
 export async function translateTestimonial(testimonialData: any): Promise<any> {
-  const fieldsToTranslate: Record<string, string> = {};
-  
-  if (testimonialData.role) fieldsToTranslate.role = testimonialData.role;
-  if (testimonialData.content) fieldsToTranslate.content = testimonialData.content;
-  
-  if (Object.keys(fieldsToTranslate).length === 0) {
+  try {
+    const fieldsToTranslate: Record<string, string> = {};
+    
+    if (testimonialData.role) fieldsToTranslate.role = testimonialData.role;
+    if (testimonialData.content) fieldsToTranslate.content = testimonialData.content;
+    
+    if (Object.keys(fieldsToTranslate).length === 0) {
+      return testimonialData;
+    }
+    
+    console.log('🌐 Auto-translating testimonial:', testimonialData.name);
+    const translations = await autoTranslate(fieldsToTranslate);
+    
+    return {
+      ...testimonialData,
+      translations
+    };
+  } catch (err) {
+    console.warn('⚠️ Auto-translate testimonial skipped:', err);
     return testimonialData;
   }
-  
-  console.log('🌐 Auto-translating testimonial:', testimonialData.name);
-  const translations = await autoTranslate(fieldsToTranslate);
-  
-  return {
-    ...testimonialData,
-    translations
-  };
 }
 
 /**
  * Auto-translate category fields
  */
 export async function translateCategory(categoryData: any): Promise<any> {
-  const fieldsToTranslate: Record<string, string> = {};
-  
-  if (categoryData.name) fieldsToTranslate.name = categoryData.name;
-  if (categoryData.description) fieldsToTranslate.description = categoryData.description;
-  
-  if (Object.keys(fieldsToTranslate).length === 0) {
+  try {
+    const fieldsToTranslate: Record<string, string> = {};
+    
+    if (categoryData.name) fieldsToTranslate.name = categoryData.name;
+    if (categoryData.description) fieldsToTranslate.description = categoryData.description;
+    
+    if (Object.keys(fieldsToTranslate).length === 0) {
+      return categoryData;
+    }
+    
+    console.log('🌐 Auto-translating category:', categoryData.name);
+    const translations = await autoTranslate(fieldsToTranslate);
+    
+    return {
+      ...categoryData,
+      translations
+    };
+  } catch (err) {
+    console.warn('⚠️ Auto-translate category skipped:', err);
     return categoryData;
   }
-  
-  console.log('🌐 Auto-translating category:', categoryData.name);
-  const translations = await autoTranslate(fieldsToTranslate);
-  
-  return {
-    ...categoryData,
-    translations
-  };
 }
 
 /**
  * Auto-translate team member fields
  */
 export async function translateTeamMember(memberData: any): Promise<any> {
-  const fieldsToTranslate: Record<string, string> = {};
-  
-  if (memberData.role) fieldsToTranslate.role = memberData.role;
-  
-  if (Object.keys(fieldsToTranslate).length === 0) {
+  try {
+    const fieldsToTranslate: Record<string, string> = {};
+    
+    if (memberData.role) fieldsToTranslate.role = memberData.role;
+    
+    if (Object.keys(fieldsToTranslate).length === 0) {
+      return memberData;
+    }
+    
+    console.log('🌐 Auto-translating team member:', memberData.name);
+    const translations = await autoTranslate(fieldsToTranslate);
+    
+    return {
+      ...memberData,
+      translations
+    };
+  } catch (err) {
+    console.warn('⚠️ Auto-translate team member skipped:', err);
     return memberData;
   }
-  
-  console.log('🌐 Auto-translating team member:', memberData.name);
-  const translations = await autoTranslate(fieldsToTranslate);
-  
-  return {
-    ...memberData,
-    translations
-  };
 }
