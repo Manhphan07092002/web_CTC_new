@@ -64,7 +64,7 @@ const ProjectDetail: React.FC = () => {
     "@id": `${window.location.origin}/projects/${id}`,
     "name": p.title,
     "image": p.image?.startsWith('http') ? p.image : `${window.location.origin}${p.image}`,
-    "description": p.description,
+    "description": p.description?.replace(/<[^>]*>/g, '') || '',
     "dateCreated": (p as any).date || p.completionDate,
     "locationCreated": {
       "@type": "Place",
@@ -89,7 +89,7 @@ const ProjectDetail: React.FC = () => {
     <div className="bg-gray-50 dark:bg-gray-900 font-sans text-gray-700 dark:text-gray-300 pt-36 sm:pt-44 md:pt-48 pb-20 animate-fade-in">
       <SEO 
         title={project.title}
-        description={project.description?.substring(0, 160) || ''}
+        description={project.description?.replace(/<[^>]*>/g, '').substring(0, 160) || ''}
         image={project.image}
         schema={getProjectSchema(project)}
       />
@@ -122,8 +122,12 @@ const ProjectDetail: React.FC = () => {
               <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-700 pb-4">
                 {getLangText(language, { vi: 'Chi tiết & Mô tả dự án', en: 'Project Details & Description', ko: '프로젝트 세부 정보', ja: 'プロジェクトの詳細', zh: '项目详情与描述', de: 'Projektdetails & Beschreibung' })}
               </h2>
-              <div className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-sans">
-                <p className="whitespace-pre-line text-base sm:text-lg leading-relaxed">{project.description}</p>
+              <div className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-sans [&_h2]:text-xl sm:[&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-corporate dark:[&_h2]:text-white [&_h2]:mb-4 [&_p]:mb-4 [&_p]:leading-relaxed [&_a]:text-primary [&_a]:hover:underline [&_a]:font-semibold">
+                {/<[a-z][\s\S]*>/i.test(project.description || '') ? (
+                  <div dangerouslySetInnerHTML={{ __html: project.description }} />
+                ) : (
+                  <p className="whitespace-pre-line text-base sm:text-lg leading-relaxed">{project.description}</p>
+                )}
               </div>
             </div>
 

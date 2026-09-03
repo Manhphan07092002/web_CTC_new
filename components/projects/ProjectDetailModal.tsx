@@ -66,7 +66,11 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project, onClos
 
           <div className="prose max-w-none text-gray-600 dark:text-gray-300">
             <h3 className="text-xl font-bold text-corporate dark:text-white mb-4">{t('common.view_details')}</h3>
-            <p className="mb-4">{project.description}</p>
+            {/<[a-z][\s\S]*>/i.test(project.description || '') ? (
+              <div className="mb-4 text-gray-700 dark:text-gray-300 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-2 [&_p]:mb-3 [&_a]:text-primary [&_a]:hover:underline" dangerouslySetInnerHTML={{ __html: project.description }} />
+            ) : (
+              <p className="mb-4 whitespace-pre-line">{project.description}</p>
+            )}
             <p className="mb-4">
               {t('home.why_choose_desc')}
             </p>

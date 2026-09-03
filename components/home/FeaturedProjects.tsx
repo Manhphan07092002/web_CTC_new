@@ -250,7 +250,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
 
                     {/* Description */}
                     <p className="text-slate-300 text-sm leading-relaxed line-clamp-2 max-w-xl opacity-90">
-                      {project.description}
+                      {(project as any).excerpt || project.description?.replace(/<[^>]*>/g, '') || ''}
                     </p>
 
                     {/* Partner / Client info */}

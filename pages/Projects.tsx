@@ -153,7 +153,7 @@ const Projects: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     "name": project.title,
-    "description": project.description,
+    "description": project.description?.replace(/<[^>]*>/g, '') || '',
     "image": project.image?.startsWith('http') ? project.image : `${window.location.origin}${project.image}`,
     "locationCreated": {
        "@type": "Place",

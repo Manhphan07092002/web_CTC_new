@@ -43,7 +43,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
           {project.title}
         </h3>
         <p className="text-gray-600 dark:text-gray-400 mb-6 flex-1 line-clamp-2">
-          {project.description}
+          {(project as any).excerpt || project.description?.replace(/<[^>]*>/g, '') || ''}
         </p>
         <div className="pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
           <div className="text-sm font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
