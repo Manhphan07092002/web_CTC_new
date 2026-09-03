@@ -14,61 +14,17 @@ interface FeaturedProductsProps {
   isLoading?: boolean;
 }
 
-const DEFAULT_FALLBACK_PRODUCTS: Product[] = [
-  {
-    id: 'jinko-solar-550w',
-    name: 'Tấm pin năng lượng mặt trời Jinko Solar 550W Tiger Pro',
-    category: 'Tấm pin mặt trời',
-    price: 'Liên hệ',
-    contactPrice: true,
-    image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&q=80',
-    description: 'Tấm pin mặt trời mono đơn tinh thể công nghệ Half-cell, hiệu suất chuyển đổi quang năng 21.33%, độ bền vượt trội Tier 1.',
-    stock: 50,
-    stockStatus: 'in_stock'
-  },
-  {
-    id: 'sungrow-inverter-110kw',
-    name: 'Biến tần Inverter hòa lưới Sungrow 110kW SG110CX',
-    category: 'Biến tần Inverter',
-    price: 'Liên hệ',
-    contactPrice: true,
-    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80',
-    description: 'Inverter công nghiệp 9 MPPT cho hiệu suất tối đa 98.7%, chuẩn chống nước bụi IP66, tích hợp giám sát thông minh iSolarCloud.',
-    stock: 25,
-    stockStatus: 'in_stock'
-  },
-  {
-    id: 'longi-solar-540w',
-    name: 'Tấm pin năng lượng mặt trời Longi Solar Hi-MO 5 540W',
-    category: 'Tấm pin mặt trời',
-    price: 'Liên hệ',
-    contactPrice: true,
-    image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80',
-    description: 'Dòng pin hiệu suất cao đạt tiêu chuẩn IEC quốc tế, bảo hành cơ lý 12 năm và bảo hành hiệu suất tuyến tính 25 năm.',
-    stock: 40,
-    stockStatus: 'in_stock'
-  },
-  {
-    id: 'huawei-inverter-100kw',
-    name: 'Biến tần Inverter thông minh Huawei SUN2000-100KTL-M1',
-    category: 'Biến tần Inverter',
-    price: 'Liên hệ',
-    contactPrice: true,
-    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80',
-    description: 'Biến tần chuỗi hòa lưới cao cấp 100kW tích hợp công nghệ AI bảo vệ hồ quang AFCI an toàn tuyệt đối chống cháy nổ.',
-    stock: 20,
-    stockStatus: 'in_stock'
-  }
-];
-
 const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, isLoading = false }) => {
   const { t, language } = useLanguage();
   const { ref: productsRef, isInView } = useInView(0.1);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
-  const displayProducts = featuredProducts && featuredProducts.length > 0 
-    ? featuredProducts 
-    : DEFAULT_FALLBACK_PRODUCTS;
+  // Chỉ lấy trực tiếp 100% từ Database
+  const displayProducts = (featuredProducts || []).slice(0, 4);
+
+  if (!isLoading && displayProducts.length === 0) {
+    return null;
+  }
 
   return (
     <section ref={productsRef} className="py-24 bg-white dark:bg-slate-900 transition-colors duration-300 relative overflow-hidden">

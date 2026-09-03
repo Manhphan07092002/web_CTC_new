@@ -26,60 +26,19 @@ function getCleanProjectDescription(description?: string, excerpt?: string): str
   return cleanText;
 }
 
-// Default top-tier projects fallback if database is empty
-const DEFAULT_FEATURED_PROJECTS: Project[] = [
-  {
-    id: 'coco-viet-nam',
-    title: 'Điện Mặt Trời Áp Mái Công Ty TNHH Dệt Quốc Tế Coco Việt Nam',
-    location: 'KCN Bảo Minh, Nam Định',
-    capacity: '2.531 kWp',
-    completionDate: '2024',
-    category: 'Điện mặt trời áp mái',
-    image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&q=80',
-    description: 'Hệ thống điện mặt trời áp mái công nghiệp quy mô 2.531 kWp sử dụng pin Tier 1 và biến tần trung tâm, giúp tiết kiệm hàng tỷ đồng tiền điện mỗi năm.'
-  },
-  {
-    id: 'max-packaging',
-    title: 'Điện Mặt Trời Áp Mái Nhà Máy Max Packaging',
-    location: 'KCN VSIP, Quảng Ngãi',
-    capacity: '600 kWp',
-    completionDate: '2024',
-    category: 'Điện mặt trời công nghiệp',
-    image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80',
-    description: 'Giải pháp tự dùng tối ưu cho nhà máy sản xuất bao bì, vận hành an toàn và đạt chứng nhận năng lượng xanh chuẩn quốc tế.'
-  },
-  {
-    id: 'det-may-chau-giang',
-    title: 'Điện Mặt Trời Áp Mái Nhà Máy Dệt May Châu Giang',
-    location: 'Hà Nam',
-    capacity: '3.0 MWp',
-    completionDate: '2023',
-    category: 'Điện mặt trời áp mái',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
-    description: 'Công trình tổng thầu EPC năng lượng mặt trời công nghiệp quy mô lớn, giảm phát thải hơn 3.200 tấn CO2 hàng năm.'
-  },
-  {
-    id: 'farm-solar-gio-linh',
-    title: 'Trang Trại Điện Mặt Trời Farm Solar Gio Linh',
-    location: 'Gio Linh, Quảng Trị',
-    capacity: '4.0 MWp',
-    completionDate: '2023',
-    category: 'Farm Solar Nông nghiệp',
-    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80',
-    description: 'Mô hình kết hợp nông nghiệp công nghệ cao và điện mặt trời hòa lưới EVN, mang lại hiệu quả kinh tế kép bền vững.'
-  }
-];
-
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, isLoading = false }) => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const { ref: projectsRef, isInView } = useInView(0.1);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Use provided featured projects or fallback
-  const rawProjects = featuredProjects && featuredProjects.length > 0
-    ? featuredProjects.slice(0, 4)
-    : DEFAULT_FEATURED_PROJECTS;
+  // Chỉ lấy trực tiếp 100% dữ liệu từ Database
+  const rawProjects = (featuredProjects || []).slice(0, 4);
+
+  // Nếu không đang tải và không có dự án nào trong DB thì không hiển thị
+  if (!isLoading && rawProjects.length === 0) {
+    return null;
+  }
 
   return (
     <section 
