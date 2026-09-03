@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { Project } from '../types';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRight, Home, Image as ImageIcon, Maximize2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getLangText } from '../utils/translation-helper';
 import SEO from '../components/SEO';
@@ -130,6 +130,49 @@ const ProjectDetail: React.FC = () => {
                 )}
               </div>
             </div>
+
+            {/* Real Project Photo Album Grid if multiple images exist */}
+            {project.images && project.images.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 sm:p-10 space-y-6">
+                <div className="border-b border-gray-100 dark:border-gray-700 pb-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+                      <ImageIcon className="text-primary" size={24} />
+                      {getLangText(language, { vi: 'Thư viện ảnh thực tế công trình', en: 'Site Construction Gallery', ko: '현장 시공 사진 갤러리', ja: '現場施工写真ギャラリー', zh: '现场施工照片画廊', de: 'Baustellen-Fotogalerie' })}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {getLangText(language, { vi: 'Hình ảnh chi tiết về kết cấu lắp đặt, pin năng lượng mặt trời, inverter và trạm đấu nối của dự án', en: 'Detailed photos of solar installation, panels, inverters and substation', ko: '태양광 모듈, 인버터 및 변전소 시공 사진', ja: '太陽光パネル、インバーター、変電所の施工写真', zh: '太阳能光伏组件、逆变器及变电站施工照片', de: 'Detaillierte Fotos der Solaranlage und Komponenten' })}
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 bg-primary/10 text-primary font-bold text-xs rounded-full">
+                    {[project.image, ...project.images].filter((img, i, arr) => Boolean(img) && arr.indexOf(img) === i).length} ảnh thực tế
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {[project.image, ...project.images].filter((img, i, arr) => Boolean(img) && arr.indexOf(img) === i).map((img, idx) => (
+                    <div 
+                      key={idx}
+                      className="group relative aspect-4/3 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 bg-gray-100 dark:bg-slate-800"
+                    >
+                      <img 
+                        src={img} 
+                        alt={`${project.title} - Ảnh ${idx + 1}`} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                        <span className="text-white text-xs font-bold flex items-center gap-1">
+                          <Maximize2 size={13} /> Góc chụp #{idx + 1}
+                        </span>
+                      </div>
+                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold rounded-md">
+                        #{idx + 1}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Features Subcomponent */}
             <ProjectFeatures features={project.features} />
