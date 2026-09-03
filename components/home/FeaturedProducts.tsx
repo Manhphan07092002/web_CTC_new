@@ -139,14 +139,10 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, i
                         </span>
                       )}
                       {(product.isHot || product.badge === 'HOT') && (
-                        <span className="px-2.5 py-0.5 bg-gradient-to-r from-red-600 to-amber-500 text-white text-[9px] font-black uppercase tracking-wider rounded-md shadow-lg flex items-center gap-1">
-                          🔥 HOT
-                        </span>
+                        <img src="/assets/icons/tag-hot.svg" alt="HOT Deal" className="h-6 object-contain drop-shadow-md" />
                       )}
                       {(product.isNew || product.badge === 'NEW') && (
-                        <span className="px-2.5 py-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[9px] font-black uppercase tracking-wider rounded-md shadow-lg flex items-center gap-1">
-                          ✨ NEW
-                        </span>
+                        <img src="/assets/icons/tag-new.svg" alt="NEW Product" className="h-6 object-contain drop-shadow-md" />
                       )}
                     </div>
 
