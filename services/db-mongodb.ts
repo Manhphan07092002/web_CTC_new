@@ -135,7 +135,9 @@ const findProductDoc = async (idParam: string) => {
 export const db = {
   products: {
     getAll: async () => {
-      const products = await Product.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 }).lean();
+      const products = await Product.find({ isDeleted: { $ne: true } })
+        .sort({ isFeatured: -1, featuredOrder: 1, createdAt: -1 })
+        .lean();
       return products.map(toPlainObject<IProduct>);
     },
 

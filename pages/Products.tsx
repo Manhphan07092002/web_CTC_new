@@ -208,7 +208,7 @@ const Products: React.FC = () => {
       filtered = filtered.filter(p => (p.efficiency || 0) <= maxEff);
     }
 
-    // Sort by Final Price with VAT or Name
+    // Sort by Final Price with VAT, Name, or Default (Featured -> Newest -> Remaining)
     switch (sortOption) {
       case 'price-asc':
         filtered.sort((a, b) => calculatePriceWithVat(a.price, a.vat) - calculatePriceWithVat(b.price, b.vat));
@@ -219,7 +219,28 @@ const Products: React.FC = () => {
       case 'name-asc':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
         break;
+      case 'default':
       default:
+        // 1. Nổi bật (isFeatured: true) lên đầu tiên
+        // 2. Mới nhất (createdAt mới hơn) tiếp theo
+        // 3. Các sản phẩm còn lại
+        filtered.sort((a, b) => {
+          const aFeatured = Boolean(a.isFeatured || (a as any).featured);
+          const bFeatured = Boolean(b.isFeatured || (b as any).featured);
+
+          if (aFeatured && !bFeatured) return -1;
+          if (!aFeatured && bFeatured) return 1;
+
+          if (aFeatured && bFeatured) {
+            const orderA = Number((a as any).featuredOrder ?? 999);
+            const orderB = Number((b as any).featuredOrder ?? 999);
+            if (orderA !== orderB) return orderA - orderB;
+          }
+
+          const timeA = new Date(a.createdAt || (a as any).updatedAt || 0).getTime();
+          const timeB = new Date(b.createdAt || (b as any).updatedAt || 0).getTime();
+          return timeB - timeA;
+        });
         break;
     }
 

@@ -56,6 +56,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.category}
               </span>
             )}
+            {(product.isFeatured || (product as any).featured) && (
+              <span className="bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 sm:px-2 sm:py-1 rounded shadow-md uppercase tracking-wider flex items-center gap-1">
+                ⭐ {t('home.products_featured') || 'Nổi bật'}
+              </span>
+            )}
             {(product.stockStatus === 'out_of_stock' || (product.stock === 0 && !product.contactPrice && product.stockStatus !== 'contact')) && (
               <span className="bg-red-500 text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs">
                 {t('common.out_of_stock')}
