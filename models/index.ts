@@ -284,6 +284,7 @@ export interface IProject extends BaseDocument {
   capacity: string;
   completionDate: string;
   image: string;
+  images?: string[];
   description: string;
   content?: string;
   excerpt?: string;
@@ -308,6 +309,7 @@ const ProjectSchema = new Schema<IProject>({
   capacity: { type: String, required: true },
   completionDate: { type: String, required: true },
   image: { type: String, required: true },
+  images: { type: [String], default: [] },
   description: { type: String, required: true },
   content: String,
   excerpt: String,

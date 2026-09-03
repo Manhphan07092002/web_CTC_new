@@ -76,6 +76,7 @@ export interface Project {
   completionDate: string;
   date?: string;
   image: string;
+  images?: string[];
   description: string;
   excerpt?: string;
   category?: string;
