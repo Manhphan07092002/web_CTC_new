@@ -35,6 +35,7 @@
     "seed:products:v9:real": "npx tsx server/scripts/seed-850-products-verified-sources-v9.ts --real",
     "seed:products:v9:validate": "npx tsx server/scripts/seed-850-products-verified-sources-v9.ts --validate",
     "seed:projects": "npx tsx server/scripts/seed-300-seo-projects_v1.ts",
+    "seed:solar": "npx tsx server/scripts/seed-solar-projects.ts",
     "seed:team": "npx tsx server/scripts/seed-50-team-members.ts",
     "clear:products": "npx tsx server/scripts/clear-all-products.ts",
     "seed:sql": "npx tsx scripts/import-sql-data.ts",
