@@ -11,6 +11,20 @@ interface FeaturedProjectsProps {
   isLoading?: boolean;
 }
 
+function getCleanProjectDescription(description?: string, excerpt?: string): string {
+  if (excerpt && excerpt.trim()) return excerpt.trim();
+  if (!description) return '';
+  const withoutHeadings = description.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, ' ');
+  const withSpaces = withoutHeadings
+    .replace(/<\/(p|div|li)>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, ' ');
+  const cleanText = withSpaces.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  if (!cleanText) {
+    return description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  return cleanText;
+}
+
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, isLoading = false }) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -250,7 +264,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, i
 
                     {/* Description */}
                     <p className="text-slate-300 text-sm leading-relaxed line-clamp-2 max-w-xl opacity-90">
-                      {(project as any).excerpt || project.description?.replace(/<[^>]*>/g, '') || ''}
+                      {getCleanProjectDescription(project.description, project.excerpt)}
                     </p>
 
                     {/* Partner / Client info */}

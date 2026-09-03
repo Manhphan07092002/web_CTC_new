@@ -9,6 +9,23 @@ interface ProjectCardProps {
   onClick: () => void;
 }
 
+function getCleanProjectDescription(description?: string, excerpt?: string): string {
+  if (excerpt && excerpt.trim()) return excerpt.trim();
+  if (!description) return '';
+  // Loại bỏ các thẻ tiêu đề <h2>...</h2> (vì tiêu đề card đã hiển thị riêng ở trên)
+  const withoutHeadings = description.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, ' ');
+  // Thay các thẻ đóng đoạn/block bằng dấu cách để chữ không bị dính
+  const withSpaces = withoutHeadings
+    .replace(/<\/(p|div|li)>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, ' ');
+  // Bóc sạch toàn bộ thẻ HTML còn lại
+  const cleanText = withSpaces.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  if (!cleanText) {
+    return description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  return cleanText;
+}
+
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
   const { t, language } = useLanguage();
 
@@ -21,7 +38,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
         <img 
           src={project.image} 
           alt={project.title} 
-          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" 
+          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1509391366360-1e97f52cefd3?auto=format&fit=crop&w=1600&q=85';
+          }}
         />
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
         {project.isFeatured && (
@@ -43,7 +63,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
           {project.title}
         </h3>
         <p className="text-gray-600 dark:text-gray-400 mb-6 flex-1 line-clamp-2">
-          {(project as any).excerpt || project.description?.replace(/<[^>]*>/g, '') || ''}
+          {getCleanProjectDescription(project.description, project.excerpt)}
         </p>
         <div className="pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
           <div className="text-sm font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">

@@ -77,6 +77,7 @@ export interface Project {
   date?: string;
   image: string;
   description: string;
+  excerpt?: string;
   category?: string;
   categoryId?: string; // Reference to ProjectCategory
   client?: string;
