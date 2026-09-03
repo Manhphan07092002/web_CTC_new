@@ -227,6 +227,65 @@ router.post('/images/create-folder', (req, res) => {
   }
 });
 
+// Rename a file or folder
+router.post('/images/rename', (req, res) => {
+  const { oldPath, newName } = req.body;
+
+  if (!oldPath || !newName) {
+    return res.status(400).json({ message: 'Vui lòng cung cấp đường dẫn cũ và tên mới' });
+  }
+
+  // Sanitize newName: disallow slashes, backslashes, colons, or traversal tokens
+  const sanitizedNewName = String(newName).trim().replace(/[/\\:*?"<>|]/g, '');
+  if (!sanitizedNewName || sanitizedNewName === '.' || sanitizedNewName === '..') {
+    return res.status(400).json({ message: 'Tên mới không hợp lệ' });
+  }
+
+  const fullOldPath = path.join(imagesDir, String(oldPath));
+  const resolvedOldPath = path.resolve(fullOldPath);
+  const resolvedImagesDir = path.resolve(imagesDir);
+
+  // Security check: prevent directory traversal
+  if (!resolvedOldPath.startsWith(resolvedImagesDir)) {
+    return res.status(403).json({ message: 'Truy cập bị từ chối' });
+  }
+
+  if (!fs.existsSync(resolvedOldPath)) {
+    return res.status(404).json({ message: 'Tệp hoặc thư mục không tồn tại' });
+  }
+
+  const parentDir = path.dirname(resolvedOldPath);
+  const fullNewPath = path.join(parentDir, sanitizedNewName);
+  const resolvedNewPath = path.resolve(fullNewPath);
+
+  // Security check: ensure target stays inside imagesDir and inside same parent directory
+  if (!resolvedNewPath.startsWith(resolvedImagesDir) || path.dirname(resolvedNewPath) !== parentDir) {
+    return res.status(403).json({ message: 'Truy cập bị từ chối' });
+  }
+
+  // Check if destination already exists
+  if (fs.existsSync(resolvedNewPath)) {
+    return res.status(409).json({ message: 'Tên này đã tồn tại trong thư mục. Vui lòng chọn tên khác.' });
+  }
+
+  try {
+    fs.renameSync(resolvedOldPath, resolvedNewPath);
+    
+    // Calculate new relative path
+    const relativeNewPath = path.relative(imagesDir, resolvedNewPath).replace(/\\/g, '/');
+    res.json({
+      success: true,
+      message: 'Đổi tên thành công',
+      newName: sanitizedNewName,
+      newPath: relativeNewPath,
+      newUrl: `/uploads/images/${relativeNewPath}`
+    });
+  } catch (err: any) {
+    console.error('Error renaming file or folder:', err);
+    res.status(500).json({ message: 'Đổi tên thất bại: ' + (err.message || 'Lỗi server') });
+  }
+});
+
 // Delete an image by filename (supports paths like folder/file.jpg)
 router.delete('/images/:filepath(*)', (req, res) => {
   const filepath = req.params.filepath;

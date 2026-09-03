@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Folder, FileImage } from 'lucide-react';
+import { Folder, FileImage, Edit3 } from 'lucide-react';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 interface UploadedFile {
@@ -24,6 +24,48 @@ const FileManager: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [renameTarget, setRenameTarget] = useState<UploadedFile | null>(null);
+  const [newTargetName, setNewTargetName] = useState('');
+  const [renaming, setRenaming] = useState(false);
+
+  const handleOpenRename = (file: UploadedFile) => {
+    setRenameTarget(file);
+    setNewTargetName(file.filename);
+  };
+
+  const handleRename = async () => {
+    if (!renameTarget || !newTargetName.trim()) return;
+    if (newTargetName.trim() === renameTarget.filename) {
+      setRenameTarget(null);
+      return;
+    }
+
+    try {
+      setRenaming(true);
+      setError(null);
+      const res = await fetch(`${API_BASE}/images/rename`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          oldPath: renameTarget.filename,
+          newName: newTargetName.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Đổi tên thất bại');
+      }
+
+      setRenameTarget(null);
+      setNewTargetName('');
+      await loadFiles();
+    } catch (e: any) {
+      setError(e.message || 'Đổi tên thất bại. Vui lòng thử lại.');
+    } finally {
+      setRenaming(false);
+    }
+  };
 
   const loadFiles = async () => {
     try {
@@ -168,15 +210,26 @@ const FileManager: React.FC = () => {
                     )}
                     {f.filename}
                   </div>
-                  {!(f.isDirectory || f.type === 'folder') && (
+                  <div className="flex items-center justify-between mt-1 pt-1 border-t border-gray-100">
                     <button
                       type="button"
-                      className="mt-1 text-xs text-primary font-bold hover:underline text-left"
-                      onClick={() => handleCopy(f.url)}
+                      className="text-[11px] text-blue-600 hover:text-blue-800 font-bold flex items-center gap-0.5 cursor-pointer"
+                      onClick={() => handleOpenRename(f)}
+                      title="Đổi tên"
                     >
-                      Copy link
+                      <Edit3 size={11} />
+                      Đổi tên
                     </button>
-                  )}
+                    {!(f.isDirectory || f.type === 'folder') && (
+                      <button
+                        type="button"
+                        className="text-[11px] text-primary font-bold hover:underline"
+                        onClick={() => handleCopy(f.url)}
+                      >
+                        Copy link
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -196,6 +249,51 @@ const FileManager: React.FC = () => {
         warningText="Tệp tin sẽ bị xóa vĩnh viễn khỏi thư mục uploads."
         confirmText="Đồng ý xóa"
       />
+
+      {/* Rename File / Folder Modal */}
+      {renameTarget && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-gray-100 animate-scale-up">
+            <h4 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <Edit3 size={18} className="text-blue-600" />
+              {renameTarget.isDirectory || renameTarget.type === 'folder' ? 'Đổi tên thư mục' : 'Đổi tên tệp tin'}
+            </h4>
+            <p className="text-xs text-gray-500 mb-3">
+              Tên hiện tại: <span className="font-semibold text-gray-700">{renameTarget.filename}</span>
+            </p>
+            <input
+              type="text"
+              value={newTargetName}
+              onChange={(e) => setNewTargetName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+              placeholder="Nhập tên mới..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl mb-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setRenameTarget(null);
+                  setNewTargetName('');
+                }}
+                disabled={renaming}
+                className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-lg hover:bg-gray-100 cursor-pointer"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleRename}
+                disabled={renaming || !newTargetName.trim()}
+                className="px-4 py-2 text-xs font-bold text-white bg-primary hover:bg-secondary rounded-lg transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
+              >
+                {renaming ? 'Đang lưu...' : 'Lưu tên mới'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
