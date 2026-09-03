@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Image as ImageIcon, Plus, Trash2, Star, Sparkles } from 'lucide-react';
+import { Save, X, Image as ImageIcon, Plus, Trash2, Star, Sparkles, Flame } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
@@ -65,6 +65,9 @@ const ProductForm: React.FC = () => {
     technicalSpecs: {} as { [key: string]: string },
     isFeatured: false,
     featuredOrder: 0,
+    isNew: false,
+    isHot: false,
+    badge: '',
     focusKeyword: ''
   });
 
@@ -304,8 +307,11 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON thuần (không bọc tron
         warranty: product.warranty || '',
         features: product.features && product.features.length > 0 ? product.features : [''],
         technicalSpecs: product.technicalSpecs || {},
-        isFeatured: product.isFeatured || false,
+        isFeatured: Boolean(product.isFeatured || (product as any).featured),
         featuredOrder: product.featuredOrder || 0,
+        isNew: Boolean(product.isNew || (product as any).badge === 'NEW'),
+        isHot: Boolean(product.isHot || (product as any).badge === 'HOT'),
+        badge: (product as any).badge || '',
         focusKeyword: loadedKw
       };
       setFormData(initialProductData);
@@ -399,6 +405,7 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON thuần (không bọc tron
       const cleanedData = {
         ...formData,
         vat: finalVat,
+        badge: formData.isHot ? 'HOT' : formData.isNew ? 'NEW' : formData.badge || '',
         features: formData.features.filter(f => f.trim() !== ''),
         images: formData.images.filter(img => img.trim() !== '')
       };
@@ -847,26 +854,70 @@ Trả về KẾT QUẢ DUY NHẤT dưới dạng JSON thuần (không bọc tron
             </div>
           </div>
 
-          {/* Featured */}
-          <div className="flex items-center gap-6 p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200/60 dark:border-yellow-800/40 rounded-xl">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formData.isFeatured}
-                onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                className="rounded"
-              />
-              <Star size={18} className="text-yellow-600 dark:text-yellow-400" fill={formData.isFeatured ? 'currentColor' : 'none'} />
-              <span className="font-medium text-gray-700 dark:text-gray-200">Sản phẩm nổi bật</span>
-            </label>
+          {/* Badges & Featured Section */}
+          <div className="space-y-3">
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Nhãn & Trạng thái hiển thị nổi bật</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Featured Card */}
+              <label className={`cursor-pointer flex items-center gap-3 p-4 rounded-2xl border-2 transition-all ${
+                formData.isFeatured ? 'border-amber-400 bg-amber-50 dark:bg-amber-950/30 shadow-md' : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={formData.isFeatured}
+                  onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                  className="w-4 h-4 text-amber-500 rounded focus:ring-amber-400"
+                />
+                <Star size={20} className="text-amber-500 flex-shrink-0" fill={formData.isFeatured ? 'currentColor' : 'none'} />
+                <div>
+                  <p className="font-bold text-xs text-gray-800 dark:text-gray-100">Sản phẩm Nổi bật (⭐)</p>
+                  <p className="text-[11px] text-gray-500">Ưu tiên hiển thị trang chủ & top danh mục</p>
+                </div>
+              </label>
+
+              {/* HOT Card */}
+              <label className={`cursor-pointer flex items-center gap-3 p-4 rounded-2xl border-2 transition-all ${
+                formData.isHot ? 'border-red-400 bg-red-50 dark:bg-red-950/30 shadow-md' : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={formData.isHot}
+                  onChange={(e) => setFormData({ ...formData, isHot: e.target.checked, badge: e.target.checked ? 'HOT' : (formData.isNew ? 'NEW' : '') })}
+                  className="w-4 h-4 text-red-500 rounded focus:ring-red-400"
+                />
+                <Flame size={20} className="text-red-500 flex-shrink-0" fill={formData.isHot ? 'currentColor' : 'none'} />
+                <div>
+                  <p className="font-bold text-xs text-gray-800 dark:text-gray-100">Sản phẩm HOT (🔥 HOT)</p>
+                  <p className="text-[11px] text-gray-500">Hiển thị nhãn HOT đỏ bán chạy</p>
+                </div>
+              </label>
+
+              {/* NEW Card */}
+              <label className={`cursor-pointer flex items-center gap-3 p-4 rounded-2xl border-2 transition-all ${
+                formData.isNew ? 'border-cyan-400 bg-cyan-50 dark:bg-cyan-950/30 shadow-md' : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={formData.isNew}
+                  onChange={(e) => setFormData({ ...formData, isNew: e.target.checked, badge: e.target.checked ? 'NEW' : (formData.isHot ? 'HOT' : '') })}
+                  className="w-4 h-4 text-cyan-500 rounded focus:ring-cyan-400"
+                />
+                <Sparkles size={20} className="text-cyan-500 flex-shrink-0" fill={formData.isNew ? 'currentColor' : 'none'} />
+                <div>
+                  <p className="font-bold text-xs text-gray-800 dark:text-gray-100">Sản phẩm MỚI (✨ NEW)</p>
+                  <p className="text-[11px] text-gray-500">Hiển thị nhãn NEW xanh sản phẩm mới</p>
+                </div>
+              </label>
+            </div>
+
             {formData.isFeatured && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Thứ tự:</label>
+              <div className="flex items-center gap-2 pt-2">
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Thứ tự ưu tiên Nổi bật (nhỏ hơn xếp trước):</label>
                 <input
                   type="number"
                   value={formData.featuredOrder}
                   onChange={(e) => setFormData({ ...formData, featuredOrder: parseInt(e.target.value) || 0 })}
-                  className="w-20 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-1 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="w-24 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-100 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-bold text-xs"
                 />
               </div>
             )}

@@ -112,6 +112,8 @@ export interface IProduct extends BaseDocument {
   technicalSpecs?: { [key: string]: string }; // Thông số kỹ thuật chi tiết
   isFeatured?: boolean; // Sản phẩm nổi bật
   featuredOrder?: number; // Thứ tự hiển thị trong danh sách nổi bật
+  isHot?: boolean; // Sản phẩm HOT
+  badge?: string; // Nhãn tùy chỉnh: 'NEW' | 'HOT'
   isActive?: boolean; // Sản phẩm có hoạt động không
   isDeleted?: boolean; // Xóa mềm
   deletedAt?: Date; // Thời gian xóa
@@ -166,6 +168,8 @@ const ProductSchema = new Schema<IProduct>({
   technicalSpecs: { type: Map, of: String },
   isFeatured: { type: Boolean, default: false },
   featuredOrder: { type: Number, default: 0 },
+  isHot: { type: Boolean, default: false },
+  badge: { type: String, default: '' },
   isActive: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
   deletedAt: Date,

@@ -502,13 +502,25 @@ const ContentManagement: React.FC = () => {
                         </div>
                       )}
                       
-                      {/* Featured Badge */}
-                      {product.isFeatured && (
-                        <div className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-0.5 rounded-md text-[10px] font-bold shadow-sm flex items-center gap-1">
-                          <Star size={10} fill="white" />
-                          Nổi bật
-                        </div>
-                      )}
+                      {/* Featured / HOT / NEW Badges */}
+                      <div className="absolute top-2 left-2 flex flex-col gap-1 items-start z-10">
+                        {product.isFeatured && (
+                          <div className="bg-amber-500 text-white px-2 py-0.5 rounded-md text-[10px] font-bold shadow-sm flex items-center gap-1">
+                            <Star size={10} fill="white" />
+                            Nổi bật
+                          </div>
+                        )}
+                        {((product as any).isHot || (product as any).badge === 'HOT') && (
+                          <div className="bg-gradient-to-r from-red-600 to-amber-500 text-white px-2 py-0.5 rounded-md text-[10px] font-bold shadow-sm flex items-center gap-1">
+                            🔥 HOT
+                          </div>
+                        )}
+                        {((product as any).isNew || (product as any).badge === 'NEW') && (
+                          <div className="bg-cyan-500 text-white px-2 py-0.5 rounded-md text-[10px] font-bold shadow-sm flex items-center gap-1">
+                            ✨ NEW
+                          </div>
+                        )}
+                      </div>
 
                       {/* Stock Badge */}
                       {product.stock !== undefined && (

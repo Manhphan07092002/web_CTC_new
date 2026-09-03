@@ -40,6 +40,9 @@ export interface Product {
   technicalSpecs?: { [key: string]: string }; // Thông số kỹ thuật chi tiết
   isFeatured?: boolean; // Sản phẩm nổi bật
   featuredOrder?: number; // Thứ tự hiển thị
+  isNew?: boolean; // Sản phẩm MỚI
+  isHot?: boolean; // Sản phẩm HOT
+  badge?: string; // Nhãn tùy chỉnh: 'NEW' | 'HOT'
   isDeleted?: boolean; // Xóa mềm
   deletedAt?: string; // Thời gian xóa
   views?: number; // Lượt xem

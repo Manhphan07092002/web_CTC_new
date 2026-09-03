@@ -56,6 +56,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.category}
               </span>
             )}
+            {(product.isHot || product.badge === 'HOT') && (
+              <span className="bg-gradient-to-r from-red-600 via-rose-500 to-amber-500 text-white text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 sm:px-2 sm:py-1 rounded shadow-md uppercase tracking-wider flex items-center gap-1">
+                🔥 HOT
+              </span>
+            )}
+            {(product.isNew || product.badge === 'NEW') && (
+              <span className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 sm:px-2 sm:py-1 rounded shadow-md uppercase tracking-wider flex items-center gap-1">
+                ✨ NEW
+              </span>
+            )}
             {(product.isFeatured || (product as any).featured) && (
               <span className="bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 sm:px-2 sm:py-1 rounded shadow-md uppercase tracking-wider flex items-center gap-1">
                 ⭐ {t('home.products_featured') || 'Nổi bật'}

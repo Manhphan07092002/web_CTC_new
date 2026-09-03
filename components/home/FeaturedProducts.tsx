@@ -131,11 +131,23 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ featuredProducts, i
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                    {/* Category tag */}
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-gray-800 dark:text-slate-200 text-[10px] font-black uppercase tracking-wide rounded-full shadow-md border border-white/50 dark:border-slate-700/50">
-                        {product.category}
-                      </span>
+                    {/* Category tag & Badges */}
+                    <div className="absolute top-4 left-4 flex flex-col gap-1.5 items-start">
+                      {product.category && (
+                        <span className="px-3 py-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-gray-800 dark:text-slate-200 text-[10px] font-black uppercase tracking-wide rounded-full shadow-md border border-white/50 dark:border-slate-700/50">
+                          {product.category}
+                        </span>
+                      )}
+                      {(product.isHot || product.badge === 'HOT') && (
+                        <span className="px-2.5 py-0.5 bg-gradient-to-r from-red-600 to-amber-500 text-white text-[9px] font-black uppercase tracking-wider rounded-md shadow-lg flex items-center gap-1">
+                          🔥 HOT
+                        </span>
+                      )}
+                      {(product.isNew || product.badge === 'NEW') && (
+                        <span className="px-2.5 py-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[9px] font-black uppercase tracking-wider rounded-md shadow-lg flex items-center gap-1">
+                          ✨ NEW
+                        </span>
+                      )}
                     </div>
 
                     {/* Hover CTA */}
