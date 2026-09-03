@@ -157,13 +157,27 @@ export const db = {
     },
     
     getFeatured: async (limit: number = 4) => {
-      const products = await Product.find({ 
+      let products = await Product.find({ 
         isFeatured: true, 
         isDeleted: { $ne: true } 
       })
         .sort({ featuredOrder: 1, createdAt: -1 })
         .limit(limit)
         .lean();
+
+      // Fallback: Nếu chưa có đủ sản phẩm gắn cờ isFeatured, tự động lấy thêm sản phẩm mới nhất đang hoạt động
+      if (products.length < limit) {
+        const existingIds = products.map(p => p._id);
+        const fallbackProducts = await Product.find({
+          _id: { $nin: existingIds },
+          isDeleted: { $ne: true }
+        })
+          .sort({ createdAt: -1 })
+          .limit(limit - products.length)
+          .lean();
+        products = [...products, ...fallbackProducts];
+      }
+
       return products.map(toPlainObject<IProduct>);
     },
     

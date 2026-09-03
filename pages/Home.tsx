@@ -116,7 +116,30 @@ const Home: React.FC = () => {
 
       await Promise.allSettled([
         api.products.getFeatured(4)
-          .then(data => { if (!cancelled) setFeaturedProducts(data); })
+          .then(async data => {
+            if (cancelled) return;
+            if (Array.isArray(data) && data.length > 0) {
+              setFeaturedProducts(data);
+            } else {
+              try {
+                const all = await api.products.getAll();
+                if (!cancelled && Array.isArray(all) && all.length > 0) {
+                  setFeaturedProducts(all.slice(0, 4));
+                }
+              } catch (e) {
+                console.warn('Fallback products load failed:', e);
+              }
+            }
+          })
+          .catch(async err => {
+            console.warn('Error fetching featured products:', err);
+            try {
+              const all = await api.products.getAll();
+              if (!cancelled && Array.isArray(all) && all.length > 0) {
+                setFeaturedProducts(all.slice(0, 4));
+              }
+            } catch (e) {}
+          })
           .finally(() => markLoaded('products')),
         api.projects.getFeatured(4)
           .then(data => { if (!cancelled) setFeaturedProjects(data); })

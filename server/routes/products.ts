@@ -117,7 +117,11 @@ router.get('/deleted', async (req, res) => {
 router.get('/featured', async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 4;
-    const products = await db.products.getFeatured(limit);
+    const lang = getLanguage(req);
+    let products = await db.products.getFeatured(limit);
+    if (lang !== 'vi' && products.length > 0) {
+      products = applyTranslationsToArray(products, [...TRANSLATION_FIELDS.product], lang);
+    }
     res.json(products);
   } catch (error) {
     console.error('Error getting featured products', error);
