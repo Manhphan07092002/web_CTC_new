@@ -44,7 +44,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
           }}
         />
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
-        {project.isFeatured && (
+        {(project.isFeatured || project.featured) && (
           <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
             ⭐ {getLangText(language, { vi: 'Nổi bật', en: 'Featured', ko: '주요', ja: '注目', zh: '精选', de: 'Hervorgehoben' })}
           </div>
