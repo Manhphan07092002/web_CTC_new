@@ -194,6 +194,10 @@ export const api = {
     delete: (id: string) => fetchAPI<void>(`/projects/${id}`, {
       method: 'DELETE',
     }),
+    toggleFeatured: (id: string, isFeatured: boolean) => fetchAPI<any>(`/projects/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ isFeatured }),
+    }),
   },
 
   // News

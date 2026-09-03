@@ -241,7 +241,18 @@ export const db = {
   },
 
   projects: {
-    getFeatured: async (limit: number = 4) => { const projects = await Project.find().sort({ createdAt: -1 }).limit(limit); return projects.map(toPlainObject<IProject>); },
+    getFeatured: async (limit: number = 4) => {
+      let projects = await Project.find({ 
+        $or: [{ isFeatured: true }, { featured: true }] 
+      }).sort({ featuredOrder: 1, createdAt: -1 }).limit(limit).lean();
+      // Fallback: Nếu không có hoặc chưa đủ dự án tiêu biểu, lấy thêm dự án mới nhất
+      if (projects.length < limit) {
+        const existingIds = projects.map(p => p._id);
+        const fallback = await Project.find({ _id: { $nin: existingIds } }).sort({ createdAt: -1 }).limit(limit - projects.length).lean();
+        projects = [...projects, ...fallback];
+      }
+      return projects.map(toPlainObject<IProject>);
+    },
     getAll: async () => {
       const projects = await Project.find().sort({ createdAt: -1 });
       return projects.map(toPlainObject<IProject>);

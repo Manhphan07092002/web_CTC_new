@@ -85,6 +85,7 @@ export interface Project {
   duration?: string;
   features?: string[];
   status?: 'completed' | 'in_progress' | 'planned';
+  featured?: boolean;
   isFeatured?: boolean;
   featuredOrder?: number;
   createdAt?: string;

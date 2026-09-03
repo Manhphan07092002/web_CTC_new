@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Image as ImageIcon, Sparkles, Plus, Trash2 } from 'lucide-react';
+import { Save, X, Image as ImageIcon, Sparkles, Plus, Trash2, Star } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
@@ -46,7 +46,8 @@ const ProjectForm: React.FC = () => {
     description: '',
     categoryId: '',
     category: '',
-    focusKeyword: ''
+    focusKeyword: '',
+    isFeatured: false
   });
 
   const { showUnsavedModal, setShowUnsavedModal, setBaseline, confirmNavigation } = useUnsavedChanges(formData, loading);
@@ -85,7 +86,8 @@ const ProjectForm: React.FC = () => {
         description: project.description || '',
         categoryId: project.categoryId || '',
         category: project.category || '',
-        focusKeyword: loadedKw
+        focusKeyword: loadedKw,
+        isFeatured: !!(project as any).isFeatured
       };
       setFormData(initialProjectData);
       setBaseline(initialProjectData);
@@ -146,11 +148,16 @@ const ProjectForm: React.FC = () => {
 
     setLoading(true);
     try {
+      const payload = {
+        ...formData,
+        featured: formData.isFeatured,
+        isFeatured: formData.isFeatured
+      };
       if (isEdit && id) {
-        await api.projects.update(id, formData);
+        await api.projects.update(id, payload);
         showToast('Cập nhật dự án thành công!', 'success');
       } else {
-        await api.projects.create(formData);
+        await api.projects.create(payload);
         showToast('Thêm dự án thành công!', 'success');
       }
       setBaseline(formData);
@@ -281,6 +288,39 @@ const ProjectForm: React.FC = () => {
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          {/* Featured Project Toggle */}
+          <div
+            onClick={() => setFormData(prev => ({ ...prev, isFeatured: !prev.isFeatured }))}
+            className={`cursor-pointer flex items-center justify-between px-5 py-4 rounded-2xl border-2 transition-all duration-200 select-none ${
+              formData.isFeatured
+                ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20 shadow-md'
+                : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                formData.isFeatured ? 'bg-amber-400 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-400'
+              }`}>
+                <Star size={20} fill={formData.isFeatured ? 'white' : 'none'} />
+              </div>
+              <div>
+                <p className={`font-bold text-sm ${formData.isFeatured ? 'text-amber-700 dark:text-amber-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                  Dự án tiêu biểu
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Hiển thị dự án này trong mục <strong>"Dự án tiêu biểu"</strong> trên Trang chủ website
+                </p>
+              </div>
+            </div>
+            <div className={`relative w-12 h-6 rounded-full transition-all duration-300 flex-shrink-0 ${
+              formData.isFeatured ? 'bg-amber-400' : 'bg-gray-300 dark:bg-slate-600'
+            }`}>
+              <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-300 ${
+                formData.isFeatured ? 'left-7' : 'left-1'
+              }`} />
             </div>
           </div>
 

@@ -292,6 +292,8 @@ export interface IProject extends BaseDocument {
   category?: string; // Category name for display
   categorySlug?: string;
   featured?: boolean;
+  isFeatured?: boolean;
+  featuredOrder?: number;
   verified?: boolean;
   isPublished?: boolean;
   pageType?: string;
@@ -317,6 +319,8 @@ const ProjectSchema = new Schema<IProject>({
   category: { type: String },
   categorySlug: String,
   featured: { type: Boolean, default: false },
+  isFeatured: { type: Boolean, default: false },
+  featuredOrder: { type: Number, default: 0 },
   verified: { type: Boolean, default: false },
   isPublished: { type: Boolean, default: true },
   pageType: String,

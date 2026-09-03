@@ -38,6 +38,7 @@ interface Project {
   completionDate: string;
   image: string;
   category?: string;
+  isFeatured?: boolean;
   createdAt: string;
 }
 
@@ -234,6 +235,17 @@ const ContentManagement: React.FC = () => {
       loadContent();
     } catch (error) {
       console.error('Error toggling featured:', error);
+      showToast('Lỗi khi cập nhật', 'error');
+    }
+  };
+
+  const handleToggleProjectFeatured = async (id: string, isFeatured: boolean) => {
+    try {
+      await api.projects.toggleFeatured(id, !isFeatured);
+      showToast(!isFeatured ? '⭐ Đã đánh dấu là Dự án tiêu biểu' : 'Đã bỏ đánh dấu tiêu biểu', 'success');
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, isFeatured: !isFeatured } : p));
+    } catch (error) {
+      console.error('Error toggling project featured:', error);
       showToast('Lỗi khi cập nhật', 'error');
     }
   };
@@ -608,6 +620,13 @@ const ContentManagement: React.FC = () => {
                           <ImageIcon size={28} className="text-gray-300 dark:text-slate-600" />
                         </div>
                       )}
+                      {/* Featured Badge */}
+                      {project.isFeatured && (
+                        <div className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-0.5 rounded-md text-[10px] font-bold shadow-sm flex items-center gap-1">
+                          <Star size={10} fill="white" />
+                          Tiêu biểu
+                        </div>
+                      )}
                     </div>
                     <div className="p-3">
                       <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xs sm:text-sm leading-snug line-clamp-2 min-h-[32px] mb-2 group-hover:text-primary dark:group-hover:text-sky-400 transition-colors" title={project.title}>
@@ -619,25 +638,41 @@ const ContentManagement: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="px-3 pb-3 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-end gap-1.5">
-                    <PermissionGate permission="edit_projects">
-                      <button
-                        onClick={() => navigate(`/admin/projects/edit/${project.id}`)}
-                        className="p-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                        title="Chỉnh sửa dự án"
-                      >
-                        <Edit size={14} />
-                      </button>
-                    </PermissionGate>
-                    <PermissionGate permission="delete_projects">
-                      <button
-                        onClick={() => handleOtherDelete(project.id, 'project', project.title)}
-                        className="p-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
-                        title="Xóa dự án"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </PermissionGate>
+                  <div className="px-3 pb-3 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between gap-1.5">
+                    {/* Featured toggle button */}
+                    <button
+                      onClick={() => handleToggleProjectFeatured(project.id, !!project.isFeatured)}
+                      className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold ${
+                        project.isFeatured
+                          ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-100'
+                          : 'bg-gray-50 dark:bg-slate-700/50 text-gray-400 hover:bg-amber-50 hover:text-amber-500'
+                      }`}
+                      title={project.isFeatured ? 'Bỏ tiêu biểu' : 'Đánh dấu tiêu biểu'}
+                    >
+                      <Star size={13} fill={project.isFeatured ? 'currentColor' : 'none'} />
+                      {project.isFeatured ? 'Tiêu biểu' : 'Nổi bật'}
+                    </button>
+
+                    <div className="flex items-center gap-1.5">
+                      <PermissionGate permission="edit_projects">
+                        <button
+                          onClick={() => navigate(`/admin/projects/edit/${project.id}`)}
+                          className="p-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                          title="Chỉnh sửa dự án"
+                        >
+                          <Edit size={14} />
+                        </button>
+                      </PermissionGate>
+                      <PermissionGate permission="delete_projects">
+                        <button
+                          onClick={() => handleOtherDelete(project.id, 'project', project.title)}
+                          className="p-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                          title="Xóa dự án"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </PermissionGate>
+                    </div>
                   </div>
                 </div>
               ))}
