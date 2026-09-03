@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, ArrowRight, MapPin, Calendar, ExternalLink } from 'lucide-react';
+import { Zap, ArrowRight, MapPin, Calendar, ExternalLink, Sparkles, Award, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLangText } from '../../utils/translation-helper';
 import { useInView } from '../../hooks/useInView';
 import { Project } from '../../types';
 import OptimizedImage from '../OptimizedImage';
@@ -25,286 +26,314 @@ function getCleanProjectDescription(description?: string, excerpt?: string): str
   return cleanText;
 }
 
+// Default top-tier projects fallback if database is empty
+const DEFAULT_FEATURED_PROJECTS: Project[] = [
+  {
+    id: 'coco-viet-nam',
+    title: 'Điện Mặt Trời Áp Mái Công Ty TNHH Dệt Quốc Tế Coco Việt Nam',
+    location: 'KCN Bảo Minh, Nam Định',
+    capacity: '2.531 kWp',
+    completionDate: '2024',
+    category: 'Điện mặt trời áp mái',
+    image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&q=80',
+    description: 'Hệ thống điện mặt trời áp mái công nghiệp quy mô 2.531 kWp sử dụng pin Tier 1 và biến tần trung tâm, giúp tiết kiệm hàng tỷ đồng tiền điện mỗi năm.'
+  },
+  {
+    id: 'max-packaging',
+    title: 'Điện Mặt Trời Áp Mái Nhà Máy Max Packaging',
+    location: 'KCN VSIP, Quảng Ngãi',
+    capacity: '600 kWp',
+    completionDate: '2024',
+    category: 'Điện mặt trời công nghiệp',
+    image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80',
+    description: 'Giải pháp tự dùng tối ưu cho nhà máy sản xuất bao bì, vận hành an toàn và đạt chứng nhận năng lượng xanh chuẩn quốc tế.'
+  },
+  {
+    id: 'det-may-chau-giang',
+    title: 'Điện Mặt Trời Áp Mái Nhà Máy Dệt May Châu Giang',
+    location: 'Hà Nam',
+    capacity: '3.0 MWp',
+    completionDate: '2023',
+    category: 'Điện mặt trời áp mái',
+    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
+    description: 'Công trình tổng thầu EPC năng lượng mặt trời công nghiệp quy mô lớn, giảm phát thải hơn 3.200 tấn CO2 hàng năm.'
+  },
+  {
+    id: 'farm-solar-gio-linh',
+    title: 'Trang Trại Điện Mặt Trời Farm Solar Gio Linh',
+    location: 'Gio Linh, Quảng Trị',
+    capacity: '4.0 MWp',
+    completionDate: '2023',
+    category: 'Farm Solar Nông nghiệp',
+    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80',
+    description: 'Mô hình kết hợp nông nghiệp công nghệ cao và điện mặt trời hòa lưới EVN, mang lại hiệu quả kinh tế kép bền vững.'
+  }
+];
+
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ featuredProjects, isLoading = false }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const navigate = useNavigate();
   const { ref: projectsRef, isInView } = useInView(0.1);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Get exactly 4 projects
-  const projects = featuredProjects.slice(0, 4);
+  // Use provided featured projects or fallback
+  const rawProjects = featuredProjects && featuredProjects.length > 0
+    ? featuredProjects.slice(0, 4)
+    : DEFAULT_FEATURED_PROJECTS;
 
   return (
     <section 
       ref={projectsRef} 
-      className="py-28 bg-gray-50 dark:bg-slate-950 relative overflow-hidden transition-colors duration-300"
+      className="py-24 sm:py-32 bg-slate-950 text-white relative overflow-hidden transition-colors duration-300"
     >
-      {/* Styles for the pulsing glow button */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes projectsPulseGlow {
-            0% {
-                box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.5);
-            }
-            70% {
-                box-shadow: 0 0 0 15px rgba(14, 165, 233, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
-            }
-        }
+      {/* Dynamic Ambient Background Lights */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent" />
+        {/* Subtle grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}
+        />
+      </div>
 
-        .btn-projects-pulse {
-            background: rgba(14, 165, 233, 0.12);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: #007cb9 !important;
-            border: 2px solid rgba(14, 165, 233, 0.4);
-            border-radius: 16px;
-            padding: 16px 36px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.4s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);
-            animation: projectsPulseGlow 2s infinite;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        .btn-projects-pulse:hover {
-            transform: translateY(-3px) scale(1.02);
-            background: #007cb9;
-            color: #ffffff !important;
-            border-color: #007cb9;
-            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
-        }
-        .btn-projects-pulse::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-            transform: skewX(-20deg);
-            transition: transform 0.8s ease;
-        }
-        .btn-projects-pulse:hover::before {
-            transform: translateX(150%);
-        }
-        .dark .btn-projects-pulse {
-            background: rgba(56, 189, 248, 0.08);
-            color: #38bdf8 !important;
-            border-color: rgba(56, 189, 248, 0.45);
-            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25);
-        }
-        .dark .btn-projects-pulse:hover {
-            background: #38bdf8;
-            color: #0f172a !important;
-            border-color: #38bdf8;
-        }
-      `}} />
       <div className="container max-w-[1440px] mx-auto px-6 relative z-10">
         
-        {/* Header */}
-        <div className={`flex flex-col mb-14 transition-all duration-700 ${
-          isInView ? 'opacity-100' : 'opacity-0'
+        {/* Header Section */}
+        <div className={`flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8 transition-all duration-700 ${
+          isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
-          <div className="inline-flex self-start items-center gap-2 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 dark:border-blue-500/30 px-3.5 py-1.5 rounded-full mb-4">
-            <Zap size={14} className="text-blue-500 dark:text-blue-400" />
-            <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
-              {t('home.projects_badge')}
-            </span>
+          <div>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-500/30 px-4 py-1.5 rounded-full mb-4 shadow-sm shadow-cyan-500/10 backdrop-blur-md">
+              <Zap size={14} className="text-cyan-400 animate-pulse" />
+              <span className="text-[11px] font-black text-cyan-300 uppercase tracking-widest">
+                {getLangText(language, {
+                  vi: 'Dự án tiêu biểu • Tổng thầu EPC',
+                  en: 'Featured Projects • EPC Contractor',
+                  ko: '주요 프로젝트 • EPC 총괄',
+                  ja: '主要プロジェクト • EPC総括',
+                  zh: '精选项目 • EPC总承包',
+                  de: 'Ausgewählte Projekte • EPC-Generalunternehmer'
+                })}
+              </span>
+            </div>
+            
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">
+              {getLangText(language, {
+                vi: 'Dự án Năng lượng Tiêu biểu',
+                en: 'Featured Energy Projects',
+                ko: '주요 태양광 에너지 프로젝트',
+                ja: '注目の太陽光エネルギープロジェクト',
+                zh: '标杆光伏能源项目',
+                de: 'Ausgewählte Energieprojekte'
+              })}
+            </h2>
+            
+            <div className="w-20 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-amber-400 rounded-full mb-5" />
+            
+            <p className="text-slate-400 text-sm sm:text-base md:text-lg max-w-2xl font-normal leading-relaxed">
+              {getLangText(language, {
+                vi: 'Khẳng định uy tín và năng lực thi công qua hàng trăm công trình điện mặt trời áp mái công nghiệp & trang trại quy mô lớn trên toàn quốc.',
+                en: 'Demonstrating excellence through hundreds of commercial rooftop and utility-scale solar farm projects across the country.',
+                ko: '전국 수백 개의 산업용 옥상 및 대규모 태양광 발전소 시공 역량을 입증합니다.',
+                ja: '全国の産業用屋根置きおよびメガソーラー発電所における確かな施工実績。',
+                zh: '通过全国数百个工商业屋顶与大型地面光伏电站，彰显卓越EPC施工实力。',
+                de: 'Nachgewiesene Kompetenz durch Hunderte von Industrie-Dachanlagen und Solarparks bundesweit.'
+              })}
+            </p>
           </div>
-          
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight leading-tight">
-            {t('home.featured_projects')}
-          </h2>
-          
-          {/* Symmetrical left-aligned gradient line */}
-          <div className="w-16 h-1.5 bg-gradient-to-r from-blue-500 to-blue-300 rounded-full mb-6" />
-          
-          <p className="text-slate-500 dark:text-slate-400 text-base md:text-lg max-w-2xl font-medium leading-relaxed">
-            {t('home.featured_projects_sub')}
-          </p>
+
+          <Link
+            to="/projects"
+            className="group flex-shrink-0 inline-flex items-center gap-3 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-2 border-cyan-400/40 text-cyan-300 hover:bg-cyan-500 hover:text-slate-950 hover:border-cyan-400 font-black text-xs uppercase tracking-widest transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/25"
+          >
+            {getLangText(language, {
+              vi: 'XEM TẤT CẢ DỰ ÁN',
+              en: 'VIEW ALL PROJECTS',
+              ko: '전체 프로젝트 보기',
+              ja: 'すべてのプロジェクトを見る',
+              zh: '查看所有项目',
+              de: 'ALLE PROJEKTE ANSEHEN'
+            })}
+            <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform" />
+          </Link>
         </div>
 
-        {/* Dynamic Expanding Accordion Grid */}
-        {isLoading ? (
-          <div className="flex flex-col lg:flex-row gap-4 h-[650px] lg:h-[550px]">
-            {Array.from({ length: 4 }, (_, i) => (
-              <div key={i} className="flex-1 rounded-3xl bg-slate-200 dark:bg-slate-800 animate-pulse border border-slate-200/50 dark:border-slate-800/50" />
-            ))}
-          </div>
-        ) : projects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-md">
-            <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
-              <Zap size={28} className="text-blue-500" />
-            </div>
-            <p className="text-slate-400 dark:text-slate-500 text-lg">{t('home.featured_projects_sub')}</p>
-          </div>
-        ) : (
-          <div 
-            onMouseLeave={() => setHoveredIndex(null)}
-            className={`flex flex-col lg:flex-row gap-4 h-[650px] lg:h-[550px] w-full transition-all duration-700 delay-100 ${
-              isInView ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            {projects.map((project, index) => {
-              const isActive = index === hoveredIndex;
-              const isAnyActive = hoveredIndex !== null;
+        {/* 4-Column Showcase Grid */}
+        <div
+          aria-busy={isLoading}
+          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-700 delay-150 ${
+            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          {isLoading
+            ? Array.from({ length: 4 }, (_, i) => (
+              <div 
+                key={`project-skeleton-${i}`} 
+                className="h-[520px] rounded-3xl bg-slate-900/80 border border-slate-800 animate-pulse flex flex-col justify-end p-6 space-y-4"
+              >
+                <div className="h-6 w-1/3 bg-slate-800 rounded-full" />
+                <div className="h-7 w-4/5 bg-slate-800 rounded-xl" />
+                <div className="h-4 w-full bg-slate-800 rounded" />
+                <div className="h-4 w-2/3 bg-slate-800 rounded" />
+              </div>
+            ))
+            : rawProjects.map((project, index) => {
+              const isHovered = hoveredIndex === index;
+              const projectId = project._id || project.id;
+              const cleanDesc = getCleanProjectDescription(project.description, project.excerpt);
 
               return (
                 <div
-                  key={`project-accordion-${index}-${project._id || project.id}`}
+                  key={`project-card-${index}-${projectId}`}
                   onMouseEnter={() => setHoveredIndex(index)}
-                  onClick={() => navigate(`/projects/${project._id || project.id}`)}
-                  className={`relative overflow-hidden rounded-[2.5rem] border border-slate-250/20 dark:border-slate-800/40 transition-all duration-700 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl
-                    ${isAnyActive
-                      ? isActive 
-                        ? 'lg:flex-[5] flex-[4] bg-slate-950' 
-                        : 'lg:flex-[1] flex-[1] bg-slate-900'
-                      : 'lg:flex-1 flex-1 bg-slate-900'
-                    }`}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  onClick={() => navigate(`/projects/${projectId}`)}
+                  className="group relative h-[520px] rounded-3xl overflow-hidden border border-slate-800/80 hover:border-cyan-400/60 bg-slate-900 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/15 transition-all duration-500 cursor-pointer flex flex-col justify-between"
                 >
-                  <Link 
-                    to={`/projects/${project._id || project.id}`}
-                    className="absolute inset-0 w-full h-full block z-35"
-                    aria-label={project.title || "Chi tiết dự án"}
-                  >
-                    <span className="sr-only">{project.title || "Chi tiết dự án"}</span>
-                  </Link>
-
-                  {/* Background Image with slow Ken Burns effect */}
-                  <OptimizedImage
-                    src={project.image}
-                    alt={project.title}
-                    loading="lazy"
-                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out
-                      ${isActive 
-                        ? 'scale-100 opacity-90' 
-                        : isAnyActive 
-                          ? 'scale-105 opacity-55' 
-                          : 'scale-100 opacity-75'}`}
-                  />
-                  
-                  {/* Advanced Gradient Overlays */}
-                  <div className={`absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10 transition-opacity duration-500 
-                    ${isActive 
-                      ? 'opacity-90' 
-                      : isAnyActive 
-                        ? 'opacity-70' 
-                        : 'opacity-65'}`} 
-                  />
-                  <div className={`absolute inset-0 bg-blue-950/20 mix-blend-color transition-opacity duration-700 z-10 
-                    ${isActive ? 'opacity-100' : 'opacity-0'}`} 
-                  />
-
-                  {/* Top Bar Section */}
-                  <div className="absolute top-6 left-6 right-6 z-20 flex justify-between items-start pointer-events-none">
-                    {/* Category Tag */}
-                    <div className={`transition-all duration-500 transform ${isActive ? 'translate-y-0 opacity-100' : 'translate-y-0 opacity-0 lg:opacity-100'}`}>
-                      {project.category && (
-                        <span className="px-3.5 py-1.5 bg-blue-500 text-white text-[10px] lg:text-xs font-black tracking-widest uppercase rounded-full shadow-lg">
-                          {isActive ? project.category : project.category.slice(0, 2)}
-                        </span>
-                      )}
-                    </div>
+                  {/* Background Image Container with Smooth Zoom */}
+                  <div className="absolute inset-0 z-0 overflow-hidden">
+                    <OptimizedImage
+                      src={project.image}
+                      alt={project.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                    />
                     
-                    {/* Active external link sign */}
-                    <div className={`w-9 h-9 rounded-full bg-slate-950/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white transition-all duration-500
-                      ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
-                    >
-                      <ExternalLink size={14} />
-                    </div>
+                    {/* Layered Rich Gradients */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-black/30 z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent z-10" />
+                    <div className={`absolute inset-0 bg-cyan-950/20 mix-blend-color transition-opacity duration-500 z-10 ${
+                      isHovered ? 'opacity-100' : 'opacity-0'
+                    }`} />
                   </div>
 
-                  {/* Inactive Horizontal Title (Desktop only) */}
-                  {!isActive && (
-                    <div className="absolute inset-x-3 bottom-8 z-20 hidden lg:flex flex-col items-center justify-end text-center pointer-events-none animate-fadeIn">
-                      <span 
-                        className="text-xs font-black text-white/95 uppercase tracking-wider line-clamp-2 select-none"
-                        style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}
-                      >
-                        {project.title}
-                      </span>
-                    </div>
-                  )}
+                  {/* Top Bar Badges */}
+                  <div className="relative z-20 p-5 flex items-start justify-between gap-2">
+                    {/* Full Category Pill (Never truncated!) */}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/70 backdrop-blur-md border border-white/15 text-white text-[11px] font-bold shadow-md">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                      {project.category || 'Điện mặt trời'}
+                    </span>
 
-                  {/* Active / Expanded Info Panel */}
-                  <div 
-                    className={`absolute bottom-0 left-0 w-full p-8 lg:p-10 z-30 transition-all duration-700 ease-in-out transform
-                      ${isActive 
-                        ? 'translate-y-0 opacity-100 pointer-events-auto' 
-                        : 'translate-y-6 opacity-0 lg:opacity-100 lg:translate-y-0 pointer-events-none lg:hidden'
-                      }`}
-                  >
-                    {/* Metadata Row */}
-                    <div className="flex items-center gap-4 mb-3.5 text-slate-300 text-xs font-semibold">
-                      <span className="flex items-center gap-1.5">
-                        <MapPin size={14} className="text-blue-500" />
-                        {project.location}
+                    {/* Capacity Badge in Shiny Gold / Amber */}
+                    {project.capacity && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20 tracking-wide">
+                        <Sparkles size={12} className="fill-slate-950" />
+                        {project.capacity}
                       </span>
+                    )}
+                  </div>
+
+                  {/* Bottom Info Glass Card */}
+                  <div className="relative z-20 p-6 flex flex-col justify-end space-y-3 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-12">
+                    
+                    {/* Location and Date Pills */}
+                    <div className="flex items-center flex-wrap gap-2 text-[11px] text-slate-300 font-semibold">
+                      {project.location && (
+                        <span className="inline-flex items-center gap-1 bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-cyan-200">
+                          <MapPin size={12} className="text-cyan-400" />
+                          <span className="truncate max-w-[130px]">{project.location}</span>
+                        </span>
+                      )}
                       {project.completionDate && (
-                        <span className="flex items-center gap-1.5">
-                          <Calendar size={14} className="text-orange-500" />
-                          {new Date(project.completionDate).getFullYear()}
+                        <span className="inline-flex items-center gap-1 bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-slate-300">
+                          <Calendar size={12} className="text-amber-400" />
+                          <span>{project.completionDate}</span>
                         </span>
                       )}
                     </div>
 
-                    {/* Title */}
-                    <h3 className="text-2xl lg:text-3.5xl font-black text-white mb-3 tracking-tight leading-tight group-hover:text-blue-400 transition-colors duration-300">
+                    {/* Project Title */}
+                    <h3 className="text-lg sm:text-xl font-black text-white leading-snug line-clamp-2 group-hover:text-cyan-300 transition-colors duration-300">
                       {project.title}
                     </h3>
 
-                    {/* Description */}
-                    <p className="text-slate-300 text-sm leading-relaxed line-clamp-2 max-w-xl opacity-90">
-                      {getCleanProjectDescription(project.description, project.excerpt)}
-                    </p>
-
-                    {/* Partner / Client info */}
-                    {project.capacity && (
-                      <div className="mt-4 pt-4 border-t border-white/10 text-xs text-slate-400 font-medium">
-                        Quy mô / Đối tác: <span className="text-white font-semibold">{project.capacity}</span>
-                      </div>
+                    {/* Description excerpt (reveals more cleanly on hover) */}
+                    {cleanDesc && (
+                      <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed opacity-85 group-hover:opacity-100 transition-opacity">
+                        {cleanDesc}
+                      </p>
                     )}
-                    
-                    {/* Interactive button hint */}
-                    <div className="mt-5 flex items-center gap-2 text-blue-400 font-bold text-sm">
-                      <span>Xem chi tiết dự án</span>
-                      <ArrowRight size={14} />
+
+                    {/* Action button row */}
+                    <div className="pt-2 flex items-center justify-between border-t border-white/10">
+                      <span className="text-xs font-black text-cyan-400 group-hover:text-white uppercase tracking-wider flex items-center gap-1 transition-colors">
+                        Khám phá công trình
+                      </span>
+                      <div className={`w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 transition-all duration-300 ${
+                        isHovered ? 'bg-cyan-400 text-slate-950 scale-110' : ''
+                      }`}>
+                        <ArrowRight size={14} className={`transition-transform duration-300 ${
+                          isHovered ? 'translate-x-0.5' : ''
+                        }`} />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Hover Border Accent */}
-                  <div className={`absolute inset-0 border rounded-[2.5rem] pointer-events-none z-40 transition-colors duration-500
-                    ${isActive ? 'border-blue-500/40' : 'border-transparent'}`} 
-                  />
+                  {/* Glowing border highlight on hover */}
+                  <div className={`absolute inset-0 rounded-3xl pointer-events-none border-2 transition-opacity duration-500 z-30 ${
+                    isHovered ? 'border-cyan-400/60 opacity-100' : 'border-transparent opacity-0'
+                  }`} />
                 </div>
               );
             })}
-          </div>
-        )}
-        {/* Center aligned view projects action button */}
-        <div className={`mt-14 flex justify-center transition-all duration-1000 delay-300 ${
-          isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-        }`}>
-          <Link
-            to="/projects"
-            className="btn-projects-pulse text-xs uppercase tracking-widest font-black"
-          >
-            <span>{t('home.view_projects')}</span>
-            <ArrowRight size={15} />
-          </Link>
         </div>
+
+        {/* Bottom Trust Indicators Bar */}
+        <div className={`mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 p-6 sm:p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md transition-all duration-700 delay-300 ${
+          isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}>
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 flex-shrink-0">
+              <Zap size={22} />
+            </div>
+            <div>
+              <div className="text-lg sm:text-xl font-black text-white">50+ MWp</div>
+              <div className="text-xs text-slate-400 font-medium">Tổng công suất đã lắp</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0">
+              <Award size={22} />
+            </div>
+            <div>
+              <div className="text-lg sm:text-xl font-black text-white">100+ Dự án</div>
+              <div className="text-xs text-slate-400 font-medium">Nhà xưởng & trang trại</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
+              <ShieldCheck size={22} />
+            </div>
+            <div>
+              <div className="text-lg sm:text-xl font-black text-white">25 Năm</div>
+              <div className="text-xs text-slate-400 font-medium">Bảo hành hiệu suất pin</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+              <CheckCircle2 size={22} />
+            </div>
+            <div>
+              <div className="text-lg sm:text-xl font-black text-white">100% EVN</div>
+              <div className="text-xs text-slate-400 font-medium">Đấu nối & nghiệm thu</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );
 };
 
 export default FeaturedProjects;
+
