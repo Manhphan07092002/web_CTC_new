@@ -47,6 +47,7 @@ export const ADMIN_MENU = [
 
   // Group 3: Quản lý nội dung (Content)
   { name: 'Quản lý nội dung', path: '/admin/content', icon: Layers, key: 'content', permission: 'view_content', minLevel: 30, group: 'content' },
+  { name: 'Quản lý File & Media', path: '/admin/files', icon: FolderOpen, key: 'files', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý bình luận', path: '/admin/comments', icon: MessageSquare, key: 'comments', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý Header', path: '/admin/header', icon: Sliders, key: 'header', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý danh mục', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50, group: 'content' },

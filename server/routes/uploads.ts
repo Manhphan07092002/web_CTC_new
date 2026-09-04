@@ -324,6 +324,49 @@ router.delete('/images/:filepath(*)', (req, res) => {
       res.status(204).send();
     });
   }
+// Bulk delete files and folders
+router.post('/images/bulk-delete', (req, res) => {
+  const { paths } = req.body;
+  if (!Array.isArray(paths) || paths.length === 0) {
+    return res.status(400).json({ message: 'Danh sách tệp tin cần xóa không hợp lệ' });
+  }
+
+  const resolvedImagesDir = path.resolve(imagesDir);
+  let deletedCount = 0;
+  const errors: string[] = [];
+
+  for (const itemPath of paths) {
+    try {
+      const fullPath = path.join(imagesDir, String(itemPath));
+      const resolvedPath = path.resolve(fullPath);
+
+      if (!resolvedPath.startsWith(resolvedImagesDir)) {
+        errors.push(`Từ chối truy cập: ${itemPath}`);
+        continue;
+      }
+
+      if (!fs.existsSync(resolvedPath)) {
+        continue;
+      }
+
+      const stats = fs.statSync(resolvedPath);
+      if (stats.isDirectory()) {
+        fs.rmSync(resolvedPath, { recursive: true, force: true });
+      } else {
+        fs.unlinkSync(resolvedPath);
+      }
+      deletedCount++;
+    } catch (e: any) {
+      errors.push(`Lỗi xóa ${itemPath}: ${e.message}`);
+    }
+  }
+
+  res.json({
+    success: true,
+    deletedCount,
+    errors: errors.length > 0 ? errors : undefined,
+    message: `Đã xóa thành công ${deletedCount} mục`
+  });
 });
 
 export default router;

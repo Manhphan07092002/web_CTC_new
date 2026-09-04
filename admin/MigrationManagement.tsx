@@ -162,7 +162,7 @@ const MigrationManagement: React.FC = () => {
             <div>
               <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Tải Lên File Dữ Liệu</h2>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                Hệ thống hỗ trợ tải lên 1 file <b>.zip</b> chứa các bảng dữ liệu (vd: Categories.json, Products.json, Blog.json, Users.json) đã được xuất từ hệ thống SQL cũ.
+                Hệ thống hỗ trợ tải lên file <b>.zip</b> sao lưu 100% toàn bộ cơ sở dữ liệu (Sản phẩm, Dự án, Tin tức, Đơn hàng, Phân quyền Roles & Permissions, Cài đặt, Đa ngôn ngữ và toàn bộ hình ảnh media).
               </p>
             </div>
           </div>
@@ -265,9 +265,9 @@ const MigrationManagement: React.FC = () => {
               <div className="w-16 h-16 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-4">
                 <AlertTriangle size={32} />
               </div>
-              <h3 className="text-xl font-bold text-red-800 dark:text-red-300 mb-2">Cảnh báo ghi đè dữ liệu!</h3>
+              <h3 className="text-xl font-bold text-red-800 dark:text-red-300 mb-2">Cảnh báo khôi phục dữ liệu!</h3>
               <p className="text-red-600/80 dark:text-red-400/80 text-sm mb-4">
-                Quá trình này sẽ <strong>XÓA SẠCH</strong> danh mục, sản phẩm, và bài viết cũ trong hệ thống và thay thế bằng dữ liệu từ file ZIP này. 
+                Quá trình này sẽ đồng bộ và khôi phục toàn bộ cơ sở dữ liệu website và tệp tin hình ảnh từ file ZIP sao lưu này. 
               </p>
               <p className="text-gray-600 dark:text-gray-300 text-sm">
                 Bạn có chắc chắn muốn tiếp tục không?
