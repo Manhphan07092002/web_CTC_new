@@ -125,9 +125,11 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
 
     const PROVIDER_MODELS: Record<string, string[]> = {
       groq: [
+        'openai/gpt-oss-120b',
         'llama-3.3-70b-versatile',
         'llama-3.1-8b-instant',
         'deepseek-r1-distill-llama-70b',
+        'qwen/qwen3.6-27b',
         'qwen-2.5-32b'
       ],
       openai: [
@@ -172,9 +174,7 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
 
       // Filter models according to provider
       if (provider === 'gemini' && !initialModel.toLowerCase().includes('gemini')) initialModel = 'gemini-2.5-flash';
-      if (provider === 'groq' && (initialModel.startsWith('gemini-') || initialModel.startsWith('gpt-'))) initialModel = 'llama-3.3-70b-versatile';
-      if (provider === 'openai' && !initialModel.startsWith('gpt-') && !initialModel.startsWith('o1-') && !initialModel.startsWith('o3-')) initialModel = 'gpt-4o-mini';
-      if (provider === 'deepseek' && !initialModel.startsWith('deepseek-')) initialModel = 'deepseek-chat';
+      if (provider === 'groq' && initialModel.toLowerCase().startsWith('gemini-')) initialModel = 'llama-3.3-70b-versatile';
 
       const candidateModels = [initialModel];
       const fallbacks = PROVIDER_MODELS[provider] || [];

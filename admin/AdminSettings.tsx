@@ -673,64 +673,54 @@ const Settings: React.FC = () => {
                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-1.5 flex items-center gap-1.5">
                   <Cpu size={16} className="text-primary" /> Mẫu Mô Hình (Model Name)
                 </label>
-                {(formData.aiProvider || 'gemini') === 'gemini' && (
-                  <select
-                    value={formData.aiModel || 'gemini-2.5-flash'}
+                <div className="relative">
+                  <input
+                    type="text"
+                    list={`models-list-${formData.aiProvider || 'gemini'}`}
+                    value={formData.aiModel || ''}
                     onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
-                  >
+                    placeholder="Chọn từ danh sách hoặc nhập tên Model..."
+                    className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 font-mono text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  />
+                  
+                  {/* Datalist for Groq */}
+                  <datalist id="models-list-groq">
+                    <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (Mới - OpenAI GPT-OSS trên Groq)</option>
+                    <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (OpenAI GPT-OSS 20B)</option>
+                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Khuyên dùng - Siêu tốc & Thông minh)</option>
+                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản hồi tức thì, Quota cao)</option>
+                    <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b (DeepSeek R1 Suy luận)</option>
+                    <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b (Alibaba Qwen 3.6)</option>
+                    <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Alibaba Qwen 3.8)</option>
+                    <option value="qwen-2.5-32b">qwen-2.5-32b (Qwen 2.5)</option>
+                    <option value="groq/compound">groq/compound</option>
+                    <option value="groq/compound-mini">groq/compound-mini</option>
+                  </datalist>
+
+                  {/* Datalist for Gemini */}
+                  <datalist id="models-list-gemini">
                     <option value="gemini-2.5-flash">gemini-2.5-flash (Khuyên dùng - Nhanh & Thông minh)</option>
                     <option value="gemini-2.5-pro">gemini-2.5-pro (Tư vấn chuyên sâu)</option>
                     <option value="gemini-1.5-flash">gemini-1.5-flash</option>
                     <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-                  </select>
-                )}
+                  </datalist>
 
-                {(formData.aiProvider || 'gemini') === 'groq' && (
-                  <select
-                    value={formData.aiModel || 'llama-3.3-70b-versatile'}
-                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
-                  >
-                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Khuyên dùng - Siêu tốc & Thông minh)</option>
-                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản hồi tức thì, Quota cao)</option>
-                    <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b (DeepSeek R1 Suy luận)</option>
-                    <option value="qwen-2.5-32b">qwen-2.5-32b (Qwen 2.5 Tiếng Việt xuất sắc)</option>
-                  </select>
-                )}
-
-                {(formData.aiProvider || 'gemini') === 'openai' && (
-                  <select
-                    value={formData.aiModel || 'gpt-4o-mini'}
-                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
-                  >
+                  {/* Datalist for OpenAI */}
+                  <datalist id="models-list-openai">
                     <option value="gpt-4o-mini">gpt-4o-mini (Nhanh & Rẻ)</option>
                     <option value="gpt-4o">gpt-4o (Thông minh nhất)</option>
                     <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                  </select>
-                )}
+                  </datalist>
 
-                {(formData.aiProvider || 'gemini') === 'deepseek' && (
-                  <select
-                    value={formData.aiModel || 'deepseek-chat'}
-                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
-                  >
+                  {/* Datalist for DeepSeek */}
+                  <datalist id="models-list-deepseek">
                     <option value="deepseek-chat">deepseek-chat (V3 - Chuẩn tư vấn)</option>
                     <option value="deepseek-reasoner">deepseek-reasoner (R1 - Suy luận)</option>
-                  </select>
-                )}
-
-                {(formData.aiProvider || 'gemini') === 'custom' && (
-                  <input
-                    type="text"
-                    value={formData.aiModel || ''}
-                    onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
-                    placeholder="Nhập tên Model (Ví dụ: llama3, mistral, custom-model)"
-                    className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  />
-                )}
+                  </datalist>
+                </div>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                  💡 Nhấp đúp vào ô để chọn từ danh mục gợi ý hoặc tự nhập/dán tên Model bất kỳ từ bảng điều khiển của nhà cung cấp.
+                </p>
               </div>
             </div>
 

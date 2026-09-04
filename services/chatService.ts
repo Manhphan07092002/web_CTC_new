@@ -393,16 +393,8 @@ export const chatService = {
           if (clean.toLowerCase().includes('gemini')) return clean;
           return 'gemini-2.5-flash';
         }
-        if (prov === 'openai') {
-          if (clean.startsWith('gpt-') || clean.startsWith('o1-') || clean.startsWith('o3-')) return clean;
-          return 'gpt-4o-mini';
-        }
-        if (prov === 'deepseek') {
-          if (clean.startsWith('deepseek-')) return clean;
-          return 'deepseek-chat';
-        }
         if (prov === 'groq') {
-          if (clean.startsWith('gemini-') || clean.startsWith('gpt-')) return 'llama-3.3-70b-versatile';
+          if (clean.toLowerCase().startsWith('gemini-')) return 'llama-3.3-70b-versatile';
           return clean;
         }
         return clean;
