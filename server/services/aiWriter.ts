@@ -1131,7 +1131,7 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
     };
 
     const PROVIDER_MODEL_CANDIDATES: Record<string, string[]> = {
-      groq: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'deepseek-r1-distill-llama-70b', 'qwen-2.5-32b'],
+      groq: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'deepseek-r1-distill-llama-70b'],
       openai: ['gpt-4o-mini', 'gpt-4o', 'gpt-3.5-turbo'],
       gemini: ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.5-pro', 'gemini-1.5-pro'],
       deepseek: ['deepseek-chat', 'deepseek-reasoner']

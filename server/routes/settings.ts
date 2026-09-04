@@ -125,12 +125,10 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
 
     const PROVIDER_MODELS: Record<string, string[]> = {
       groq: [
-        'openai/gpt-oss-120b',
         'llama-3.3-70b-versatile',
         'llama-3.1-8b-instant',
         'deepseek-r1-distill-llama-70b',
-        'qwen/qwen3.6-27b',
-        'qwen-2.5-32b'
+        'openai/gpt-oss-120b'
       ],
       openai: [
         'gpt-4o-mini',

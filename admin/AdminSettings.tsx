@@ -685,14 +685,12 @@ const Settings: React.FC = () => {
                   
                   {/* Datalist for Groq */}
                   <datalist id="models-list-groq">
-                    <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (Mới - OpenAI GPT-OSS trên Groq)</option>
-                    <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (OpenAI GPT-OSS 20B)</option>
                     <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Khuyên dùng - Siêu tốc & Thông minh)</option>
                     <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản hồi tức thì, Quota cao)</option>
                     <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b (DeepSeek R1 Suy luận)</option>
+                    <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (Mới - OpenAI GPT-OSS trên Groq)</option>
+                    <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (OpenAI GPT-OSS 20B)</option>
                     <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b (Alibaba Qwen 3.6)</option>
-                    <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Alibaba Qwen 3.8)</option>
-                    <option value="qwen-2.5-32b">qwen-2.5-32b (Qwen 2.5)</option>
                     <option value="groq/compound">groq/compound</option>
                     <option value="groq/compound-mini">groq/compound-mini</option>
                   </datalist>

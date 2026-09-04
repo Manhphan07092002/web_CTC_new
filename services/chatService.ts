@@ -366,8 +366,7 @@ export const chatService = {
         groq: [
           'llama-3.3-70b-versatile',
           'llama-3.1-8b-instant',
-          'deepseek-r1-distill-llama-70b',
-          'qwen-2.5-32b'
+          'deepseek-r1-distill-llama-70b'
         ],
         openai: [
           'gpt-4o-mini',
@@ -506,9 +505,15 @@ export const chatService = {
 
             const isModelNotFoundError = 
               errStatus === 404 || 
+              (errStatus === 400 && (errMsg.toLowerCase().includes('model') || errMsg.toLowerCase().includes('decommissioned') || errMsg.toLowerCase().includes('deprecated'))) ||
               errMsg.toLowerCase().includes('does not exist') || 
               errMsg.toLowerCase().includes('not found') || 
-              errMsg.toLowerCase().includes('do not have access');
+              errMsg.toLowerCase().includes('do not have access') ||
+              errMsg.toLowerCase().includes('decommissioned') ||
+              errMsg.toLowerCase().includes('deprecated') ||
+              errMsg.toLowerCase().includes('retired') ||
+              errMsg.toLowerCase().includes('model_decommissioned') ||
+              errMsg.toLowerCase().includes('model_not_found');
 
             if (isModelNotFoundError) {
               // Try next model candidate immediately for this provider
