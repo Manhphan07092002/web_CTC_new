@@ -566,7 +566,7 @@ const FileManager: React.FC = () => {
             }`}
           >
             <Home size={16} />
-            <span>Gốc (uploads/images)</span>
+            <span>Gốc (uploads)</span>
           </button>
 
           {breadcrumbs.map((crumb, idx) => (
@@ -993,7 +993,7 @@ const FileManager: React.FC = () => {
           {stats.totalBytes > 0 && ` (Tổng dung lượng: ${formatFileSize(stats.totalBytes)})`}
         </div>
         <div>
-          Vị trí hiện tại: <span className="font-mono">{currentPath ? `/uploads/images/${currentPath}` : '/uploads/images'}</span>
+          Vị trí hiện tại: <span className="font-mono">{currentPath ? `/uploads/${currentPath}` : '/uploads'}</span>
         </div>
       </div>
 
@@ -1118,6 +1118,26 @@ const FileManager: React.FC = () => {
                   alt={previewFile.filename}
                   className="max-h-[60vh] max-w-full object-contain rounded-xl shadow-md"
                 />
+              ) : previewFile.filename.toLowerCase().endsWith('.pdf') ? (
+                <div className="w-full flex flex-col items-center">
+                  <iframe
+                    src={previewFile.url}
+                    title={previewFile.filename}
+                    className="w-full h-[60vh] rounded-xl border border-gray-200 dark:border-slate-700 bg-white"
+                  />
+                </div>
+              ) : getFileCategory(previewFile.filename) === 'video' ? (
+                <video
+                  src={previewFile.url}
+                  controls
+                  className="max-h-[60vh] max-w-full rounded-xl shadow-md"
+                />
+              ) : getFileCategory(previewFile.filename) === 'audio' ? (
+                <div className="w-full max-w-md p-6 text-center bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
+                  <FileAudio size={56} className="text-pink-500 mx-auto mb-4" />
+                  <p className="font-semibold text-gray-800 dark:text-gray-200 mb-4">{previewFile.filename}</p>
+                  <audio src={previewFile.url} controls className="w-full" />
+                </div>
               ) : getFileCategory(previewFile.filename) === 'document' ? (
                 <div className="text-center p-8">
                   <FileText size={64} className="text-blue-500 mx-auto mb-3" />

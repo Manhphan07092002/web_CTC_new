@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, FileText, Upload, Save, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, FileText, Upload, Save, X, FolderOpen } from 'lucide-react';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import FilePickerModal from './FilePickerModal';
 
 interface Resource {
   _id: string;
@@ -29,6 +30,7 @@ const ResourceManagement: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [showFilePicker, setShowFilePicker] = useState(false);
 
   useEffect(() => {
     fetchResources();
@@ -155,7 +157,7 @@ const ResourceManagement: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/uploads/images', {
+      const response = await fetch('/api/uploads', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -286,18 +288,26 @@ const ResourceManagement: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">File Tài liệu (Link URL hoặc Upload) *</label>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <input
                   type="text"
                   value={currentResource.fileUrl || ''}
                   onChange={e => setCurrentResource(prev => ({ ...prev, fileUrl: e.target.value }))}
-                  className="flex-1 p-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  placeholder="https://..."
+                  className="flex-1 min-w-[200px] p-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  placeholder="/uploads/... hoặc https://..."
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowFilePicker(true)}
+                  className="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3.5 py-2 rounded-lg cursor-pointer flex items-center gap-1.5 border border-blue-200 dark:border-blue-800 font-medium text-sm transition-colors"
+                >
+                  <FolderOpen size={16} />
+                  <span>Chọn từ file</span>
+                </button>
                 <label className="bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 border border-gray-300 dark:border-slate-600 transition-colors">
                   <Upload size={18} />
                   <span>{uploadingFile ? 'Đang tải...' : 'Upload'}</span>
-                  <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleFileUpload} disabled={uploadingFile} />
+                  <input type="file" className="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" onChange={handleFileUpload} disabled={uploadingFile} />
                 </label>
               </div>
             </div>
@@ -441,6 +451,17 @@ const ResourceManagement: React.FC = () => {
         description={`Bạn có chắc chắn muốn xóa tài liệu "${deleteConfirm.resource?.title}"?`}
         warningText="Tài liệu này sẽ bị xóa khỏi hệ thống và không thể tải xuống nữa."
         confirmText="Đồng ý xóa"
+      />
+
+      {/* File Picker Modal */}
+      <FilePickerModal
+        isOpen={showFilePicker}
+        onClose={() => setShowFilePicker(false)}
+        onSelect={(url) => {
+          setCurrentResource(prev => ({ ...prev, fileUrl: url }));
+          setShowFilePicker(false);
+        }}
+        title="Chọn file tài liệu"
       />
     </div>
   );

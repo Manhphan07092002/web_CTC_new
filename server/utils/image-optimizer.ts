@@ -65,9 +65,10 @@ export async function optimizeUploadedImage(filePath: string, publicSubPath: str
       }
     }
 
-    const relativeWebpPath = publicSubPath
-      ? `/uploads/images/${publicSubPath}/${parsedPath.name}.webp`
-      : `/uploads/images/${parsedPath.name}.webp`;
+    const cleanSub = publicSubPath.replace(/^\/+|\/+$/g, '');
+    const relativeWebpPath = cleanSub
+      ? `/uploads/${cleanSub}/${parsedPath.name}.webp`
+      : `/uploads/${parsedPath.name}.webp`;
 
     return {
       originalPath: filePath,

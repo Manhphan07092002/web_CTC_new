@@ -6,27 +6,63 @@ import path from 'path';
 const router = Router();
 
 const uploadRoot = path.join(process.cwd(), 'uploads');
-const imagesDir = path.join(uploadRoot, 'images');
 
-// Ensure folders exist
+// Ensure root upload folder exists
 if (!fs.existsSync(uploadRoot)) {
-  fs.mkdirSync(uploadRoot);
-}
-if (!fs.existsSync(imagesDir)) {
-  fs.mkdirSync(imagesDir);
+  fs.mkdirSync(uploadRoot, { recursive: true });
 }
 
 const ALLOWED_MIME_TYPES = new Set([
+  // Images
   'image/jpeg',
   'image/png',
   'image/webp',
   'image/gif',
   'image/svg+xml',
+  'image/x-icon',
+  'image/vnd.microsoft.icon',
+  'image/bmp',
+  'image/tiff',
+  // Documents
   'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain',
+  'text/csv',
+  // Video & Audio
+  'video/mp4',
+  'video/webm',
+  'video/quicktime',
+  'video/x-msvideo',
+  'video/x-matroska',
+  'audio/mpeg',
+  'audio/wav',
+  'audio/ogg',
+  'audio/mp4',
+  'audio/x-m4a',
+  // Archives & General
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/x-rar-compressed',
+  'application/x-7z-compressed',
+  'application/x-tar',
+  'application/gzip',
+  'application/octet-stream',
 ]);
 
 const ALLOWED_EXTENSIONS = new Set([
-  '.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.pdf'
+  // Images
+  '.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.ico', '.bmp', '.tiff',
+  // Documents
+  '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv',
+  // Video & Audio
+  '.mp4', '.webm', '.mov', '.avi', '.mkv', '.mp3', '.wav', '.ogg', '.m4a',
+  // Archives
+  '.zip', '.rar', '.7z', '.tar', '.gz'
 ]);
 
 import crypto from 'crypto';
@@ -34,7 +70,7 @@ import crypto from 'crypto';
 /**
  * Generates a secure yet human-readable filename:
  * Preserves sanitized original filename base + appends a 8-char crypto hash token
- * Example: "Báo giá điện 2024.jpg" -> "bao-gia-dien-2024_a8f3b2c9.jpg"
+ * Example: "Báo giá điện 2024.pdf" -> "bao-gia-dien-2024_a8f3b2c9.pdf"
  */
 function generateSecureFilename(originalName: string): string {
   const ext = path.extname(originalName).toLowerCase() || '';
@@ -62,14 +98,15 @@ function generateSecureFilename(originalName: string): string {
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
     // Get path from query params or form data
-    const subPath = String(req.query.path || req.body.path || '');
-    const targetDir = subPath ? path.join(imagesDir, subPath) : imagesDir;
+    const rawSubPath = String(req.query.path || req.body.path || '').trim();
+    const sanitizedSubPath = rawSubPath.replace(/^(\.\.(\/|\\|$))+/, '').replace(/^\/+|\/+$/g, '');
+    const targetDir = sanitizedSubPath ? path.join(uploadRoot, sanitizedSubPath) : uploadRoot;
     
     // Security check: prevent directory traversal
     const resolvedTarget = path.resolve(targetDir);
-    const resolvedImagesDir = path.resolve(imagesDir);
-    if (!resolvedTarget.startsWith(resolvedImagesDir)) {
-      return cb(new Error('Access denied: Invalid upload directory path'), imagesDir);
+    const resolvedUploadRoot = path.resolve(uploadRoot);
+    if (!resolvedTarget.startsWith(resolvedUploadRoot)) {
+      return cb(new Error('Access denied: Invalid upload directory path'), uploadRoot);
     }
 
     // Ensure target directory exists
@@ -88,14 +125,14 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max per file
+    fileSize: 50 * 1024 * 1024, // 50MB max per file (supports PDFs, docs, videos)
   },
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (ALLOWED_MIME_TYPES.has(file.mimetype) && ALLOWED_EXTENSIONS.has(ext)) {
+    if (ALLOWED_EXTENSIONS.has(ext) || ALLOWED_MIME_TYPES.has(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error(`Invalid file type (${file.mimetype} / ${ext}). Allowed formats: ${Array.from(ALLOWED_EXTENSIONS).join(', ')}`));
+      cb(new Error(`Định dạng tệp không được hỗ trợ (${file.mimetype} / ${ext}).`));
     }
   }
 });
@@ -111,21 +148,22 @@ const handleUpload = (req: any, res: any, next: any) => {
   });
 };
 
-// Upload single or multiple files (supports POST / and POST /images)
-router.post(['/', '/images'], handleUpload, async (req, res) => {
+// Upload single or multiple files (supports POST /, POST /images, POST /files)
+router.post(['/', '/images', '/files'], handleUpload, async (req, res) => {
   const files = (req as any).files as Express.Multer.File[] | undefined;
 
   if (!files || files.length === 0) {
-    return res.status(400).json({ message: 'No files uploaded' });
+    return res.status(400).json({ message: 'Không có tệp tin nào được tải lên' });
   }
 
   // Get the path from query params or form data
-  const subPath = String(req.query.path || req.body.path || '');
+  const rawSubPath = String(req.query.path || req.body.path || '').trim();
+  const subPath = rawSubPath.replace(/^\/+|\/+$/g, '');
   
   const results = await Promise.all(
     files.map(async file => {
       const optResult = await optimizeUploadedImage(file.path, subPath);
-      const relativeUrl = subPath ? `/uploads/images/${subPath}/${file.filename}` : `/uploads/images/${file.filename}`;
+      const relativeUrl = subPath ? `/uploads/${subPath}/${file.filename}` : `/uploads/${file.filename}`;
       
       return {
         filename: file.filename,
@@ -139,34 +177,35 @@ router.post(['/', '/images'], handleUpload, async (req, res) => {
   );
 
   res.json({
-    message: `Uploaded ${files.length} file(s) successfully`,
+    message: `Đã tải lên thành công ${files.length} tệp tin`,
     files: results,
     url: results[0]?.url,
     webpUrl: results[0]?.webpUrl,
   });
 });
 
-// List all images (files and folders) with optional path parameter
-router.get('/images', (req, res) => {
-  const subPath = (req.query.path as string) || '';
-  const targetDir = subPath ? path.join(imagesDir, subPath) : imagesDir;
+// List all files and folders with optional path parameter
+router.get(['/', '/images', '/files'], (req, res) => {
+  const rawSubPath = String(req.query.path || '').trim();
+  const subPath = rawSubPath.replace(/^\/+|\/+$/g, '');
+  const targetDir = subPath ? path.join(uploadRoot, subPath) : uploadRoot;
 
   // Security check: prevent directory traversal
   const resolvedPath = path.resolve(targetDir);
-  const resolvedImagesDir = path.resolve(imagesDir);
-  if (!resolvedPath.startsWith(resolvedImagesDir)) {
-    return res.status(403).json({ message: 'Access denied' });
+  const resolvedUploadRoot = path.resolve(uploadRoot);
+  if (!resolvedPath.startsWith(resolvedUploadRoot)) {
+    return res.status(403).json({ message: 'Truy cập bị từ chối' });
   }
 
   // Check if directory exists
   if (!fs.existsSync(targetDir)) {
-    return res.status(404).json({ message: 'Directory not found' });
+    return res.status(404).json({ message: 'Thư mục không tồn tại' });
   }
 
   fs.readdir(targetDir, { withFileTypes: true }, (err, dirents) => {
     if (err) {
       console.error('Error reading directory', err);
-      return res.status(500).json({ message: 'Failed to read directory' });
+      return res.status(500).json({ message: 'Không thể đọc thư mục' });
     }
 
     const list = dirents.map((dirent) => {
@@ -184,7 +223,7 @@ router.get('/images', (req, res) => {
       
       return {
         filename: dirent.name,
-        url: `/uploads/images/${relativePath.replace(/\\/g, '/')}`,
+        url: `/uploads/${relativePath.replace(/\\/g, '/')}`,
         type: dirent.isDirectory() ? 'folder' : 'file',
         isDirectory: dirent.isDirectory(),
         size: size,
@@ -197,38 +236,39 @@ router.get('/images', (req, res) => {
 });
 
 // Create a new folder
-router.post('/images/create-folder', (req, res) => {
+router.post(['/create-folder', '/images/create-folder', '/files/create-folder'], (req, res) => {
   const { path: folderPath } = req.body;
 
   if (!folderPath) {
-    return res.status(400).json({ message: 'Folder path is required' });
+    return res.status(400).json({ message: 'Đường dẫn thư mục là bắt buộc' });
   }
 
-  const fullPath = path.join(imagesDir, folderPath);
+  const cleanFolderPath = String(folderPath).replace(/^\/+|\/+$/g, '');
+  const fullPath = path.join(uploadRoot, cleanFolderPath);
 
   // Security check: prevent directory traversal
   const resolvedPath = path.resolve(fullPath);
-  const resolvedImagesDir = path.resolve(imagesDir);
-  if (!resolvedPath.startsWith(resolvedImagesDir)) {
-    return res.status(403).json({ message: 'Access denied' });
+  const resolvedUploadRoot = path.resolve(uploadRoot);
+  if (!resolvedPath.startsWith(resolvedUploadRoot)) {
+    return res.status(403).json({ message: 'Truy cập bị từ chối' });
   }
 
   // Check if folder already exists
   if (fs.existsSync(fullPath)) {
-    return res.status(409).json({ message: 'Folder already exists' });
+    return res.status(409).json({ message: 'Thư mục đã tồn tại' });
   }
 
   try {
     fs.mkdirSync(fullPath, { recursive: true });
-    res.status(201).json({ message: 'Folder created successfully', path: folderPath });
+    res.status(201).json({ message: 'Tạo thư mục thành công', path: cleanFolderPath });
   } catch (err) {
     console.error('Error creating folder', err);
-    res.status(500).json({ message: 'Failed to create folder' });
+    res.status(500).json({ message: 'Không thể tạo thư mục' });
   }
 });
 
 // Rename a file or folder
-router.post('/images/rename', (req, res) => {
+router.post(['/rename', '/images/rename', '/files/rename'], (req, res) => {
   const { oldPath, newName } = req.body;
 
   if (!oldPath || !newName) {
@@ -241,12 +281,13 @@ router.post('/images/rename', (req, res) => {
     return res.status(400).json({ message: 'Tên mới không hợp lệ' });
   }
 
-  const fullOldPath = path.join(imagesDir, String(oldPath));
+  const cleanOldPath = String(oldPath).replace(/^\/+|\/+$/g, '');
+  const fullOldPath = path.join(uploadRoot, cleanOldPath);
   const resolvedOldPath = path.resolve(fullOldPath);
-  const resolvedImagesDir = path.resolve(imagesDir);
+  const resolvedUploadRoot = path.resolve(uploadRoot);
 
   // Security check: prevent directory traversal
-  if (!resolvedOldPath.startsWith(resolvedImagesDir)) {
+  if (!resolvedOldPath.startsWith(resolvedUploadRoot) || resolvedOldPath === resolvedUploadRoot) {
     return res.status(403).json({ message: 'Truy cập bị từ chối' });
   }
 
@@ -258,8 +299,8 @@ router.post('/images/rename', (req, res) => {
   const fullNewPath = path.join(parentDir, sanitizedNewName);
   const resolvedNewPath = path.resolve(fullNewPath);
 
-  // Security check: ensure target stays inside imagesDir and inside same parent directory
-  if (!resolvedNewPath.startsWith(resolvedImagesDir) || path.dirname(resolvedNewPath) !== parentDir) {
+  // Security check: ensure target stays inside uploadRoot and inside same parent directory
+  if (!resolvedNewPath.startsWith(resolvedUploadRoot) || path.dirname(resolvedNewPath) !== parentDir) {
     return res.status(403).json({ message: 'Truy cập bị từ chối' });
   }
 
@@ -272,13 +313,13 @@ router.post('/images/rename', (req, res) => {
     fs.renameSync(resolvedOldPath, resolvedNewPath);
     
     // Calculate new relative path
-    const relativeNewPath = path.relative(imagesDir, resolvedNewPath).replace(/\\/g, '/');
+    const relativeNewPath = path.relative(uploadRoot, resolvedNewPath).replace(/\\/g, '/');
     res.json({
       success: true,
       message: 'Đổi tên thành công',
       newName: sanitizedNewName,
       newPath: relativeNewPath,
-      newUrl: `/uploads/images/${relativeNewPath}`
+      newUrl: `/uploads/${relativeNewPath}`
     });
   } catch (err: any) {
     console.error('Error renaming file or folder:', err);
@@ -286,21 +327,25 @@ router.post('/images/rename', (req, res) => {
   }
 });
 
-// Delete an image by filename (supports paths like folder/file.jpg)
-router.delete('/images/:filepath(*)', (req, res) => {
+// Delete a file or folder by path
+router.delete(['/:filepath(*)', '/images/:filepath(*)', '/files/:filepath(*)'], (req, res) => {
   const filepath = req.params.filepath;
-  const fullPath = path.join(imagesDir, filepath);
+  if (!filepath) {
+    return res.status(400).json({ message: 'Đường dẫn tệp tin là bắt buộc' });
+  }
+  const cleanPath = String(filepath).replace(/^\/+|\/+$/g, '');
+  const fullPath = path.join(uploadRoot, cleanPath);
 
-  // Security check: prevent directory traversal
+  // Security check: prevent directory traversal & deleting root
   const resolvedPath = path.resolve(fullPath);
-  const resolvedImagesDir = path.resolve(imagesDir);
-  if (!resolvedPath.startsWith(resolvedImagesDir)) {
-    return res.status(403).json({ message: 'Access denied' });
+  const resolvedUploadRoot = path.resolve(uploadRoot);
+  if (!resolvedPath.startsWith(resolvedUploadRoot) || resolvedPath === resolvedUploadRoot) {
+    return res.status(403).json({ message: 'Truy cập bị từ chối: Không thể xóa thư mục gốc' });
   }
 
   // Check if it's a file or directory
   if (!fs.existsSync(fullPath)) {
-    return res.status(404).json({ message: 'File or folder not found' });
+    return res.status(404).json({ message: 'Không tìm thấy tệp hoặc thư mục' });
   }
 
   const stats = fs.statSync(fullPath);
@@ -310,7 +355,7 @@ router.delete('/images/:filepath(*)', (req, res) => {
     fs.rm(fullPath, { recursive: true, force: true }, (err) => {
       if (err) {
         console.error('Error deleting directory', err);
-        return res.status(500).json({ message: 'Failed to delete directory' });
+        return res.status(500).json({ message: 'Lỗi khi xóa thư mục' });
       }
       res.status(204).send();
     });
@@ -319,7 +364,7 @@ router.delete('/images/:filepath(*)', (req, res) => {
     fs.unlink(fullPath, (err) => {
       if (err) {
         console.error('Error deleting file', err);
-        return res.status(500).json({ message: 'Failed to delete file' });
+        return res.status(500).json({ message: 'Lỗi khi xóa tệp tin' });
       }
       res.status(204).send();
     });
@@ -327,22 +372,23 @@ router.delete('/images/:filepath(*)', (req, res) => {
 });
 
 // Bulk delete files and folders
-router.post('/images/bulk-delete', (req, res) => {
+router.post(['/bulk-delete', '/images/bulk-delete', '/files/bulk-delete'], (req, res) => {
   const { paths } = req.body;
   if (!Array.isArray(paths) || paths.length === 0) {
     return res.status(400).json({ message: 'Danh sách tệp tin cần xóa không hợp lệ' });
   }
 
-  const resolvedImagesDir = path.resolve(imagesDir);
+  const resolvedUploadRoot = path.resolve(uploadRoot);
   let deletedCount = 0;
   const errors: string[] = [];
 
   for (const itemPath of paths) {
     try {
-      const fullPath = path.join(imagesDir, String(itemPath));
+      const cleanItemPath = String(itemPath).replace(/^\/+|\/+$/g, '');
+      const fullPath = path.join(uploadRoot, cleanItemPath);
       const resolvedPath = path.resolve(fullPath);
 
-      if (!resolvedPath.startsWith(resolvedImagesDir)) {
+      if (!resolvedPath.startsWith(resolvedUploadRoot) || resolvedPath === resolvedUploadRoot) {
         errors.push(`Từ chối truy cập: ${itemPath}`);
         continue;
       }
