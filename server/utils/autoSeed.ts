@@ -103,8 +103,8 @@ export async function autoSeedProfileData(): Promise<void> {
         description: 'Tổng hợp toàn diện về năng lực pháp lý, tài chính, đội ngũ nhân sự kỹ thuật cao và trang thiết bị thi công hiện đại của CÔNG TY CỔ PHẦN XÂY LẮP BƯU ĐIỆN MIỀN TRUNG (CTC).',
         year: '2026',
         version: 'v2026.1',
-        fileUrl: '/file/HSNL 2024.docx',
-        fileName: 'HoSoNangLuc_CTC_2026.docx',
+        fileUrl: '/uploads/hsnl-2026_ac89d054.docx',
+        fileName: 'HSNL 2026.docx',
         tag: 'CTC-PROFILE-2026',
         highlights: [
           'Đầy đủ chứng chỉ hành nghề và năng lực xây dựng Hạng I của Bộ Xây dựng.',

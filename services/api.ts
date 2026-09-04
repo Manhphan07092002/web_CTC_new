@@ -672,7 +672,7 @@ export const api = {
   // Company Profiles (Hồ sơ năng lực)
   companyProfiles: {
     getAll: (admin = false) => fetchAPI<any[]>(`/company-profiles${admin ? '?admin=true' : ''}`, undefined, !admin),
-    getActive: () => fetchAPI<any>('/company-profiles/active', undefined, true),
+    getActive: () => fetchAPI<any>('/company-profiles/active', undefined, false),
     getById: (id: string) => fetchAPI<any>(`/company-profiles/${id}`),
     create: (data: any) => {
       clearApiCache();
@@ -758,7 +758,7 @@ export const api = {
   // Business Sectors (Lĩnh vực hoạt động)
   businessSectors: {
     getAll: (admin = false) => fetchAPI<any[]>(`/business-sectors${admin ? '?admin=true' : ''}`, undefined, !admin),
-    getActive: () => fetchAPI<any[]>('/business-sectors', undefined, true),
+    getActive: () => fetchAPI<any[]>('/business-sectors', undefined, false),
     getById: (id: string) => fetchAPI<any>(`/business-sectors/${id}`),
     create: (data: any) => {
       clearApiCache();

@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, TrendingUp, Handshake, Download, X, Check, ArrowRight, Eye, ShieldCheck, ChevronRight, BarChart3, Building2 } from 'lucide-react';
+import { FileText, TrendingUp, Handshake, Download, X, Check, ArrowRight, ShieldCheck, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLangText } from '../../utils/translation-helper';
 import { api } from '../../services/api';
-
-// Load company profile data fallback
-import companyProfile from '../../constants/company_profile.json';
 
 export const Features: React.FC = () => {
   const { language } = useLanguage();
@@ -39,7 +36,7 @@ export const Features: React.FC = () => {
           setDbSectors(sectorsRes.value);
         }
       } catch (error) {
-        console.warn('Could not fetch dynamic profile/reports/sectors data, using fallback:', error);
+        console.warn('Could not fetch dynamic profile/reports/sectors data:', error);
       }
     };
 
@@ -53,27 +50,21 @@ export const Features: React.FC = () => {
   const tabData = {
     hsnl: {
       id: 'hsnl',
-      title: dbProfile?.title && language === 'vi' 
-        ? dbProfile.title 
-        : getLangText(language, { vi: 'Hồ Sơ Năng Lực', en: 'Company Profile', ko: '회사 프로필', ja: '会社概要・実績', zh: '公司资质与能力', de: 'Unternehmensprofil' }),
-      subtitle: dbProfile?.subtitle && language === 'vi'
-        ? dbProfile.subtitle
-        : getLangText(language, { vi: 'Năng lực & Pháp lý', en: 'Credentials & Capacity', ko: '자격 및 역량', ja: '資格・法的能力', zh: '资质与法律', de: 'Qualifikationen' }),
+      title: dbProfile?.title || getLangText(language, { vi: 'Hồ Sơ Năng Lực', en: 'Company Profile', ko: '회사 프로필', ja: '会社概要・実績', zh: '公司资质与能力', de: 'Unternehmensprofil' }),
+      subtitle: dbProfile?.subtitle || getLangText(language, { vi: 'Năng Lực & Pháp Lý', en: 'Credentials & Capacity', ko: '자격 및 역량', ja: '資格・法的能力', zh: '资质与法律', de: 'Qualifikationen' }),
       color: "from-blue-500 to-sky-600",
       accentColor: "sky",
       icon: FileText,
-      tag: dbProfile?.tag || "CTC-PROFILE-2026",
-      desc: dbProfile?.description && language === 'vi'
-        ? dbProfile.description
-        : getLangText(language, {
-            vi: 'Tổng hợp toàn diện về năng lực pháp lý, tài chính, đội ngũ nhân sự kỹ thuật cao và trang thiết bị thi công hiện đại của công ty.',
-            en: 'Comprehensive review of CTC legal credentials, capital, engineering staff, and machinery capacities.',
-            ko: 'CTC의 법적 자격, 자본, 엔지니어링 인력 및 장비 역량에 대한 종합적 검토.',
-            ja: 'CTCの法的資格、資本、エンジニアリングスタッフ、および設備能力の総合的な概要。',
-            zh: '全面汇总CTC的法律资质、资金、高素质技术团队和现代施工设备。',
-            de: 'Umfassende Übersicht über rechtliche Qualifikationen, Kapital, Ingenieurteam und Bauausrüstung von CTC.'
-          }),
-      details: dbProfile?.highlights && dbProfile.highlights.length > 0 && language === 'vi'
+      tag: dbProfile?.tag || (dbProfile?.year ? `CTC-PROFILE-${dbProfile.year}` : "CTC-PROFILE-2026"),
+      desc: dbProfile?.description || getLangText(language, {
+        vi: 'Tổng hợp toàn diện về năng lực pháp lý, tài chính, đội ngũ nhân sự kỹ thuật cao và trang thiết bị thi công hiện đại của công ty.',
+        en: 'Comprehensive review of CTC legal credentials, capital, engineering staff, and machinery capacities.',
+        ko: 'CTC의 법적 자격, 자본, 엔지니어링 인력 및 장비 역량에 대한 종합적 검토.',
+        ja: 'CTCの法的資格、資本、エンジニアリングスタッフ、および設備能力の総合的な概要。',
+        zh: '全面汇总CTC的法律资质、资金、高素质技术团队和现代施工设备。',
+        de: 'Umfassende Übersicht über rechtliche Qualifikationen, Kapital, Ingenieurteam und Bauausrüstung von CTC.'
+      }),
+      details: dbProfile?.highlights && dbProfile.highlights.length > 0
         ? dbProfile.highlights
         : [
             getLangText(language, { vi: 'Đầy đủ chứng chỉ hành nghề và năng lực xây dựng Hạng I của Bộ Xây dựng.', en: 'Full legal credentials & construction licenses Class I', ko: '건설부의 Class I 건설 능력 인증서 보유', ja: '建設省の等級I建設能力認定を保有', zh: '具备建设部一级施工能力证书', de: 'Bauqualifikationszertifikat Klasse I des Bauministeriums' }),
@@ -89,8 +80,8 @@ export const Features: React.FC = () => {
           ],
       btnText: getLangText(language, { vi: 'Xem Hồ Sơ Năng Lực', en: 'View Complete Profile', ko: '전체 프로필 보기', ja: '会社概要を見る', zh: '查看完整资质', de: 'Vollständiges Profil ansehen' }),
       downloadText: getLangText(language, { vi: 'Tải về bản DOCX', en: 'Download DOCX', ko: 'DOCX 다운로드', ja: 'DOCXをダウンロード', zh: '下载 DOCX 文件', de: 'DOCX herunterladen' }),
-      fileUrl: dbProfile?.fileUrl || '/file/HSNL 2024.docx',
-      fileName: dbProfile?.fileName || 'HoSoNangLuc_CTC_2024.docx',
+      fileUrl: dbProfile?.fileUrl || '/uploads/hsnl-2026_ac89d054.docx',
+      fileName: dbProfile?.fileName || 'HSNL 2026.docx',
       modalId: 'hsnl'
     },
     bctc: {
@@ -511,19 +502,17 @@ export const Features: React.FC = () => {
             </div>
             <div className="p-6 sm:p-8 overflow-y-auto flex-1 relative z-10 space-y-6">
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed text-justify">
-                {dbProfile?.description && language === 'vi' 
-                  ? dbProfile.description 
-                  : getLangText(language, {
-                      vi: 'Hồ sơ năng lực của chúng tôi cung cấp một cái nhìn chi tiết và toàn diện về CÔNG TY CỔ PHẦN XÂY LẮP BƯU ĐIỆN MIỀN TRUNG (CTC). Tại đây, Quý đối tác và khách hàng có thể tìm thấy thông tin đầy đủ về:',
-                      en: 'Our Company Profile provides a detailed and comprehensive look at CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS CONSTRUCTION JOINT-STOCK COMPANY (CTC). Here, partners and clients can find full details about:',
-                      ko: '회사 프로필은 중부 포스트 및 통신 건설 주식 회사 (CTC)에 대한 자세한 정보를 제공합니다.',
-                      ja: '当社プロファイルは、中部ポスト＆電気通信建設株式会社（CTC）の詳細な情報を提供します。',
-                      zh: '我们的公司资质与能力文件为您提供越南中部邮电建设股份有限公司（CTC）的全面信息：',
-                      de: 'Unser Unternehmensprofil bietet einen detaillierten Überblick über CTC:'
-                    })}
+                {dbProfile?.description || getLangText(language, {
+                  vi: 'Hồ sơ năng lực của chúng tôi cung cấp một cái nhìn chi tiết và toàn diện về CÔNG TY CỔ PHẦN XÂY LẮP BƯU ĐIỆN MIỀN TRUNG (CTC). Tại đây, Quý đối tác và khách hàng có thể tìm thấy thông tin đầy đủ về:',
+                  en: 'Our Company Profile provides a detailed and comprehensive look at CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS CONSTRUCTION JOINT-STOCK COMPANY (CTC). Here, partners and clients can find full details about:',
+                  ko: '회사 프로필은 중부 포스트 및 통신 건설 주식 회사 (CTC)에 대한 자세한 정보를 제공합니다.',
+                  ja: '当社プロファイルは、中部ポスト＆電気通信建設株式会社（CTC）の詳細な情報を提供します。',
+                  zh: '我们的公司资质与能力文件为您提供越南中部邮电建设股份有限公司（CTC）的全面信息：',
+                  de: 'Unser Unternehmensprofil bietet einen detaillierten Überblick über CTC:'
+                })}
               </p>
               <ul className="space-y-3">
-                {(dbProfile?.highlights && dbProfile.highlights.length > 0 && language === 'vi' 
+                {(dbProfile?.highlights && dbProfile.highlights.length > 0 
                   ? dbProfile.highlights 
                   : [
                       getLangText(language, { vi: 'Năng lực pháp lý: Giấy phép kinh doanh, chứng chỉ năng lực xây dựng hạng do Bộ Xây dựng cấp.', en: 'Legal capacity: Business license, operation credentials, and government construction certificates.', ko: '법적 역량: 사업자 등록증, 건설부 발급 건설 역량 인증서.', ja: '法的能力：事業ライセンス、建設省発行の建設能力認定。', zh: '法律资质：营业执照、建设部颁发的施工资质证书。', de: 'Rechtliche Qualifikation: Gewerbelizenz, Bauzertifikate Klasse I.' }),
@@ -545,9 +534,11 @@ export const Features: React.FC = () => {
                 {getLangText(language, { vi: 'Đóng', en: 'Close', ko: '닫기', ja: '閉じる', zh: '关闭', de: 'Schließen' })}
               </button>
               <a 
-                href={tabData.hsnl.fileUrl} 
-                download={tabData.hsnl.fileName} 
-                className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white py-3 rounded-xl font-bold text-sm tracking-wider uppercase hover:shadow-lg hover:shadow-blue-500/20 transition-all text-center flex items-center justify-center gap-2"
+                href={dbProfile?.fileUrl || tabData.hsnl.fileUrl} 
+                download={dbProfile?.fileName || tabData.hsnl.fileName} 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white py-3 rounded-xl font-bold text-sm tracking-wider uppercase hover:shadow-lg hover:shadow-blue-500/20 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Download size={16} /> {getLangText(language, { vi: 'Tải về HSNL', en: 'Download File', ko: '다운로드', ja: 'ダウンロード', zh: '下载文件', de: 'Herunterladen' })}
               </a>
@@ -601,7 +592,9 @@ export const Features: React.FC = () => {
                       <a 
                         href={fileHref} 
                         download={fileName}
-                        className="bg-sky-500/10 dark:bg-sky-400/5 hover:bg-sky-500 dark:hover:bg-sky-400 hover:text-white text-sky-600 dark:text-sky-400 p-2.5 rounded-xl border border-sky-500/20 dark:border-sky-400/10 flex items-center justify-center gap-2 font-bold text-xs transition-all flex-shrink-0"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-sky-500/10 dark:bg-sky-400/5 hover:bg-sky-500 dark:hover:bg-sky-400 hover:text-white text-sky-600 dark:text-sky-400 p-2.5 rounded-xl border border-sky-500/20 dark:border-sky-400/10 flex items-center justify-center gap-2 font-bold text-xs transition-all flex-shrink-0 cursor-pointer"
                       >
                         <Download size={14} /> {getLangText(language, { vi: 'Tải PDF', en: 'PDF', ko: 'PDF', ja: 'PDF', zh: 'PDF', de: 'PDF' })}
                       </a>
