@@ -9,46 +9,171 @@ export interface Review {
   date: string;
 }
 
+export interface ProductSpecification {
+  name: string;
+  key?: string;
+  value: any;
+  unit?: string;
+  type?: 'text' | 'number' | 'boolean' | 'select' | 'multi_select' | 'date';
+  group?: string;
+  isHighlight?: boolean;
+}
+
+export interface ProductDocument {
+  id?: string;
+  title: string;
+  fileUrl?: string;
+  url?: string;
+  fileName?: string;
+  fileType?: string; // 'pdf' | 'doc' | 'dwg' | 'other'
+  fileSize?: number;
+  version?: string;
+}
+
+export interface ProductVariant {
+  id?: string;
+  name: string; // VD: "550W / Đen", "RAM 16GB / SSD 512GB"
+  sku?: string;
+  price?: string | number;
+  originalPrice?: string | number;
+  stock?: number;
+  image?: string;
+  attributes?: { [key: string]: string };
+}
+
+export interface ProductWarehouse {
+  name: string;
+  quantity?: number;
+  stock?: number;
+  code?: string;
+  location?: string;
+}
+
+export interface ProductWarrantyDetails {
+  hasWarranty?: boolean;
+  period?: number | string;
+  unit?: 'month' | 'year' | string;
+  provider?: string;
+  conditions?: string;
+  type?: 'hang' | 'ctc' | 'online';
+  coverage?: string;
+  policyUrl?: string;
+}
+
 export interface Product {
   id: string;
   _id?: string;
   name: string;
+  slug?: string;
   category: string;
   categoryId?: string; // Reference to ProductCategory
   categoryLabel?: string; // Nhãn category hiển thị (VD: "INVERTER")
   code?: string; // Mã sản phẩm (VD: "TL-G5199a")
+  sku?: string;
+  model?: string; // Model sản phẩm
+  partNumber?: string; // Mã phụ tùng / MPN
+  origin?: string; // Xuất xứ
+  unit?: string; // Đơn vị tính: Cái, Bộ, Chiếc, Mét, Cuộn, Thùng, Kg...
   description: string;
   shortDescription?: string; // Mô tả ngắn
-  specifications?: string; // Chi tiết kỹ thuật
+  specifications?: string; // Chi tiết kỹ thuật dạng text (backward compatibility)
+  specificationsList?: ProductSpecification[]; // Danh sách thông số kỹ thuật động
   price?: string;
   originalPrice?: string;
   vat?: number;
   contactPrice?: boolean; // Liên hệ để biết giá
-  brand?: string; // Thương hiệu (Cisco, TP-Link, MikroTik, Ruijie, Huawei, etc.)
+  brand?: string; // Thương hiệu
+  brandId?: string;
   image: string;
   imageUrl?: string;
   images?: string[]; // Multiple images
+  videos?: Array<{ title?: string; url: string; type?: 'youtube' | 'direct' }>;
+  documents?: ProductDocument[]; // Catalogue, Datasheet, Manual PDF
   stock?: number;
-  stockStatus?: 'in_stock' | 'out_of_stock' | 'contact'; // Còn hàng / Hết hàng / Liên hệ
+  minStockAlert?: number;
+  stockStatus?: 'in_stock' | 'out_of_stock' | 'contact' | 'pre_order' | 'discontinued';
+  warehouses?: ProductWarehouse[];
+  hasVariants?: boolean;
+  variants?: ProductVariant[];
   reviews?: Review[];
   rating?: number; // Đánh giá trung bình
-  // Technical Specs
+  // Legacy / Optional Technical Specs for Solar
   power?: number; // Công suất (kW)
   efficiency?: number; // Hiệu suất (%)
   warranty?: string; // Bảo hành (VD: "25 năm")
+  warrantyDetails?: ProductWarrantyDetails;
   features?: string[]; // Các tính năng nổi bật
   technicalSpecs?: { [key: string]: string }; // Thông số kỹ thuật chi tiết
   isFeatured?: boolean; // Sản phẩm nổi bật
   featuredOrder?: number; // Thứ tự hiển thị
   isNew?: boolean; // Sản phẩm MỚI
   isHot?: boolean; // Sản phẩm HOT
-  badge?: string; // Nhãn tùy chỉnh: 'NEW' | 'HOT'
+  badge?: string; // Nhãn tùy chỉnh: 'NEW' | 'HOT' | 'BEST_SELLER' | 'CHÍNH HÃNG'
+  badges?: string[];
+  status?: 'draft' | 'published' | 'hidden' | 'out_of_stock' | 'discontinued';
   isDeleted?: boolean; // Xóa mềm
   deletedAt?: string; // Thời gian xóa
   views?: number; // Lượt xem
   likes?: number; // Lượt thích
   shares?: number; // Lượt chia sẻ
   focusKeyword?: string; // Từ khóa SEO Focus
+  secondaryKeywords?: string[];
+  seoTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+  seo?: any;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Brand {
+  id?: string;
+  _id?: string;
+  name: string;
+  slug: string;
+  logo?: string;
+  website?: string;
+  origin?: string;
+  country?: string;
+  description?: string;
+  featured?: boolean;
+  isFeatured?: boolean;
+  status?: 'active' | 'inactive';
+  isActive?: boolean;
+  sortOrder?: number;
+  productCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AttributeField {
+  name: string;
+  key: string;
+  type: 'text' | 'number' | 'boolean' | 'select' | 'multi_select' | 'date';
+  unit?: string;
+  options?: string[];
+  defaultValue?: any;
+  required?: boolean;
+  order: number;
+  placeholder?: string;
+  isFilterable?: boolean;
+  isHighlight?: boolean;
+}
+
+export interface AttributeTemplate {
+  id?: string;
+  _id?: string;
+  name: string;
+  category?: string;
+  categoryId?: string;
+  categorySlug?: string;
+  categoryName?: string;
+  description?: string;
+  fields?: AttributeField[];
+  attributes?: AttributeField[];
+  status?: 'active' | 'inactive';
+  isActive?: boolean;
+  sortOrder?: number;
   createdAt?: string;
   updatedAt?: string;
 }

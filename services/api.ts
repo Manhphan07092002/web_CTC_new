@@ -327,6 +327,93 @@ export const api = {
     }),
   },
 
+  // Brands (Thương hiệu sản phẩm)
+  brands: {
+    getAll: (admin = false) => fetchAPI<any[]>(`/brands${admin ? '?admin=true' : ''}`, undefined, !admin),
+    getActive: () => fetchAPI<any[]>('/brands', undefined, false),
+    getById: (id: string) => fetchAPI<any>(`/brands/${id}`),
+    getBySlug: (slug: string) => fetchAPI<any>(`/brands/slug/${slug}`),
+    create: (data: any) => {
+      clearApiCache();
+      return fetchAPI<any>('/brands', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update: (id: string, data: any) => {
+      clearApiCache();
+      return fetchAPI<any>(`/brands/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    toggleStatus: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/brands/${id}/toggle-status`, {
+        method: 'PATCH',
+      });
+    },
+    delete: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/brands/${id}`, {
+        method: 'DELETE',
+      });
+    },
+    reorder: (items: Array<{ id: string; sortOrder: number }>) => {
+      clearApiCache();
+      return fetchAPI<any>('/brands/reorder', {
+        method: 'PUT',
+        body: JSON.stringify({ items }),
+      });
+    },
+  },
+
+  // Attribute Templates (Mẫu thông số kỹ thuật theo danh mục)
+  attributeTemplates: {
+    getAll: (admin = false) => fetchAPI<any[]>(`/attribute-templates${admin ? '?admin=true' : ''}`, undefined, !admin),
+    getByCategory: (category: string) => fetchAPI<any>(`/attribute-templates/by-category/${encodeURIComponent(category)}`),
+    getById: (id: string) => fetchAPI<any>(`/attribute-templates/${id}`),
+    create: (data: any) => {
+      clearApiCache();
+      return fetchAPI<any>('/attribute-templates', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update: (id: string, data: any) => {
+      clearApiCache();
+      return fetchAPI<any>(`/attribute-templates/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    toggleStatus: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/attribute-templates/${id}/toggle-status`, {
+        method: 'PATCH',
+      });
+    },
+    delete: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/attribute-templates/${id}`, {
+        method: 'DELETE',
+      });
+    },
+    reorder: (items: Array<{ id: string; sortOrder: number }>) => {
+      clearApiCache();
+      return fetchAPI<any>('/attribute-templates/reorder', {
+        method: 'PUT',
+        body: JSON.stringify({ items }),
+      });
+    },
+    seedDefaults: () => {
+      clearApiCache();
+      return fetchAPI<any>('/attribute-templates/seed-defaults', {
+        method: 'POST',
+      });
+    },
+  },
+
   // News Categories
   newsCategories: {
     getAll: () => fetchAPI<any[]>('/news-categories'),

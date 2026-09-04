@@ -61,6 +61,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, plac
         heading: { levels: [1, 2, 3] },
         bulletList: { keepMarks: true, keepAttributes: false },
         orderedList: { keepMarks: true, keepAttributes: false },
+        underline: false as any,
+        link: false as any,
       }),
       Image.configure({ 
         inline: false, 

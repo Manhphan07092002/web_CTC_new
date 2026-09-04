@@ -35,6 +35,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   // Group headings
   const GROUP_TITLES: Record<string, string> = {
     main: 'TỔNG QUAN',
+    products: 'QUẢN LÝ SẢN PHẨM',
     business: 'KINH DOANH & KHÁCH HÀNG',
     content: 'QUẢN LÝ NỘI DUNG',
     profile: 'HỒ SƠ NĂNG LỰC',
@@ -45,6 +46,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const groupedMenu = React.useMemo<Record<string, typeof filteredMenu>>(() => {
     const groups: Record<string, typeof filteredMenu> = {
       main: [],
+      products: [],
       business: [],
       content: [],
       profile: [],

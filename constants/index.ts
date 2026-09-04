@@ -1,5 +1,5 @@
 import { Product, Project, NewsItem, User, Testimonial, Partner, Category, TeamMember } from '../types';
-import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText, ShoppingCart, Sliders, MessageSquare, TrendingUp, Building2 } from 'lucide-react';
+import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText, ShoppingCart, Sliders, MessageSquare, TrendingUp, Building2, Award, Package, SlidersHorizontal } from 'lucide-react';
 
 export const NAV_LINKS = [
   { name: 'Trang chủ', path: '/', key: 'home' },
@@ -39,25 +39,30 @@ export const ADMIN_MENU = [
   // Group 1: Tổng quan (Main)
   { name: 'Tổng quan', path: '/admin', icon: LayoutDashboard, key: 'dashboard', permission: null, minLevel: 10, group: 'main' },
 
-  // Group 2: Kinh doanh & Khách hàng (Business & Customers)
+  // Group 2: Quản lý sản phẩm (Product CMS)
+  { name: 'Quản lý sản phẩm', path: '/admin/content?tab=products', icon: Package, key: 'products', permission: 'view_content', minLevel: 30, group: 'products' },
+  { name: 'Thương hiệu & Hãng SX', path: '/admin/brands', icon: Award, key: 'brands', permission: 'view_content', minLevel: 30, group: 'products' },
+  { name: 'Mẫu thông số kỹ thuật', path: '/admin/attribute-templates', icon: SlidersHorizontal, key: 'attribute_templates', permission: 'view_content', minLevel: 30, group: 'products' },
+  { name: 'Danh mục sản phẩm', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50, group: 'products' },
+
+  // Group 3: Kinh doanh & Khách hàng (Business & Customers)
   { name: 'Quản lý đơn hàng', path: '/admin/orders', icon: ShoppingCart, key: 'orders', permission: 'view_customers', minLevel: 40, group: 'business' },
   { name: 'Quản lý liên hệ', path: '/admin/contacts', icon: Mail, key: 'contacts', permission: 'view_customers', minLevel: 40, group: 'business' },
   { name: 'Đánh giá khách hàng', path: '/admin/reviews', icon: Star, key: 'reviews', permission: 'view_content', minLevel: 30, group: 'business' },
   { name: 'Quản lý mục tiêu', path: '/admin/goals', icon: Target, key: 'goals', permission: 'view_content', minLevel: 30, group: 'business' },
 
-  // Group 3: Quản lý nội dung (Content)
+  // Group 4: Quản lý nội dung (Content)
   { name: 'Quản lý nội dung', path: '/admin/content', icon: Layers, key: 'content', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý File & Media', path: '/admin/files', icon: FolderOpen, key: 'files', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý bình luận', path: '/admin/comments', icon: MessageSquare, key: 'comments', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý Header', path: '/admin/header', icon: Sliders, key: 'header', permission: 'view_content', minLevel: 30, group: 'content' },
-  { name: 'Quản lý danh mục', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50, group: 'content' },
 
-  // Group 4: Hồ sơ năng lực (Company Profile & Reports)
+  // Group 5: Hồ sơ năng lực (Company Profile & Reports)
   { name: 'Hồ sơ năng lực', path: '/admin/company-profiles', icon: FileText, key: 'company_profiles', permission: 'view_content', minLevel: 30, group: 'profile' },
   { name: 'Báo cáo tài chính', path: '/admin/financial-reports', icon: TrendingUp, key: 'financial_reports', permission: 'view_content', minLevel: 30, group: 'profile' },
   { name: 'Lĩnh vực hoạt động', path: '/admin/business-sectors', icon: Building2, key: 'business_sectors', permission: 'view_content', minLevel: 30, group: 'profile' },
 
-  // Group 5: Hệ thống & Bảo mật (System & Administration)
+  // Group 6: Hệ thống & Bảo mật (System & Administration)
   { name: 'Quản lý tài khoản', path: '/admin/users', icon: Handshake, key: 'users', permission: 'view_users', minLevel: 90, group: 'system' },
   { name: 'Quản lý nhân sự', path: '/admin/team', icon: Users, key: 'team', permission: 'view_users', minLevel: 50, group: 'system' },
   { name: 'Giám sát bảo mật', path: '/admin/security', icon: Shield, key: 'security', permission: 'view_security_logs', minLevel: 90, group: 'system' },

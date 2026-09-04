@@ -48,7 +48,11 @@ import {
   BusinessSector,
   type ICompanyProfile,
   type IFinancialReport,
-  type IBusinessSector
+  type IBusinessSector,
+  Brand,
+  AttributeTemplate,
+  type IBrand,
+  type IAttributeTemplate
 } from '../models';
 
 // Helper to convert MongoDB document to plain object with id
@@ -1543,6 +1547,111 @@ export const db = {
         }
       }));
       await BusinessSector.bulkWrite(bulkOps);
+      return true;
+    }
+  },
+
+  brands: {
+    getAll: async (filter: any = { isDeleted: { $ne: true } }) => {
+      const items = await Brand.find(filter).sort({ sortOrder: 1, name: 1 });
+      return items.map(toPlainObject<IBrand>);
+    },
+    getActive: async () => {
+      const items = await Brand.find({ isActive: true, isDeleted: { $ne: true } }).sort({ sortOrder: 1, name: 1 });
+      return items.map(toPlainObject<IBrand>);
+    },
+    getById: async (id: string) => {
+      const item = await Brand.findOne({ _id: id, isDeleted: { $ne: true } });
+      return item ? toPlainObject<IBrand>(item) : null;
+    },
+    getBySlug: async (slug: string) => {
+      const item = await Brand.findOne({ slug, isDeleted: { $ne: true } });
+      return item ? toPlainObject<IBrand>(item) : null;
+    },
+    add: async (data: Partial<IBrand>) => {
+      const item = new Brand(data);
+      await item.save();
+      return toPlainObject<IBrand>(item);
+    },
+    update: async (id: string, data: Partial<IBrand>) => {
+      const item = await Brand.findByIdAndUpdate(id, data, { new: true });
+      return item ? toPlainObject<IBrand>(item) : null;
+    },
+    toggleStatus: async (id: string) => {
+      const item = await Brand.findById(id);
+      if (!item) return null;
+      item.isActive = !item.isActive;
+      await item.save();
+      return toPlainObject<IBrand>(item);
+    },
+    delete: async (id: string, soft = true) => {
+      if (soft) {
+        const item = await Brand.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+        return !!item;
+      }
+      const result = await Brand.findByIdAndDelete(id);
+      return !!result;
+    },
+    reorder: async (items: Array<{ id: string; sortOrder: number }>) => {
+      const bulkOps = items.map(item => ({
+        updateOne: {
+          filter: { _id: item.id },
+          update: { $set: { sortOrder: item.sortOrder } }
+        }
+      }));
+      await Brand.bulkWrite(bulkOps);
+      return true;
+    }
+  },
+
+  attributeTemplates: {
+    getAll: async (filter: any = { isDeleted: { $ne: true } }) => {
+      const items = await AttributeTemplate.find(filter).sort({ sortOrder: 1, name: 1 });
+      return items.map(toPlainObject<IAttributeTemplate>);
+    },
+    getByCategoryId: async (categoryId: string) => {
+      const item = await AttributeTemplate.findOne({ 
+        categoryId: new mongoose.Types.ObjectId(categoryId),
+        isDeleted: { $ne: true } 
+      });
+      return item ? toPlainObject<IAttributeTemplate>(item) : null;
+    },
+    getByCategorySlug: async (categorySlug: string) => {
+      const item = await AttributeTemplate.findOne({ 
+        categorySlug,
+        isDeleted: { $ne: true } 
+      });
+      return item ? toPlainObject<IAttributeTemplate>(item) : null;
+    },
+    getById: async (id: string) => {
+      const item = await AttributeTemplate.findOne({ _id: id, isDeleted: { $ne: true } });
+      return item ? toPlainObject<IAttributeTemplate>(item) : null;
+    },
+    add: async (data: Partial<IAttributeTemplate>) => {
+      const item = new AttributeTemplate(data);
+      await item.save();
+      return toPlainObject<IAttributeTemplate>(item);
+    },
+    update: async (id: string, data: Partial<IAttributeTemplate>) => {
+      const item = await AttributeTemplate.findByIdAndUpdate(id, data, { new: true });
+      return item ? toPlainObject<IAttributeTemplate>(item) : null;
+    },
+    delete: async (id: string, soft = true) => {
+      if (soft) {
+        const item = await AttributeTemplate.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+        return !!item;
+      }
+      const result = await AttributeTemplate.findByIdAndDelete(id);
+      return !!result;
+    },
+    reorder: async (items: Array<{ id: string; sortOrder: number }>) => {
+      const bulkOps = items.map(item => ({
+        updateOne: {
+          filter: { _id: item.id },
+          update: { $set: { sortOrder: item.sortOrder } }
+        }
+      }));
+      await AttributeTemplate.bulkWrite(bulkOps);
       return true;
     }
   }

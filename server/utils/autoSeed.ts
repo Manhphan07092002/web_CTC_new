@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
-import { CompanyProfile, FinancialReport, BusinessSector } from '../../models';
+import { CompanyProfile, FinancialReport, BusinessSector, Brand, AttributeTemplate, ProductCategory } from '../../models';
+import { DEFAULT_ATTRIBUTE_TEMPLATES } from '../routes/attribute-templates';
 
 function convertIds(obj: any): any {
   if (!obj) return obj;
@@ -283,3 +284,63 @@ export async function autoSeedProfileData(): Promise<void> {
     console.error('❌ Error seeding profile data:', err.message || err);
   }
 }
+
+/**
+ * Automatically seeds default Brands and Category Attribute Templates
+ * for the Universal Dynamic Product CMS if they are empty.
+ */
+export async function autoSeedProductMeta(): Promise<void> {
+  try {
+    // 1. Seed Brands
+    const brandCount = await Brand.countDocuments({ isDeleted: { $ne: true } });
+    if (brandCount === 0) {
+      console.log('🌱 Seeding initial Brands...');
+      const initialBrands = [
+        { name: 'Hikvision', slug: 'hikvision', origin: 'Trung Quốc', description: 'Thương hiệu thiết bị an ninh & camera giám sát hàng đầu thế giới.', isActive: true, sortOrder: 1, isDeleted: false },
+        { name: 'DrayTek', slug: 'draytek', origin: 'Đài Loan', description: 'Chuyên gia thiết bị định tuyến Router & mạng doanh nghiệp chịu tải cao.', isActive: true, sortOrder: 2, isDeleted: false },
+        { name: 'Cisco', slug: 'cisco', origin: 'Mỹ', description: 'Tập đoàn công nghệ mạng & viễn thông hàng đầu toàn cầu.', isActive: true, sortOrder: 3, isDeleted: false },
+        { name: 'Ruijie Networks', slug: 'ruijie', origin: 'Trung Quốc', description: 'Giải pháp mạng Wi-Fi và Switch chuyên dụng doanh nghiệp & khách sạn.', isActive: true, sortOrder: 4, isDeleted: false },
+        { name: 'Dell', slug: 'dell', origin: 'Mỹ', description: 'Thương hiệu máy chủ Server, máy trạm Workstation và Laptop doanh nghiệp.', isActive: true, sortOrder: 5, isDeleted: false },
+        { name: 'HP', slug: 'hp', origin: 'Mỹ', description: 'Tập đoàn sản xuất máy in, máy tính cá nhân và thiết bị văn phòng.', isActive: true, sortOrder: 6, isDeleted: false },
+        { name: 'TP-Link', slug: 'tp-link', origin: 'Trung Quốc', description: 'Nhà cung cấp thiết bị mạng SOHO & SMB phổ biến toàn cầu.', isActive: true, sortOrder: 7, isDeleted: false },
+        { name: 'LONGi Solar', slug: 'longi-solar', origin: 'Trung Quốc', description: 'Nhà sản xuất tấm pin quang điện năng lượng mặt trời đơn tinh thể hàng đầu.', isActive: true, sortOrder: 8, isDeleted: false },
+        { name: 'Canadian Solar', slug: 'canadian-solar', origin: 'Canada', description: 'Tập đoàn năng lượng mặt trời đa quốc gia.', isActive: true, sortOrder: 9, isDeleted: false },
+        { name: 'Sungrow', slug: 'sungrow', origin: 'Trung Quốc', description: 'Hãng sản xuất Inverter và hệ thống lưu trữ điện năng lượng tái tạo.', isActive: true, sortOrder: 10, isDeleted: false },
+        { name: 'Huawei', slug: 'huawei', origin: 'Trung Quốc', description: 'Tập đoàn hạ tầng viễn thông, CNTT và Inverter năng lượng số.', isActive: true, sortOrder: 11, isDeleted: false },
+        { name: 'Schneider Electric', slug: 'schneider', origin: 'Pháp', description: 'Tập đoàn thiết bị điện, tự động hóa và giải pháp cơ điện M&E.', isActive: true, sortOrder: 12, isDeleted: false },
+        { name: 'Dahua Technology', slug: 'dahua', origin: 'Trung Quốc', description: 'Nhà cung cấp giải pháp an ninh, camera AI và giám sát video.', isActive: true, sortOrder: 13, isDeleted: false }
+      ];
+      await Brand.insertMany(initialBrands);
+      console.log(`   ✅ Brands seeded: ${initialBrands.length} brands.`);
+    }
+
+    // 2. Seed Attribute Templates
+    const templateCount = await AttributeTemplate.countDocuments({ isDeleted: { $ne: true } });
+    if (templateCount === 0) {
+      console.log('🌱 Seeding initial Attribute Templates...');
+      for (const tpl of DEFAULT_ATTRIBUTE_TEMPLATES) {
+        let matchedCat = null;
+        if (tpl.categorySlug) {
+          matchedCat = await ProductCategory.findOne({
+            $or: [
+              { slug: tpl.categorySlug },
+              { slug: new RegExp(tpl.categorySlug, 'i') },
+              { name: new RegExp(tpl.categorySlug, 'i') }
+            ]
+          });
+        }
+
+        await AttributeTemplate.create({
+          ...tpl,
+          categoryId: matchedCat ? matchedCat._id : undefined,
+          categoryName: matchedCat ? matchedCat.name : tpl.categoryName,
+          isDeleted: false
+        });
+      }
+      console.log(`   ✅ Attribute Templates seeded: ${DEFAULT_ATTRIBUTE_TEMPLATES.length} templates.`);
+    }
+  } catch (err: any) {
+    console.error('❌ Error seeding product meta:', err.message || err);
+  }
+}
+

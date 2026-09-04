@@ -26,6 +26,8 @@ const ReviewsManagement = lazy(() => import('./modules/content').then(m => ({ de
 const ResourceManagement = lazy(() => import('./modules/content').then(m => ({ default: m.ResourceManagement })));
 const HeaderManagement = lazy(() => import('./modules/content').then(m => ({ default: m.HeaderManagement })));
 const CommentManagement = lazy(() => import('./CommentManagement'));
+const BrandManagement = lazy(() => import('./modules/products').then(m => ({ default: m.BrandManagement })));
+const AttributeTemplateManagement = lazy(() => import('./modules/products').then(m => ({ default: m.AttributeTemplateManagement })));
 
 const UserManagement = lazy(() => import('./modules/users').then(m => ({ default: m.UserManagement })));
 const RoleManagement = lazy(() => import('./modules/users').then(m => ({ default: m.RoleManagement })));
@@ -139,6 +141,8 @@ const AdminDashboard: React.FC = () => {
               <Route path="/products/new" element={<ProductForm />} />
               <Route path="/products/edit/:id" element={<ProductForm />} />
               <Route path="/products/trash" element={<ProductTrash />} />
+              <Route path="/brands" element={<BrandManagement />} />
+              <Route path="/attribute-templates" element={<AttributeTemplateManagement />} />
               <Route path="/projects/new" element={<ProjectForm />} />
               <Route path="/projects/edit/:id" element={<ProjectForm />} />
               <Route path="/news/new" element={<NewsForm />} />

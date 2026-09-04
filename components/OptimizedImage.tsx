@@ -37,8 +37,9 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   ...props
 }) => {
   const [imgError, setImgError] = useState(false);
-  const originalSrc = src || fallback;
-  const computedWebP = webpSrc || toWebP(src);
+  const isValidSrc = src && !src.startsWith('x-raw-image://') && src.trim() !== '';
+  const originalSrc = isValidSrc ? src : fallback;
+  const computedWebP = isValidSrc ? (webpSrc || toWebP(src)) : null;
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     if (!imgError) {

@@ -82,8 +82,49 @@ const ReviewSchema = new Schema<IReview>({
 
 ReviewSchema.index({ rating: -1, createdAt: -1 });
 
+// Product Sub-Interfaces
+export interface IProductSpecification {
+  name: string;
+  value: any;
+  unit?: string;
+  type?: 'text' | 'number' | 'boolean' | 'select' | 'multi_select' | 'date';
+  group?: string;
+}
+
+export interface IProductDocument {
+  title: string;
+  fileUrl: string;
+  fileType?: string;
+  fileSize?: number;
+}
+
+export interface IProductVariant {
+  id?: string;
+  name: string;
+  sku?: string;
+  price?: string;
+  originalPrice?: string;
+  stock?: number;
+  image?: string;
+  attributes?: { [key: string]: string };
+}
+
+export interface IProductWarehouse {
+  name: string;
+  quantity: number;
+  location?: string;
+}
+
+export interface IProductWarrantyDetails {
+  hasWarranty: boolean;
+  period: number;
+  unit: 'month' | 'year';
+  provider?: string;
+  conditions?: string;
+}
+
 // Product Schema
-export interface IProduct extends BaseDocument {
+export interface IProduct extends Omit<BaseDocument, 'model'> {
   name: string;
   slug?: string;
   category: string; // Keep for backward compatibility
@@ -91,29 +132,45 @@ export interface IProduct extends BaseDocument {
   categoryLabel?: string; // Nhãn category hiển thị (VD: "INVERTER")
   code?: string; // Mã sản phẩm (VD: "TL-G5199a")
   sku?: string;
+  model?: string; // Model thiết bị
+  partNumber?: string; // Part Number / MPN
+  origin?: string; // Xuất xứ
+  unit?: string; // Đơn vị tính: Cái, Bộ, Chiếc, Mét, Cuộn, Thùng, Kg...
   description: string;
   shortDescription?: string; // Mô tả ngắn
-  specifications?: string; // Chi tiết kỹ thuật
+  specifications?: string; // Chi tiết kỹ thuật dạng text cũ
+  specificationsList?: IProductSpecification[]; // Danh sách thông số kỹ thuật động
   price?: string;
   originalPrice?: string; // Giá gốc (để tạo hiệu ứng giảm giá)
   vat?: number; // Thuế VAT (%) áp dụng cho sản phẩm (VD: 0, 8, 10)
   contactPrice?: boolean; // Liên hệ để biết giá
-  brand?: string; // Thương hiệu (Cisco, TP-Link, MikroTik, Ruijie, Huawei, etc.)
+  brand?: string; // Thương hiệu (Hikvision, DrayTek, Cisco, TP-Link, Dell, etc.)
+  brandId?: mongoose.Types.ObjectId;
   image: string;
+  imageUrl?: string;
   images?: string[];
+  videos?: Array<{ title?: string; url: string; type?: 'youtube' | 'direct' }>;
+  documents?: IProductDocument[]; // Catalogue, Datasheet, Manual PDF
   stock?: number;
-  stockStatus?: 'in_stock' | 'out_of_stock' | 'contact'; // Còn hàng / Hết hàng / Liên hệ
+  minStockAlert?: number;
+  stockStatus?: 'in_stock' | 'out_of_stock' | 'contact' | 'pre_order' | 'discontinued';
+  warehouses?: IProductWarehouse[];
+  hasVariants?: boolean;
+  variants?: IProductVariant[];
   reviews?: IReview[];
   rating?: number; // Đánh giá trung bình
-  power?: number; // Công suất (kW)
-  efficiency?: number; // Hiệu suất (%)
+  power?: number; // Công suất (kW) - Legacy solar compatibility
+  efficiency?: number; // Hiệu suất (%) - Legacy solar compatibility
   warranty?: string; // Bảo hành (VD: "25 năm")
+  warrantyDetails?: IProductWarrantyDetails;
   features?: string[]; // Các tính năng nổi bật
-  technicalSpecs?: { [key: string]: string }; // Thông số kỹ thuật chi tiết
+  technicalSpecs?: { [key: string]: string }; // Thông số kỹ thuật chi tiết dạng Key-Value
   isFeatured?: boolean; // Sản phẩm nổi bật
   featuredOrder?: number; // Thứ tự hiển thị trong danh sách nổi bật
   isHot?: boolean; // Sản phẩm HOT
-  badge?: string; // Nhãn tùy chỉnh: 'NEW' | 'HOT'
+  badge?: string; // Nhãn tùy chỉnh: 'NEW' | 'HOT' | 'BEST_SELLER' | 'CHÍNH HÃNG'
+  badges?: string[];
+  status?: 'draft' | 'published' | 'hidden' | 'out_of_stock' | 'discontinued';
   isActive?: boolean; // Sản phẩm có hoạt động không
   isDeleted?: boolean; // Xóa mềm
   deletedAt?: Date; // Thời gian xóa
@@ -121,6 +178,10 @@ export interface IProduct extends BaseDocument {
   likes?: number; // Lượt thích
   shares?: number; // Lượt chia sẻ
   focusKeyword?: string; // Từ khóa SEO Focus
+  secondaryKeywords?: string[];
+  seoTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
   seo?: any;
   geo?: any;
   faq?: any;
@@ -143,33 +204,91 @@ const ProductSchema = new Schema<IProduct>({
   name: { type: String, required: true },
   slug: { type: String, index: true },
   category: { type: String, required: true },
-  categoryId: { type: Schema.Types.ObjectId, ref: 'ProductCategory' }, // Reference to ProductCategory
+  categoryId: { type: Schema.Types.Mixed },
   categoryLabel: String,
   code: String,
   sku: String,
+  model: String,
+  partNumber: String,
+  origin: String,
+  unit: { type: String, default: 'Cái' },
   description: { type: String, required: true },
   shortDescription: String,
   specifications: String,
+  specificationsList: [{
+    name: { type: String, required: true },
+    value: Schema.Types.Mixed,
+    unit: String,
+    type: { type: String, default: 'text' },
+    group: String
+  }],
   price: String,
   originalPrice: String,
   vat: { type: Number, default: 0 },
   contactPrice: { type: Boolean, default: false },
   brand: String,
+  brandId: { type: Schema.Types.Mixed },
   image: { type: String, required: false },
+  imageUrl: String,
   images: [String],
-  stock: Number,
-  stockStatus: { type: String, enum: ['in_stock', 'out_of_stock', 'contact'], default: 'in_stock' },
+  videos: [{
+    title: String,
+    url: String,
+    type: { type: String, default: 'youtube' }
+  }],
+  documents: [{
+    title: { type: String, required: true },
+    fileUrl: { type: String, required: true },
+    fileType: { type: String, default: 'pdf' },
+    fileSize: Number
+  }],
+  stock: { type: Number, default: 0 },
+  minStockAlert: { type: Number, default: 5 },
+  stockStatus: { 
+    type: String, 
+    enum: ['in_stock', 'out_of_stock', 'contact', 'pre_order', 'discontinued'], 
+    default: 'in_stock' 
+  },
+  warehouses: [{
+    name: String,
+    quantity: Number,
+    location: String
+  }],
+  hasVariants: { type: Boolean, default: false },
+  variants: [{
+    name: String,
+    sku: String,
+    price: String,
+    originalPrice: String,
+    stock: Number,
+    image: String,
+    attributes: { type: Map, of: String }
+  }],
   reviews: [ReviewSubSchema],
   rating: { type: Number, min: 0, max: 5, default: 0 },
   power: Number,
   efficiency: Number,
   warranty: String,
+  warrantyDetails: {
+    hasWarranty: { type: Boolean, default: true },
+    period: { type: Number, default: 12 },
+    unit: { type: String, enum: ['month', 'year'], default: 'month' },
+    provider: String,
+    conditions: String
+  },
   features: [String],
   technicalSpecs: { type: Map, of: String },
   isFeatured: { type: Boolean, default: false },
   featuredOrder: { type: Number, default: 0 },
   isHot: { type: Boolean, default: false },
+  isNew: { type: Boolean, default: false },
   badge: { type: String, default: '' },
+  badges: [{ type: String }],
+  status: { 
+    type: String, 
+    enum: ['draft', 'published', 'hidden', 'out_of_stock', 'discontinued'], 
+    default: 'published' 
+  },
   isActive: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
   deletedAt: Date,
@@ -177,6 +296,10 @@ const ProductSchema = new Schema<IProduct>({
   likes: { type: Number, default: 0 },
   shares: { type: Number, default: 0 },
   focusKeyword: { type: String, default: '' },
+  secondaryKeywords: [String],
+  seoTitle: String,
+  metaDescription: String,
+  canonicalUrl: String,
   seo: Schema.Types.Mixed,
   geo: Schema.Types.Mixed,
   faq: Schema.Types.Mixed,
@@ -189,7 +312,10 @@ const ProductSchema = new Schema<IProduct>({
 // Product Indexes for fast querying & filtering
 ProductSchema.index({ category: 1, isDeleted: 1 });
 ProductSchema.index({ categoryId: 1, isDeleted: 1 });
+ProductSchema.index({ brand: 1, isDeleted: 1 });
 ProductSchema.index({ code: 1 });
+ProductSchema.index({ sku: 1 });
+ProductSchema.index({ model: 1 });
 ProductSchema.index({ isFeatured: 1, isDeleted: 1 });
 ProductSchema.index({ isActive: 1, isDeleted: 1, createdAt: -1 });
 
@@ -1256,9 +1382,92 @@ const BusinessSectorSchema = new Schema<IBusinessSector>({
   updatedBy: { type: String }
 }, { timestamps: true });
 
-BusinessSectorSchema.index({ sortOrder: 1, status: 1, isDeleted: 1 });
-
 export const BusinessSector = (mongoose.models.BusinessSector as mongoose.Model<IBusinessSector>) || 
   mongoose.model<IBusinessSector>('BusinessSector', BusinessSectorSchema);
+
+// ==================== BRAND (THƯƠNG HIỆU) ====================
+export interface IBrand extends BaseDocument {
+  name: string;
+  slug: string;
+  logo?: string;
+  website?: string;
+  origin?: string;
+  description?: string;
+  isActive: boolean;
+  sortOrder: number;
+  productCount?: number;
+  isDeleted?: boolean;
+}
+
+const BrandSchema = new Schema<IBrand>({
+  name: { type: String, required: true, trim: true },
+  slug: { type: String, required: true, unique: true, trim: true },
+  logo: { type: String, default: '' },
+  website: { type: String, default: '' },
+  origin: { type: String, default: '' },
+  description: { type: String, default: '' },
+  isActive: { type: Boolean, default: true },
+  sortOrder: { type: Number, default: 0 },
+  productCount: { type: Number, default: 0 },
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
+
+BrandSchema.index({ isActive: 1, sortOrder: 1, isDeleted: 1 });
+export const Brand = (mongoose.models.Brand as mongoose.Model<IBrand>) || 
+  mongoose.model<IBrand>('Brand', BrandSchema);
+
+// ==================== ATTRIBUTE TEMPLATE (BỘ THUỘC TÍNH DANH MỤC) ====================
+export interface IAttributeField {
+  name: string;
+  key: string;
+  type: 'text' | 'number' | 'boolean' | 'select' | 'multi_select' | 'date';
+  unit?: string;
+  options?: string[];
+  defaultValue?: any;
+  required?: boolean;
+  order: number;
+  placeholder?: string;
+}
+
+export interface IAttributeTemplate extends BaseDocument {
+  name: string;
+  categoryId?: mongoose.Types.ObjectId;
+  categorySlug?: string;
+  categoryName?: string;
+  description?: string;
+  attributes: IAttributeField[];
+  isActive: boolean;
+  sortOrder: number;
+  isDeleted?: boolean;
+}
+
+const AttributeFieldSchema = new Schema<IAttributeField>({
+  name: { type: String, required: true },
+  key: { type: String, required: true },
+  type: { type: String, enum: ['text', 'number', 'boolean', 'select', 'multi_select', 'date'], default: 'text' },
+  unit: { type: String, default: '' },
+  options: [{ type: String }],
+  defaultValue: Schema.Types.Mixed,
+  required: { type: Boolean, default: false },
+  order: { type: Number, default: 0 },
+  placeholder: { type: String, default: '' }
+}, { _id: false });
+
+const AttributeTemplateSchema = new Schema<IAttributeTemplate>({
+  name: { type: String, required: true },
+  categoryId: { type: Schema.Types.ObjectId, ref: 'ProductCategory' },
+  categorySlug: { type: String, default: '' },
+  categoryName: { type: String, default: '' },
+  description: { type: String, default: '' },
+  attributes: [AttributeFieldSchema],
+  isActive: { type: Boolean, default: true },
+  sortOrder: { type: Number, default: 0 },
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
+
+AttributeTemplateSchema.index({ categoryId: 1, isActive: 1, isDeleted: 1 });
+export const AttributeTemplate = (mongoose.models.AttributeTemplate as mongoose.Model<IAttributeTemplate>) || 
+  mongoose.model<IAttributeTemplate>('AttributeTemplate', AttributeTemplateSchema);
+
 
 

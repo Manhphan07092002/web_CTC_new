@@ -71,6 +71,8 @@ import productWriterRouter from './routes/productWriter';
 import companyProfilesRouter from './routes/company-profiles';
 import financialReportsRouter from './routes/financial-reports';
 import businessSectorsRouter from './routes/business-sectors';
+import brandsRouter from './routes/brands';
+import attributeTemplatesRouter from './routes/attribute-templates';
 import { startTranslationScheduler } from './services/translationScheduler.js';
 import { createSeoInjectMiddleware } from './middleware/seo-inject';
 
@@ -345,6 +347,8 @@ app.use('/api/uploads', uploadsRouter);
 app.use('/api/company-profiles', companyProfilesRouter);
 app.use('/api/financial-reports', financialReportsRouter);
 app.use('/api/business-sectors', businessSectorsRouter);
+app.use('/api/brands', brandsRouter);
+app.use('/api/attribute-templates', attributeTemplatesRouter);
 
 // ============================================
 // HEALTH CHECK ENDPOINT (Docker healthcheck)

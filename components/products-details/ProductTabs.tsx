@@ -103,50 +103,136 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
 
         {/* Specifications Tab */}
         {activeTab === 'specs' && (
-          <div className="max-w-2xl overflow-x-auto">
-            <table className="w-full text-sm text-left border-collapse">
+          <div className="max-w-3xl overflow-x-auto space-y-6">
+            <table className="w-full text-sm text-left border-collapse rounded-xl overflow-hidden shadow-2xs border border-gray-100 dark:border-gray-700">
               <tbody className="divide-y divide-gray-100 dark:divide-gray-750">
-                {/* Basic specifications */}
-                {product.power && (
-                  <tr className="bg-gray-50 dark:bg-gray-900/30">
+                {/* Brand & Model */}
+                {product.brand && (
+                  <tr className="bg-gray-50/80 dark:bg-gray-900/40">
                     <td className="p-4 font-bold text-gray-700 dark:text-gray-300 w-1/3">
-                      {t('products.power') || 'Công suất'}
+                      Hãng sản xuất / Thương hiệu
                     </td>
-                    <td className="p-4 text-gray-600 dark:text-gray-400">
-                      {product.power}W
+                    <td className="p-4 text-gray-800 dark:text-gray-200 font-semibold">
+                      {product.brand}
                     </td>
                   </tr>
                 )}
-                {product.efficiency && (
+                {product.model && (
                   <tr className="bg-white dark:bg-gray-800">
                     <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
-                      {t('products.efficiency') || 'Hiệu suất'}
+                      Model / Mã thiết bị
                     </td>
-                    <td className="p-4 text-gray-600 dark:text-gray-400">
-                      {product.efficiency}%
+                    <td className="p-4 text-gray-800 dark:text-gray-200 font-mono font-medium">
+                      {product.model}
+                    </td>
+                  </tr>
+                )}
+                {product.origin && (
+                  <tr className="bg-gray-50/80 dark:bg-gray-900/40">
+                    <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
+                      Xuất xứ / Nơi sản xuất
+                    </td>
+                    <td className="p-4 text-gray-700 dark:text-gray-300">
+                      {product.origin}
                     </td>
                   </tr>
                 )}
                 {product.warranty && (
-                  <tr className="bg-gray-50 dark:bg-gray-900/30">
+                  <tr className="bg-white dark:bg-gray-800">
                     <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
                       {t('products.warranty') || 'Bảo hành'}
                     </td>
-                    <td className="p-4 text-gray-600 dark:text-gray-400">
+                    <td className="p-4 text-gray-700 dark:text-gray-300">
                       {product.warranty}
                     </td>
                   </tr>
                 )}
-                
-                {/* Custom specifications list */}
-                {product.technicalSpecs && Object.entries(product.technicalSpecs).map(([key, value], index) => (
-                  <tr key={key} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900/30' : 'bg-white dark:bg-gray-800'}>
-                    <td className="p-4 font-bold text-gray-700 dark:text-gray-300">{key}</td>
-                    <td className="p-4 text-gray-600 dark:text-gray-400">{value}</td>
-                  </tr>
-                ))}
+
+                {/* Dynamic specifications list */}
+                {Array.isArray(product.specificationsList) && product.specificationsList.length > 0 ? (
+                  product.specificationsList.map((spec, idx) => (
+                    <tr 
+                      key={spec.key || idx} 
+                      className={idx % 2 === 0 ? 'bg-gray-50/80 dark:bg-gray-900/40' : 'bg-white dark:bg-gray-800'}
+                    >
+                      <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
+                        <div className="flex items-center gap-1.5">
+                          <span>{spec.name}</span>
+                          {spec.isHighlight && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300">
+                              Nổi bật
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-4 text-gray-700 dark:text-gray-300">
+                        {spec.value} {spec.unit ? <span className="font-mono text-gray-500 font-medium">{spec.unit}</span> : ''}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <>
+                    {/* Fallback legacy technicalSpecs */}
+                    {product.power && (
+                      <tr className="bg-gray-50/80 dark:bg-gray-900/40">
+                        <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
+                          {t('products.power') || 'Công suất'}
+                        </td>
+                        <td className="p-4 text-gray-700 dark:text-gray-300 font-mono">
+                          {product.power}W
+                        </td>
+                      </tr>
+                    )}
+                    {product.efficiency && (
+                      <tr className="bg-white dark:bg-gray-800">
+                        <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
+                          {t('products.efficiency') || 'Hiệu suất'}
+                        </td>
+                        <td className="p-4 text-gray-700 dark:text-gray-300 font-mono">
+                          {product.efficiency}%
+                        </td>
+                      </tr>
+                    )}
+                    {product.technicalSpecs && Object.entries(product.technicalSpecs).map(([key, value], index) => (
+                      <tr key={key} className={index % 2 === 0 ? 'bg-gray-50/80 dark:bg-gray-900/40' : 'bg-white dark:bg-gray-800'}>
+                        <td className="p-4 font-bold text-gray-700 dark:text-gray-300">{key}</td>
+                        <td className="p-4 text-gray-700 dark:text-gray-300">{value}</td>
+                      </tr>
+                    ))}
+                  </>
+                )}
               </tbody>
             </table>
+
+            {/* Downloadable Documents / Datasheets in specs tab */}
+            {Array.isArray(product.documents) && product.documents.length > 0 && (
+              <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                <h4 className="font-bold text-gray-900 dark:text-white text-base mb-3">
+                  Tài liệu kỹ thuật & Catalogue PDF tải về:
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {product.documents.map((doc, di) => (
+                    <a
+                      key={di}
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-sky-50 dark:hover:bg-sky-950/40 hover:border-sky-300 transition-colors group"
+                    >
+                      <div className="p-2 bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 rounded-lg group-hover:scale-105 transition-transform">
+                        <span className="font-bold text-xs uppercase font-mono">{doc.fileType || 'PDF'}</span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-xs text-gray-800 dark:text-gray-200 truncate group-hover:text-sky-600">
+                          {doc.title || 'Tài liệu kỹ thuật'}
+                        </div>
+                        <div className="text-[11px] text-gray-400">Bấm để tải về / xem trực tuyến</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

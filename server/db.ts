@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { autoSeedIfEmpty, autoSeedProfileData } from './utils/autoSeed';
+import { autoSeedIfEmpty, autoSeedProfileData, autoSeedProductMeta } from './utils/autoSeed';
 
 // Load environment variables from .env.local (fallback to .env)
 dotenv.config({ path: '.env.local' });
@@ -22,6 +22,8 @@ export const connectDB = async () => {
     await autoSeedIfEmpty();
     // Ensure profile data is seeded
     await autoSeedProfileData();
+    // Ensure brands and attribute templates are seeded
+    await autoSeedProductMeta();
 
     return conn;
   } catch (error) {

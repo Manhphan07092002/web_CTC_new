@@ -213,15 +213,23 @@ router.put('/:id', async (req, res) => {
       logger.warn('Product translation skipped on update:', e);
     }
     
+    // Clean up empty fields
+    if (translatedData.categoryId === '' || translatedData.categoryId === null) {
+      delete translatedData.categoryId;
+    }
+    if (translatedData.brandId === '' || translatedData.brandId === null) {
+      delete translatedData.brandId;
+    }
+    
     const updated = await db.products.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'Product not found' });
     
     cacheService.invalidatePattern('products:');
     logger.info('Product updated with translations:', req.params.id);
     res.json(updated);
-  } catch (error) {
-    console.error('Error updating product', error);
-    res.status(500).json({ message: 'Failed to update product' });
+  } catch (error: any) {
+    logger.error('Error updating product:', error);
+    res.status(500).json({ message: error?.message || 'Failed to update product' });
   }
 });
 
