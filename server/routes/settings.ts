@@ -125,10 +125,11 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
 
     const PROVIDER_MODELS: Record<string, string[]> = {
       groq: [
-        'llama-3.3-70b-versatile',
+        'openai/gpt-oss-120b',
         'llama-3.1-8b-instant',
-        'deepseek-r1-distill-llama-70b',
-        'openai/gpt-oss-120b'
+        'llama-3.3-70b-versatile',
+        'openai/gpt-oss-20b',
+        'groq/compound'
       ],
       openai: [
         'gpt-4o-mini',
@@ -163,16 +164,30 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
 
       // Candidate models
       const defaultModel = provider === 'gemini' ? 'gemini-2.5-flash' :
-        provider === 'groq' ? 'llama-3.3-70b-versatile' :
+        provider === 'groq' ? 'openai/gpt-oss-120b' :
         provider === 'openai' ? 'gpt-4o-mini' :
-        provider === 'deepseek' ? 'deepseek-chat' : 'llama-3.3-70b-versatile';
+        provider === 'deepseek' ? 'deepseek-chat' : 'openai/gpt-oss-120b';
 
       let initialModel = rawModel;
       if (!initialModel) initialModel = defaultModel;
 
       // Filter models according to provider
       if (provider === 'gemini' && !initialModel.toLowerCase().includes('gemini')) initialModel = 'gemini-2.5-flash';
-      if (provider === 'groq' && initialModel.toLowerCase().startsWith('gemini-')) initialModel = 'llama-3.3-70b-versatile';
+      if (provider === 'groq') {
+        const DEPRECATED_GROQ = [
+          'deepseek-r1-distill-llama-70b',
+          'gemma2-9b-it',
+          'gemma-7b-it',
+          'llama3-70b-8192',
+          'llama3-8b-8192',
+          'mixtral-8x7b-32768',
+          'qwen-2.5-32b',
+          'whisper-large-v3-turbo'
+        ];
+        if (DEPRECATED_GROQ.includes(initialModel.toLowerCase()) || initialModel.toLowerCase().startsWith('gemini-')) {
+          initialModel = 'openai/gpt-oss-120b';
+        }
+      }
 
       const candidateModels = [initialModel];
       const fallbacks = PROVIDER_MODELS[provider] || [];

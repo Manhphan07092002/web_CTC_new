@@ -647,10 +647,10 @@ const Settings: React.FC = () => {
                     const provider = e.target.value as any;
                     const defaultModels: Record<string, string> = {
                       gemini: 'gemini-2.5-flash',
-                      groq: 'llama-3.3-70b-versatile',
+                      groq: 'openai/gpt-oss-120b',
                       openai: 'gpt-4o-mini',
                       deepseek: 'deepseek-chat',
-                      custom: 'llama-3.3-70b-versatile'
+                      custom: 'openai/gpt-oss-120b'
                     };
                     setFormData({ 
                       ...formData, 
@@ -661,7 +661,7 @@ const Settings: React.FC = () => {
                   className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 font-bold text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                 >
                   <option value="gemini">✨ Google Gemini AI (Miễn phí & Phản hồi nhanh)</option>
-                  <option value="groq">⚡ Groq Cloud AI (Siêu tốc độ - Llama 3.3 / DeepSeek R1)</option>
+                  <option value="groq">⚡ Groq Cloud AI (Siêu tốc độ - GPT-OSS / Llama 3.1 & 3.3)</option>
                   <option value="openai">🤖 OpenAI (ChatGPT - GPT-4o / GPT-4o-mini)</option>
                   <option value="deepseek">🐳 DeepSeek AI (Chính xác & Tiết kiệm)</option>
                   <option value="custom">🛠️ Custom Endpoint API (OpenAI Compatible API)</option>
@@ -685,10 +685,9 @@ const Settings: React.FC = () => {
                   
                   {/* Datalist for Groq */}
                   <datalist id="models-list-groq">
-                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Khuyên dùng - Siêu tốc & Thông minh)</option>
+                    <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (Khuyên dùng - OpenAI GPT-OSS trên Groq)</option>
                     <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản hồi tức thì, Quota cao)</option>
-                    <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b (DeepSeek R1 Suy luận)</option>
-                    <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (Mới - OpenAI GPT-OSS trên Groq)</option>
+                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Llama 3.3 70B Thông minh)</option>
                     <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (OpenAI GPT-OSS 20B)</option>
                     <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b (Alibaba Qwen 3.6)</option>
                     <option value="groq/compound">groq/compound</option>

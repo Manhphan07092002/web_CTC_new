@@ -356,17 +356,19 @@ export const chatService = {
 
       const DEFAULT_MODELS: Record<string, string> = {
         gemini: 'gemini-2.5-flash',
-        groq: 'llama-3.3-70b-versatile',
+        groq: 'openai/gpt-oss-120b',
         openai: 'gpt-4o-mini',
         deepseek: 'deepseek-chat',
-        custom: 'llama-3.3-70b-versatile'
+        custom: 'openai/gpt-oss-120b'
       };
 
       const PROVIDER_MODEL_CANDIDATES: Record<string, string[]> = {
         groq: [
-          'llama-3.3-70b-versatile',
+          'openai/gpt-oss-120b',
           'llama-3.1-8b-instant',
-          'deepseek-r1-distill-llama-70b'
+          'llama-3.3-70b-versatile',
+          'openai/gpt-oss-20b',
+          'groq/compound'
         ],
         openai: [
           'gpt-4o-mini',
@@ -393,7 +395,19 @@ export const chatService = {
           return 'gemini-2.5-flash';
         }
         if (prov === 'groq') {
-          if (clean.toLowerCase().startsWith('gemini-')) return 'llama-3.3-70b-versatile';
+          const DEPRECATED_GROQ = [
+            'deepseek-r1-distill-llama-70b',
+            'gemma2-9b-it',
+            'gemma-7b-it',
+            'llama3-70b-8192',
+            'llama3-8b-8192',
+            'mixtral-8x7b-32768',
+            'qwen-2.5-32b',
+            'whisper-large-v3-turbo'
+          ];
+          if (DEPRECATED_GROQ.includes(clean.toLowerCase()) || clean.toLowerCase().startsWith('gemini-')) {
+            return 'openai/gpt-oss-120b';
+          }
           return clean;
         }
         return clean;
