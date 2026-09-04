@@ -1,6 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, User as UserIcon, Lock, LogOut, ChevronDown, Menu } from 'lucide-react';
+import { Search, Bell, User as UserIcon, Lock, LogOut, ChevronDown, Menu, FolderOpen } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import SessionTimer from '../../components/SessionTimer';
@@ -40,7 +40,17 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         </div>
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Quick File Manager Link */}
+        <button
+          onClick={() => navigate('/admin/files')}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 bg-gray-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all cursor-pointer"
+          title="Mở Quản lý File & Media"
+        >
+          <FolderOpen size={16} className="text-blue-600 dark:text-blue-400" />
+          <span className="hidden sm:inline">Quản lý File</span>
+        </button>
+
         {/* Session Timer */}
         <SessionTimer />
         
