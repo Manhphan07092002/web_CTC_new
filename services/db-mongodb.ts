@@ -42,7 +42,13 @@ import {
   Order,
   OrderItem,
   type IOrder,
-  type IOrderItem
+  type IOrderItem,
+  CompanyProfile,
+  FinancialReport,
+  BusinessSector,
+  type ICompanyProfile,
+  type IFinancialReport,
+  type IBusinessSector
 } from '../models';
 
 // Helper to convert MongoDB document to plain object with id
@@ -1388,6 +1394,156 @@ export const db = {
     },
     getPendingCount: async () => {
       return await Order.countDocuments({ status: 'pending' });
+    }
+  },
+
+  companyProfiles: {
+    getAll: async (filter: any = { isDeleted: { $ne: true } }) => {
+      const items = await CompanyProfile.find(filter).sort({ sortOrder: 1, createdAt: -1 });
+      return items.map(toPlainObject<ICompanyProfile>);
+    },
+    getActive: async () => {
+      const items = await CompanyProfile.find({ status: 'active', isDeleted: { $ne: true } }).sort({ sortOrder: 1, createdAt: -1 });
+      return items.map(toPlainObject<ICompanyProfile>);
+    },
+    getById: async (id: string) => {
+      const item = await CompanyProfile.findOne({ _id: id, isDeleted: { $ne: true } });
+      return item ? toPlainObject<ICompanyProfile>(item) : null;
+    },
+    add: async (data: Partial<ICompanyProfile>) => {
+      const item = new CompanyProfile(data);
+      await item.save();
+      return toPlainObject<ICompanyProfile>(item);
+    },
+    update: async (id: string, data: Partial<ICompanyProfile>) => {
+      const item = await CompanyProfile.findByIdAndUpdate(id, data, { new: true });
+      return item ? toPlainObject<ICompanyProfile>(item) : null;
+    },
+    toggleStatus: async (id: string) => {
+      const item = await CompanyProfile.findById(id);
+      if (!item) return null;
+      item.status = item.status === 'active' ? 'inactive' : 'active';
+      await item.save();
+      return toPlainObject<ICompanyProfile>(item);
+    },
+    delete: async (id: string, soft = true) => {
+      if (soft) {
+        const item = await CompanyProfile.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+        return !!item;
+      }
+      const result = await CompanyProfile.findByIdAndDelete(id);
+      return !!result;
+    },
+    reorder: async (items: Array<{ id: string; sortOrder: number }>) => {
+      const bulkOps = items.map(item => ({
+        updateOne: {
+          filter: { _id: item.id },
+          update: { $set: { sortOrder: item.sortOrder } }
+        }
+      }));
+      await CompanyProfile.bulkWrite(bulkOps);
+      return true;
+    }
+  },
+
+  financialReports: {
+    getAll: async (filter: any = { isDeleted: { $ne: true } }) => {
+      const items = await FinancialReport.find(filter).sort({ year: -1, sortOrder: 1, createdAt: -1 });
+      return items.map(toPlainObject<IFinancialReport>);
+    },
+    getActive: async (year?: string, reportType?: string) => {
+      const query: any = { status: 'active', isDeleted: { $ne: true } };
+      if (year) query.year = year;
+      if (reportType) query.reportType = reportType;
+      const items = await FinancialReport.find(query).sort({ year: -1, sortOrder: 1, createdAt: -1 });
+      return items.map(toPlainObject<IFinancialReport>);
+    },
+    getById: async (id: string) => {
+      const item = await FinancialReport.findOne({ _id: id, isDeleted: { $ne: true } });
+      return item ? toPlainObject<IFinancialReport>(item) : null;
+    },
+    add: async (data: Partial<IFinancialReport>) => {
+      const item = new FinancialReport(data);
+      await item.save();
+      return toPlainObject<IFinancialReport>(item);
+    },
+    update: async (id: string, data: Partial<IFinancialReport>) => {
+      const item = await FinancialReport.findByIdAndUpdate(id, data, { new: true });
+      return item ? toPlainObject<IFinancialReport>(item) : null;
+    },
+    toggleStatus: async (id: string) => {
+      const item = await FinancialReport.findById(id);
+      if (!item) return null;
+      item.status = item.status === 'active' ? 'inactive' : 'active';
+      await item.save();
+      return toPlainObject<IFinancialReport>(item);
+    },
+    delete: async (id: string, soft = true) => {
+      if (soft) {
+        const item = await FinancialReport.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+        return !!item;
+      }
+      const result = await FinancialReport.findByIdAndDelete(id);
+      return !!result;
+    },
+    reorder: async (items: Array<{ id: string; sortOrder: number }>) => {
+      const bulkOps = items.map(item => ({
+        updateOne: {
+          filter: { _id: item.id },
+          update: { $set: { sortOrder: item.sortOrder } }
+        }
+      }));
+      await FinancialReport.bulkWrite(bulkOps);
+      return true;
+    }
+  },
+
+  businessSectors: {
+    getAll: async (filter: any = { isDeleted: { $ne: true } }) => {
+      const items = await BusinessSector.find(filter).sort({ sortOrder: 1, createdAt: 1 });
+      return items.map(toPlainObject<IBusinessSector>);
+    },
+    getActive: async () => {
+      const items = await BusinessSector.find({ status: 'active', isDeleted: { $ne: true } }).sort({ sortOrder: 1, createdAt: 1 });
+      return items.map(toPlainObject<IBusinessSector>);
+    },
+    getById: async (id: string) => {
+      const item = await BusinessSector.findOne({ _id: id, isDeleted: { $ne: true } });
+      return item ? toPlainObject<IBusinessSector>(item) : null;
+    },
+    add: async (data: Partial<IBusinessSector>) => {
+      const item = new BusinessSector(data);
+      await item.save();
+      return toPlainObject<IBusinessSector>(item);
+    },
+    update: async (id: string, data: Partial<IBusinessSector>) => {
+      const item = await BusinessSector.findByIdAndUpdate(id, data, { new: true });
+      return item ? toPlainObject<IBusinessSector>(item) : null;
+    },
+    toggleStatus: async (id: string) => {
+      const item = await BusinessSector.findById(id);
+      if (!item) return null;
+      item.status = item.status === 'active' ? 'inactive' : 'active';
+      await item.save();
+      return toPlainObject<IBusinessSector>(item);
+    },
+    delete: async (id: string, soft = true) => {
+      if (soft) {
+        const item = await BusinessSector.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+        return !!item;
+      }
+      const result = await BusinessSector.findByIdAndDelete(id);
+      return !!result;
+    },
+    reorder: async (items: Array<{ id: string; sortOrder: number }>) => {
+      const bulkOps = items.map(item => ({
+        updateOne: {
+          filter: { _id: item.id },
+          update: { $set: { sortOrder: item.sortOrder } }
+        }
+      }));
+      await BusinessSector.bulkWrite(bulkOps);
+      return true;
     }
   }
 };

@@ -65,9 +65,11 @@ import migrationRouter from './routes/migration.js';
 import resourcesRouter from './routes/resources.js';
 import documentCategoriesRouter from './routes/document-categories.js';
 import ordersRouter from './routes/orders';
-import searchRouter from './routes/search';
 import aiWriterRouter from './routes/aiWriter';
 import productWriterRouter from './routes/productWriter';
+import companyProfilesRouter from './routes/company-profiles';
+import financialReportsRouter from './routes/financial-reports';
+import businessSectorsRouter from './routes/business-sectors';
 import { startTranslationScheduler } from './services/translationScheduler.js';
 import { createSeoInjectMiddleware } from './middleware/seo-inject';
 
@@ -339,6 +341,9 @@ app.use('/api/search', searchRouter);
 app.use('/api/ai', aiWriterRouter);
 app.use('/api/ai/product', productWriterRouter);
 app.use('/api/uploads', uploadsRouter);
+app.use('/api/company-profiles', companyProfilesRouter);
+app.use('/api/financial-reports', financialReportsRouter);
+app.use('/api/business-sectors', businessSectorsRouter);
 
 // ============================================
 // HEALTH CHECK ENDPOINT (Docker healthcheck)

@@ -1109,3 +1109,156 @@ const OrderItemSchema = new Schema<IOrderItem>({
 
 export const OrderItem = mongoose.model<IOrderItem>('OrderItem', OrderItemSchema);
 
+// ==================== COMPANY PROFILE (HỒ SƠ NĂNG LỰC) ====================
+export interface ICompanyProfileStat {
+  value: string;
+  label: string;
+}
+
+export interface ICompanyProfile extends BaseDocument {
+  title: string;
+  subtitle?: string;
+  description?: string;
+  year?: string;
+  version?: string;
+  fileUrl: string;
+  fileName?: string;
+  fileSize?: number;
+  thumbnail?: string;
+  tag?: string;
+  highlights?: string[];
+  stats?: ICompanyProfileStat[];
+  status: 'active' | 'inactive';
+  sortOrder: number;
+  publishedAt?: Date;
+  isDeleted?: boolean;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+const CompanyProfileSchema = new Schema<ICompanyProfile>({
+  title: { type: String, required: true },
+  subtitle: { type: String },
+  description: { type: String },
+  year: { type: String },
+  version: { type: String },
+  fileUrl: { type: String, required: true },
+  fileName: { type: String },
+  fileSize: { type: Number },
+  thumbnail: { type: String },
+  tag: { type: String, default: 'CTC-PROFILE-2026' },
+  highlights: [{ type: String }],
+  stats: [{
+    value: { type: String },
+    label: { type: String }
+  }],
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  sortOrder: { type: Number, default: 0 },
+  publishedAt: { type: Date, default: Date.now },
+  isDeleted: { type: Boolean, default: false },
+  createdBy: { type: String },
+  updatedBy: { type: String }
+}, { timestamps: true });
+
+CompanyProfileSchema.index({ status: 1, sortOrder: 1, isDeleted: 1 });
+
+export const CompanyProfile = (mongoose.models.CompanyProfile as mongoose.Model<ICompanyProfile>) || 
+  mongoose.model<ICompanyProfile>('CompanyProfile', CompanyProfileSchema);
+
+// ==================== FINANCIAL REPORT (BÁO CÁO TÀI CHÍNH) ====================
+export interface IFinancialReport extends BaseDocument {
+  title: string;
+  year: string;
+  reportType: 'financial_statement' | 'annual_report' | 'audit_report' | 'tax_confirmation' | 'governance_report' | 'other';
+  reportTypeName?: string;
+  description?: string;
+  fileUrl: string;
+  fileName?: string;
+  fileSize?: number;
+  thumbnail?: string;
+  status: 'active' | 'inactive';
+  sortOrder: number;
+  publishedAt?: Date;
+  isDeleted?: boolean;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+const FinancialReportSchema = new Schema<IFinancialReport>({
+  title: { type: String, required: true },
+  year: { type: String, required: true },
+  reportType: { 
+    type: String, 
+    enum: ['financial_statement', 'annual_report', 'audit_report', 'tax_confirmation', 'governance_report', 'other'],
+    default: 'financial_statement' 
+  },
+  reportTypeName: { type: String },
+  description: { type: String },
+  fileUrl: { type: String, required: true },
+  fileName: { type: String },
+  fileSize: { type: Number },
+  thumbnail: { type: String },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  sortOrder: { type: Number, default: 0 },
+  publishedAt: { type: Date, default: Date.now },
+  isDeleted: { type: Boolean, default: false },
+  createdBy: { type: String },
+  updatedBy: { type: String }
+}, { timestamps: true });
+
+FinancialReportSchema.index({ year: -1, sortOrder: 1, status: 1, isDeleted: 1 });
+
+export const FinancialReport = (mongoose.models.FinancialReport as mongoose.Model<IFinancialReport>) || 
+  mongoose.model<IFinancialReport>('FinancialReport', FinancialReportSchema);
+
+// ==================== BUSINESS SECTOR (LĨNH VỰC HOẠT ĐỘNG) ====================
+export interface IBusinessSectorStat {
+  value: string;
+  label: string;
+}
+
+export interface IBusinessSector extends BaseDocument {
+  name: string;
+  slug?: string;
+  subtitle?: string;
+  description?: string;
+  content?: string;
+  icon?: string;
+  image?: string;
+  gallery?: string[];
+  highlights?: string[];
+  stats?: IBusinessSectorStat[];
+  status: 'active' | 'inactive';
+  sortOrder: number;
+  isDeleted?: boolean;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+const BusinessSectorSchema = new Schema<IBusinessSector>({
+  name: { type: String, required: true },
+  slug: { type: String },
+  subtitle: { type: String },
+  description: { type: String },
+  content: { type: String },
+  icon: { type: String, default: 'Handshake' },
+  image: { type: String },
+  gallery: [{ type: String }],
+  highlights: [{ type: String }],
+  stats: [{
+    value: { type: String },
+    label: { type: String }
+  }],
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  sortOrder: { type: Number, default: 0 },
+  isDeleted: { type: Boolean, default: false },
+  createdBy: { type: String },
+  updatedBy: { type: String }
+}, { timestamps: true });
+
+BusinessSectorSchema.index({ sortOrder: 1, status: 1, isDeleted: 1 });
+
+export const BusinessSector = (mongoose.models.BusinessSector as mongoose.Model<IBusinessSector>) || 
+  mongoose.model<IBusinessSector>('BusinessSector', BusinessSectorSchema);
+
+

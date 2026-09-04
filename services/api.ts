@@ -668,4 +668,130 @@ export const api = {
     },
     live: (q: string) => fetchAPI<any>(`/search/live?q=${encodeURIComponent(q.trim())}`),
   },
+
+  // Company Profiles (Hồ sơ năng lực)
+  companyProfiles: {
+    getAll: (admin = false) => fetchAPI<any[]>(`/company-profiles${admin ? '?admin=true' : ''}`, undefined, !admin),
+    getActive: () => fetchAPI<any>('/company-profiles/active', undefined, true),
+    getById: (id: string) => fetchAPI<any>(`/company-profiles/${id}`),
+    create: (data: any) => {
+      clearApiCache();
+      return fetchAPI<any>('/company-profiles', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update: (id: string, data: any) => {
+      clearApiCache();
+      return fetchAPI<any>(`/company-profiles/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    toggleStatus: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/company-profiles/${id}/toggle-status`, {
+        method: 'PATCH',
+      });
+    },
+    delete: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/company-profiles/${id}`, {
+        method: 'DELETE',
+      });
+    },
+    reorder: (items: Array<{ id: string; sortOrder: number }>) => {
+      clearApiCache();
+      return fetchAPI<any>('/company-profiles/reorder', {
+        method: 'PUT',
+        body: JSON.stringify({ items }),
+      });
+    },
+  },
+
+  // Financial Reports (Báo cáo tài chính)
+  financialReports: {
+    getAll: (admin = false, year?: string, reportType?: string) => {
+      const params = [];
+      if (admin) params.push('admin=true');
+      if (year) params.push(`year=${encodeURIComponent(year)}`);
+      if (reportType) params.push(`reportType=${encodeURIComponent(reportType)}`);
+      const query = params.length > 0 ? `?${params.join('&')}` : '';
+      return fetchAPI<any[]>(`/financial-reports${query}`, undefined, !admin);
+    },
+    getById: (id: string) => fetchAPI<any>(`/financial-reports/${id}`),
+    create: (data: any) => {
+      clearApiCache();
+      return fetchAPI<any>('/financial-reports', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update: (id: string, data: any) => {
+      clearApiCache();
+      return fetchAPI<any>(`/financial-reports/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    toggleStatus: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/financial-reports/${id}/toggle-status`, {
+        method: 'PATCH',
+      });
+    },
+    delete: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/financial-reports/${id}`, {
+        method: 'DELETE',
+      });
+    },
+    reorder: (items: Array<{ id: string; sortOrder: number }>) => {
+      clearApiCache();
+      return fetchAPI<any>('/financial-reports/reorder', {
+        method: 'PUT',
+        body: JSON.stringify({ items }),
+      });
+    },
+  },
+
+  // Business Sectors (Lĩnh vực hoạt động)
+  businessSectors: {
+    getAll: (admin = false) => fetchAPI<any[]>(`/business-sectors${admin ? '?admin=true' : ''}`, undefined, !admin),
+    getActive: () => fetchAPI<any[]>('/business-sectors', undefined, true),
+    getById: (id: string) => fetchAPI<any>(`/business-sectors/${id}`),
+    create: (data: any) => {
+      clearApiCache();
+      return fetchAPI<any>('/business-sectors', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update: (id: string, data: any) => {
+      clearApiCache();
+      return fetchAPI<any>(`/business-sectors/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    toggleStatus: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/business-sectors/${id}/toggle-status`, {
+        method: 'PATCH',
+      });
+    },
+    delete: (id: string) => {
+      clearApiCache();
+      return fetchAPI<any>(`/business-sectors/${id}`, {
+        method: 'DELETE',
+      });
+    },
+    reorder: (items: Array<{ id: string; sortOrder: number }>) => {
+      clearApiCache();
+      return fetchAPI<any>('/business-sectors/reorder', {
+        method: 'PUT',
+        body: JSON.stringify({ items }),
+      });
+    },
+  },
 };

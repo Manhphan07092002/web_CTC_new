@@ -1,5 +1,5 @@
 import { Product, Project, NewsItem, User, Testimonial, Partner, Category, TeamMember } from '../types';
-import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText, ShoppingCart, Sliders, MessageSquare } from 'lucide-react';
+import { Database, LayoutDashboard, Users, Layers, Settings, Handshake, Mail, Folder, FolderOpen, Star, Target, Shield, FileText, ShoppingCart, Sliders, MessageSquare, TrendingUp, Building2 } from 'lucide-react';
 
 export const NAV_LINKS = [
   { name: 'Trang chủ', path: '/', key: 'home' },
@@ -52,7 +52,12 @@ export const ADMIN_MENU = [
   { name: 'Quản lý Header', path: '/admin/header', icon: Sliders, key: 'header', permission: 'view_content', minLevel: 30, group: 'content' },
   { name: 'Quản lý danh mục', path: '/admin/categories', icon: Folder, key: 'categories', permission: 'manage_product_categories', minLevel: 50, group: 'content' },
 
-  // Group 4: Hệ thống & Bảo mật (System & Administration)
+  // Group 4: Hồ sơ năng lực (Company Profile & Reports)
+  { name: 'Hồ sơ năng lực', path: '/admin/company-profiles', icon: FileText, key: 'company_profiles', permission: 'view_content', minLevel: 30, group: 'profile' },
+  { name: 'Báo cáo tài chính', path: '/admin/financial-reports', icon: TrendingUp, key: 'financial_reports', permission: 'view_content', minLevel: 30, group: 'profile' },
+  { name: 'Lĩnh vực hoạt động', path: '/admin/business-sectors', icon: Building2, key: 'business_sectors', permission: 'view_content', minLevel: 30, group: 'profile' },
+
+  // Group 5: Hệ thống & Bảo mật (System & Administration)
   { name: 'Quản lý tài khoản', path: '/admin/users', icon: Handshake, key: 'users', permission: 'view_users', minLevel: 90, group: 'system' },
   { name: 'Quản lý nhân sự', path: '/admin/team', icon: Users, key: 'team', permission: 'view_users', minLevel: 50, group: 'system' },
   { name: 'Giám sát bảo mật', path: '/admin/security', icon: Shield, key: 'security', permission: 'view_security_logs', minLevel: 90, group: 'system' },

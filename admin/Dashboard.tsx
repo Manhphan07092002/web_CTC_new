@@ -42,6 +42,10 @@ const MigrationManagement = lazy(() => import('./modules/system').then(m => ({ d
 const GoalsManagement = lazy(() => import('./modules/system').then(m => ({ default: m.GoalsManagement })));
 const EngagementManagement = lazy(() => import('./modules/system').then(m => ({ default: m.EngagementManagement })));
 
+const CompanyProfilesManagement = lazy(() => import('./modules/company-profile').then(m => ({ default: m.CompanyProfilesManagement })));
+const FinancialReportsManagement = lazy(() => import('./modules/company-profile').then(m => ({ default: m.FinancialReportsManagement })));
+const BusinessSectorsManagement = lazy(() => import('./modules/company-profile').then(m => ({ default: m.BusinessSectorsManagement })));
+
 const FileManager = lazy(() => import('./FileManager'));
 
 const AdminDashboard: React.FC = () => {
@@ -145,6 +149,9 @@ const AdminDashboard: React.FC = () => {
               <Route path="/chat" element={<ChatManagement />} />
               <Route path="/contacts" element={<ContactsManagement />} />
               <Route path="/categories" element={<CategoryManagement />} />
+              <Route path="/company-profiles" element={<CompanyProfilesManagement />} />
+              <Route path="/financial-reports" element={<FinancialReportsManagement />} />
+              <Route path="/business-sectors" element={<BusinessSectorsManagement />} />
               <Route path="/reviews" element={<ReviewsManagement />} />
               <Route path="/resources" element={<ResourceManagement />} />
               <Route path="/engagement" element={<EngagementManagement />} />
