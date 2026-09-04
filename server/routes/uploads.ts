@@ -324,6 +324,8 @@ router.delete('/images/:filepath(*)', (req, res) => {
       res.status(204).send();
     });
   }
+});
+
 // Bulk delete files and folders
 router.post('/images/bulk-delete', (req, res) => {
   const { paths } = req.body;
