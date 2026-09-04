@@ -692,10 +692,10 @@ const Settings: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, aiModel: e.target.value })}
                     className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
                   >
-                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Siêu tốc & Thông minh)</option>
-                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản hồi tức thì)</option>
-                    <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b (Suy luận cao cấp)</option>
-                    <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Khuyên dùng - Siêu tốc & Thông minh)</option>
+                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản hồi tức thì, Quota cao)</option>
+                    <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b (DeepSeek R1 Suy luận)</option>
+                    <option value="qwen-2.5-32b">qwen-2.5-32b (Qwen 2.5 Tiếng Việt xuất sắc)</option>
                   </select>
                 )}
 

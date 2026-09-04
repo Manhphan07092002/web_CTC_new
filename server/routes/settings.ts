@@ -127,11 +127,8 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
       groq: [
         'llama-3.3-70b-versatile',
         'llama-3.1-8b-instant',
-        'llama3-70b-8192',
-        'llama3-8b-8192',
         'deepseek-r1-distill-llama-70b',
-        'mixtral-8x7b-32768',
-        'gemma2-9b-it'
+        'qwen-2.5-32b'
       ],
       openai: [
         'gpt-4o-mini',
@@ -188,6 +185,7 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
       }
 
       let keySuccess = false;
+      let primaryModelError = '';
       let lastError = '';
       let successfulModel = initialModel;
       let responseText = '';
@@ -215,7 +213,10 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
             if (!resp.ok) {
               const errBody: any = await resp.json().catch(() => ({}));
               const errMsg = errBody.error?.message || `HTTP ${resp.status}: ${resp.statusText}`;
-              if (resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist')) {
+              if (testModel === initialModel) {
+                primaryModelError = errMsg;
+              }
+              if (resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist') || errMsg.toLowerCase().includes('decommissioned')) {
                 lastError = `Model ${testModel} không khả dụng (${errMsg})`;
                 continue; // Try next model
               }
@@ -257,7 +258,10 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
             if (!resp.ok) {
               const errBody: any = await resp.json().catch(() => ({}));
               const errMsg = errBody.error?.message || `HTTP ${resp.status}: ${resp.statusText}`;
-              if (resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist')) {
+              if (testModel === initialModel) {
+                primaryModelError = errMsg;
+              }
+              if (resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist') || errMsg.toLowerCase().includes('decommissioned')) {
                 lastError = `Model ${testModel} không hỗ trợ trên key này (${errMsg})`;
                 continue; // Try next candidate model
               }
@@ -272,7 +276,11 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
           }
         } catch (callErr: any) {
           latencyMs = Date.now() - startTime;
-          lastError = callErr.message || String(callErr);
+          const errMsg = callErr.message || String(callErr);
+          if (testModel === initialModel) {
+            primaryModelError = errMsg;
+          }
+          lastError = errMsg;
           // If error is 401 (Unauthorized) or 403 (Forbidden), stop trying other models on this key
           if (lastError.includes('401') || lastError.toLowerCase().includes('unauthorized') || lastError.toLowerCase().includes('invalid api key')) {
             break;
@@ -293,12 +301,15 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
         });
       } else {
         // User-friendly error diagnosis
-        let friendlyErr = lastError;
-        if (lastError.includes('401') || lastError.toLowerCase().includes('unauthorized') || lastError.toLowerCase().includes('invalid api key')) {
+        const errToDiagnose = primaryModelError || lastError;
+        let friendlyErr = errToDiagnose;
+        if (errToDiagnose.includes('401') || errToDiagnose.toLowerCase().includes('unauthorized') || errToDiagnose.toLowerCase().includes('invalid api key')) {
           friendlyErr = `Mã lỗi HTTP 401 (Unauthorized): API Key không chính xác hoặc đã bị xóa. Vui lòng kiểm tra lại trên Dashboard của ${provider.toUpperCase()}.`;
-        } else if (lastError.includes('429') || lastError.toLowerCase().includes('quota') || lastError.toLowerCase().includes('rate limit')) {
-          friendlyErr = `Mã lỗi HTTP 429 (Quota/Rate Limit): Key này đã hết hạn mức sử dụng (Quota) hoặc vượt quá số request/phút.`;
-        } else if (lastError.toLowerCase().includes('timeout') || lastError.toLowerCase().includes('etimedout')) {
+        } else if (errToDiagnose.includes('429') || errToDiagnose.toLowerCase().includes('quota') || errToDiagnose.toLowerCase().includes('rate limit') || errToDiagnose.toLowerCase().includes('rate_limit_exceeded')) {
+          friendlyErr = `Mã lỗi HTTP 429 (Quota/Rate Limit): Key này đã hết hạn mức sử dụng hoặc vượt quá số request/phút (TPM/RPM) của gói miễn phí Groq. ${errToDiagnose}`;
+        } else if (errToDiagnose.toLowerCase().includes('decommissioned')) {
+          friendlyErr = `Model ${initialModel} đã ngừng hỗ trợ trên ${provider.toUpperCase()}. Hệ thống khuyên dùng 'llama-3.3-70b-versatile' hoặc 'llama-3.1-8b-instant'. Chi tiết: ${errToDiagnose}`;
+        } else if (errToDiagnose.toLowerCase().includes('timeout') || errToDiagnose.toLowerCase().includes('etimedout')) {
           friendlyErr = `Quá thời gian kết nối (Timeout > 10s): Máy chủ AI không phản hồi kịp.`;
         }
 
