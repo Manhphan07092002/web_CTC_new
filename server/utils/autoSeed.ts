@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
+import { CompanyProfile, FinancialReport, BusinessSector } from '../../models';
 
 function convertIds(obj: any): any {
   if (!obj) return obj;
@@ -79,7 +80,13 @@ export async function autoSeedIfEmpty(): Promise<boolean> {
       }
     }
 
-import { CompanyProfile, FinancialReport, BusinessSector } from '../../models';
+    console.log(`🎉 Auto-seeding completed! Imported ${totalImported} documents across ${files.length} collections.`);
+    return true;
+  } catch (error: any) {
+    console.error('❌ Auto-seed failed:', error.message || error);
+    return false;
+  }
+}
 
 /**
  * Automatically seeds Company Profile, Financial Reports, and Business Sectors if collections are empty.

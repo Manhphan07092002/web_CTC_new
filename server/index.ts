@@ -65,6 +65,7 @@ import migrationRouter from './routes/migration.js';
 import resourcesRouter from './routes/resources.js';
 import documentCategoriesRouter from './routes/document-categories.js';
 import ordersRouter from './routes/orders';
+import searchRouter from './routes/search';
 import aiWriterRouter from './routes/aiWriter';
 import productWriterRouter from './routes/productWriter';
 import companyProfilesRouter from './routes/company-profiles';
