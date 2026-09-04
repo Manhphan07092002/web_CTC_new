@@ -265,6 +265,26 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
         </div>
       )}
 
+      {/* Dynamic Highlight Specifications */}
+      {Array.isArray(product.specificationsList) && product.specificationsList.filter(s => s.isHighlight && s.value).length > 0 && (
+        <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-gray-200/80 dark:border-slate-700/80">
+          <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Sparkles size={12} className="text-amber-500" />
+            <span>Thông số nổi bật</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {product.specificationsList.filter(s => s.isHighlight && s.value).map((spec, i) => (
+              <div key={i} className="flex flex-col bg-white dark:bg-slate-850 p-2 rounded-lg border border-gray-100 dark:border-slate-700/60">
+                <span className="text-[11px] text-gray-400 font-medium truncate">{spec.name}</span>
+                <span className="font-bold text-gray-800 dark:text-gray-100 font-mono text-xs truncate">
+                  {String(spec.value)} {spec.unit || ''}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Short Description Callout */}
       {product.shortDescription && (
         <div className="p-3.5 bg-sky-50/60 dark:bg-sky-950/20 border-l-4 border-sky-500 rounded-r-xl text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
