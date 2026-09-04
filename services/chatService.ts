@@ -326,7 +326,7 @@ export const chatService = {
         return '';
       };
 
-      const provider = siteSettings?.aiProvider || 'gemini';
+      const rawProvider = (siteSettings?.aiProvider || 'gemini').toLowerCase();
       const envFallback = getEnvVar('VITE_GEMINI_API_KEY') || getEnvVar('GEMINI_API_KEY');
       const rawApiKeyString = siteSettings?.aiApiKey || envFallback || "";
       
@@ -336,12 +336,25 @@ export const chatService = {
         .filter((k: string) => k.length > 0);
 
       if (keys.length === 0) {
-        const msg = `Rất tiếc, API Key cho nhà cung cấp AI (${provider.toUpperCase()}) chưa được cấu hình. Quý khách vui lòng truy cập Cài đặt hệ thống để bổ sung ạ.`;
+        const msg = `Rất tiếc, API Key cho nhà cung cấp AI (${rawProvider.toUpperCase()}) chưa được cấu hình. Quý khách vui lòng truy cập Cài đặt hệ thống để bổ sung ạ.`;
         onChunk(msg);
         return msg;
       }
 
-      const defaultModels: Record<string, string> = {
+      // ─────────────────────────────────────────────────────────────
+      // AUTO-DETECT PROVIDER & NORMALIZE MODEL
+      // ─────────────────────────────────────────────────────────────
+      let provider = rawProvider;
+      const firstKey = keys[0] || '';
+      if (firstKey.startsWith('gsk_')) {
+        provider = 'groq';
+      } else if (firstKey.startsWith('AIza')) {
+        provider = 'gemini';
+      } else if (firstKey.startsWith('sk-proj-') && provider === 'groq') {
+        provider = 'openai';
+      }
+
+      const DEFAULT_MODELS: Record<string, string> = {
         gemini: 'gemini-2.5-flash',
         groq: 'llama-3.3-70b-versatile',
         openai: 'gpt-4o-mini',
@@ -349,7 +362,64 @@ export const chatService = {
         custom: 'llama-3.3-70b-versatile'
       };
 
-      const modelName = siteSettings?.aiModel || defaultModels[provider] || 'gemini-2.5-flash';
+      const PROVIDER_MODEL_CANDIDATES: Record<string, string[]> = {
+        groq: [
+          'llama-3.3-70b-versatile',
+          'llama-3.1-8b-instant',
+          'llama3-70b-8192',
+          'llama3-8b-8192',
+          'deepseek-r1-distill-llama-70b',
+          'mixtral-8x7b-32768',
+          'gemma2-9b-it'
+        ],
+        openai: [
+          'gpt-4o-mini',
+          'gpt-4o',
+          'gpt-3.5-turbo'
+        ],
+        gemini: [
+          'gemini-2.5-flash',
+          'gemini-1.5-flash',
+          'gemini-2.5-pro',
+          'gemini-1.5-pro'
+        ],
+        deepseek: [
+          'deepseek-chat',
+          'deepseek-reasoner'
+        ]
+      };
+
+      const normalizeModel = (prov: string, rawModel?: string): string => {
+        const clean = (rawModel || '').trim();
+        if (!clean) return DEFAULT_MODELS[prov] || 'gemini-2.5-flash';
+        if (prov === 'gemini') {
+          if (clean.toLowerCase().includes('gemini')) return clean;
+          return 'gemini-2.5-flash';
+        }
+        if (prov === 'openai') {
+          if (clean.startsWith('gpt-') || clean.startsWith('o1-') || clean.startsWith('o3-')) return clean;
+          return 'gpt-4o-mini';
+        }
+        if (prov === 'deepseek') {
+          if (clean.startsWith('deepseek-')) return clean;
+          return 'deepseek-chat';
+        }
+        if (prov === 'groq') {
+          if (clean.startsWith('gemini-') || clean.startsWith('gpt-')) return 'llama-3.3-70b-versatile';
+          return clean;
+        }
+        return clean;
+      };
+
+      const initialModel = normalizeModel(provider, siteSettings?.aiModel);
+      const candidateModels = [initialModel];
+      const fallbacks = PROVIDER_MODEL_CANDIDATES[provider] || [];
+      for (const m of fallbacks) {
+        if (!candidateModels.includes(m)) {
+          candidateModels.push(m);
+        }
+      }
+
       const temperature = siteSettings?.aiTemperature ?? 0.6;
 
       const isWriterRequest = text.includes('NHIỆM VỤ:') || text.includes('JSON') || text.includes('MÔ TẢ SẢN PHẨM') || text.includes('BÀI VIẾT') || text.includes('technicalSpecs');
@@ -418,43 +488,60 @@ export const chatService = {
         const keyIndex = (startIndex + attempt) % keys.length;
         const currentKey = keys[keyIndex];
 
-        try {
-          let responseText = "";
+        for (const currentModel of candidateModels) {
+          try {
+            let responseText = "";
 
-          if (provider === 'gemini') {
-            responseText = await executeGeminiCallStream(currentKey, modelName, temperature, systemInstruction, text, onChunk);
-          } else {
-            responseText = await executeOpenAICallStream(endpoint, currentKey, modelName, temperature, systemInstruction, text, onChunk);
-          }
+            if (provider === 'gemini') {
+              responseText = await executeGeminiCallStream(currentKey, currentModel, temperature, systemInstruction, text, onChunk);
+            } else {
+              responseText = await executeOpenAICallStream(endpoint, currentKey, currentModel, temperature, systemInstruction, text, onChunk);
+            }
 
-          activeKeyIndexes[provider] = keyIndex;
-          if (attempt > 0) {
-            console.log(`[AI Key Rotation] Successfully failed over to key #${keyIndex + 1}/${keys.length}`);
-          }
+            activeKeyIndexes[provider] = keyIndex;
+            if (currentModel !== initialModel) {
+              console.log(`[AI Auto-Recovery] Model '${initialModel}' switched to working model '${currentModel}'!`);
+            }
+            if (attempt > 0) {
+              console.log(`[AI Key Rotation] Successfully failed over to key #${keyIndex + 1}/${keys.length}`);
+            }
 
-          if (responseText && responseText.trim()) {
-            return responseText;
-          }
-        } catch (err: any) {
-          lastError = err;
-          const errMsg = err?.message || '';
-          const errStatus = err?.status;
-          console.warn(`[AI Provider Warning] Provider '${provider}' Key #${keyIndex + 1}/${keys.length} error (${errStatus || '429'}: ${errMsg}).`);
+            if (responseText && responseText.trim()) {
+              return responseText;
+            }
+          } catch (err: any) {
+            lastError = err;
+            const errMsg = err?.message || '';
+            const errStatus = err?.status;
+            console.warn(`[AI Provider Warning] Provider '${provider}' Model '${currentModel}' Key #${keyIndex + 1}/${keys.length} error (${errStatus || 'error'}: ${errMsg}).`);
 
-          if (keys.length > 1 && isQuotaOrAuthError(errMsg, errStatus)) {
-            continue;
+            const isModelNotFoundError = 
+              errStatus === 404 || 
+              errMsg.toLowerCase().includes('does not exist') || 
+              errMsg.toLowerCase().includes('not found') || 
+              errMsg.toLowerCase().includes('do not have access');
+
+            if (isModelNotFoundError) {
+              // Try next model candidate immediately for this provider
+              continue;
+            }
+
+            if (keys.length > 1 && isQuotaOrAuthError(errMsg, errStatus)) {
+              break;
+            }
           }
         }
       }
 
       // ══════════════════════════════════════════════════════════════
-      // CROSS-PROVIDER FAILOVER (Khi nhà cung cấp chính Groq/OpenAI bị 429 Rate Limit)
+      // CROSS-PROVIDER FAILOVER (Khi nhà cung cấp chính Groq/OpenAI bị lỗi/429/Model issue)
       // ══════════════════════════════════════════════════════════════
-      if (provider !== 'gemini' && envFallback) {
+      const geminiFallbackKey = (keys.find(k => k.startsWith('AIza')) || envFallback || '').trim();
+      if (geminiFallbackKey) {
         try {
-          console.warn(`[AI Failover] Primary provider '${provider}' rate-limited (${lastError?.message}). Auto-failing over to Google Gemini...`);
+          console.warn(`[AI Failover] Provider '${provider}' failed (${lastError?.message}). Auto-failing over to Google Gemini...`);
           const geminiModel = 'gemini-2.5-flash';
-          const failoverText = await executeGeminiCallStream(envFallback, geminiModel, temperature, systemInstruction, text, onChunk);
+          const failoverText = await executeGeminiCallStream(geminiFallbackKey, geminiModel, temperature, systemInstruction, text, onChunk);
           if (failoverText && failoverText.trim()) {
             console.log(`[AI Failover] Successfully completed request via Gemini fallback!`);
             return failoverText;

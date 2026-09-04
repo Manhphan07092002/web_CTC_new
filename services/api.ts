@@ -433,6 +433,27 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+    testAi: (data: { provider?: string; model?: string; apiKey?: string; baseUrl?: string }) =>
+      fetchAPI<{
+        success: boolean;
+        allSuccess: boolean;
+        summary: string;
+        message?: string;
+        results: Array<{
+          keyIndex: number;
+          keyMasked: string;
+          provider: string;
+          model: string;
+          status: 'success' | 'error';
+          latencyMs: number;
+          responseSnippet?: string;
+          errorMessage?: string;
+          note?: string;
+        }>;
+      }>('/settings/test-ai', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   },
 
   // Notifications

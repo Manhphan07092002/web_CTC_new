@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Image as ImageIcon, Globe, Mail, Phone, MapPin, Facebook, Instagram, Youtube, Linkedin, Bot, Key, Eye, EyeOff, Sparkles, Cpu, Sliders } from 'lucide-react';
+import { 
+  Save, Image as ImageIcon, Globe, Mail, Phone, MapPin, 
+  Facebook, Instagram, Youtube, Linkedin, Bot, Key, Eye, EyeOff, 
+  Sparkles, Cpu, Sliders, CheckCircle2, AlertTriangle, XCircle, 
+  Loader2, Zap 
+} from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
@@ -42,6 +47,24 @@ const Settings: React.FC = () => {
   const { hasPermission, hasMinRoleLevel } = usePermission();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [testingAi, setTestingAi] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    success: boolean;
+    allSuccess: boolean;
+    summary: string;
+    message?: string;
+    results: Array<{
+      keyIndex: number;
+      keyMasked: string;
+      provider: string;
+      model: string;
+      status: 'success' | 'error';
+      latencyMs: number;
+      responseSnippet?: string;
+      errorMessage?: string;
+      note?: string;
+    }>;
+  } | null>(null);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
   const [imagePickerTarget, setImagePickerTarget] = useState<'logo' | 'logoHeader' | 'logoFooter' | 'favicon' | 'appleTouchIcon'>('logo');
@@ -136,6 +159,49 @@ const Settings: React.FC = () => {
       }
     }
     setSaving(false);
+  };
+
+  const handleTestAi = async () => {
+    const rawKey = (formData.aiApiKey || '').trim();
+    if (!rawKey) {
+      showToast('Vui lòng nhập ít nhất 1 API Key để kiểm tra kết nối', 'error');
+      return;
+    }
+
+    setTestingAi(true);
+    setTestResult(null);
+
+    try {
+      const res = await api.settings.testAi({
+        provider: formData.aiProvider || 'gemini',
+        model: formData.aiModel,
+        apiKey: formData.aiApiKey,
+        baseUrl: formData.aiBaseUrl
+      });
+
+      setTestResult(res);
+
+      if (res.allSuccess) {
+        showToast('🎉 Kiểm tra hoàn tất: Tất cả API Key đều kết nối AI thành công!', 'success');
+      } else if (res.success) {
+        showToast(`⚠️ ${res.summary}: Có một số Key gặp sự cố, vui lòng xem chi tiết bên dưới`, 'warning');
+      } else {
+        showToast(`❌ Kết nối thất bại: ${res.message || 'Không có API Key nào hoạt động'}`, 'error');
+      }
+    } catch (error: any) {
+      console.error('Error testing AI:', error);
+      const errMsg = error.message || 'Không thể kết nối đến máy chủ kiểm tra';
+      setTestResult({
+        success: false,
+        allSuccess: false,
+        summary: 'Kiểm tra thất bại',
+        message: errMsg,
+        results: []
+      });
+      showToast(errMsg, 'error');
+    } finally {
+      setTestingAi(false);
+    }
   };
 
   if (!hasPermission('view_system_settings') && !hasMinRoleLevel(90)) {
@@ -742,6 +808,139 @@ const Settings: React.FC = () => {
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 💡 <strong>Mẹo chống gián đoạn:</strong> Bạn có thể nhập nhiều API Key (mỗi Key 1 dòng hoặc cách nhau bằng dấu phẩy <code>,</code>). Khi 1 Key bị hết Quota hoặc giới hạn số request (HTTP 429), hệ thống sẽ <strong>tự động chuyển sang Key tiếp theo</strong> ngay lập tức!
               </p>
+
+              {/* Action Button: Test API Key */}
+              <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleTestAi}
+                  disabled={testingAi}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-primary text-white font-bold text-xs rounded-xl shadow-md hover:shadow-lg hover:brightness-105 transition-all disabled:opacity-50 cursor-pointer active:scale-95"
+                >
+                  {testingAi ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      Đang kiểm tra kết nối API Key...
+                    </>
+                  ) : (
+                    <>
+                      <Zap size={15} className="text-yellow-200 fill-yellow-200" />
+                      Kiểm Tra Kết Nối AI (Test API Key)
+                    </>
+                  )}
+                </button>
+
+                {testResult && (
+                  <button
+                    type="button"
+                    onClick={() => setTestResult(null)}
+                    className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline cursor-pointer"
+                  >
+                    Đóng kết quả kiểm tra
+                  </button>
+                )}
+              </div>
+
+              {/* Test Results Display Box */}
+              {testResult && (
+                <div className="mt-3.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/90 p-4 space-y-3">
+                  {/* Summary Header */}
+                  <div className={`flex items-center gap-2.5 px-3 py-2 rounded-lg font-bold text-xs ${
+                    testResult.allSuccess 
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800'
+                      : testResult.success
+                      ? 'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800'
+                      : 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800'
+                  }`}>
+                    {testResult.allSuccess ? (
+                      <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                    ) : testResult.success ? (
+                      <AlertTriangle size={18} className="text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                    ) : (
+                      <XCircle size={18} className="text-rose-600 dark:text-rose-400 flex-shrink-0" />
+                    )}
+                    <span className="flex-1">
+                      {testResult.summary}
+                      {testResult.allSuccess && ' — Tất cả API Key đã sẵn sàng hoạt động!'}
+                    </span>
+                  </div>
+
+                  {/* Key Results List */}
+                  {testResult.results && testResult.results.length > 0 && (
+                    <div className="space-y-2">
+                      {testResult.results.map((res) => (
+                        <div
+                          key={res.keyIndex}
+                          className={`p-3 rounded-lg border text-xs flex flex-col gap-1.5 transition-all ${
+                            res.status === 'success'
+                              ? 'bg-white dark:bg-slate-800 border-emerald-200 dark:border-emerald-900/60'
+                              : 'bg-rose-50/70 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/60'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between flex-wrap gap-2 font-mono">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-gray-700 dark:text-gray-300">
+                                Key #{res.keyIndex}:
+                              </span>
+                              <code className="bg-gray-100 dark:bg-slate-900 px-2 py-0.5 rounded text-gray-800 dark:text-gray-200">
+                                {res.keyMasked}
+                              </code>
+                              <span className="uppercase text-[10px] px-2 py-0.5 rounded-full font-bold bg-primary/10 text-primary">
+                                {res.provider}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              {res.latencyMs > 0 && (
+                                <span className="text-gray-500 dark:text-gray-400 text-[11px] font-sans">
+                                  ⚡ {res.latencyMs}ms
+                                </span>
+                              )}
+                              <span className={`font-bold px-2 py-0.5 rounded text-[11px] font-sans flex items-center gap-1 ${
+                                res.status === 'success'
+                                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200'
+                                  : 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200'
+                              }`}>
+                                {res.status === 'success' ? (
+                                  <>
+                                    <CheckCircle2 size={12} /> Thành công
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle size={12} /> Thất bại
+                                  </>
+                                )}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="font-sans text-[11px] text-gray-600 dark:text-gray-300">
+                            <strong>Model đã test:</strong> <code className="font-mono text-primary font-semibold">{res.model}</code> {res.note && <span className="text-amber-600 dark:text-amber-400 italic ml-1">{res.note}</span>}
+                          </div>
+
+                          {res.status === 'success' && res.responseSnippet && (
+                            <div className="font-sans text-[11px] text-emerald-700 dark:text-emerald-300 bg-emerald-50/50 dark:bg-emerald-950/30 p-2 rounded border border-emerald-100 dark:border-emerald-900/40">
+                              💬 <em>"{res.responseSnippet}"</em>
+                            </div>
+                          )}
+
+                          {res.status === 'error' && res.errorMessage && (
+                            <div className="font-sans text-[11px] text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 p-2.5 rounded border border-rose-200 dark:border-rose-900">
+                              ⚠️ <strong>Chi tiết lỗi:</strong> {res.errorMessage}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {testResult.message && testResult.results.length === 0 && (
+                    <p className="text-xs text-rose-600 dark:text-rose-400">
+                      {testResult.message}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Temperature Slider */}

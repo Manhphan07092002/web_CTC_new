@@ -437,9 +437,57 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
     const settings = await db.settings.get();
     if (!settings || !settings.aiApiKey) return null;
 
-    const apiKey = settings.aiApiKey;
-    const provider = (settings.aiProvider || 'gemini').toLowerCase();
-    let model = settings.aiModel || 'gemini-1.5-flash';
+    const apiKey = (settings.aiApiKey || '').trim();
+    let provider = (settings.aiProvider || 'gemini').toLowerCase();
+
+    // Auto-detect provider from key prefix if mismatched
+    if (apiKey.startsWith('gsk_')) provider = 'groq';
+    else if (apiKey.startsWith('AIza')) provider = 'gemini';
+    else if (apiKey.startsWith('sk-proj-') && provider === 'groq') provider = 'openai';
+
+    const DEFAULT_MODELS: Record<string, string> = {
+      gemini: 'gemini-2.5-flash',
+      groq: 'llama-3.3-70b-versatile',
+      openai: 'gpt-4o-mini',
+      deepseek: 'deepseek-chat',
+      custom: 'llama-3.3-70b-versatile'
+    };
+
+    const PROVIDER_MODEL_CANDIDATES: Record<string, string[]> = {
+      groq: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'deepseek-r1-distill-llama-70b', 'mixtral-8x7b-32768'],
+      openai: ['gpt-4o-mini', 'gpt-4o', 'gpt-3.5-turbo'],
+      gemini: ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.5-pro', 'gemini-1.5-pro'],
+      deepseek: ['deepseek-chat', 'deepseek-reasoner']
+    };
+
+    const normalizeModel = (prov: string, rawModel?: string): string => {
+      const clean = (rawModel || '').trim();
+      if (!clean) return DEFAULT_MODELS[prov] || 'gemini-2.5-flash';
+      if (prov === 'gemini') {
+        if (clean.toLowerCase().includes('gemini')) return clean;
+        return 'gemini-2.5-flash';
+      }
+      if (prov === 'openai') {
+        if (clean.startsWith('gpt-') || clean.startsWith('o1-') || clean.startsWith('o3-')) return clean;
+        return 'gpt-4o-mini';
+      }
+      if (prov === 'deepseek') {
+        if (clean.startsWith('deepseek-')) return clean;
+        return 'deepseek-chat';
+      }
+      if (prov === 'groq') {
+        if (clean.startsWith('gemini-') || clean.startsWith('gpt-')) return 'llama-3.3-70b-versatile';
+        return clean;
+      }
+      return clean;
+    };
+
+    const initialModel = normalizeModel(provider, settings.aiModel);
+    const candidateModels = [initialModel];
+    const fallbacks = PROVIDER_MODEL_CANDIDATES[provider] || [];
+    for (const m of fallbacks) {
+      if (!candidateModels.includes(m)) candidateModels.push(m);
+    }
 
     if (['openai', 'groq', 'deepseek', 'custom'].includes(provider)) {
       let baseUrl = 'https://api.openai.com/v1';
@@ -447,36 +495,55 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
       else if (provider === 'deepseek') baseUrl = 'https://api.deepseek.com/v1';
       else if (provider === 'custom') baseUrl = (settings.aiBaseUrl || '').replace(/\/$/, '') || 'https://api.groq.com/openai/v1';
 
-      const response = await fetch(`${baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.7
-        })
-      });
+      for (const currentModel of candidateModels) {
+        try {
+          const response = await fetch(`${baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: currentModel,
+              messages: [{ role: 'user', content: prompt }],
+              temperature: 0.7
+            })
+          });
 
-      const data: any = await response.json();
-      return data.choices?.[0]?.message?.content || null;
+          const data: any = await response.json();
+          if (response.ok && data.choices?.[0]?.message?.content) {
+            return data.choices[0].message.content;
+          }
+        } catch (err: any) {
+          console.warn(`[ProductWriter Query] Model ${currentModel} error:`, err.message);
+        }
+      }
+      return null;
     } else {
-      if (model.includes('2.5-flash') || model.includes('2.0-flash')) model = 'gemini-1.5-flash';
-      else if (model.includes('2.5-pro')) model = 'gemini-1.5-pro';
+      for (const gemModel of candidateModels) {
+        let apiModel = gemModel;
+        if (apiModel.includes('2.5-flash') || apiModel.includes('2.0-flash')) apiModel = 'gemini-1.5-flash';
+        else if (apiModel.includes('2.5-pro')) apiModel = 'gemini-1.5-pro';
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${apiModel}:generateContent?key=${apiKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          });
 
-      const data: any = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+          const data: any = await response.json();
+          if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return data.candidates[0].content.parts[0].text;
+          }
+        } catch (e: any) {
+          console.warn(`[ProductWriter Gemini Query] ${gemModel} error:`, e.message);
+        }
+      }
+      return null;
     }
   } catch (err: any) {
     console.error('[Product AI LLM Query Error]:', err.message || err);
