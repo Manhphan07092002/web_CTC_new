@@ -1,17 +1,20 @@
-import React from 'react';
-import { Star, Sparkles, CheckCircle, MessageSquare } from 'lucide-react';
-import { Product, Review } from '../../types';
+import React, { useMemo } from 'react';
+import { 
+  Star, Sparkles, CheckCircle, MessageSquare, FileText, 
+  Download, Video, ShieldCheck, Tag, ExternalLink, Cpu
+} from 'lucide-react';
+import { Product, Review, ProductSpecification } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ProductTabsProps {
   product: Product;
   reviews: Review[];
-  activeTab: 'desc' | 'specs' | 'reviews';
-  setActiveTab: (tab: 'desc' | 'specs' | 'reviews') => void;
+  activeTab: 'desc' | 'specs' | 'documents' | 'reviews';
+  setActiveTab: (tab: 'desc' | 'specs' | 'documents' | 'reviews') => void;
   onWriteReviewClick: () => void;
 }
 
-const ProductTabs: React.FC<ProductTabsProps> = ({
+export const ProductTabs: React.FC<ProductTabsProps> = ({
   product,
   reviews,
   activeTab,
@@ -20,270 +23,364 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
 }) => {
   const { t } = useLanguage();
 
+  const documents = Array.isArray(product.documents) ? product.documents : [];
+  const videos = Array.isArray(product.videos) ? product.videos : [];
+  const specsList = Array.isArray(product.specificationsList) ? product.specificationsList : [];
+
+  // Group dynamic specifications by group
+  const groupedSpecs = useMemo(() => {
+    if (specsList.length === 0) return null;
+    const groups: { [key: string]: ProductSpecification[] } = {};
+    specsList.forEach(s => {
+      const g = (s.group && s.group.trim()) || 'Thông số chung';
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(s);
+    });
+    return groups;
+  }, [specsList]);
+
+  const hasDocs = documents.length > 0;
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-12">
+    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden mb-12">
       {/* Tabs Selector */}
-      <div className="flex border-b border-gray-100 dark:border-gray-700 overflow-x-auto">
+      <div className="flex border-b border-gray-100 dark:border-slate-700 overflow-x-auto scrollbar-hide bg-gray-50/50 dark:bg-slate-900/30">
         <button 
           onClick={() => setActiveTab('desc')}
-          className={`px-8 py-4 font-bold text-sm uppercase tracking-wide transition-colors border-b-2 whitespace-nowrap ${activeTab === 'desc' ? 'border-primary text-primary bg-orange-50/50 dark:bg-orange-950/10' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-50'}`}
+          className={`px-6 md:px-8 py-4 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all border-b-2 whitespace-nowrap ${
+            activeTab === 'desc' 
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400 bg-white dark:bg-slate-800 shadow-2xs' 
+              : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+          }`}
         >
-          {t('products.detail_tab_desc') || 'Chi tiết'}
+          {t('products.detail_tab_desc') || 'Mô tả & Tính năng'}
         </button>
+
         <button 
           onClick={() => setActiveTab('specs')}
-          className={`px-8 py-4 font-bold text-sm uppercase tracking-wide transition-colors border-b-2 whitespace-nowrap ${activeTab === 'specs' ? 'border-primary text-primary bg-orange-50/50 dark:bg-orange-950/10' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-50'}`}
+          className={`px-6 md:px-8 py-4 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all border-b-2 whitespace-nowrap flex items-center gap-2 ${
+            activeTab === 'specs' 
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400 bg-white dark:bg-slate-800 shadow-2xs' 
+              : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+          }`}
         >
-          {t('products.detail_tab_specs') || 'Thông số kỹ thuật'}
+          <Cpu size={15} />
+          <span>{t('products.detail_tab_specs') || 'Thông số kỹ thuật'}</span>
+          {specsList.length > 0 && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300">
+              {specsList.length}
+            </span>
+          )}
         </button>
+
+        {hasDocs && (
+          <button 
+            onClick={() => setActiveTab('documents')}
+            className={`px-6 md:px-8 py-4 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all border-b-2 whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'documents' 
+                ? 'border-primary-500 text-primary-600 dark:text-primary-400 bg-white dark:bg-slate-800 shadow-2xs' 
+                : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+            }`}
+          >
+            <FileText size={15} />
+            <span>Tài liệu & Datasheet</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-bold">
+              {documents.length}
+            </span>
+          </button>
+        )}
+
         <button 
           onClick={() => setActiveTab('reviews')}
-          className={`px-8 py-4 font-bold text-sm uppercase tracking-wide transition-colors border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === 'reviews' ? 'border-primary text-primary bg-orange-50/50 dark:bg-orange-950/10' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-50'}`}
+          className={`px-6 md:px-8 py-4 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all border-b-2 whitespace-nowrap flex items-center gap-2 ${
+            activeTab === 'reviews' 
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400 bg-white dark:bg-slate-800 shadow-2xs' 
+              : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+          }`}
         >
-          {t('products.detail_tab_reviews') || 'Đánh giá'} 
-          <span className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs">
+          <MessageSquare size={15} />
+          <span>{t('products.detail_tab_reviews') || 'Đánh giá'}</span>
+          <span className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs">
             {reviews.length}
           </span>
         </button>
       </div>
       
       {/* Tabs Content */}
-      <div className="p-8 md:p-12">
-        {/* Description Tab */}
+      <div className="p-6 md:p-10">
+        {/* ── Tab 1: Description ── */}
         {activeTab === 'desc' && (
-          <div className="space-y-6">
-            <div className="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-              {product.description && (product.description.includes('<') || product.description.includes('&lt;')) ? (
-                <div 
-                  className="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed [&_img]:rounded-2xl [&_img]:shadow-lg [&_img]:my-6 [&_img]:max-h-[550px] [&_img]:mx-auto [&_img]:object-cover [&_a]:text-primary [&_a]:underline [&_a]:font-semibold [&_table]:w-full [&_table]:border-collapse [&_table]:my-6 [&_th]:border [&_th]:border-gray-200 [&_th]:p-3 [&_th]:bg-gray-100 [&_td]:border [&_td]:border-gray-200 [&_td]:p-3"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-              ) : (
-                <p className="text-justify whitespace-pre-line leading-relaxed">{product.description}</p>
-              )}
-
-              {product.shortDescription && (
-                <div className="text-gray-600 dark:text-gray-400 italic bg-orange-50/60 dark:bg-orange-950/20 p-4 rounded-xl border-l-4 border-primary mt-6">
-                  {product.shortDescription}
-                </div>
-              )}
-            </div>
-
-            {/* Key Features */}
+          <div className="space-y-8">
+            {/* Key Features Bullet List */}
             {product.features && product.features.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                  <Sparkles size={24} className="text-primary" />
-                  {t('products.key_features') || 'Tính năng nổi bật'}
+              <div className="p-6 bg-emerald-50/50 dark:bg-emerald-950/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Sparkles size={18} className="text-emerald-600 dark:text-emerald-400" />
+                  <span>{t('products.key_features') || 'Đặc điểm & Tính năng nổi bật:'}</span>
                 </h3>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-950/10 rounded-lg border border-green-100 dark:border-green-900/30">
-                      <CheckCircle size={20} className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                    <li key={index} className="flex items-start gap-2.5 text-xs sm:text-sm text-gray-800 dark:text-gray-200">
+                      <CheckCircle size={17} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
 
-            {/* Detailed specifications text */}
-            {product.specifications && (
-              <div className="mt-8">
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                  {t('products.tech_details') || 'Chi tiết kỹ thuật'}
+            {/* Main TipTap HTML Description */}
+            <div className="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed [&_img]:rounded-2xl [&_img]:shadow-md [&_img]:my-6 [&_img]:max-h-[550px] [&_img]:mx-auto [&_img]:object-cover [&_a]:text-primary-600 [&_a]:underline [&_a]:font-semibold [&_table]:w-full [&_table]:border-collapse [&_table]:my-6 [&_th]:border [&_th]:border-gray-200 [&_th]:dark:border-slate-700 [&_th]:p-3 [&_th]:bg-gray-100 [&_th]:dark:bg-slate-800 [&_td]:border [&_td]:border-gray-200 [&_td]:dark:border-slate-700 [&_td]:p-3">
+              {product.description && (product.description.includes('<') || product.description.includes('&lt;')) ? (
+                <div dangerouslySetInnerHTML={{ __html: product.description }} />
+              ) : (
+                <p className="whitespace-pre-line text-justify leading-relaxed">{product.description}</p>
+              )}
+            </div>
+
+            {/* Video Section if available */}
+            {videos.length > 0 && (
+              <div className="pt-6 border-t border-gray-100 dark:border-slate-700">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Video size={20} className="text-rose-500" />
+                  <span>Video giới thiệu & Hướng dẫn kỹ thuật:</span>
                 </h3>
-                <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/30 p-6 rounded-xl">
-                  <p className="whitespace-pre-line text-justify">{product.specifications}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {videos.map((vid: any, vi: number) => {
+                    const vidUrl = typeof vid === 'string' ? vid : vid.url;
+                    const vidTitle = typeof vid === 'string' ? 'Video giới thiệu' : (vid.title || 'Video giới thiệu');
+                    // Check if youtube embed
+                    const isYoutube = vidUrl?.includes('youtube.com') || vidUrl?.includes('youtu.be');
+                    let embedUrl = vidUrl;
+                    if (isYoutube) {
+                      const match = vidUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+                      if (match && match[1]) {
+                        embedUrl = `https://www.youtube.com/embed/${match[1]}`;
+                      }
+                    }
+
+                    return (
+                      <div key={vi} className="rounded-2xl overflow-hidden border border-gray-200 dark:border-slate-700 bg-black aspect-video shadow-md">
+                        {isYoutube ? (
+                          <iframe
+                            src={embedUrl}
+                            title={vidTitle}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <video src={vidUrl} controls className="w-full h-full object-cover">
+                            Trình duyệt không hỗ trợ thẻ video.
+                          </video>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Specifications Tab */}
+        {/* ── Tab 2: Specifications ── */}
         {activeTab === 'specs' && (
-          <div className="max-w-3xl overflow-x-auto space-y-6">
-            <table className="w-full text-sm text-left border-collapse rounded-xl overflow-hidden shadow-2xs border border-gray-100 dark:border-gray-700">
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-750">
-                {/* Brand & Model */}
-                {product.brand && (
-                  <tr className="bg-gray-50/80 dark:bg-gray-900/40">
-                    <td className="p-4 font-bold text-gray-700 dark:text-gray-300 w-1/3">
-                      Hãng sản xuất / Thương hiệu
-                    </td>
-                    <td className="p-4 text-gray-800 dark:text-gray-200 font-semibold">
-                      {product.brand}
-                    </td>
-                  </tr>
-                )}
-                {product.model && (
-                  <tr className="bg-white dark:bg-gray-800">
-                    <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
-                      Model / Mã thiết bị
-                    </td>
-                    <td className="p-4 text-gray-800 dark:text-gray-200 font-mono font-medium">
-                      {product.model}
-                    </td>
-                  </tr>
-                )}
-                {product.origin && (
-                  <tr className="bg-gray-50/80 dark:bg-gray-900/40">
-                    <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
-                      Xuất xứ / Nơi sản xuất
-                    </td>
-                    <td className="p-4 text-gray-700 dark:text-gray-300">
-                      {product.origin}
-                    </td>
-                  </tr>
-                )}
-                {product.warranty && (
-                  <tr className="bg-white dark:bg-gray-800">
-                    <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
-                      {t('products.warranty') || 'Bảo hành'}
-                    </td>
-                    <td className="p-4 text-gray-700 dark:text-gray-300">
-                      {product.warranty}
-                    </td>
-                  </tr>
-                )}
-
-                {/* Dynamic specifications list */}
-                {Array.isArray(product.specificationsList) && product.specificationsList.length > 0 ? (
-                  product.specificationsList.map((spec, idx) => (
-                    <tr 
-                      key={spec.key || idx} 
-                      className={idx % 2 === 0 ? 'bg-gray-50/80 dark:bg-gray-900/40' : 'bg-white dark:bg-gray-800'}
-                    >
-                      <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
-                        <div className="flex items-center gap-1.5">
-                          <span>{spec.name}</span>
-                          {spec.isHighlight && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300">
-                              Nổi bật
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-4 text-gray-700 dark:text-gray-300">
-                        {spec.value} {spec.unit ? <span className="font-mono text-gray-500 font-medium">{spec.unit}</span> : ''}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <>
-                    {/* Fallback legacy technicalSpecs */}
+          <div className="space-y-8 max-w-4xl">
+            {/* Grouped Dynamic Specifications */}
+            {groupedSpecs ? (
+              Object.entries(groupedSpecs).map(([groupName, groupItems], gi) => (
+                <div key={gi} className="rounded-2xl border border-gray-200/80 dark:border-slate-700 overflow-hidden shadow-2xs">
+                  <div className="px-5 py-3 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-slate-800 dark:to-slate-850 border-b border-gray-200 dark:border-slate-700 font-bold text-xs uppercase tracking-wider text-gray-800 dark:text-gray-200 flex items-center justify-between">
+                    <span>{groupName}</span>
+                    <span className="text-[10px] text-gray-400 font-normal">{groupItems.length} thông số</span>
+                  </div>
+                  <table className="w-full text-xs sm:text-sm text-left border-collapse">
+                    <tbody className="divide-y divide-gray-100 dark:divide-slate-700/60">
+                      {groupItems.map((spec, si) => (
+                        <tr 
+                          key={si}
+                          className={si % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/60 dark:bg-slate-850/40'}
+                        >
+                          <td className="py-3 px-5 font-semibold text-gray-600 dark:text-gray-300 w-1/3 sm:w-2/5">
+                            <div className="flex items-center gap-1.5">
+                              <span>{spec.name}</span>
+                              {spec.isHighlight && (
+                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300">
+                                  Nổi bật
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 px-5 text-gray-900 dark:text-white font-medium">
+                            <span>{String(spec.value)}</span>
+                            {spec.unit && (
+                              <span className="ml-1 text-gray-400 font-mono text-xs font-normal">
+                                {spec.unit}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))
+            ) : (
+              /* Fallback for legacy specs */
+              <div className="rounded-2xl border border-gray-200/80 dark:border-slate-700 overflow-hidden shadow-2xs">
+                <table className="w-full text-xs sm:text-sm text-left border-collapse">
+                  <tbody className="divide-y divide-gray-100 dark:divide-slate-700/60">
+                    {product.brand && (
+                      <tr className="bg-white dark:bg-slate-800">
+                        <td className="py-3 px-5 font-semibold text-gray-600 dark:text-gray-300 w-1/3">Thương hiệu</td>
+                        <td className="py-3 px-5 text-gray-900 dark:text-white font-bold">{product.brand}</td>
+                      </tr>
+                    )}
+                    {product.model && (
+                      <tr className="bg-gray-50/60 dark:bg-slate-850/40">
+                        <td className="py-3 px-5 font-semibold text-gray-600 dark:text-gray-300">Model / Ký hiệu</td>
+                        <td className="py-3 px-5 text-gray-900 dark:text-white font-mono">{product.model}</td>
+                      </tr>
+                    )}
+                    {product.origin && (
+                      <tr className="bg-white dark:bg-slate-800">
+                        <td className="py-3 px-5 font-semibold text-gray-600 dark:text-gray-300">Xuất xứ</td>
+                        <td className="py-3 px-5 text-gray-900 dark:text-white">{product.origin}</td>
+                      </tr>
+                    )}
                     {product.power && (
-                      <tr className="bg-gray-50/80 dark:bg-gray-900/40">
-                        <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
-                          {t('products.power') || 'Công suất'}
-                        </td>
-                        <td className="p-4 text-gray-700 dark:text-gray-300 font-mono">
-                          {product.power}W
-                        </td>
+                      <tr className="bg-gray-50/60 dark:bg-slate-850/40">
+                        <td className="py-3 px-5 font-semibold text-gray-600 dark:text-gray-300">Công suất định mức</td>
+                        <td className="py-3 px-5 text-gray-900 dark:text-white font-mono">{product.power} kW</td>
                       </tr>
                     )}
                     {product.efficiency && (
-                      <tr className="bg-white dark:bg-gray-800">
-                        <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
-                          {t('products.efficiency') || 'Hiệu suất'}
-                        </td>
-                        <td className="p-4 text-gray-700 dark:text-gray-300 font-mono">
-                          {product.efficiency}%
-                        </td>
+                      <tr className="bg-white dark:bg-slate-800">
+                        <td className="py-3 px-5 font-semibold text-gray-600 dark:text-gray-300">Hiệu suất</td>
+                        <td className="py-3 px-5 text-gray-900 dark:text-white font-mono">{product.efficiency}%</td>
                       </tr>
                     )}
-                    {product.technicalSpecs && Object.entries(product.technicalSpecs).map(([key, value], index) => (
-                      <tr key={key} className={index % 2 === 0 ? 'bg-gray-50/80 dark:bg-gray-900/40' : 'bg-white dark:bg-gray-800'}>
-                        <td className="p-4 font-bold text-gray-700 dark:text-gray-300">{key}</td>
-                        <td className="p-4 text-gray-700 dark:text-gray-300">{value}</td>
+                    {product.technicalSpecs && Object.entries(product.technicalSpecs).map(([key, value], idx) => (
+                      <tr key={key} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/60 dark:bg-slate-850/40'}>
+                        <td className="py-3 px-5 font-semibold text-gray-600 dark:text-gray-300">{key}</td>
+                        <td className="py-3 px-5 text-gray-900 dark:text-white">{value}</td>
                       </tr>
                     ))}
-                  </>
-                )}
-              </tbody>
-            </table>
-
-            {/* Downloadable Documents / Datasheets in specs tab */}
-            {Array.isArray(product.documents) && product.documents.length > 0 && (
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-                <h4 className="font-bold text-gray-900 dark:text-white text-base mb-3">
-                  Tài liệu kỹ thuật & Catalogue PDF tải về:
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {product.documents.map((doc, di) => (
-                    <a
-                      key={di}
-                      href={doc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-sky-50 dark:hover:bg-sky-950/40 hover:border-sky-300 transition-colors group"
-                    >
-                      <div className="p-2 bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 rounded-lg group-hover:scale-105 transition-transform">
-                        <span className="font-bold text-xs uppercase font-mono">{doc.fileType || 'PDF'}</span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="font-semibold text-xs text-gray-800 dark:text-gray-200 truncate group-hover:text-sky-600">
-                          {doc.title || 'Tài liệu kỹ thuật'}
-                        </div>
-                        <div className="text-[11px] text-gray-400">Bấm để tải về / xem trực tuyến</div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
+                  </tbody>
+                </table>
               </div>
             )}
+
+            {/* Warranty & Certificates Box */}
+            <div className="p-5 bg-gradient-to-r from-sky-50 to-indigo-50/50 dark:from-slate-800/80 dark:to-indigo-950/20 rounded-2xl border border-sky-100 dark:border-slate-700 flex items-start gap-3.5">
+              <ShieldCheck size={28} className="text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-sm text-gray-900 dark:text-white mb-1">
+                  Chính Sách Bảo Hành & Cam Kết Chất Lượng CTC:
+                </h4>
+                <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Tất cả sản phẩm do <strong>Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)</strong> phân phối đều có đầy đủ chứng chỉ chất lượng (CQ), chứng chỉ xuất xứ (CO) và được hưởng chế độ bảo hành chính hãng theo tiêu chuẩn của nhà sản xuất.
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Reviews Tab */}
+        {/* ── Tab 3: Documents / Datasheet ── */}
+        {activeTab === 'documents' && (
+          <div className="space-y-6 max-w-3xl">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                Tài Liệu Kỹ Thuật, Datasheet & Catalogue Tải Về
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Tài liệu chính thức do hãng sản xuất và CTC ban hành, quý khách có thể tải về hoặc xem trực tuyến.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {documents.map((doc, di) => (
+                <a
+                  key={di}
+                  href={doc.fileUrl || doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3.5 p-4 rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-850 hover:bg-sky-50 dark:hover:bg-sky-950/40 hover:border-sky-300 dark:hover:border-sky-700 transition-all group shadow-2xs hover:shadow-md"
+                >
+                  <div className="p-3 bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 rounded-xl group-hover:scale-105 transition-transform shrink-0">
+                    <FileText size={22} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white truncate group-hover:text-sky-600 dark:group-hover:text-sky-400">
+                      {doc.title || 'Tài liệu kỹ thuật PDF'}
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-gray-400 mt-0.5">
+                      <span className="uppercase font-mono font-bold text-[10px] bg-gray-200 dark:bg-slate-700 px-1.5 py-0.2 rounded text-gray-700 dark:text-gray-300">
+                        {doc.fileType || 'PDF'}
+                      </span>
+                      <span>Nhấn để tải về</span>
+                    </div>
+                  </div>
+                  <Download size={16} className="text-gray-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 shrink-0" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Tab 4: Reviews ── */}
         {activeTab === 'reviews' && (
           <div>
             <div className="flex justify-between items-center mb-8">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                {t('products.detail_tab_reviews') || 'Đánh giá khách hàng'}
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                {t('products.detail_tab_reviews') || 'Đánh giá từ khách hàng'}
               </h3>
               <button 
                 onClick={onWriteReviewClick}
-                className="border border-primary text-primary px-6 py-2 rounded-full hover:bg-primary hover:text-white transition-colors flex items-center gap-2 font-bold text-sm bg-transparent"
+                className="px-5 py-2 rounded-full border border-primary-500 text-primary-600 dark:text-primary-400 hover:bg-primary-500 hover:text-white transition-colors flex items-center gap-2 font-bold text-xs sm:text-sm bg-transparent"
               >
-                <MessageSquare size={16}/> {t('products.write_review') || 'Viết đánh giá'}
+                <MessageSquare size={16} />
+                <span>{t('products.write_review') || 'Viết đánh giá'}</span>
               </button>
             </div>
 
             {reviews.length === 0 ? (
-              <div className="text-center py-10 bg-gray-50 dark:bg-gray-900/30 rounded-xl border border-dashed border-gray-200 dark:border-gray-750">
-                <Star size={48} className="mx-auto text-gray-300 mb-3"/>
-                <p className="text-gray-500 italic mb-2">{t('products.no_reviews') || 'Chưa có đánh giá nào cho sản phẩm này.'}</p>
-                <p className="text-sm text-gray-400">{t('products.be_first') || 'Hãy là người đầu tiên gửi đánh giá!'}</p>
+              <div className="text-center py-12 bg-gray-50 dark:bg-slate-850 rounded-2xl border border-dashed border-gray-200 dark:border-slate-700">
+                <Star size={40} className="mx-auto text-gray-300 dark:text-slate-600 mb-2" />
+                <p className="text-xs sm:text-sm text-gray-500 italic mb-1">
+                  {t('products.no_reviews') || 'Chưa có đánh giá nào cho sản phẩm này.'}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {t('products.be_first') || 'Hãy là người đầu tiên chia sẻ trải nghiệm của bạn!'}
+                </p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {reviews.map((review) => (
-                  <div key={review.id} className="bg-gray-50 dark:bg-gray-900/30 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <div className="flex justify-between items-start mb-3">
+                  <div key={review.id} className="bg-gray-50 dark:bg-slate-850 p-5 rounded-2xl border border-gray-100 dark:border-slate-700/60">
+                    <div className="flex justify-between items-start mb-2.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">
+                        <div className="w-9 h-9 bg-primary-100 dark:bg-primary-950/60 rounded-full flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-xs">
                           {review.userName.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <h4 className="font-bold text-gray-800 dark:text-gray-200">{review.userName}</h4>
-                          {review.userRole && <p className="text-xs text-gray-500 dark:text-gray-400">{review.userRole}</p>}
+                          <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white">{review.userName}</h4>
+                          {review.userRole && <p className="text-[11px] text-gray-400">{review.userRole}</p>}
                         </div>
                       </div>
-                      <span className="text-xs text-gray-400">{review.date}</span>
+                      <span className="text-[11px] text-gray-400">{review.date}</span>
                     </div>
-                    <div className="flex text-yellow-400 text-xs mb-3">
+                    <div className="flex text-amber-400 text-xs mb-2">
                       {[1, 2, 3, 4, 5].map(i => (
                         <Star 
                           key={i} 
-                          size={14} 
+                          size={13} 
                           fill={i <= review.rating ? "currentColor" : "none"} 
-                          className={i <= review.rating ? "text-yellow-400" : "text-gray-300"} 
+                          className={i <= review.rating ? "text-amber-400" : "text-gray-300 dark:text-slate-600"} 
                         />
                       ))}
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                    <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-relaxed">
                       "{review.comment}"
                     </p>
                   </div>

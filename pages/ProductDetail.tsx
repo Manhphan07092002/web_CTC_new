@@ -30,7 +30,8 @@ const ProductDetail: React.FC = () => {
   const { t } = useLanguage();
   const { addToCart, openCartModal } = useCart();
   const { categories: productCategories } = useProductCategories();
-  const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'reviews'>('desc');
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'documents' | 'reviews'>('desc');
   
   // AI States
   const [aiSummary, setAiSummary] = useState<string>('');
@@ -412,6 +413,8 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
                 averageRating={averageRating}
                 reviewsCount={reviews.length}
                 views={views}
+                selectedVariant={selectedVariant}
+                onSelectVariant={setSelectedVariant}
               />
 
               <ProductActions 
