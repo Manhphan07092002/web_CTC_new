@@ -124,13 +124,25 @@ export const DEFAULT_ATTRIBUTE_TEMPLATES = [
   }
 ];
 
+const normalizeTemplate = (tpl: any) => {
+  if (!tpl) return null;
+  const obj = typeof tpl.toObject === 'function' ? tpl.toObject() : { ...tpl };
+  const rawFields = obj.attributes || obj.fields || [];
+  obj.attributes = rawFields;
+  obj.fields = rawFields;
+  obj.category = obj.category || obj.categorySlug || '';
+  if (obj._id && !obj.id) obj.id = String(obj._id);
+  return obj;
+};
+
 // GET /api/attribute-templates
 router.get('/', async (req, res) => {
   try {
     const admin = req.query.admin === 'true';
     const filter = admin ? { isDeleted: { $ne: true } } : { isActive: true, isDeleted: { $ne: true } };
     const items = await db.attributeTemplates.getAll(filter);
-    res.json(items);
+    const normalized = (items || []).map(normalizeTemplate);
+    res.json(normalized);
   } catch (error: any) {
     console.error('Error getting attribute templates:', error);
     res.status(500).json({ message: 'Failed to get attribute templates', error: error?.message });
@@ -160,12 +172,13 @@ router.get('/by-category/:cat', async (req, res) => {
         isActive: true,
         $or: [
           { categorySlug: new RegExp(cat, 'i') },
-          { name: new RegExp(cat, 'i') }
+          { name: new RegExp(cat, 'i') },
+          { category: new RegExp(cat, 'i') }
         ]
       });
     }
 
-    res.json(template || null);
+    res.json(normalizeTemplate(template));
   } catch (error: any) {
     console.error('Error getting template by category:', error);
     res.status(500).json({ message: 'Failed to get attribute template by category', error: error?.message });
@@ -177,7 +190,7 @@ router.get('/:id', async (req, res) => {
   try {
     const item = await db.attributeTemplates.getById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Attribute template not found' });
-    res.json(item);
+    res.json(normalizeTemplate(item));
   } catch (error: any) {
     console.error('Error getting attribute template:', error);
     res.status(500).json({ message: 'Failed to get attribute template', error: error?.message });
@@ -187,24 +200,30 @@ router.get('/:id', async (req, res) => {
 // POST /api/attribute-templates
 router.post('/', async (req, res) => {
   try {
-    const { name, categoryId, categorySlug, categoryName, description, attributes, isActive, sortOrder } = req.body;
+    const { name, category, categoryId, categorySlug, categoryName, description, attributes, fields, isActive, sortOrder } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Tên bộ thuộc tính không được để trống' });
     }
 
+    const rawFields = Array.isArray(fields) && fields.length > 0 
+      ? fields 
+      : (Array.isArray(attributes) ? attributes : []);
+
     const created = await db.attributeTemplates.add({
       name: name.trim(),
+      category: category || categorySlug || '',
       categoryId: categoryId || undefined,
-      categorySlug: categorySlug || '',
+      categorySlug: categorySlug || category || '',
       categoryName: categoryName || '',
       description: description || '',
-      attributes: Array.isArray(attributes) ? attributes : [],
+      attributes: rawFields,
+      fields: rawFields,
       isActive: isActive !== undefined ? Boolean(isActive) : true,
       sortOrder: Number(sortOrder) || 0,
       isDeleted: false
     });
 
-    res.status(201).json(created);
+    res.status(201).json(normalizeTemplate(created));
   } catch (error: any) {
     console.error('Error creating attribute template:', error);
     res.status(500).json({ message: 'Failed to create attribute template', error: error?.message });
@@ -214,21 +233,28 @@ router.post('/', async (req, res) => {
 // PUT /api/attribute-templates/:id
 router.put('/:id', async (req, res) => {
   try {
-    const { name, categoryId, categorySlug, categoryName, description, attributes, isActive, sortOrder } = req.body;
+    const { name, category, categoryId, categorySlug, categoryName, description, attributes, fields, isActive, sortOrder } = req.body;
     const updateData: any = {};
 
     if (name !== undefined) updateData.name = name.trim();
+    if (category !== undefined) updateData.category = category;
     if (categoryId !== undefined) updateData.categoryId = categoryId || undefined;
     if (categorySlug !== undefined) updateData.categorySlug = categorySlug;
     if (categoryName !== undefined) updateData.categoryName = categoryName;
     if (description !== undefined) updateData.description = description;
-    if (attributes !== undefined) updateData.attributes = Array.isArray(attributes) ? attributes : [];
+    
+    if (fields !== undefined || attributes !== undefined) {
+      const rawFields = Array.isArray(fields) ? fields : (Array.isArray(attributes) ? attributes : []);
+      updateData.attributes = rawFields;
+      updateData.fields = rawFields;
+    }
+
     if (isActive !== undefined) updateData.isActive = Boolean(isActive);
     if (sortOrder !== undefined) updateData.sortOrder = Number(sortOrder);
 
     const updated = await db.attributeTemplates.update(req.params.id, updateData);
     if (!updated) return res.status(404).json({ message: 'Attribute template not found' });
-    res.json(updated);
+    res.json(normalizeTemplate(updated));
   } catch (error: any) {
     console.error('Error updating attribute template:', error);
     res.status(500).json({ message: 'Failed to update attribute template', error: error?.message });
@@ -250,7 +276,7 @@ router.delete('/:id', async (req, res) => {
 // POST /api/attribute-templates/seed-defaults
 router.post('/seed-defaults', async (req, res) => {
   try {
-    let createdCount = 0;
+    let seededCount = 0;
     for (const tpl of DEFAULT_ATTRIBUTE_TEMPLATES) {
       // Find category in DB if exists to associate ID
       let matchedCat = null;
@@ -275,16 +301,30 @@ router.post('/seed-defaults', async (req, res) => {
       if (!existing) {
         await AttributeTemplate.create({
           ...tpl,
+          category: tpl.categorySlug,
+          fields: tpl.attributes,
           categoryId: matchedCat ? matchedCat._id : undefined,
           categoryName: matchedCat ? matchedCat.name : tpl.categoryName,
           isDeleted: false
         });
-        createdCount++;
+        seededCount++;
+      } else {
+        // Update existing to ensure fields are fully populated
+        existing.attributes = tpl.attributes as any;
+        existing.fields = tpl.attributes as any;
+        existing.category = tpl.categorySlug;
+        if (matchedCat && !existing.categoryId) {
+          existing.categoryId = matchedCat._id;
+          existing.categoryName = matchedCat.name;
+        }
+        await existing.save();
+        seededCount++;
       }
     }
 
     const all = await db.attributeTemplates.getAll();
-    res.json({ success: true, message: `Đã khởi tạo ${createdCount} bộ thuộc tính mẫu.`, data: all });
+    const normalized = (all || []).map(normalizeTemplate);
+    res.json({ success: true, message: `Đã cập nhật/khởi tạo ${seededCount} bộ thuộc tính mẫu chuẩn.`, data: normalized });
   } catch (error: any) {
     console.error('Error seeding attribute templates:', error);
     res.status(500).json({ message: 'Failed to seed attribute templates', error: error?.message });

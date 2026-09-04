@@ -1427,15 +1427,19 @@ export interface IAttributeField {
   required?: boolean;
   order: number;
   placeholder?: string;
+  isHighlight?: boolean;
+  isFilterable?: boolean;
 }
 
 export interface IAttributeTemplate extends BaseDocument {
   name: string;
+  category?: string;
   categoryId?: mongoose.Types.ObjectId;
   categorySlug?: string;
   categoryName?: string;
   description?: string;
   attributes: IAttributeField[];
+  fields?: IAttributeField[];
   isActive: boolean;
   sortOrder: number;
   isDeleted?: boolean;
@@ -1450,16 +1454,20 @@ const AttributeFieldSchema = new Schema<IAttributeField>({
   defaultValue: Schema.Types.Mixed,
   required: { type: Boolean, default: false },
   order: { type: Number, default: 0 },
-  placeholder: { type: String, default: '' }
+  placeholder: { type: String, default: '' },
+  isHighlight: { type: Boolean, default: false },
+  isFilterable: { type: Boolean, default: false }
 }, { _id: false });
 
 const AttributeTemplateSchema = new Schema<IAttributeTemplate>({
   name: { type: String, required: true },
+  category: { type: String, default: '' },
   categoryId: { type: Schema.Types.ObjectId, ref: 'ProductCategory' },
   categorySlug: { type: String, default: '' },
   categoryName: { type: String, default: '' },
   description: { type: String, default: '' },
   attributes: [AttributeFieldSchema],
+  fields: [AttributeFieldSchema],
   isActive: { type: Boolean, default: true },
   sortOrder: { type: Number, default: 0 },
   isDeleted: { type: Boolean, default: false }

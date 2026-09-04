@@ -72,6 +72,7 @@ const ProductForm: React.FC = () => {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [templates, setTemplates] = useState<AttributeTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
 
   // File Picker State
   const [showImagePicker, setShowImagePicker] = useState(false);
@@ -252,44 +253,80 @@ const ProductForm: React.FC = () => {
   };
 
   // Apply Attribute Template to Specs List
-  const applyTemplateForCategory = (catSlug: string) => {
-    if (!catSlug) return;
+  const applyTemplateForCategory = (catSlugOrId: string) => {
+    if (!catSlugOrId || !templates || templates.length === 0) return;
+    const target = catSlugOrId.toLowerCase().trim();
     const match = templates.find(t => 
-      (t.category && t.category.toLowerCase() === catSlug.toLowerCase()) || 
-      (t.categoryId && t.categoryId.toLowerCase() === catSlug.toLowerCase()) ||
-      (t.category && catSlug.toLowerCase().includes(t.category.toLowerCase()))
+      (t.category && t.category.toLowerCase().trim() === target) || 
+      (t.categorySlug && t.categorySlug.toLowerCase().trim() === target) ||
+      (t.categoryId && String(t.categoryId).toLowerCase().trim() === target) ||
+      (t.name && t.name.toLowerCase().includes(target)) ||
+      (t.category && target.includes(t.category.toLowerCase().trim())) ||
+      (t.categorySlug && target.includes(t.categorySlug.toLowerCase().trim()))
     );
 
-    if (match && Array.isArray(match.fields) && match.fields.length > 0) {
-      const newSpecs: ProductSpecification[] = match.fields.map(f => ({
-        name: f.name,
-        key: f.key,
-        value: (formData.technicalSpecs && formData.technicalSpecs[f.name]) || (formData.technicalSpecs && formData.technicalSpecs[f.key]) || '',
-        unit: f.unit || '',
-        type: f.type || 'text',
-        isHighlight: f.isHighlight || false
-      }));
+    if (match) {
+      const rawFields = match.fields || match.attributes || [];
+      if (Array.isArray(rawFields) && rawFields.length > 0) {
+        const existingMap = new Map<string, ProductSpecification>();
+        formData.specificationsList.forEach(s => {
+          if (s.key) existingMap.set(s.key.toLowerCase().trim(), s);
+          if (s.name) existingMap.set(s.name.toLowerCase().trim(), s);
+        });
 
-      setFormData(prev => ({
-        ...prev,
-        specificationsList: newSpecs
-      }));
-      showToast(`Đã tự động áp dụng mẫu thông số "${match.name}"!`, 'info');
+        const newSpecs: ProductSpecification[] = rawFields.map((f: any) => {
+          const existing = existingMap.get((f.key || '').toLowerCase().trim()) || existingMap.get((f.name || '').toLowerCase().trim());
+          return {
+            name: f.name,
+            key: f.key || generateSlug(f.name).replace(/-/g, '_'),
+            value: existing?.value || (formData.technicalSpecs && (formData.technicalSpecs[f.name] || formData.technicalSpecs[f.key])) || f.defaultValue || '',
+            unit: f.unit || existing?.unit || '',
+            type: f.type || 'text',
+            isHighlight: f.isHighlight || false
+          };
+        });
+
+        setFormData(prev => ({
+          ...prev,
+          specificationsList: newSpecs
+        }));
+        showToast(`Đã tự động áp dụng mẫu thông số "${match.name}"!`, 'info');
+      }
     }
   };
 
+  const getTemplateIcon = (tplName: string = '', category: string = '') => {
+    const text = (tplName + ' ' + category).toLowerCase();
+    if (text.includes('camera') || text.includes('an ninh')) return '📷';
+    if (text.includes('mạng') || text.includes('switch') || text.includes('router')) return '🌐';
+    if (text.includes('máy tính') || text.includes('laptop') || text.includes('server')) return '💻';
+    if (text.includes('pin') || text.includes('solar') || text.includes('mặt trời')) return '☀️';
+    if (text.includes('inverter') || text.includes('biến tần')) return '⚡';
+    if (text.includes('máy in') || text.includes('in') || text.includes('văn phòng')) return '🖨️';
+    return '📋';
+  };
+
   const handleApplyTemplate = (tpl: AttributeTemplate) => {
-    if (!tpl.fields || tpl.fields.length === 0) return;
+    const rawFields = tpl.fields || tpl.attributes || [];
+    if (!Array.isArray(rawFields) || rawFields.length === 0) {
+      showToast(`Mẫu "${tpl.name}" chưa có trường thông số nào`, 'warning');
+      return;
+    }
+
+    setSelectedTemplateId(tpl.id || tpl._id || '');
 
     const existingMap = new Map<string, ProductSpecification>();
-    formData.specificationsList.forEach(s => existingMap.set(s.key || s.name, s));
+    formData.specificationsList.forEach(s => {
+      if (s.key) existingMap.set(s.key.toLowerCase().trim(), s);
+      if (s.name) existingMap.set(s.name.toLowerCase().trim(), s);
+    });
 
-    const newSpecs: ProductSpecification[] = tpl.fields.map(f => {
-      const existing = existingMap.get(f.key) || existingMap.get(f.name);
+    const newSpecs: ProductSpecification[] = rawFields.map((f: any) => {
+      const existing = existingMap.get((f.key || '').toLowerCase().trim()) || existingMap.get((f.name || '').toLowerCase().trim());
       return {
         name: f.name,
-        key: f.key,
-        value: existing?.value || '',
+        key: f.key || generateSlug(f.name).replace(/-/g, '_'),
+        value: existing?.value || f.defaultValue || '',
         unit: f.unit || existing?.unit || '',
         type: f.type || 'text',
         isHighlight: f.isHighlight || false
@@ -300,7 +337,7 @@ const ProductForm: React.FC = () => {
       ...prev,
       specificationsList: newSpecs
     }));
-    showToast(`Đã áp dụng mẫu thông số "${tpl.name}"!`, 'success');
+    showToast(`Đã nạp ${newSpecs.length} trường thông số từ mẫu "${tpl.name}"!`, 'success');
   };
 
   // Load Existing Product
@@ -1272,56 +1309,148 @@ const ProductForm: React.FC = () => {
           {/* ================= TAB 5: DYNAMIC SPECIFICATIONS ================= */}
           {activeTab === 'specs' && (
             <div className="space-y-6">
-              <div className="border-b border-gray-100 dark:border-slate-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="border-b border-gray-100 dark:border-slate-800 pb-3 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <Sliders size={18} className="text-indigo-500" />
                     <span>5. Bảng thông số kỹ thuật động (Dynamic Specifications)</span>
                   </h3>
                   <p className="text-xs text-gray-500">
-                    Linh hoạt cho mọi ngành nghề (Camera, Switch mạng, Máy tính, Solar, Inverter...). Tự động khớp theo mẫu danh mục.
+                    Linh hoạt cho mọi ngành nghề (Camera, Switch mạng, Máy tính, Solar, Inverter, Máy in...). Tự động khớp theo mẫu danh mục.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 flex-wrap">
-                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-gray-200 dark:border-slate-700 text-xs">
-                    <span className="px-2 text-gray-500 font-medium">Nạp mẫu:</span>
-                    {templates.slice(0, 3).map(tpl => (
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  {/* Select Dropdown to pick template from DB */}
+                  <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/90 p-1.5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-2xs">
+                    <label htmlFor="attribute-template-select" className="pl-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shrink-0">
+                      <Sparkles size={14} className="text-amber-500 animate-pulse" />
+                      <span>Nạp mẫu từ CSDL:</span>
+                    </label>
+
+                    <select
+                      id="attribute-template-select"
+                      value={selectedTemplateId}
+                      onChange={(e) => {
+                        const id = e.target.value;
+                        setSelectedTemplateId(id);
+                        if (!id) return;
+                        const found = templates.find(t => (t.id || t._id) === id);
+                        if (found) handleApplyTemplate(found);
+                      }}
+                      className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-lg text-xs font-medium text-gray-800 dark:text-gray-100 cursor-pointer focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[240px] max-w-[340px]"
+                    >
+                      <option value="">-- Chọn bộ mẫu thông số ({templates.length} mẫu trong CSDL) --</option>
+                      {templates.map(tpl => {
+                        const count = (tpl.fields || tpl.attributes || []).length;
+                        const icon = getTemplateIcon(tpl.name, tpl.category || tpl.categorySlug);
+                        return (
+                          <option key={tpl.id || tpl._id} value={tpl.id || tpl._id}>
+                            {icon} {tpl.name} ({count} thông số)
+                          </option>
+                        );
+                      })}
+                    </select>
+
+                    {selectedTemplateId && (
                       <button
-                        key={tpl.id || tpl.category || (tpl as any)._id}
                         type="button"
-                        onClick={() => handleApplyTemplate(tpl)}
-                        className="px-2.5 py-1 bg-white dark:bg-slate-900 hover:text-indigo-600 rounded-lg font-semibold shadow-2xs cursor-pointer text-[11px]"
+                        onClick={() => {
+                          const found = templates.find(t => (t.id || t._id) === selectedTemplateId);
+                          if (found) handleApplyTemplate(found);
+                        }}
+                        className="px-2.5 py-1.5 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                        title="Nạp lại mẫu này"
                       >
-                        {tpl.name.replace(/Mẫu thông số /i, '')}
+                        Nạp lại
                       </button>
-                    ))}
+                    )}
                   </div>
+
+                  {formData.specificationsList.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm('Bạn có chắc chắn muốn xóa toàn bộ thông số kỹ thuật hiện tại?')) {
+                          setFormData(prev => ({ ...prev, specificationsList: [] }));
+                          setSelectedTemplateId('');
+                          showToast('Đã xóa tất cả thông số kỹ thuật', 'info');
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 px-3 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs font-semibold cursor-pointer transition-all"
+                      title="Xóa toàn bộ danh sách thông số"
+                    >
+                      <Trash2 size={13} />
+                      <span>Xóa hết</span>
+                    </button>
+                  )}
 
                   <button
                     type="button"
                     onClick={handleAddSpecRow}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold cursor-pointer transition-all"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold cursor-pointer transition-all shadow-xs"
                   >
                     <Plus size={14} />
-                    <span>Thêm dòng thông số</span>
+                    <span>Thêm dòng</span>
                   </button>
                 </div>
               </div>
 
               {/* Specs Table */}
               {formData.specificationsList.length === 0 ? (
-                <div className="py-12 text-center bg-gray-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700 p-6">
-                  <Sliders size={36} className="mx-auto text-gray-400 mb-2" />
-                  <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">Chưa có thông số kỹ thuật nào</p>
-                  <p className="text-xs text-gray-400 mt-0.5 mb-3">Bấm "Nạp mẫu" ở trên hoặc tự thêm các dòng thông số</p>
-                  <button
-                    type="button"
-                    onClick={handleAddSpecRow}
-                    className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl"
-                  >
-                    + Thêm thông số đầu tiên
-                  </button>
+                <div className="py-10 text-center bg-gray-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700 p-6">
+                  <Sliders size={36} className="mx-auto text-indigo-500 mb-2 opacity-80" />
+                  <p className="font-bold text-gray-800 dark:text-gray-200 text-sm">Chưa có thông số kỹ thuật nào</p>
+                  <p className="text-xs text-gray-500 mt-1 mb-5 max-w-md mx-auto">
+                    Chọn từ menu trỏ xuống ở trên hoặc bấm vào một trong các bộ mẫu trong CSDL dưới đây để nạp nhanh:
+                  </p>
+
+                  {/* Grid of database template cards */}
+                  {templates.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-4xl mx-auto mb-6">
+                      {templates.map(tpl => {
+                        const count = (tpl.fields || tpl.attributes || []).length;
+                        const icon = getTemplateIcon(tpl.name, tpl.category || tpl.categorySlug);
+                        return (
+                          <button
+                            key={tpl.id || tpl._id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedTemplateId(tpl.id || tpl._id || '');
+                              handleApplyTemplate(tpl);
+                            }}
+                            className="flex items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900 hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/30 border border-gray-200 dark:border-slate-700 rounded-xl text-left shadow-2xs transition-all cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className="text-lg shrink-0">{icon}</span>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold text-gray-800 dark:text-gray-200 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                                  {tpl.name}
+                                </div>
+                                <div className="text-[11px] text-gray-400 truncate">
+                                  {tpl.categoryName || tpl.category || tpl.categorySlug}
+                                </div>
+                              </div>
+                            </div>
+                            <span className="shrink-0 text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-md">
+                              {count} trường
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleAddSpecRow}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer transition-all shadow-xs"
+                    >
+                      <Plus size={14} />
+                      <span>Thêm dòng thông số thủ công</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-slate-700">
