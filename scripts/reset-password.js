@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -12,30 +13,39 @@ const UserSchema = new mongoose.Schema({
   lastLogin: { type: Date }
 }, { timestamps: true });
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 async function resetPassword() {
   try {
-    console.log('Connecting to MongoDB...');
+    console.log('Connecting to MongoDB at:', MONGO_URI);
     await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB');
 
-    const admin = await User.findOne({ email: 'admin@ctcdn.vn' });
+    let admin = await User.findOne({ email: 'admin@ctcdn.vn' });
+    const salt = await bcrypt.genSalt(10);
+    const newPassword = 'CTC@2024';
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
     
     if (!admin) {
-      console.error('Admin user not found!');
-      process.exit(1);
+      console.log('Admin user not found. Creating new admin user...');
+      admin = await User.create({
+        name: 'Super Admin',
+        email: 'admin@ctcdn.vn',
+        password: hashedPassword,
+        role: 'admin',
+        phone: '0915 059 666',
+        avatar: ''
+      });
+    } else {
+      console.log('Found admin user:', admin._id);
+      admin.password = hashedPassword;
+      admin.role = 'admin';
+      await admin.save();
     }
-
-    console.log('Found admin user:', admin._id);
-    console.log('Resetting password to: CTC@2024');
     
-    admin.password = 'CTC@2024';
-    await admin.save();
-    
-    console.log('\n✅ Password reset successfully!');
+    console.log('\n✅ Password reset successfully with bcrypt hash!');
     console.log('Email: admin@ctcdn.vn');
-    console.log('Password: CTC@2024');
+    console.log('Password: ' + newPassword);
     
     await mongoose.disconnect();
     console.log('\nDisconnected from MongoDB');

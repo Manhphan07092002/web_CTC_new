@@ -84,6 +84,25 @@ export const Features: React.FC = () => {
       color: "from-amber-500 to-orange-600",
       accentColor: "orange",
       icon: Handshake,
+      tag: "CTC-SECTORS-2026",
+      desc: getLangText(language, {
+        vi: 'Đa dạng hoá các mũi nhọn phát triển, từ hạ tầng viễn thông, cơ điện M&E, năng lượng tái tạo đến giải pháp công nghệ thông tin và chuyển đổi số.',
+        en: 'Diversified core capabilities ranging from telecom infrastructure, M&E electrical engineering, renewable energy to IT solutions.',
+        ko: '통신 인프라, M&E 전기 엔지니어링, 재생 가능 에너지부터 IT 솔루션에 이르는 다각화된 역량.',
+        ja: '通信インフラ、M&E電気設備、再生可能エネルギーからITソリューションまでの多角化された事業領域。',
+        zh: '多元化核心业务，涵盖电信基础设施、M&E机电工程、可再生能源及IT数字化解决方案。',
+        de: 'Vielfältige Kernkompetenzen von Telekommunikationsinfrastruktur, M&E bis hin zu erneuerbaren Energien und IT-Lösungen.'
+      }),
+      details: [
+        getLangText(language, { vi: 'Cung cấp và tích hợp giải pháp CNTT, hệ thống mạng viễn thông & trung tâm dữ liệu.', en: 'Integrated IT solutions, telecom networks & smart data centers', ko: '통합 IT 솔루션, 통신 네트워크 및 데이터 센터 공급', ja: '統合ITソリューション、通信ネットワークおよびデータセンター', zh: '提供与集成IT解决方案、电信网络系统及数据中心', de: 'Integrierte IT-Lösungen, Telekommunikationsnetze & Rechenzentren' }),
+        getLangText(language, { vi: 'Tổng thầu EPC xây dựng, hạ tầng trạm BTS và hệ thống cơ điện công trình M&E.', en: 'General EPC contractor for construction, BTS infrastructure & M&E', ko: '민간 및 산업 EPC 총괄 시공, BTS 기지국 및 M&E 전기/기계 시스템', ja: '建築・土木EPC総一括施工、BTS局インフラおよびM&E設備施工', zh: '民用与工业EPC总承包施工、BTS基站与建筑M&E机电系统', de: 'EPC-Generalunternehmer für Bau, BTS-Infrastruktur & M&E' }),
+        getLangText(language, { vi: 'Dịch vụ tư vấn, đo kiểm, cấu hình và bảo dưỡng, ứng cứu sự cố viễn thông O&M.', en: 'Consultation, testing, maintenance & telecom O&M emergency services', ko: '기술 자문, 측정, 구성 및 통신 O&M 운영/유지보수 서비스', ja: '高度技術コンサルティング、測定・設定および通信O&M保守サービス', zh: '技术咨询、勘察测试、配置及通信O&M运维保障服务', de: 'Beratung, Prüfung, Konfiguration und Telekom-O&M-Wartung' }),
+        getLangText(language, { vi: 'Triển khai dự án chìa khoá trao tay, năng lượng mặt trời và chuyển đổi số.', en: 'Turnkey smart projects, solar energy systems and digital transformation', ko: '턴키 프로젝트, 태양광 발전 시스템 및 디지털 전환 솔루션', ja: 'ターンキープロジェクト、太陽光発電システムおよびDX推進', zh: '交钥匙工程、光伏太阳能系统及数字化转型升级', de: 'Schlüsselfertige Projekte, Solaranlagen und digitale Transformation' })
+      ],
+      stats: [
+        { value: "4+", label: getLangText(language, { vi: 'Khối ngành mũi nhọn', en: 'Core Sectors', ko: '핵심 분야', ja: '主要事業部門', zh: '核心业务板块', de: 'Kernbereiche' }) },
+        { value: "100%", label: getLangText(language, { vi: 'Chuẩn quy trình EPC', en: 'EPC Standards', ko: 'EPC 표준 준수', ja: 'EPC標準準拠', zh: 'EPC标准流程', de: 'EPC-Standards' }) }
+      ],
       btnText: getLangText(language, { vi: 'Khám Phá Chi Tiết Lĩnh Vực', en: 'Explore Business Sectors', ko: '사업 분야 자세히 보기', ja: '事業領域の詳細を見る', zh: '探索业务领域', de: 'Geschäftsbereiche erkunden' }),
       downloadText: getLangText(language, { vi: 'Xem Danh Mục Dự Án', en: 'View Portfolio', ko: '포트폴리오 보기', ja: 'ポートフォリオを見る', zh: '查看项目组合', de: 'Portfolio ansehen' }),
       modalId: 'lvhd'
@@ -346,7 +365,7 @@ export const Features: React.FC = () => {
 
               {/* Bullet details stack */}
               <div className="space-y-3">
-                {activeTabInfo.details.map((detail, idx) => (
+                {(activeTabInfo?.details || []).map((detail: string, idx: number) => (
                   <div key={idx} className="flex items-start gap-3 bg-white/40 dark:bg-slate-950/20 p-3 sm:p-3.5 rounded-2xl border border-white/50 dark:border-white/5 shadow-sm">
                     <Check size={16} className="text-emerald-500 mt-0.5 flex-shrink-0" />
                     <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-tight">{detail}</span>
@@ -360,7 +379,7 @@ export const Features: React.FC = () => {
               
               {/* Mini Stats Widgets */}
               <div className="flex items-center gap-6">
-                {activeTabInfo.stats.map((stat, idx) => (
+                {(activeTabInfo?.stats || []).map((stat: any, idx: number) => (
                   <div key={idx} className="space-y-1">
                     <div className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
                       {stat.value}
