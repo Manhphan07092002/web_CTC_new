@@ -503,7 +503,14 @@ export const chatService = {
             const errStatus = err?.status;
             console.warn(`[AI Provider Warning] Provider '${provider}' Model '${currentModel}' Key #${keyIndex + 1}/${keys.length} error (${errStatus || 'error'}: ${errMsg}).`);
 
-            const isModelNotFoundError = 
+            const isAuthError = 
+              errStatus === 401 || 
+              errStatus === 403 || 
+              errMsg.toLowerCase().includes('invalid api key') || 
+              errMsg.toLowerCase().includes('unauthorized');
+
+            const isModelOrRateLimitError = 
+              errStatus === 429 ||
               errStatus === 404 || 
               (errStatus === 400 && (errMsg.toLowerCase().includes('model') || errMsg.toLowerCase().includes('decommissioned') || errMsg.toLowerCase().includes('deprecated'))) ||
               errMsg.toLowerCase().includes('does not exist') || 
@@ -513,15 +520,25 @@ export const chatService = {
               errMsg.toLowerCase().includes('deprecated') ||
               errMsg.toLowerCase().includes('retired') ||
               errMsg.toLowerCase().includes('model_decommissioned') ||
-              errMsg.toLowerCase().includes('model_not_found');
+              errMsg.toLowerCase().includes('model_not_found') ||
+              errMsg.toLowerCase().includes('rate limit') ||
+              errMsg.toLowerCase().includes('rate_limit_exceeded') ||
+              errMsg.toLowerCase().includes('quota') ||
+              errMsg.toLowerCase().includes('resource_exhausted') ||
+              errMsg.toLowerCase().includes('too many requests') ||
+              errMsg.toLowerCase().includes('capacity') ||
+              errMsg.toLowerCase().includes('tpm') ||
+              errMsg.toLowerCase().includes('rpm');
 
-            if (isModelNotFoundError) {
-              // Try next model candidate immediately for this provider
-              continue;
+            if (isAuthError) {
+              // Key is invalid, break and try next key if multiple keys exist
+              break;
             }
 
-            if (keys.length > 1 && isQuotaOrAuthError(errMsg, errStatus)) {
-              break;
+            if (isModelOrRateLimitError) {
+              // Rate limit (429) or model error: Auto-switch to next candidate model immediately!
+              console.log(`[AI Auto-Failover] Model '${currentModel}' reached limit (${errStatus || 'Limit'}: ${errMsg}). Auto-switching to next model candidate...`);
+              continue;
             }
           }
         }

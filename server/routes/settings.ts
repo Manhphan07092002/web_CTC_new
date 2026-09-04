@@ -214,8 +214,8 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
               if (testModel === initialModel) {
                 primaryModelError = errMsg;
               }
-              if (resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist') || errMsg.toLowerCase().includes('decommissioned')) {
-                lastError = `Model ${testModel} không khả dụng (${errMsg})`;
+              if (resp.status === 429 || resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist') || errMsg.toLowerCase().includes('decommissioned') || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('rate limit')) {
+                lastError = `Model ${testModel} chạm giới hạn hoặc không khả dụng (${errMsg})`;
                 continue; // Try next model
               }
               throw new Error(errMsg);
@@ -259,8 +259,8 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
               if (testModel === initialModel) {
                 primaryModelError = errMsg;
               }
-              if (resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist') || errMsg.toLowerCase().includes('decommissioned')) {
-                lastError = `Model ${testModel} không hỗ trợ trên key này (${errMsg})`;
+              if (resp.status === 429 || resp.status === 404 || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('does not exist') || errMsg.toLowerCase().includes('decommissioned') || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('rate limit')) {
+                lastError = `Model ${testModel} chạm giới hạn hoặc không hỗ trợ (${errMsg})`;
                 continue; // Try next candidate model
               }
               throw new Error(errMsg);
