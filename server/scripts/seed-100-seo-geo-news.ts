@@ -25,6 +25,7 @@ import dotenv from 'dotenv';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2101,13 +2102,13 @@ async function writePreview(rows: unknown[]): Promise<void> {
 async function main(): Promise<void> {
   validateTopics();
 
-  console.log('\n============================================================');
-  console.log('CTC — SEED 100 BÀI VIẾT SEO + GEO');
-  console.log('============================================================');
-  console.log(`PUBLISH_NEWS : ${PUBLISH_NEWS}`);
-  console.log(`INDEX_NEWS   : ${INDEX_NEWS}`);
-  console.log(`DRY_RUN      : ${DRY_RUN}`);
-  console.log('============================================================\n');
+  logger.log('\n============================================================');
+  logger.log('CTC — SEED 100 BÀI VIẾT SEO + GEO');
+  logger.log('============================================================');
+  logger.log(`PUBLISH_NEWS : ${PUBLISH_NEWS}`);
+  logger.log(`INDEX_NEWS   : ${INDEX_NEWS}`);
+  logger.log(`DRY_RUN      : ${DRY_RUN}`);
+  logger.log('============================================================\n');
 
   const preview = TOPICS.map((topic) => {
     const cluster = CLUSTERS[topic.cluster];
@@ -2137,20 +2138,20 @@ async function main(): Promise<void> {
   await writePreview(preview);
 
   if (DRY_RUN) {
-    console.log('🧪 DRY_RUN=true: đã tạo preview, chưa ghi MongoDB.');
-    console.log(`✅ Số bài hợp lệ: ${preview.length}`);
+    logger.log('🧪 DRY_RUN=true: đã tạo preview, chưa ghi MongoDB.');
+    logger.log(`✅ Số bài hợp lệ: ${preview.length}`);
     return;
   }
 
   await mongoose.connect(MONGO_URI);
-  console.log('✅ Đã kết nối MongoDB.');
+  logger.log('✅ Đã kết nối MongoDB.');
 
   const db = mongoose.connection.db;
   if (db) {
     const res1 = await db.collection('news').deleteMany({}).catch(() => ({ deletedCount: 0 }));
     const res2 = await db.collection('newsarticles').deleteMany({}).catch(() => ({ deletedCount: 0 }));
     const res3 = await db.collection('newscategories').deleteMany({}).catch(() => ({ deletedCount: 0 }));
-    console.log(`🗑️ Đã xóa sạch toàn bộ bài viết cũ (${(res1.deletedCount || 0) + (res2.deletedCount || 0)} bài) và danh mục tin tức cũ (${res3.deletedCount || 0} danh mục).`);
+    logger.log(`🗑️ Đã xóa sạch toàn bộ bài viết cũ (${(res1.deletedCount || 0) + (res2.deletedCount || 0)} bài) và danh mục tin tức cũ (${res3.deletedCount || 0} danh mục).`);
   }
 
   const categoryMap = await ensureCategories();
@@ -2253,7 +2254,7 @@ async function main(): Promise<void> {
     );
 
     upserted += 1;
-    console.log(`✅ ${String(upserted).padStart(3, '0')}/100 — ${topic.title}`);
+    logger.log(`✅ ${String(upserted).padStart(3, '0')}/100 — ${topic.title}`);
   }
 
   for (const cluster of Object.values(CLUSTERS)) {
@@ -2267,8 +2268,8 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log(`\n🎉 Hoàn thành upsert ${upserted} bài viết.`);
-  console.log(
+  logger.log(`\n🎉 Hoàn thành upsert ${upserted} bài viết.`);
+  logger.log(
     PUBLISH_NEWS
       ? '⚠️ Bài đã được xuất bản theo cấu hình. Hãy kiểm tra kỹ nội dung.'
       : '📝 Bài đang ở trạng thái draft/noindex để duyệt biên tập.'
@@ -2277,7 +2278,7 @@ async function main(): Promise<void> {
 
 main()
   .catch((error) => {
-    console.error('\n❌ Seed thất bại:', error);
+    logger.error('\n❌ Seed thất bại:', error);
     process.exitCode = 1;
   })
   .finally(async () => {

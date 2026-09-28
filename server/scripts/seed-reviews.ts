@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Product } from '../../models';
 import dotenv from 'dotenv';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -60,19 +61,19 @@ const sampleReviews = [
 
 async function seedReviews() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // Get all products
     const products = await Product.find().limit(3);
     
     if (products.length === 0) {
-      console.log('No products found. Please seed products first.');
+      logger.log('No products found. Please seed products first.');
       return;
     }
 
-    console.log(`Found ${products.length} products. Adding reviews...`);
+    logger.log(`Found ${products.length} products. Adding reviews...`);
 
     // Add reviews to each product
     for (let i = 0; i < products.length; i++) {
@@ -91,15 +92,15 @@ async function seedReviews() {
       
       await product.save();
       
-      console.log(`✅ Added ${reviewsForProduct.length} reviews to product: ${product.name}`);
-      console.log(`   Average rating: ${product.rating}/5`);
+      logger.log(`✅ Added ${reviewsForProduct.length} reviews to product: ${product.name}`);
+      logger.log(`   Average rating: ${product.rating}/5`);
     }
 
-    console.log('✅ Reviews seeding completed!');
+    logger.log('✅ Reviews seeding completed!');
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
+    logger.log('Disconnected from MongoDB');
   } catch (error) {
-    console.error('Error seeding reviews:', error);
+    logger.error('Error seeding reviews:', error);
     process.exit(1);
   }
 }

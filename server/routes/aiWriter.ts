@@ -1,5 +1,6 @@
 import express from 'express';
 import { generateAiArticle, scrapeArticleFromUrl } from '../services/aiWriter';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.post('/generate-article', async (req, res) => {
       return res.status(400).json({ message: 'Vui lòng nhập tiêu đề hoặc dán link bài viết' });
     }
 
-    console.log(`[AI Writer] Generating article for topic: "${title}" (Tone: ${tone || 'journalistic'}, Length: ${targetLength || 'medium'}, Structure: ${structure || 'inverted_pyramid'}, Has URL: ${!!articleUrl}, Selected Images: ${selectedImages?.length || 0})`);
+    logger.log(`[AI Writer] Generating article for topic: "${title}" (Tone: ${tone || 'journalistic'}, Length: ${targetLength || 'medium'}, Structure: ${structure || 'inverted_pyramid'}, Has URL: ${!!articleUrl}, Selected Images: ${selectedImages?.length || 0})`);
     const article = await generateAiArticle(title || '', focusKeyword, tone, targetLength, referenceContent, articleUrl, structure, selectedImages);
 
     res.json({
@@ -23,7 +24,7 @@ router.post('/generate-article', async (req, res) => {
       data: article
     });
   } catch (error: any) {
-    console.error('[AI Writer Error]:', error.message || error);
+    logger.error('[AI Writer Error]:', error.message || error);
     res.status(500).json({ 
       success: false, 
       message: error.message || 'Lỗi khi tạo bài viết AI' 
@@ -44,7 +45,7 @@ router.post('/scrape-url', async (req, res) => {
       return res.status(400).json({ success: false, message: 'URL không hợp lệ' });
     }
 
-    console.log(`[AI Scraper] Scraping URL: ${url}`);
+    logger.log(`[AI Scraper] Scraping URL: ${url}`);
     const { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos } = await scrapeArticleFromUrl(url.trim());
 
     res.json({
@@ -58,7 +59,7 @@ router.post('/scrape-url', async (req, res) => {
       }
     });
   } catch (error: any) {
-    console.error('[AI Scraper Error]:', error.message || error);
+    logger.error('[AI Scraper Error]:', error.message || error);
     res.status(500).json({ success: false, message: error.message || 'Lỗi khi cào dữ liệu từ URL' });
   }
 });

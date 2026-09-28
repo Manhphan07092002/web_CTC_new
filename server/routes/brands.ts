@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { Brand } from '../../models';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -25,7 +26,7 @@ router.get('/', async (req, res) => {
     const items = await db.brands.getAll(filter);
     res.json(items);
   } catch (error: any) {
-    console.error('Error getting brands:', error);
+    logger.error('Error getting brands:', error);
     res.status(500).json({ message: 'Failed to get brands', error: error?.message });
   }
 });
@@ -37,7 +38,7 @@ router.get('/:id', async (req, res) => {
     if (!item) return res.status(404).json({ message: 'Brand not found' });
     res.json(item);
   } catch (error: any) {
-    console.error('Error getting brand:', error);
+    logger.error('Error getting brand:', error);
     res.status(500).json({ message: 'Failed to get brand', error: error?.message });
   }
 });
@@ -72,7 +73,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(created);
   } catch (error: any) {
-    console.error('Error creating brand:', error);
+    logger.error('Error creating brand:', error);
     res.status(500).json({ message: 'Failed to create brand', error: error?.message });
   }
 });
@@ -96,7 +97,7 @@ router.put('/:id', async (req, res) => {
     if (!updated) return res.status(404).json({ message: 'Brand not found' });
     res.json(updated);
   } catch (error: any) {
-    console.error('Error updating brand:', error);
+    logger.error('Error updating brand:', error);
     res.status(500).json({ message: 'Failed to update brand', error: error?.message });
   }
 });
@@ -108,7 +109,7 @@ router.patch('/:id/toggle-status', async (req, res) => {
     if (!updated) return res.status(404).json({ message: 'Brand not found' });
     res.json(updated);
   } catch (error: any) {
-    console.error('Error toggling brand status:', error);
+    logger.error('Error toggling brand status:', error);
     res.status(500).json({ message: 'Failed to toggle status', error: error?.message });
   }
 });
@@ -120,7 +121,7 @@ router.delete('/:id', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'Brand not found' });
     res.json({ message: 'Brand deleted successfully' });
   } catch (error: any) {
-    console.error('Error deleting brand:', error);
+    logger.error('Error deleting brand:', error);
     res.status(500).json({ message: 'Failed to delete brand', error: error?.message });
   }
 });
@@ -135,7 +136,7 @@ router.put('/reorder', async (req, res) => {
     await db.brands.reorder(items);
     res.json({ message: 'Brands reordered successfully' });
   } catch (error: any) {
-    console.error('Error reordering brands:', error);
+    logger.error('Error reordering brands:', error);
     res.status(500).json({ message: 'Failed to reorder brands', error: error?.message });
   }
 });

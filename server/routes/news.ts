@@ -3,6 +3,7 @@ import { db } from '../../services/db-mongodb';
 import { applyTranslationsToArray, applyTranslations, TRANSLATION_FIELDS, SupportedLanguage, SUPPORTED_LANGUAGES } from '../../models';
 import { translateNews } from '../services/translate';
 import { triggerInstantIndexing } from '../services/indexing';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.get('/', async (req, res) => {
     
     res.json(items);
   } catch (error) {
-    console.error('Error getting news', error);
+    logger.error('Error getting news', error);
     res.status(500).json({ message: 'Failed to get news' });
   }
 });
@@ -46,7 +47,7 @@ router.get('/latest', async (req, res) => {
     
     res.json(items);
   } catch (error) {
-    console.error('Error getting latest news', error);
+    logger.error('Error getting latest news', error);
     res.status(500).json({ message: 'Failed to get latest news' });
   }
 });
@@ -67,7 +68,7 @@ router.get('/:id', async (req, res) => {
     
     res.json(newsItem);
   } catch (error) {
-    console.error('Error getting news by id', error);
+    logger.error('Error getting news by id', error);
     res.status(404).json({ message: 'News not found' });
   }
 });
@@ -78,10 +79,10 @@ router.post('/', async (req, res) => {
     try {
       translatedData = await translateNews(req.body);
     } catch (e) {
-      console.warn('⚠️ Auto-translate skipped:', e);
+      logger.warn('⚠️ Auto-translate skipped:', e);
     }
     const created = await db.news.add(translatedData);
-    console.log('News created:', created?._id || created?.id);
+    logger.log('News created:', created?._id || created?.id);
     
     // Helper tao Clean SEO URL cho Indexing
     const getCleanUrl = (item: any) => {
@@ -100,7 +101,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(created);
   } catch (error: any) {
-    console.error('Error creating news:', error?.stack || error?.message || error);
+    logger.error('Error creating news:', error?.stack || error?.message || error);
     res.status(500).json({ message: error?.message || 'Failed to create news', error: String(error?.stack || error) });
   }
 });
@@ -111,11 +112,11 @@ router.put('/:id', async (req, res) => {
     try {
       translatedData = await translateNews(req.body);
     } catch (e) {
-      console.warn('⚠️ Auto-translate skipped:', e);
+      logger.warn('⚠️ Auto-translate skipped:', e);
     }
     const updated = await db.news.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'News not found' });
-    console.log('News updated with translations:', req.params.id);
+    logger.log('News updated with translations:', req.params.id);
 
     // Helper tao Clean SEO URL cho Indexing
     const getCleanUrl = (item: any) => {
@@ -134,7 +135,7 @@ router.put('/:id', async (req, res) => {
 
     res.json(updated);
   } catch (error: any) {
-    console.error('Error updating news:', error?.stack || error?.message || error);
+    logger.error('Error updating news:', error?.stack || error?.message || error);
     res.status(500).json({ message: error?.message || 'Failed to update news', error: String(error?.stack || error) });
   }
 });
@@ -146,7 +147,7 @@ router.delete('/:id', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'News not found' });
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting news', error);
+    logger.error('Error deleting news', error);
     res.status(500).json({ message: 'Failed to delete news' });
   }
 });
@@ -158,7 +159,7 @@ router.post('/:id/view', async (req, res) => {
     await db.news.incrementViewCount(id);
     res.json({ success: true });
   } catch (error) {
-    console.error('Error incrementing view count:', error);
+    logger.error('Error incrementing view count:', error);
     res.status(500).json({ message: 'Failed to increment view count' });
   }
 });
@@ -170,7 +171,7 @@ router.post('/:id/like', async (req, res) => {
     await db.news.incrementLikesCount(id);
     res.json({ success: true });
   } catch (error) {
-    console.error('Error incrementing likes count:', error);
+    logger.error('Error incrementing likes count:', error);
     res.status(500).json({ message: 'Failed to increment likes count' });
   }
 });
@@ -186,7 +187,7 @@ router.get('/:id/comments', async (req, res) => {
     });
     res.json(comments);
   } catch (error) {
-    console.error('Error fetching comments:', error);
+    logger.error('Error fetching comments:', error);
     res.status(500).json({ message: 'Failed to fetch comments' });
   }
 });
@@ -219,7 +220,7 @@ router.post('/:id/comments', async (req, res) => {
     });
     res.status(201).json(newComment);
   } catch (error) {
-    console.error('Error posting comment:', error);
+    logger.error('Error posting comment:', error);
     res.status(500).json({ message: 'Failed to post comment' });
   }
 });
@@ -242,7 +243,7 @@ router.post('/comments/:commentId/like', async (req, res) => {
     const result = await db.comments.toggleLike(commentId, { email, userId });
     res.json({ success: true, ...result });
   } catch (error: any) {
-    console.error('Error liking comment:', error);
+    logger.error('Error liking comment:', error);
     res.status(500).json({ message: error?.message || 'Failed to like comment' });
   }
 });
@@ -253,7 +254,7 @@ router.get('/comments/admin/all', async (req, res) => {
     const comments = await db.comments.getAllForAdmin();
     res.json(comments);
   } catch (error) {
-    console.error('Error fetching admin comments:', error);
+    logger.error('Error fetching admin comments:', error);
     res.status(500).json({ message: 'Failed to fetch admin comments' });
   }
 });
@@ -265,7 +266,7 @@ router.post('/comments/:commentId/reply', async (req, res) => {
     const updated = await db.comments.replyComment(commentId, reply || '', repliedBy);
     res.json(updated);
   } catch (error) {
-    console.error('Error replying comment:', error);
+    logger.error('Error replying comment:', error);
     res.status(500).json({ message: 'Failed to reply comment' });
   }
 });
@@ -276,7 +277,7 @@ router.delete('/comments/:commentId/reply', async (req, res) => {
     const updated = await db.comments.deleteReply(commentId);
     res.json(updated);
   } catch (error) {
-    console.error('Error deleting reply:', error);
+    logger.error('Error deleting reply:', error);
     res.status(500).json({ message: 'Failed to delete reply' });
   }
 });
@@ -288,7 +289,7 @@ router.delete('/comments/:commentId', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'Comment not found' });
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting comment:', error);
+    logger.error('Error deleting comment:', error);
     res.status(500).json({ message: 'Failed to delete comment' });
   }
 });

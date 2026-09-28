@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { apiCache } from '../utils/api-cache';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
     const items = await db.partners.getAll();
     res.json(items);
   } catch (error) {
-    console.error('Error getting partners', error);
+    logger.error('Error getting partners', error);
     res.status(500).json({ message: 'Failed to get partners' });
   }
 });
@@ -23,7 +24,7 @@ router.post('/', async (req, res) => {
     apiCache.delByPrefix('/api/partners');
     res.status(201).json(created);
   } catch (error) {
-    console.error('Error creating partner', error);
+    logger.error('Error creating partner', error);
     res.status(500).json({ message: 'Failed to create partner' });
   }
 });
@@ -35,7 +36,7 @@ router.put('/:id', async (req, res) => {
     apiCache.delByPrefix('/api/partners');
     res.json(updated);
   } catch (error) {
-    console.error('Error updating partner', error);
+    logger.error('Error updating partner', error);
     res.status(500).json({ message: 'Failed to update partner' });
   }
 });
@@ -47,7 +48,7 @@ router.delete('/:id', async (req, res) => {
     apiCache.delByPrefix('/api/partners');
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting partner', error);
+    logger.error('Error deleting partner', error);
     res.status(500).json({ message: 'Failed to delete partner' });
   }
 });

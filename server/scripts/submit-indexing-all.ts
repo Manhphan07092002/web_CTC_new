@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { triggerInstantIndexing } from '../services/indexing.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,12 +15,12 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_ne
 const SITE_URL = (process.env.SITE_URL || 'https://ctcdn.vn').replace(/\/$/, '');
 
 async function submitAllUrls() {
-  console.log('\n============================================================');
-  console.log('🚀 CTC — PING INSTANT INDEXING (INDEXNOW + SEARCH ENGINES)');
-  console.log('============================================================');
+  logger.log('\n============================================================');
+  logger.log('🚀 CTC — PING INSTANT INDEXING (INDEXNOW + SEARCH ENGINES)');
+  logger.log('============================================================');
 
   await mongoose.connect(MONGO_URI);
-  console.log('✅ Connected to MongoDB.');
+  logger.log('✅ Connected to MongoDB.');
 
   const db = mongoose.connection.db;
   if (!db) throw new Error('DB connection failed');
@@ -68,26 +69,26 @@ async function submitAllUrls() {
     }
   }
 
-  console.log(`📦 Found total ${urls.length} URLs to submit for indexing.`);
+  logger.log(`📦 Found total ${urls.length} URLs to submit for indexing.`);
 
   // Submit in batches of 100
   const batchSize = 100;
   for (let i = 0; i < urls.length; i += batchSize) {
     const batch = urls.slice(i, i + batchSize);
-    console.log(`📡 Pinging batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(urls.length / batchSize)} (${batch.length} URLs)...`);
+    logger.log(`📡 Pinging batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(urls.length / batchSize)} (${batch.length} URLs)...`);
     try {
       const res = await triggerInstantIndexing(batch);
-      console.log(`  ✓ Status:`, res);
+      logger.log(`  ✓ Status:`, res);
     } catch (err: any) {
-      console.error(`  ✕ Error submitting batch:`, err?.message || err);
+      logger.error(`  ✕ Error submitting batch:`, err?.message || err);
     }
   }
 
   await mongoose.disconnect();
-  console.log('\n🎉 Instant Indexing submit completed successfully!\n');
+  logger.log('\n🎉 Instant Indexing submit completed successfully!\n');
 }
 
 submitAllUrls().catch(err => {
-  console.error('❌ Error running submitAllUrls:', err);
+  logger.error('❌ Error running submitAllUrls:', err);
   process.exit(1);
 });

@@ -1,17 +1,18 @@
 import mongoose from 'mongoose';
 import { Product, ProductCategory } from '../../models';
+import { logger } from "../../utils/logger";
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 async function updateCategoryCounts() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // Get all categories
     const categories = await ProductCategory.find();
-    console.log(`Found ${categories.length} categories`);
+    logger.log(`Found ${categories.length} categories`);
 
     // Update count for each category
     for (const category of categories) {
@@ -37,23 +38,23 @@ async function updateCategoryCounts() {
         productCount: totalCount
       });
 
-      console.log(`✅ ${category.name}: ${totalCount} products`);
+      logger.log(`✅ ${category.name}: ${totalCount} products`);
     }
 
     // Show final summary
-    console.log('\n📊 Final Summary:');
+    logger.log('\n📊 Final Summary:');
     const updatedCategories = await ProductCategory.find().sort({ name: 1 });
     updatedCategories.forEach(cat => {
-      console.log(`${cat.name}: ${cat.productCount} products`);
+      logger.log(`${cat.name}: ${cat.productCount} products`);
     });
 
-    console.log('\n🎉 Category counts updated successfully!');
+    logger.log('\n🎉 Category counts updated successfully!');
     
   } catch (error) {
-    console.error('❌ Error:', error);
+    logger.error('❌ Error:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
+    logger.log('Disconnected from MongoDB');
   }
 }
 

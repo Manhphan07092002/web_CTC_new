@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { CompanyProfile, FinancialReport, BusinessSector, Brand, AttributeTemplate, ProductCategory } from '../../models';
 import { DEFAULT_ATTRIBUTE_TEMPLATES } from '../routes/attribute-templates';
+import { logger } from "../../utils/logger";
 
 function convertIds(obj: any): any {
   if (!obj) return obj;
@@ -44,12 +45,12 @@ export async function autoSeedIfEmpty(): Promise<boolean> {
       return false;
     }
 
-    console.log('🌱 Database is empty! Auto-seeding initial data from seed-data/...');
+    logger.log('🌱 Database is empty! Auto-seeding initial data from seed-data/...');
 
     // Locate seed-data directory
     const seedDir = path.join(process.cwd(), 'seed-data');
     if (!fs.existsSync(seedDir)) {
-      console.warn(`⚠️ seed-data directory not found at: ${seedDir}`);
+      logger.warn(`⚠️ seed-data directory not found at: ${seedDir}`);
       return false;
     }
 
@@ -73,18 +74,18 @@ export async function autoSeedIfEmpty(): Promise<boolean> {
           await collection.deleteMany({});
           await collection.insertMany(data, { ordered: false });
           
-          console.log(`   ✅ Loaded ${collectionName}: ${data.length} records`);
+          logger.log(`   ✅ Loaded ${collectionName}: ${data.length} records`);
           totalImported += data.length;
         }
       } catch (err: any) {
-        console.error(`   ❌ Error loading ${file}:`, err.message || err);
+        logger.error(`   ❌ Error loading ${file}:`, err.message || err);
       }
     }
 
-    console.log(`🎉 Auto-seeding completed! Imported ${totalImported} documents across ${files.length} collections.`);
+    logger.log(`🎉 Auto-seeding completed! Imported ${totalImported} documents across ${files.length} collections.`);
     return true;
   } catch (error: any) {
-    console.error('❌ Auto-seed failed:', error.message || error);
+    logger.error('❌ Auto-seed failed:', error.message || error);
     return false;
   }
 }
@@ -97,7 +98,7 @@ export async function autoSeedProfileData(): Promise<void> {
     // 1. Company Profile
     const profileCount = await CompanyProfile.countDocuments({ isDeleted: { $ne: true } });
     if (profileCount === 0) {
-      console.log('🌱 Seeding initial Company Profile...');
+      logger.log('🌱 Seeding initial Company Profile...');
       await CompanyProfile.create({
         title: 'Hồ Sơ Năng Lực CTC 2026',
         subtitle: 'Năng Lực & Pháp Lý',
@@ -121,13 +122,13 @@ export async function autoSeedProfileData(): Promise<void> {
         sortOrder: 1,
         isDeleted: false
       });
-      console.log('   ✅ Company Profile seeded.');
+      logger.log('   ✅ Company Profile seeded.');
     }
 
     // 2. Financial Reports
     const financeCount = await FinancialReport.countDocuments({ isDeleted: { $ne: true } });
     if (financeCount === 0) {
-      console.log('🌱 Seeding initial Financial Reports...');
+      logger.log('🌱 Seeding initial Financial Reports...');
       const initialReports = [
         {
           title: 'Báo cáo tài chính năm 2025',
@@ -191,13 +192,13 @@ export async function autoSeedProfileData(): Promise<void> {
         }
       ];
       await FinancialReport.insertMany(initialReports);
-      console.log('   ✅ Financial Reports seeded: 5 reports.');
+      logger.log('   ✅ Financial Reports seeded: 5 reports.');
     }
 
     // 3. Business Sectors
     const sectorCount = await BusinessSector.countDocuments({ isDeleted: { $ne: true } });
     if (sectorCount === 0) {
-      console.log('🌱 Seeding initial Business Sectors...');
+      logger.log('🌱 Seeding initial Business Sectors...');
       const initialSectors = [
         {
           name: 'Cung cấp giải pháp & sản phẩm công nghệ',
@@ -278,10 +279,10 @@ export async function autoSeedProfileData(): Promise<void> {
         }
       ];
       await BusinessSector.insertMany(initialSectors);
-      console.log('   ✅ Business Sectors seeded: 4 sectors.');
+      logger.log('   ✅ Business Sectors seeded: 4 sectors.');
     }
   } catch (err: any) {
-    console.error('❌ Error seeding profile data:', err.message || err);
+    logger.error('❌ Error seeding profile data:', err.message || err);
   }
 }
 
@@ -294,7 +295,7 @@ export async function autoSeedProductMeta(): Promise<void> {
     // 1. Seed Brands
     const brandCount = await Brand.countDocuments({ isDeleted: { $ne: true } });
     if (brandCount === 0) {
-      console.log('🌱 Seeding initial Brands...');
+      logger.log('🌱 Seeding initial Brands...');
       const initialBrands = [
         { name: 'Hikvision', slug: 'hikvision', origin: 'Trung Quốc', description: 'Thương hiệu thiết bị an ninh & camera giám sát hàng đầu thế giới.', isActive: true, sortOrder: 1, isDeleted: false },
         { name: 'DrayTek', slug: 'draytek', origin: 'Đài Loan', description: 'Chuyên gia thiết bị định tuyến Router & mạng doanh nghiệp chịu tải cao.', isActive: true, sortOrder: 2, isDeleted: false },
@@ -311,13 +312,13 @@ export async function autoSeedProductMeta(): Promise<void> {
         { name: 'Dahua Technology', slug: 'dahua', origin: 'Trung Quốc', description: 'Nhà cung cấp giải pháp an ninh, camera AI và giám sát video.', isActive: true, sortOrder: 13, isDeleted: false }
       ];
       await Brand.insertMany(initialBrands);
-      console.log(`   ✅ Brands seeded: ${initialBrands.length} brands.`);
+      logger.log(`   ✅ Brands seeded: ${initialBrands.length} brands.`);
     }
 
     // 2. Seed Attribute Templates
     const templateCount = await AttributeTemplate.countDocuments({ isDeleted: { $ne: true } });
     if (templateCount === 0) {
-      console.log('🌱 Seeding initial Attribute Templates...');
+      logger.log('🌱 Seeding initial Attribute Templates...');
       for (const tpl of DEFAULT_ATTRIBUTE_TEMPLATES) {
         let matchedCat = null;
         if (tpl.categorySlug) {
@@ -337,10 +338,10 @@ export async function autoSeedProductMeta(): Promise<void> {
           isDeleted: false
         });
       }
-      console.log(`   ✅ Attribute Templates seeded: ${DEFAULT_ATTRIBUTE_TEMPLATES.length} templates.`);
+      logger.log(`   ✅ Attribute Templates seeded: ${DEFAULT_ATTRIBUTE_TEMPLATES.length} templates.`);
     }
   } catch (err: any) {
-    console.error('❌ Error seeding product meta:', err.message || err);
+    logger.error('❌ Error seeding product meta:', err.message || err);
   }
 }
 

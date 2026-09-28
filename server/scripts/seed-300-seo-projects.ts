@@ -14,6 +14,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ProjectCategory, Project } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -310,28 +311,28 @@ function generate300Projects() {
 }
 
 async function main() {
-  console.log('🔌 Connecting to MongoDB:', MONGO_URI);
+  logger.log('🔌 Connecting to MongoDB:', MONGO_URI);
   await mongoose.connect(MONGO_URI);
-  console.log('✅ Connected to MongoDB\n');
+  logger.log('✅ Connected to MongoDB\n');
 
   // 1. Xóa sạch 100% dữ liệu danh mục dự án và dự án cũ
-  console.log('🗑️  Đang xóa sạch toàn bộ danh mục dự án cũ và dự án cũ trong Database...');
+  logger.log('🗑️  Đang xóa sạch toàn bộ danh mục dự án cũ và dự án cũ trong Database...');
   await ProjectCategory.deleteMany({});
   await Project.deleteMany({});
-  console.log('✅ Đã xóa sạch dữ liệu dự án cũ!\n');
+  logger.log('✅ Đã xóa sạch dữ liệu dự án cũ!\n');
 
   // 2. Khởi tạo lại 6 Danh mục dự án (ProjectCategories)
-  console.log('🌱 Đang khởi tạo lại Danh mục dự án (ProjectCategories)...');
+  logger.log('🌱 Đang khởi tạo lại Danh mục dự án (ProjectCategories)...');
   const catMap: Record<string, any> = {};
 
   for (const c of CATEGORIES) {
     const catDoc = await ProjectCategory.create(c);
-    console.log(`  ➕ Tạo danh mục: ${c.name}`);
+    logger.log(`  ➕ Tạo danh mục: ${c.name}`);
     catMap[c.slug] = catDoc._id;
   }
 
   const allProjects = generate300Projects();
-  console.log(`\n🚀 Đang tiến hành chèn ${allProjects.length} Dự án tiêu biểu (Chuẩn SEO & GEO Location)...`);
+  logger.log(`\n🚀 Đang tiến hành chèn ${allProjects.length} Dự án tiêu biểu (Chuẩn SEO & GEO Location)...`);
 
   let insertedCount = 0;
   const docsToInsert = allProjects.map((p, idx) => {
@@ -355,23 +356,23 @@ async function main() {
   insertedCount = insertedDocs.length;
 
   // 3. Cập nhật số lượng dự án (projectCount) cho từng danh mục
-  console.log('\n📊 Đang cập nhật projectCount cho các danh mục...');
+  logger.log('\n📊 Đang cập nhật projectCount cho các danh mục...');
   for (const c of CATEGORIES) {
     const count = await Project.countDocuments({ categoryId: catMap[c.slug] });
     await ProjectCategory.findByIdAndUpdate(catMap[c.slug], { projectCount: count });
-    console.log(`  📁 ${c.name}: ${count} dự án`);
+    logger.log(`  📁 ${c.name}: ${count} dự án`);
   }
 
-  console.log('\n────────────────────────────────────────────────────────────');
-  console.log(`🎉 HOÀN THÀNH KẾT QUẢ: ĐÃ SEED THÀNH CÔNG ${insertedCount} DỰ ÁN CHUẨN SEO & GEO!`);
-  console.log(`☀️  Trong đó: Đã bao gồm 100% tất cả các dự án Solar từ HSNL 06.2026.`);
-  console.log('────────────────────────────────────────────────────────────\n');
+  logger.log('\n────────────────────────────────────────────────────────────');
+  logger.log(`🎉 HOÀN THÀNH KẾT QUẢ: ĐÃ SEED THÀNH CÔNG ${insertedCount} DỰ ÁN CHUẨN SEO & GEO!`);
+  logger.log(`☀️  Trong đó: Đã bao gồm 100% tất cả các dự án Solar từ HSNL 06.2026.`);
+  logger.log('────────────────────────────────────────────────────────────\n');
 
   await mongoose.disconnect();
-  console.log('🔌 Đã ngắt kết nối MongoDB');
+  logger.log('🔌 Đã ngắt kết nối MongoDB');
 }
 
 main().catch(err => {
-  console.error('❌ Lỗi nghiêm trọng:', err);
+  logger.error('❌ Lỗi nghiêm trọng:', err);
   process.exit(1);
 });

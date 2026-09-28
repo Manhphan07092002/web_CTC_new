@@ -3,6 +3,7 @@ import * as middleware from 'i18next-http-middleware';
 import path from 'path';
 import { EnhancedI18nBackend } from './utils/i18n-backend-enhanced';
 import { translationCache } from './utils/translation-cache';
+import { logger } from "../../utils/logger";
 
 // Initialize enhanced backend
 const enhancedBackend = new EnhancedI18nBackend();
@@ -33,7 +34,7 @@ i18next
     },
     saveMissing: true,
     missingKeyHandler: (lng: string[], ns: string, key: string, fallbackValue: string) => {
-      console.warn(`Missing translation key: ${lng}.${ns}.${key}`);
+      logger.warn(`Missing translation key: ${lng}.${ns}.${key}`);
     },
     // Enhanced options
     debug: process.env.NODE_ENV === 'development',
@@ -42,11 +43,11 @@ i18next
     initImmediate: false // Wait for backend initialization
   })
   .then(() => {
-    console.log('🌐 Enhanced i18n system initialized successfully');
-    console.log(`📊 Cache stats: ${JSON.stringify(translationCache.getStats())}`);
+    logger.log('🌐 Enhanced i18n system initialized successfully');
+    logger.log(`📊 Cache stats: ${JSON.stringify(translationCache.getStats())}`);
   })
   .catch((error) => {
-    console.error('❌ Enhanced i18n initialization failed:', error);
+    logger.error('❌ Enhanced i18n initialization failed:', error);
   });
 
 // Export enhanced backend instance for cache management

@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { ProductCategory, Product } from '../models/index.js';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -227,19 +228,19 @@ export const TAXONOMY = [
 
 async function run() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // 1. Map existing categories in DB to back up old ID mappings
     const oldCategories = await ProductCategory.find({});
-    console.log(`Found ${oldCategories.length} existing categories in DB.`);
+    logger.log(`Found ${oldCategories.length} existing categories in DB.`);
 
     const oldIdMap = new Map<string, any>();
     oldCategories.forEach(c => oldIdMap.set(c._id.toString(), c));
 
     // 2. Clear old categories
-    console.log('Clearing old product categories...');
+    logger.log('Clearing old product categories...');
     await ProductCategory.deleteMany({});
 
     // 3. Insert new structured taxonomy
@@ -260,7 +261,7 @@ async function run() {
 
         const saved = await catDoc.save();
         newCategoryMap.set(node.slug, saved);
-        console.log(`  ✓ Inserted category: "${saved.name}" (Slug: ${saved.slug}, ID: ${saved._id})`);
+        logger.log(`  ✓ Inserted category: "${saved.name}" (Slug: ${saved.slug}, ID: ${saved._id})`);
 
         if (node.children && node.children.length > 0) {
           await insertNodes(node.children, saved._id.toString());
@@ -268,12 +269,12 @@ async function run() {
       }
     }
 
-    console.log('\nInserting new taxonomy tree...');
+    logger.log('\nInserting new taxonomy tree...');
     await insertNodes(TAXONOMY);
 
     // 4. Update existing Products categoryId, brand, and category references
     const products = await Product.find({ isDeleted: { $ne: true } });
-    console.log(`\nRe-mapping ${products.length} products to new categories and brands...`);
+    logger.log(`\nRe-mapping ${products.length} products to new categories and brands...`);
 
     let updatedProducts = 0;
 
@@ -362,10 +363,10 @@ async function run() {
       }
     }
 
-    console.log(`✓ Updated ${updatedProducts} products to match new category hierarchy & brands.`);
+    logger.log(`✓ Updated ${updatedProducts} products to match new category hierarchy & brands.`);
 
     // 5. Calculate and update product counts for all categories (including parent categories)
-    console.log('\nRecalculating product counts for category tree...');
+    logger.log('\nRecalculating product counts for category tree...');
     const allCategoryDocs = await ProductCategory.find({});
 
     const docMap = new Map<string, any>();
@@ -393,7 +394,7 @@ async function run() {
       await cat.save();
     }
 
-    console.log('✓ Updated category product counts recursively.');
+    logger.log('✓ Updated category product counts recursively.');
 
     // 6. Sync seed-data/productcategories.json file
     const seedCategoriesPath = path.join(process.cwd(), 'seed-data', 'productcategories.json');
@@ -410,12 +411,12 @@ async function run() {
     }));
 
     fs.writeFileSync(seedCategoriesPath, JSON.stringify(jsonCategories, null, 2), 'utf8');
-    console.log(`✓ Exported clean categories tree to ${seedCategoriesPath}`);
+    logger.log(`✓ Exported clean categories tree to ${seedCategoriesPath}`);
 
-    console.log('\n🎉 Category & Brand reorganization completed successfully!');
+    logger.log('\n🎉 Category & Brand reorganization completed successfully!');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error reorganizing categories:', error);
+    logger.error('❌ Error reorganizing categories:', error);
     process.exit(1);
   }
 }

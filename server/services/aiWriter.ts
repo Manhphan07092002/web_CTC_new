@@ -18,6 +18,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { db } from '../../services/db-mongodb';
+import { logger } from "../../utils/logger";
 
 export interface AiGeneratedArticle {
   title: string;
@@ -201,7 +202,7 @@ function formatYoastSeoExcerpt(cleanTitle: string, kw: string, firstSnippet?: st
 
 function resolveAbsoluteUrl(rawUrl: string, baseUrl: string): string | null {
   try {
-    let clean = rawUrl.trim();
+    const clean = rawUrl.trim();
     if (!clean) return null;
     if (clean.startsWith('//')) return 'https:' + clean;
     if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
@@ -244,7 +245,7 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
     clearTimeout(timeout);
 
     if (!res.ok) {
-      console.warn(`[Scraper] URL fetch non-200: ${res.status} ${res.statusText} for ${url}`);
+      logger.warn(`[Scraper] URL fetch non-200: ${res.status} ${res.statusText} for ${url}`);
       return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
     }
     const rawHtml = await res.text();
@@ -319,7 +320,7 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
       const containerMatch = pattern.exec(html);
       if (containerMatch && containerMatch[1] && containerMatch[1].length > 200) {
         articleHtml = containerMatch[1];
-        console.log(`[Scraper] Found article container (${articleHtml.length} chars) using pattern: ${pattern.source.substring(0, 40)}...`);
+        logger.log(`[Scraper] Found article container (${articleHtml.length} chars) using pattern: ${pattern.source.substring(0, 40)}...`);
         break;
       }
     }
@@ -502,11 +503,11 @@ export async function scrapeArticleFromUrl(url: string): Promise<{ scrapedTitle:
     const videoTagRegex = /<(?:video|source)[^>]+src=["']([^"'\s]+\.(?:mp4|webm|ogg))["'][^>]*>/gi;
     while ((vMatch = videoTagRegex.exec(html)) !== null && scrapedVideos.length < 3) addVideo(vMatch[1]);
 
-    console.log(`[Scraper] URL: ${url} → Title: "${scrapedTitle}" | Images: ${scrapedImages.length} | Videos: ${scrapedVideos.length} | Paragraphs: ${scrapedParagraphs.length}`);
+    logger.log(`[Scraper] URL: ${url} → Title: "${scrapedTitle}" | Images: ${scrapedImages.length} | Videos: ${scrapedVideos.length} | Paragraphs: ${scrapedParagraphs.length}`);
 
     return { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos };
   } catch (err) {
-    console.error('[AI Scrape Article URL Error]:', err);
+    logger.error('[AI Scrape Article URL Error]:', err);
     return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [] };
   }
 }
@@ -563,7 +564,7 @@ async function searchWebContext(query: string): Promise<{ rawSnippets: string[];
       combinedText: snippets.join(' ')
     };
   } catch (err) {
-    console.log('[AI Search Web Context]: Web search fallback active');
+    logger.log('[AI Search Web Context]: Web search fallback active');
     return { rawSnippets: [], combinedText: '' };
   }
 }
@@ -708,12 +709,12 @@ async function localizeExternalImage(imageUrl: string): Promise<string> {
       const buffer = await res.buffer();
       if (buffer && buffer.length > 500) {
         fs.writeFileSync(filePath, buffer);
-        console.log(`[AI Image Localizer]: Downloaded & saved ${imageUrl} -> ${relativeUrl} (${buffer.length} bytes)`);
+        logger.log(`[AI Image Localizer]: Downloaded & saved ${imageUrl} -> ${relativeUrl} (${buffer.length} bytes)`);
         return relativeUrl;
       }
     }
   } catch (err) {
-    console.warn(`[AI Image Localizer Warning]: Could not download ${imageUrl}:`, (err as any).message);
+    logger.warn(`[AI Image Localizer Warning]: Could not download ${imageUrl}:`, (err as any).message);
   }
 
   return imageUrl;
@@ -822,7 +823,7 @@ function optimizeReadabilityScore(htmlContent: string, kw: string): string {
 
       for (const delim of delimiters) {
         const lower = trimmed.toLowerCase();
-        let searchStart = 5;
+        const searchStart = 5;
         let delimIdx = lower.indexOf(delim, searchStart);
 
         while (delimIdx !== -1) {
@@ -965,7 +966,7 @@ function parseCleanReferenceParagraphs(rawText: string): string[] {
   const cleanParagraphs: string[] = [];
 
   for (const line of lines) {
-    let text = line.trim();
+    const text = line.trim();
     if (!text || text.length < 15) continue;
 
     if (/(?:GMT\+7|chủ nhật|thứ hai|thứ ba|thứ tư|thứ năm|thứ sáu|thứ bảy|\d{1,2}\/\d{1,2}\/\d{4})/i.test(text) && text.length < 90) {
@@ -1110,7 +1111,7 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
   try {
     const settings = await db.settings.get();
     if (!settings || !settings.aiApiKey) {
-      console.warn('[AI LLM API Query]: No aiApiKey found in Admin Settings.');
+      logger.warn('[AI LLM API Query]: No aiApiKey found in Admin Settings.');
       return null;
     }
 
@@ -1170,7 +1171,7 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
       if (!candidateModels.includes(m)) candidateModels.push(m);
     }
 
-    console.log(`[AI LLM API Query]: Requesting provider="${provider}", model="${initialModel}"...`);
+    logger.log(`[AI LLM API Query]: Requesting provider="${provider}", model="${initialModel}"...`);
 
     // Handle OpenAI-compatible providers (openai, groq, deepseek, custom)
     if (['openai', 'groq', 'deepseek', 'custom'].includes(provider)) {
@@ -1198,9 +1199,9 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
           if (response.ok && data.choices?.[0]?.message?.content) {
             return data.choices[0].message.content;
           }
-          console.warn(`[AI LLM Query] Model ${currentModel} on ${provider} error:`, data.error?.message || response.statusText);
+          logger.warn(`[AI LLM Query] Model ${currentModel} on ${provider} error:`, data.error?.message || response.statusText);
         } catch (err: any) {
-          console.warn(`[AI LLM Query Error] Model ${currentModel} failed:`, err.message);
+          logger.warn(`[AI LLM Query Error] Model ${currentModel} failed:`, err.message);
         }
       }
       return null;
@@ -1226,13 +1227,13 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
             return data.candidates[0].content.parts[0].text;
           }
         } catch (e: any) {
-          console.warn(`[Gemini Query Error] ${gemModel} failed:`, e.message);
+          logger.warn(`[Gemini Query Error] ${gemModel} failed:`, e.message);
         }
       }
       return null;
     }
   } catch (err) {
-    console.error('[AI Admin Settings Query Error]:', err);
+    logger.error('[AI Admin Settings Query Error]:', err);
     return null;
   }
 }
@@ -1261,7 +1262,7 @@ export async function generateAiArticle(
   let scrapedUrlSuccess = false;
   let scrapedTitleFound = '';
   if (articleUrl && articleUrl.trim().startsWith('http')) {
-    console.log(`[AI Writer]: Auto scraping article content, images & videos from URL: ${articleUrl}`);
+    logger.log(`[AI Writer]: Auto scraping article content, images & videos from URL: ${articleUrl}`);
     const { scrapedTitle, scrapedParagraphs, scrapedImages, scrapedVideos } = await scrapeArticleFromUrl(articleUrl.trim());
     if (scrapedParagraphs.length > 0 || scrapedImages.length > 0 || scrapedTitle) {
       scrapedUrlSuccess = true;
@@ -1280,7 +1281,7 @@ export async function generateAiArticle(
 
   // Override extractedImages if user explicitly selected specific images in UI
   if (selectedImages && Array.isArray(selectedImages) && selectedImages.length > 0) {
-    console.log(`[AI Writer]: Using ${selectedImages.length} user-selected images (out of ${extractedImages.length} scraped)`);
+    logger.log(`[AI Writer]: Using ${selectedImages.length} user-selected images (out of ${extractedImages.length} scraped)`);
     extractedImages = selectedImages;
   }
 
@@ -1412,7 +1413,7 @@ ${imageListPrompt}
   let content = '';
 
   if (aiLlmGeneratedContent && aiLlmGeneratedContent.length > 300) {
-    console.log('[AI Writer]: Successfully generated article using Admin Settings LLM API Key!');
+    logger.log('[AI Writer]: Successfully generated article using Admin Settings LLM API Key!');
     content = aiLlmGeneratedContent;
   } else {
     // Content-first Fallback Engine: ALL body comes from scraped content, only CTC contact is static

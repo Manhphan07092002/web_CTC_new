@@ -18,6 +18,7 @@ import {
 } from '../../models';
 import { Permission, Role, UserPermission, PermissionLog } from '../../models/permissions';
 import { SecurityEvent, AuditLog, IPBlacklist, SecurityStats } from '../../models/security';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -102,7 +103,7 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
     const logs: string[] = [];
     const importCounts: Record<string, number> = {};
 
-    let catMap: Record<string, any> = {};
+    const catMap: Record<string, any> = {};
 
     // 0. Extract images and media files into uploads/ directory
     const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -291,7 +292,7 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
             await new Product(cleanData).save();
           } else {
             const catId = prod.categoryId || catMap[prod.CateID];
-            let imageList = prod.images || [];
+            const imageList = prod.images || [];
             if (imageList.length === 0) {
               if (prod.Image) imageList.push(prod.Image);
               if (prod.Image2) imageList.push(prod.Image2);
@@ -385,7 +386,7 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
       await News.deleteMany({});
       try {
         await News.collection.dropIndexes();
-      } catch (e) {}
+      } catch (e) { /* ignore */ }
       
       const existingSlugs = new Set<string>();
       for (const blog of sqlBlogs) {
@@ -393,7 +394,7 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
           const isNative = blog.title && blog.excerpt && blog.date;
           if (isNative) {
             const cleanData = cleanDocForInsert(blog, true);
-            let baseSlug = (cleanData.slug && typeof cleanData.slug === 'string' && cleanData.slug.trim())
+            const baseSlug = (cleanData.slug && typeof cleanData.slug === 'string' && cleanData.slug.trim())
               ? cleanData.slug.trim()
               : (generateSlug(cleanData.title) || 'tin-tuc');
             let finalSlug = baseSlug;
@@ -415,7 +416,7 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
             if (isNaN(d.getTime())) d = new Date();
             
             const blogTitle = blog.title || blog.Name || 'Untitled';
-            let baseSlug = (blog.slug && typeof blog.slug === 'string' && blog.slug.trim()) 
+            const baseSlug = (blog.slug && typeof blog.slug === 'string' && blog.slug.trim()) 
               ? blog.slug.trim() 
               : (generateSlug(blogTitle) || 'tin-tuc');
             let finalSlug = baseSlug;
@@ -757,7 +758,7 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
 
     res.json({ success: true, logs });
   } catch (error: any) {
-    console.error('Migration Upload API Error:', error);
+    logger.error('Migration Upload API Error:', error);
     const logEntry = new MigrationLog({
       action: 'import',
       status: 'error',
@@ -917,7 +918,7 @@ router.all('/export', async (req, res) => {
     await logEntry.save();
 
   } catch (error: any) {
-    console.error('Export API Error:', error);
+    logger.error('Export API Error:', error);
     const logEntry = new MigrationLog({
       action: 'export',
       status: 'error',

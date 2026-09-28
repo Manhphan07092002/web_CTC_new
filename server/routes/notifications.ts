@@ -1,6 +1,7 @@
 import express from 'express';
 import { db } from '../../services/db-mongodb';
 import { notificationStream } from '../services/notificationStream';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.get('/', async (req, res) => {
     const notifications = await db.notifications.getAll();
     res.json(notifications);
   } catch (error) {
-    console.error('Error getting notifications:', error);
+    logger.error('Error getting notifications:', error);
     res.status(500).json({ error: 'Failed to get notifications' });
   }
 });
@@ -34,7 +35,7 @@ router.get('/all', async (req, res) => {
     const notifications = await db.notifications.getAll();
     res.json(notifications);
   } catch (error) {
-    console.error('Error getting notifications:', error);
+    logger.error('Error getting notifications:', error);
     res.status(500).json({ error: 'Failed to get notifications' });
   }
 });
@@ -45,7 +46,7 @@ router.get('/unread', async (req, res) => {
     const notifications = await db.notifications.getUnread();
     res.json(notifications);
   } catch (error) {
-    console.error('Error getting unread notifications:', error);
+    logger.error('Error getting unread notifications:', error);
     res.status(500).json({ error: 'Failed to get unread notifications' });
   }
 });
@@ -56,7 +57,7 @@ router.delete('/all', async (req, res) => {
     await db.notifications.deleteAll();
     res.json({ success: true });
   } catch (error) {
-    console.error('Error deleting all notifications:', error);
+    logger.error('Error deleting all notifications:', error);
     res.status(500).json({ error: 'Failed to delete all notifications' });
   }
 });
@@ -74,7 +75,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(notification);
   } catch (error) {
-    console.error('Error getting notification:', error);
+    logger.error('Error getting notification:', error);
     res.status(500).json({ error: 'Failed to get notification' });
   }
 });
@@ -85,7 +86,7 @@ router.post('/', async (req, res) => {
     const notification = await db.notifications.add(req.body);
     res.status(201).json(notification);
   } catch (error) {
-    console.error('Error creating notification:', error);
+    logger.error('Error creating notification:', error);
     res.status(500).json({ error: 'Failed to create notification' });
   }
 });
@@ -99,7 +100,7 @@ router.patch('/:id/read', async (req, res) => {
     }
     res.json(notification);
   } catch (error) {
-    console.error('Error marking notification as read:', error);
+    logger.error('Error marking notification as read:', error);
     res.status(500).json({ error: 'Failed to mark notification as read' });
   }
 });
@@ -110,7 +111,7 @@ router.patch('/read-all', async (req, res) => {
     await db.notifications.markAllAsRead();
     res.json({ success: true });
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
+    logger.error('Error marking all notifications as read:', error);
     res.status(500).json({ error: 'Failed to mark all notifications as read' });
   }
 });
@@ -128,7 +129,7 @@ router.delete('/:id', async (req, res) => {
     }
     res.json({ success: true });
   } catch (error) {
-    console.error('Error deleting notification:', error);
+    logger.error('Error deleting notification:', error);
     res.status(500).json({ error: 'Failed to delete notification' });
   }
 });
@@ -139,7 +140,7 @@ router.delete('/', async (req, res) => {
     await db.notifications.deleteAll();
     res.json({ success: true });
   } catch (error) {
-    console.error('Error deleting all notifications:', error);
+    logger.error('Error deleting all notifications:', error);
     res.status(500).json({ error: 'Failed to delete all notifications' });
   }
 });

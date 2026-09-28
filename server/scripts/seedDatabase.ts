@@ -21,6 +21,7 @@ import {
 } from '../models/index.js';
 import { Permission, Role, UserPermission } from '../../models/permissions.js';
 import bcrypt from 'bcrypt';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,11 +34,11 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_ne
 
 const seedDatabase = async () => {
   try {
-    console.log('Connecting to database...');
+    logger.log('Connecting to database...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected successfully.');
+    logger.log('Connected successfully.');
 
-    console.log('Clearing old data...');
+    logger.log('Clearing old data...');
     await Promise.all([
       ProductCategory.deleteMany({}),
       Product.deleteMany({}),
@@ -59,7 +60,7 @@ const seedDatabase = async () => {
       Resource.deleteMany({})
     ]);
 
-    console.log('Inserting Settings...');
+    logger.log('Inserting Settings...');
     await Settings.create({
       siteName: 'CTC',
       siteDescription: 'Giải pháp EPC và Năng lượng tái tạo hàng đầu Việt Nam',
@@ -74,7 +75,7 @@ const seedDatabase = async () => {
       taxRate: 10
     });
 
-    console.log('Inserting Users...');
+    logger.log('Inserting Users...');
     const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeMe@2024!';
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
     const admin = await User.create({
@@ -95,7 +96,7 @@ const seedDatabase = async () => {
       status: 'active'
     });
 
-    console.log('Inserting Permissions & Roles...');
+    logger.log('Inserting Permissions & Roles...');
     // Array of permissions
     const permissionsData = [
       // Content Management
@@ -248,7 +249,7 @@ const seedDatabase = async () => {
       });
     }
 
-    console.log('Inserting Product Categories & Products...');
+    logger.log('Inserting Product Categories & Products...');
     const catSolar = await ProductCategory.create({ name: 'Tấm Pin Năng Lượng Mặt Trời', slug: 'tam-pin-mat-troi', description: 'Các loại pin mặt trời chất lượng cao', status: 'active', order: 1 });
     const catInverter = await ProductCategory.create({ name: 'Biến Tần (Inverter)', slug: 'bien-tan', description: 'Inverter hòa lưới và lưu trữ', status: 'active', order: 2 });
     
@@ -279,7 +280,7 @@ const seedDatabase = async () => {
       }
     ]);
 
-    console.log('Inserting Projects...');
+    logger.log('Inserting Projects...');
     const pCatResidential = await ProjectCategory.create({ name: 'Điện Mặt Trời Áp Mái (Hộ Gia Đình)', slug: 'ap-mai-ho-gia-dinh', status: 'active', order: 1 });
     const pCatIndustrial = await ProjectCategory.create({ name: 'Điện Mặt Trời Công Nghiệp', slug: 'cong-nghiep', status: 'active', order: 2 });
 
@@ -308,7 +309,7 @@ const seedDatabase = async () => {
       }
     ]);
 
-    console.log('Inserting News...');
+    logger.log('Inserting News...');
     const nCatTech = await NewsCategory.create({ name: 'Công Nghệ Điện Mặt Trời', slug: 'cong-nghe', status: 'active' });
 
     await News.insertMany([
@@ -327,7 +328,7 @@ const seedDatabase = async () => {
       }
     ]);
 
-    console.log('Inserting Team, Testimonials, Partners...');
+    logger.log('Inserting Team, Testimonials, Partners...');
     await TeamMember.insertMany([
       { name: 'Ban Giám Đốc CTC', role: 'Hội đồng Quản trị & Điều hành', bio: 'Hội đồng Quản trị & Ban Điều hành Công ty Cổ phần Xây lắp Bưu điện Miền Trung (CTC)', image: '/images/why_choose_us_visual.webp', email: 'info@ctcdn.vn', phone: '0915059666', order: 1 },
       { name: 'Trần Thị B', role: 'Kỹ sư trưởng', bio: 'Chuyên gia thiết kế hệ thống', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80', email: 'b@ctcdn.vn', phone: '0909876543', order: 2 }
@@ -343,7 +344,7 @@ const seedDatabase = async () => {
       { name: 'Huawei', logo: 'https://via.placeholder.com/150x80?text=Huawei', website: 'https://huawei.com', tier: 'platinum', type: 'supplier', status: 'active' }
     ]);
 
-    console.log('Inserting Document Categories...');
+    logger.log('Inserting Document Categories...');
     const docCatCatalogue = await DocumentCategory.create({
       name: 'Catalogue',
       description: 'Danh mục sản phẩm',
@@ -360,7 +361,7 @@ const seedDatabase = async () => {
       isActive: true
     });
 
-    console.log('Inserting Resources (Documents)...');
+    logger.log('Inserting Resources (Documents)...');
     await Resource.insertMany([
       {
         title: 'Catalogue Tấm Pin Jinko Solar 2024',
@@ -391,10 +392,10 @@ const seedDatabase = async () => {
       }
     ]);
 
-    console.log('Database seeded successfully!');
+    logger.log('Database seeded successfully!');
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error);
+    logger.error('Error seeding database:', error);
     process.exit(1);
   }
 };

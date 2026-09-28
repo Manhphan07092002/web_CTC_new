@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import { db } from '../../services/db-mongodb';
+import { logger } from "../../utils/logger";
 
 export type ProductStyle = 'technical' | 'sales' | 'comparison';
 export type ProductLength = 'standard' | 'deep';
@@ -87,7 +88,7 @@ export async function scrapeProductFromUrl(url: string): Promise<ScrapedProductD
     clearTimeout(timeout);
 
     if (!response.ok) {
-      console.warn(`[Product Scraper] HTTP ${response.status} for URL: ${url}`);
+      logger.warn(`[Product Scraper] HTTP ${response.status} for URL: ${url}`);
       return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [], specifications: {}, rawText: '' };
     }
 
@@ -177,7 +178,7 @@ export async function scrapeProductFromUrl(url: string): Promise<ScrapedProductD
       rawText: scrapedParagraphs.slice(0, 30).join('\n\n')
     };
   } catch (err: any) {
-    console.error('[Product Scraper Error]:', err.message || err);
+    logger.error('[Product Scraper Error]:', err.message || err);
     return { scrapedTitle: '', scrapedParagraphs: [], scrapedImages: [], scrapedVideos: [], specifications: {}, rawText: '' };
   }
 }
@@ -218,7 +219,7 @@ async function localizeExternalImage(imageUrl: string): Promise<string> {
 
     return `/uploads/scraped/${filename}`;
   } catch (err: any) {
-    console.warn(`[Localize Product Image Error]: Could not download ${imageUrl}:`, err.message || err);
+    logger.warn(`[Localize Product Image Error]: Could not download ${imageUrl}:`, err.message || err);
     return imageUrl;
   }
 }
@@ -274,7 +275,7 @@ function optimizeReadabilityScore(htmlContent: string): string {
 
       for (const delim of delimiters) {
         const lower = trimmed.toLowerCase();
-        let searchStart = 5;
+        const searchStart = 5;
         let delimIdx = lower.indexOf(delim, searchStart);
 
         while (delimIdx !== -1) {
@@ -519,7 +520,7 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
             return data.choices[0].message.content;
           }
         } catch (err: any) {
-          console.warn(`[ProductWriter Query] Model ${currentModel} error:`, err.message);
+          logger.warn(`[ProductWriter Query] Model ${currentModel} error:`, err.message);
         }
       }
       return null;
@@ -544,13 +545,13 @@ async function queryAiLlmFromAdminSettings(prompt: string): Promise<string | nul
             return data.candidates[0].content.parts[0].text;
           }
         } catch (e: any) {
-          console.warn(`[ProductWriter Gemini Query] ${gemModel} error:`, e.message);
+          logger.warn(`[ProductWriter Gemini Query] ${gemModel} error:`, e.message);
         }
       }
       return null;
     }
   } catch (err: any) {
-    console.error('[Product AI LLM Query Error]:', err.message || err);
+    logger.error('[Product AI LLM Query Error]:', err.message || err);
     return null;
   }
 }

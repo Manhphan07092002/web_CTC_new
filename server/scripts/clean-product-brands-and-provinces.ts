@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { Product } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
@@ -51,13 +52,13 @@ function cleanText(text: string, realBrand: string): string {
 }
 
 async function runCleanup() {
-  console.log('🚀 Starting MongoDB Product Brands & Provinces Cleanup...');
+  logger.log('🚀 Starting MongoDB Product Brands & Provinces Cleanup...');
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('🍃 Connected to MongoDB:', MONGODB_URI);
+    logger.log('🍃 Connected to MongoDB:', MONGODB_URI);
 
     const products = await Product.find({ isDeleted: { $ne: true } });
-    console.log(`📦 Total products to inspect: ${products.length}`);
+    logger.log(`📦 Total products to inspect: ${products.length}`);
 
     let updatedCount = 0;
 
@@ -94,13 +95,13 @@ async function runCleanup() {
       }
     }
 
-    console.log(`✅ Successfully updated ${updatedCount} products with clean brands & nationwide delivery text.`);
+    logger.log(`✅ Successfully updated ${updatedCount} products with clean brands & nationwide delivery text.`);
 
   } catch (error) {
-    console.error('❌ Error during product cleanup:', error);
+    logger.error('❌ Error during product cleanup:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('👋 MongoDB connection closed.');
+    logger.log('👋 MongoDB connection closed.');
   }
 }
 

@@ -54,6 +54,7 @@ import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { Product, ProductCategory, Category } from '../models/index.js';
+import { logger } from "../../utils/logger";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -3064,7 +3065,7 @@ async function resolveAllImages(items: Array<{ name: string }>): Promise<{ ok: M
     await saveImageCache();
     const done = Math.min(start + batch.length, items.length);
     if (done % 25 === 0 || done === items.length) {
-      console.log(`🖼️  Đã kiểm tra ${done}/${items.length} sản phẩm | đạt: ${ok.size} | lỗi: ${failed.length}`);
+      logger.log(`🖼️  Đã kiểm tra ${done}/${items.length} sản phẩm | đạt: ${ok.size} | lỗi: ${failed.length}`);
     }
   }
 
@@ -3269,7 +3270,7 @@ async function renderSourcePage(url: string): Promise<ValidatedSourcePage | null
     };
   } catch (error) {
     if (!playwrightUnavailableWarningShown) {
-      console.warn(`⚠️  Playwright fallback không khả dụng: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(`⚠️  Playwright fallback không khả dụng: ${error instanceof Error ? error.message : String(error)}`);
       playwrightUnavailableWarningShown = true;
     }
     return null;
@@ -4227,7 +4228,7 @@ async function discoverProductCatalog(): Promise<CatalogGroup[]> {
       .slice(0, 3)
       .map(([reason, count]) => `${reason}=${count}`)
       .join(', ');
-    console.log(
+    logger.log(
       `🔎 ${targetItem.category}: ${accepted.length}/${targetItem.quota} model hãng hợp lệ ` +
       `| search=${diagnostics.searchResults}, sitemap=${diagnostics.sitemapUrls}, ` +
       `category=${diagnostics.categoryUrls}, api=${diagnostics.publicApiUrls}, fetch=${diagnostics.pagesFetched}` +
@@ -4614,7 +4615,7 @@ async function resolveAllEvidence(
       const official = [...result.values()].filter((item) => item.primarySource.official && item.primarySource.supportsProductFacts).length;
       const datasheets = [...result.values()].filter((item) => item.datasheet).length;
       const withSpecs = [...result.values()].filter((item) => item.specifications.length > 0).length;
-      console.log(`🔎 Evidence ${done}/${items.length} | nguồn hãng: ${official} | datasheet: ${datasheets} | có specs: ${withSpecs}`);
+      logger.log(`🔎 Evidence ${done}/${items.length} | nguồn hãng: ${official} | datasheet: ${datasheets} | có specs: ${withSpecs}`);
     }
   }
 
@@ -5446,7 +5447,7 @@ async function connectMongo(): Promise<void> {
   } catch (error) {
     if (error instanceof Error && error.message.includes('ENOTFOUND') && MONGO_URI.includes('mongo')) {
       const fallback = MONGO_URI.replace(/([\/@])mongo(?=[:\/]|$)/g, (_match, prefix: string) => `${prefix}127.0.0.1`);
-      console.warn(`⚠️  Không phân giải được host mongo, thử: ${fallback}`);
+      logger.warn(`⚠️  Không phân giải được host mongo, thử: ${fallback}`);
       await mongoose.connect(fallback);
       return;
     }
@@ -5552,7 +5553,7 @@ async function bulkUpsertProducts(products: any[]): Promise<void> {
       })),
       { ordered: false },
     );
-    console.log(`💾 Đã ghi ${Math.min(start + batch.length, products.length)}/${products.length} sản phẩm`);
+    logger.log(`💾 Đã ghi ${Math.min(start + batch.length, products.length)}/${products.length} sản phẩm`);
   }
 }
 
@@ -5616,17 +5617,17 @@ async function main(): Promise<void> {
         CATEGORY_TARGETS.filter((item) => item.level1 === level1).reduce((sum, item) => sum + item.quota, 0),
       ]),
     );
-    console.log(`✅ Cấu hình V8 Static Seed hợp lệ: ${CATEGORY_TARGETS.length} danh mục lá, đúng ${TARGET_TOTAL_PRODUCTS} sản phẩm.`);
-    console.log(JSON.stringify(totals, null, 2));
-    console.log('📦 Catalog sản phẩm: khai báo tĩnh, không crawl website hãng.');
-    console.log(`🖼️  Ảnh: Google Images URL; mirror về server=${MIRROR_IMAGES}.`);
+    logger.log(`✅ Cấu hình V8 Static Seed hợp lệ: ${CATEGORY_TARGETS.length} danh mục lá, đúng ${TARGET_TOTAL_PRODUCTS} sản phẩm.`);
+    logger.log(JSON.stringify(totals, null, 2));
+    logger.log('📦 Catalog sản phẩm: khai báo tĩnh, không crawl website hãng.');
+    logger.log(`🖼️  Ảnh: Google Images URL; mirror về server=${MIRROR_IMAGES}.`);
     return;
   }
 
   if (DISCOVERY_ONLY) {
     const discoveredTotal = ACTIVE_PRODUCT_CATALOG.reduce((sum, group) => sum + group.products.length, 0);
-    console.log(`\n📦 STATIC CATALOG: ${discoveredTotal}/${TARGET_TOTAL_PRODUCTS} sản phẩm, không thực hiện product crawl.`);
-    console.log(`📄 Catalog: ${DISCOVERED_CATALOG_FILE}`);
+    logger.log(`\n📦 STATIC CATALOG: ${discoveredTotal}/${TARGET_TOTAL_PRODUCTS} sản phẩm, không thực hiện product crawl.`);
+    logger.log(`📄 Catalog: ${DISCOVERED_CATALOG_FILE}`);
     return;
   }
 
@@ -5640,7 +5641,7 @@ async function main(): Promise<void> {
       `${partNumberReport.missing} thiếu mã thật, ${partNumberReport.duplicate} trùng mã. ` +
       `Static seed không tự sinh mã thay thế; xem ${PART_NUMBER_REPORT_FILE}`;
     if (VALIDATE_ONLY) {
-      console.error(`❌ ${message}`);
+      logger.error(`❌ ${message}`);
       process.exitCode = 1;
       return;
     }
@@ -5668,36 +5669,36 @@ async function main(): Promise<void> {
   if (VALIDATE_ONLY) {
     const brandCount = new Set(flatProducts.map((item) => detectBrand(item.name))).size;
     const brandSubmenuCount = [...categorySeoByKey.values()].filter((item) => item.menuType === 'brand').length;
-    console.log(`✅ Catalog hợp lệ: ${flatProducts.length} sản phẩm, ${ACTIVE_PRODUCT_CATALOG.length} danh mục lá, ${categorySeoByKey.size} category landing, ${brandCount} thương hiệu nhận diện.`);
-    console.log(`✅ Submenu hãng theo category: ${brandSubmenuCount} (ví dụ Cáp mạng → CommScope).`);
-    console.log(`✅ Part number hợp lệ và duy nhất: ${partNumberReport.valid}/${partNumberReport.total}.`);
-    console.log(`📄 Báo cáo Part number: ${PART_NUMBER_REPORT_FILE}`);
-    console.log(`📄 Báo cáo Category SEO: ${CATEGORY_REPORT_FILE}`);
+    logger.log(`✅ Catalog hợp lệ: ${flatProducts.length} sản phẩm, ${ACTIVE_PRODUCT_CATALOG.length} danh mục lá, ${categorySeoByKey.size} category landing, ${brandCount} thương hiệu nhận diện.`);
+    logger.log(`✅ Submenu hãng theo category: ${brandSubmenuCount} (ví dụ Cáp mạng → CommScope).`);
+    logger.log(`✅ Part number hợp lệ và duy nhất: ${partNumberReport.valid}/${partNumberReport.total}.`);
+    logger.log(`📄 Báo cáo Part number: ${PART_NUMBER_REPORT_FILE}`);
+    logger.log(`📄 Báo cáo Category SEO: ${CATEGORY_REPORT_FILE}`);
     return;
   }
 
   await Promise.all([loadImageCache(), loadEvidenceCache()]);
-  console.log('\n════════════════════════════════════════════════════════════');
-  console.log('CTC — V8 STATIC SEED: 850 SẢN PHẨM + GOOGLE IMAGE URL');
-  console.log('════════════════════════════════════════════════════════════');
-  console.log(`Sản phẩm          : ${flatProducts.length}`);
-  console.log(`Danh mục lá       : ${ACTIVE_PRODUCT_CATALOG.length}`);
-  console.log(`Mục tiêu / dải    : ${TARGET_TOTAL_PRODUCTS} / ${MIN_TOTAL_PRODUCTS}–${MAX_TOTAL_PRODUCTS}`);
-  console.log('Product discovery : TẮT — dùng catalog tĩnh trong file');
-  console.log(`Phạm vi địa lý    : ${GEO_PROVINCES.length} tỉnh/thành`);
-  console.log(`GEO standard      : ${GEO_STANDARD}`);
-  console.log(`Tìm nguồn hãng    : ${RESOLVE_OFFICIAL_SOURCES}`);
-  console.log(`Category landing  : ${categorySeoByKey.size}`);
-  console.log(`Điểm khớp ảnh min : ${MIN_IMAGE_MATCH_SCORE}/100`);
-  console.log(`Yêu cầu datasheet : ${REQUIRE_DATASHEET}`);
-  console.log(`Yêu cầu specs     : ${REQUIRE_VERIFIED_SPECIFICATIONS}`);
-  console.log(`Tìm datasheet riêng: ${SEPARATE_DATASHEET_SEARCH}`);
-  console.log(`Google Images     : ${SERPER_ENABLED ? 'BẬT qua Serper' : 'TẮT'}`);
-  console.log(`Mirror ảnh        : ${MIRROR_IMAGES}`);
-  console.log(`Chỉ nhận ảnh hãng : ${REQUIRE_OFFICIAL_IMAGE}`);
-  console.log(`DRY_RUN           : ${DRY_RUN}`);
-  console.log(`VALIDATE_ONLY     : ${VALIDATE_ONLY}`);
-  console.log('════════════════════════════════════════════════════════════\n');
+  logger.log('\n════════════════════════════════════════════════════════════');
+  logger.log('CTC — V8 STATIC SEED: 850 SẢN PHẨM + GOOGLE IMAGE URL');
+  logger.log('════════════════════════════════════════════════════════════');
+  logger.log(`Sản phẩm          : ${flatProducts.length}`);
+  logger.log(`Danh mục lá       : ${ACTIVE_PRODUCT_CATALOG.length}`);
+  logger.log(`Mục tiêu / dải    : ${TARGET_TOTAL_PRODUCTS} / ${MIN_TOTAL_PRODUCTS}–${MAX_TOTAL_PRODUCTS}`);
+  logger.log('Product discovery : TẮT — dùng catalog tĩnh trong file');
+  logger.log(`Phạm vi địa lý    : ${GEO_PROVINCES.length} tỉnh/thành`);
+  logger.log(`GEO standard      : ${GEO_STANDARD}`);
+  logger.log(`Tìm nguồn hãng    : ${RESOLVE_OFFICIAL_SOURCES}`);
+  logger.log(`Category landing  : ${categorySeoByKey.size}`);
+  logger.log(`Điểm khớp ảnh min : ${MIN_IMAGE_MATCH_SCORE}/100`);
+  logger.log(`Yêu cầu datasheet : ${REQUIRE_DATASHEET}`);
+  logger.log(`Yêu cầu specs     : ${REQUIRE_VERIFIED_SPECIFICATIONS}`);
+  logger.log(`Tìm datasheet riêng: ${SEPARATE_DATASHEET_SEARCH}`);
+  logger.log(`Google Images     : ${SERPER_ENABLED ? 'BẬT qua Serper' : 'TẮT'}`);
+  logger.log(`Mirror ảnh        : ${MIRROR_IMAGES}`);
+  logger.log(`Chỉ nhận ảnh hãng : ${REQUIRE_OFFICIAL_IMAGE}`);
+  logger.log(`DRY_RUN           : ${DRY_RUN}`);
+  logger.log(`VALIDATE_ONLY     : ${VALIDATE_ONLY}`);
+  logger.log('════════════════════════════════════════════════════════════\n');
 
   if (!SERPER_ENABLED) {
     throw new Error('V8 cần ENABLE_SERPER=true và SERPER_API_KEY trong môi trường để lấy URL ảnh Google Images.');
@@ -5802,18 +5803,18 @@ async function main(): Promise<void> {
 
   if (!DRY_RUN) {
     await connectMongo();
-    console.log('✅ Đã kết nối MongoDB.');
+    logger.log('✅ Đã kết nối MongoDB.');
 
     if (RESET_ALL_PRODUCTS) {
       const result = await Product.deleteMany({});
-      console.log(`🗑️  Đã xóa toàn bộ ${result.deletedCount} sản phẩm theo yêu cầu RESET_ALL_PRODUCTS=true.`);
+      logger.log(`🗑️  Đã xóa toàn bộ ${result.deletedCount} sản phẩm theo yêu cầu RESET_ALL_PRODUCTS=true.`);
       const catResult = await ProductCategory.deleteMany({});
-      console.log(`🗑️  Đã xóa toàn bộ ${catResult.deletedCount} danh mục mới theo yêu cầu.`);
+      logger.log(`🗑️  Đã xóa toàn bộ ${catResult.deletedCount} danh mục mới theo yêu cầu.`);
       const legacyCatResult = await Category.deleteMany({});
-      console.log(`🗑️  Đã xóa toàn bộ ${legacyCatResult.deletedCount} danh mục legacy theo yêu cầu.`);
+      logger.log(`🗑️  Đã xóa toàn bộ ${legacyCatResult.deletedCount} danh mục legacy theo yêu cầu.`);
     } else if (RESET_PRODUCTS) {
       const result = await Product.deleteMany({});
-      console.log(`🗑️  Đã xóa sạch toàn bộ ${result.deletedCount} sản phẩm cũ trước khi nạp mới.`);
+      logger.log(`🗑️  Đã xóa sạch toàn bộ ${result.deletedCount} sản phẩm cũ trước khi nạp mới.`);
     }
 
     if (CLEANUP_LEGACY_GLOBAL_BRAND_MENU) {
@@ -5826,7 +5827,7 @@ async function main(): Promise<void> {
         ],
       });
       if (obsoleteBrandCategories.deletedCount > 0) {
-        console.log(`🧹 Đã dọn ${obsoleteBrandCategories.deletedCount} category hãng thuộc nhánh Thương Hiệu cũ.`);
+        logger.log(`🧹 Đã dọn ${obsoleteBrandCategories.deletedCount} category hãng thuộc nhánh Thương Hiệu cũ.`);
       }
     }
 
@@ -5973,22 +5974,22 @@ async function main(): Promise<void> {
   if (prepared.length !== flatProducts.length) throw new Error(`Payload cuối phải có ${flatProducts.length} sản phẩm, hiện có ${prepared.length}.`);
 
   if (DRY_RUN) {
-    console.log(`\n🧪 DRY_RUN=true: đã kiểm chứng ảnh-model, evidence, datasheet/specs và Category SEO; chưa ghi MongoDB.`);
-    console.log(`📄 Báo cáo ảnh       : ${IMAGE_REPORT_FILE}`);
-    console.log(`📄 Báo cáo evidence  : ${EVIDENCE_REPORT_FILE}`);
-    console.log(`📄 Báo cáo category  : ${CATEGORY_REPORT_FILE}`);
-    console.log(`📄 Preview           : ${PRODUCT_PREVIEW_FILE}`);
+    logger.log(`\n🧪 DRY_RUN=true: đã kiểm chứng ảnh-model, evidence, datasheet/specs và Category SEO; chưa ghi MongoDB.`);
+    logger.log(`📄 Báo cáo ảnh       : ${IMAGE_REPORT_FILE}`);
+    logger.log(`📄 Báo cáo evidence  : ${EVIDENCE_REPORT_FILE}`);
+    logger.log(`📄 Báo cáo category  : ${CATEGORY_REPORT_FILE}`);
+    logger.log(`📄 Preview           : ${PRODUCT_PREVIEW_FILE}`);
     return;
   }
 
   await bulkUpsertProducts(prepared);
   await updateCategoryCounts();
-  console.log(`\n✅ Hoàn thành V8: upsert ${prepared.length} sản phẩm tĩnh với URL ảnh Google đúng model.`);
+  logger.log(`\n✅ Hoàn thành V8: upsert ${prepared.length} sản phẩm tĩnh với URL ảnh Google đúng model.`);
 }
 
 main()
   .catch((error) => {
-    console.error('\n❌ Seed thất bại:', error instanceof Error ? error.stack || error.message : error);
+    logger.error('\n❌ Seed thất bại:', error instanceof Error ? error.stack || error.message : error);
     process.exitCode = 1;
   })
   .finally(async () => {

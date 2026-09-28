@@ -1,6 +1,7 @@
 import express from 'express';
 import { TeamMember, SupportedLanguage, SUPPORTED_LANGUAGES } from '../models';
 import { translateTeamMember } from '../services/translate';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -57,7 +58,7 @@ router.get('/', async (req, res) => {
       };
     }));
   } catch (error) {
-    console.error('Error fetching team:', error);
+    logger.error('Error fetching team:', error);
     res.status(500).json({ error: 'Failed to fetch team members' });
   }
 });
@@ -112,7 +113,7 @@ router.post('/', async (req, res) => {
     const translatedData = await translateTeamMember(req.body);
     const member = new TeamMember(translatedData);
     await member.save();
-    console.log('Team member created with translations:', member.name);
+    logger.log('Team member created with translations:', member.name);
     res.status(201).json({
       id: member._id.toString(),
       name: member.name,
@@ -125,7 +126,7 @@ router.post('/', async (req, res) => {
       isActive: member.isActive
     });
   } catch (error) {
-    console.error('Error creating team member:', error);
+    logger.error('Error creating team member:', error);
     res.status(500).json({ error: 'Failed to create team member' });
   }
 });
@@ -143,7 +144,7 @@ router.put('/:id', async (req, res) => {
     if (!member) {
       return res.status(404).json({ error: 'Team member not found' });
     }
-    console.log('Team member updated with translations:', member.name);
+    logger.log('Team member updated with translations:', member.name);
     res.json({
       id: member._id.toString(),
       name: member.name,
@@ -156,7 +157,7 @@ router.put('/:id', async (req, res) => {
       isActive: member.isActive
     });
   } catch (error) {
-    console.error('Error updating team member:', error);
+    logger.error('Error updating team member:', error);
     res.status(500).json({ error: 'Failed to update team member' });
   }
 });

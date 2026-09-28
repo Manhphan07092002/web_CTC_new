@@ -1,6 +1,7 @@
 import NodeCache from 'node-cache';
 import { Translation } from '../../models/Translation';
 import { SUPPORTED_LANGUAGES } from './i18n-helpers';
+import { logger } from "../../utils/logger";
 
 interface CachedTranslation {
   value: string;
@@ -56,15 +57,15 @@ class TranslationCache {
     // Log cache events in development
     if (process.env.NODE_ENV === 'development') {
       this.cache.on('set', (key, value) => {
-        console.log(`[Cache] Set key: ${key}`);
+        logger.log(`[Cache] Set key: ${key}`);
       });
 
       this.cache.on('del', (key, value) => {
-        console.log(`[Cache] Deleted key: ${key}`);
+        logger.log(`[Cache] Deleted key: ${key}`);
       });
 
       this.cache.on('expired', (key, value) => {
-        console.log(`[Cache] Expired key: ${key}`);
+        logger.log(`[Cache] Expired key: ${key}`);
       });
     }
   }
@@ -262,9 +263,9 @@ class TranslationCache {
         });
       });
 
-      console.log(`[Cache] Preloaded ${translations.length} database translations`);
+      logger.log(`[Cache] Preloaded ${translations.length} database translations`);
     } catch (error) {
-      console.error('[Cache] Error preloading database translations:', error);
+      logger.error('[Cache] Error preloading database translations:', error);
     }
   }
 
@@ -289,15 +290,15 @@ class TranslationCache {
               const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
               this.setNamespace(lang.code, namespace, content, false);
             } catch (error) {
-              console.error(`[Cache] Error loading ${filePath}:`, error);
+              logger.error(`[Cache] Error loading ${filePath}:`, error);
             }
           }
         }
       }
 
-      console.log('[Cache] File-based translations warmed up');
+      logger.log('[Cache] File-based translations warmed up');
     } catch (error) {
-      console.error('[Cache] Error warming up cache:', error);
+      logger.error('[Cache] Error warming up cache:', error);
     }
   }
 

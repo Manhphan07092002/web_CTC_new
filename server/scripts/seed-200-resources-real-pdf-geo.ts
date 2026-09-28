@@ -70,6 +70,7 @@ import { once } from 'node:events';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { DocumentCategory, Resource } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1188,7 +1189,7 @@ async function collectValidatedPdfs(providerName: SearchProviderName): Promise<V
       try {
         results = await searchGoogle(providerName, query, start);
       } catch (error) {
-        console.warn(`⚠️ Không tìm được [${currentProfile.publisher}] trang ${pageIndex + 1}:`, (error as Error).message);
+        logger.warn(`⚠️ Không tìm được [${currentProfile.publisher}] trang ${pageIndex + 1}:`, (error as Error).message);
         continue;
       }
 
@@ -1226,7 +1227,7 @@ async function collectValidatedPdfs(providerName: SearchProviderName): Promise<V
           accepted.push({ search: result, profile: currentProfile, asset });
 
           const updatedCounts = categoryCounts(accepted);
-          console.log(
+          logger.log(
             `✅ ${accepted.length}/${TARGET_RESOURCES} | ${currentProfile.categorySlug}: ` +
               `${updatedCounts[currentProfile.categorySlug]}/${quotaFor(currentProfile.categorySlug)} | ` +
               `${truncate(titleForFile, 74)} | ${humanFileSize(asset.sizeBytes)}`,
@@ -1234,7 +1235,7 @@ async function collectValidatedPdfs(providerName: SearchProviderName): Promise<V
 
           if (hasMetAllQuotas(accepted)) return accepted.slice(0, TARGET_RESOURCES);
         } catch (error) {
-          console.warn(`   ↳ Bỏ qua PDF không đạt: ${truncate(result.link, 100)} — ${(error as Error).message}`);
+          logger.warn(`   ↳ Bỏ qua PDF không đạt: ${truncate(result.link, 100)} — ${(error as Error).message}`);
         }
       }
     }
@@ -1293,7 +1294,7 @@ async function ensureIndexes(): Promise<void> {
 
   const results = await Promise.allSettled(indexes);
   results.forEach((result) => {
-    if (result.status === 'rejected') console.warn('⚠️ Không tạo được một index:', result.reason?.message || result.reason);
+    if (result.status === 'rejected') logger.warn('⚠️ Không tạo được một index:', result.reason?.message || result.reason);
   });
 }
 
@@ -1310,7 +1311,7 @@ async function saveResources(candidates: ValidatedCandidate[]): Promise<void> {
   }
 
   if (DRY_RUN) {
-    console.log('🧪 DRY_RUN=true: đã kiểm tra đủ PDF, bỏ qua bước ghi MongoDB.');
+    logger.log('🧪 DRY_RUN=true: đã kiểm tra đủ PDF, bỏ qua bước ghi MongoDB.');
     return;
   }
 
@@ -1319,7 +1320,7 @@ async function saveResources(candidates: ValidatedCandidate[]): Promise<void> {
 
   if (RESET_SEEDED_RESOURCES) {
     const result = await Resource.collection.deleteMany({ seedKey: SEED_KEY });
-    console.log(`🗑️ Đã xóa ${result.deletedCount} tài liệu cũ của seed ${SEED_KEY}.`);
+    logger.log(`🗑️ Đã xóa ${result.deletedCount} tài liệu cũ của seed ${SEED_KEY}.`);
   }
 
   const documents = candidates.map((candidate, index) => {
@@ -1340,7 +1341,7 @@ async function saveResources(candidates: ValidatedCandidate[]): Promise<void> {
   }));
 
   const result = await Resource.collection.bulkWrite(operations, { ordered: false });
-  console.log(
+  logger.log(
     `💾 MongoDB: upserted=${result.upsertedCount}, modified=${result.modifiedCount}, matched=${result.matchedCount}`,
   );
 
@@ -1369,26 +1370,26 @@ async function main(): Promise<void> {
   const providerName = resolveSearchProvider();
   await loadSearchCache();
 
-  console.log('============================================================');
-  console.log('CTC — SEED 200 PDF THẬT CHUẨN SEO + GEO/AEO');
-  console.log('============================================================');
-  console.log(`Nguồn tìm kiếm       : ${providerName}`);
-  console.log(`Số tài liệu mục tiêu : ${TARGET_RESOURCES}`);
-  console.log(`PDF tối thiểu        : ${humanFileSize(PDF_MIN_BYTES)}`);
-  console.log(`PDF tối đa           : ${humanFileSize(PDF_MAX_BYTES)}`);
-  console.log(`Lưu bản sao về VPS   : ${MIRROR_PDFS ? 'Có' : 'Không — dùng URL PDF gốc đã kiểm chứng'}`);
-  console.log(`Dry run              : ${DRY_RUN ? 'Có' : 'Không'}`);
-  console.log('============================================================');
+  logger.log('============================================================');
+  logger.log('CTC — SEED 200 PDF THẬT CHUẨN SEO + GEO/AEO');
+  logger.log('============================================================');
+  logger.log(`Nguồn tìm kiếm       : ${providerName}`);
+  logger.log(`Số tài liệu mục tiêu : ${TARGET_RESOURCES}`);
+  logger.log(`PDF tối thiểu        : ${humanFileSize(PDF_MIN_BYTES)}`);
+  logger.log(`PDF tối đa           : ${humanFileSize(PDF_MAX_BYTES)}`);
+  logger.log(`Lưu bản sao về VPS   : ${MIRROR_PDFS ? 'Có' : 'Không — dùng URL PDF gốc đã kiểm chứng'}`);
+  logger.log(`Dry run              : ${DRY_RUN ? 'Có' : 'Không'}`);
+  logger.log('============================================================');
 
   const candidates = await collectValidatedPdfs(providerName);
 
   const counts = categoryCounts(candidates);
-  console.log('\nKẾT QUẢ XÁC THỰC:');
+  logger.log('\nKẾT QUẢ XÁC THỰC:');
   for (const category of CATEGORIES_DATA) {
-    console.log(`- ${category.name}: ${counts[category.slug] || 0}/${category.quota}`);
+    logger.log(`- ${category.name}: ${counts[category.slug] || 0}/${category.quota}`);
   }
-  console.log(`- Tổng cộng: ${candidates.length}/${TARGET_RESOURCES}`);
-  console.log(`- Số truy vấn API mới: ${searchApiCalls}/${MAX_GOOGLE_QUERIES}`);
+  logger.log(`- Tổng cộng: ${candidates.length}/${TARGET_RESOURCES}`);
+  logger.log(`- Số truy vấn API mới: ${searchApiCalls}/${MAX_GOOGLE_QUERIES}`);
 
   // Chỉ kết nối MongoDB sau khi đã thu đủ tài liệu hợp lệ.
   if (!DRY_RUN) {
@@ -1397,23 +1398,23 @@ async function main(): Promise<void> {
     } catch (err: any) {
       if (err.message && (err.message.includes('ENOTFOUND') || err.message.includes('mongo')) && MONGO_URI.includes('mongo')) {
         const fallbackUri = MONGO_URI.replace(/([\/@])mongo(?=[:\/]|$)/g, '$1127.0.0.1');
-        console.warn(`⚠️ Không tìm thấy host 'mongo' (chạy ngoài Docker container), tự động chuyển sang: ${fallbackUri}`);
+        logger.warn(`⚠️ Không tìm thấy host 'mongo' (chạy ngoài Docker container), tự động chuyển sang: ${fallbackUri}`);
         await mongoose.connect(fallbackUri);
       } else {
         throw err;
       }
     }
-    console.log('✅ Đã kết nối MongoDB.');
+    logger.log('✅ Đã kết nối MongoDB.');
   }
 
   await saveResources(candidates);
-  console.log('🎉 Hoàn tất seed tài liệu PDF có thật, không sử dụng file dummy.');
+  logger.log('🎉 Hoàn tất seed tài liệu PDF có thật, không sử dụng file dummy.');
 }
 
 main()
   .catch((error) => {
-    console.error('\n❌ Seed thất bại:');
-    console.error(error instanceof Error ? error.stack || error.message : error);
+    logger.error('\n❌ Seed thất bại:');
+    logger.error(error instanceof Error ? error.stack || error.message : error);
     process.exitCode = 1;
   })
   .finally(async () => {

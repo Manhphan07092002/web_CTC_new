@@ -23,6 +23,7 @@ import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { Product, ProductCategory, Category } from '../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1924,7 +1925,7 @@ async function ensureCategoryPath(pathNames: string[]): Promise<mongoose.Types.O
         },
         seoContent: seo.seoContent,
       });
-      console.log(`📁 Đã tạo danh mục: ${pathNames.slice(0, i + 1).join(' > ')}`);
+      logger.log(`📁 Đã tạo danh mục: ${pathNames.slice(0, i + 1).join(' > ')}`);
     }
     parentId = category._id as mongoose.Types.ObjectId;
   }
@@ -1936,22 +1937,22 @@ async function ensureCategoryPath(pathNames: string[]): Promise<mongoose.Types.O
 // Hàm Chính Thực Thi (Main Seed Function)
 // =============================================================================
 async function main() {
-  console.log('════════════════════════════════════════════════════════════');
-  console.log('🚀 KHỞI ĐỘNG SEED 850 SẢN PHẨM TỪ 6 NGUỒN CHÍNH THỨC (V9)');
-  console.log('════════════════════════════════════════════════════════════');
-  console.log(`• MongoDB URI         : ${MONGO_URI}`);
-  console.log(`• Serper API Enabled  : ${SERPER_ENABLED ? 'Có' : 'Không'}`);
-  console.log(`• Chế độ Dry Run      : ${DRY_RUN ? 'BẬT (Không ghi DB)' : 'TẮT (Ghi vào DB)'}`);
-  console.log(`• Validate Only       : ${VALIDATE_ONLY ? 'BẬT (Chỉ kiểm tra cấu hình)' : 'TẮT'}`);
-  console.log(`• Reset All Products  : ${RESET_ALL_PRODUCTS ? 'CÓ (Xóa sạch tạo lại)' : 'KHÔNG'}`);
+  logger.log('════════════════════════════════════════════════════════════');
+  logger.log('🚀 KHỞI ĐỘNG SEED 850 SẢN PHẨM TỪ 6 NGUỒN CHÍNH THỨC (V9)');
+  logger.log('════════════════════════════════════════════════════════════');
+  logger.log(`• MongoDB URI         : ${MONGO_URI}`);
+  logger.log(`• Serper API Enabled  : ${SERPER_ENABLED ? 'Có' : 'Không'}`);
+  logger.log(`• Chế độ Dry Run      : ${DRY_RUN ? 'BẬT (Không ghi DB)' : 'TẮT (Ghi vào DB)'}`);
+  logger.log(`• Validate Only       : ${VALIDATE_ONLY ? 'BẬT (Chỉ kiểm tra cấu hình)' : 'TẮT'}`);
+  logger.log(`• Reset All Products  : ${RESET_ALL_PRODUCTS ? 'CÓ (Xóa sạch tạo lại)' : 'KHÔNG'}`);
 
   // 1. Kiểm tra tính toàn vẹn danh mục & quota
   const flatProducts = VERIFIED_PRODUCT_CATALOG.flatMap((group) =>
     group.products.map((name) => ({ name, group })),
   );
 
-  console.log(`\n📦 Tổng số danh mục lá : ${VERIFIED_PRODUCT_CATALOG.length} / ${CATEGORY_TARGETS.length}`);
-  console.log(`📦 Tổng số sản phẩm     : ${flatProducts.length} (Mục tiêu: ${TARGET_TOTAL_PRODUCTS})`);
+  logger.log(`\n📦 Tổng số danh mục lá : ${VERIFIED_PRODUCT_CATALOG.length} / ${CATEGORY_TARGETS.length}`);
+  logger.log(`📦 Tổng số sản phẩm     : ${flatProducts.length} (Mục tiêu: ${TARGET_TOTAL_PRODUCTS})`);
 
   if (flatProducts.length !== TARGET_TOTAL_PRODUCTS) {
     throw new Error(`Catalog V9 phải có đúng ${TARGET_TOTAL_PRODUCTS} sản phẩm, hiện có ${flatProducts.length}.`);
@@ -1971,10 +1972,10 @@ async function main() {
     uniqueNames.add(s);
   }
 
-  console.log('✅ Đã xác thực thành công toàn bộ 850 sản phẩm và 54 danh mục lá.');
+  logger.log('✅ Đã xác thực thành công toàn bộ 850 sản phẩm và 54 danh mục lá.');
 
   if (VALIDATE_ONLY) {
-    console.log('\n🏁 VALIDATE_ONLY=true: Đã hoàn thành kiểm tra catalog và model.');
+    logger.log('\n🏁 VALIDATE_ONLY=true: Đã hoàn thành kiểm tra catalog và model.');
     return;
   }
 
@@ -1989,7 +1990,7 @@ async function main() {
     imageCache = {};
   }
 
-  console.log('\n🔍 BẮT ĐẦU XÁC MINH HÌNH ẢNH GOOGLE SERPER TỪ 6 NGUỒN...');
+  logger.log('\n🔍 BẮT ĐẦU XÁC MINH HÌNH ẢNH GOOGLE SERPER TỪ 6 NGUỒN...');
   const resolvedImages = new Map<string, VerifiedImage>();
   const failedImages: string[] = [];
 
@@ -2076,7 +2077,7 @@ async function main() {
     process.stdout.write(`\r⏳ Tiến độ tìm ảnh: ${progress}/${flatProducts.length} (${resolvedImages.size} thành công, ${failedImages.length} cần tra cứu)...`);
   }
 
-  console.log('\n💾 Đang lưu cache hình ảnh...');
+  logger.log('\n💾 Đang lưu cache hình ảnh...');
   await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8');
 
   // 3. Chuẩn bị Payload Sản Phẩm & Ghi vào MongoDB
@@ -2084,19 +2085,19 @@ async function main() {
   const preparedProducts: any[] = [];
 
   if (!DRY_RUN) {
-    console.log('\n🔌 Đang kết nối tới MongoDB...');
+    logger.log('\n🔌 Đang kết nối tới MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Đã kết nối MongoDB thành công.');
+    logger.log('✅ Đã kết nối MongoDB thành công.');
 
     if (RESET_ALL_PRODUCTS) {
-      console.log('🗑️  Đang xóa toàn bộ sản phẩm và danh mục cũ...');
+      logger.log('🗑️  Đang xóa toàn bộ sản phẩm và danh mục cũ...');
       await Product.deleteMany({});
       await ProductCategory.deleteMany({});
       await Category.deleteMany({});
-      console.log('✅ Đã làm sạch cơ sở dữ liệu.');
+      logger.log('✅ Đã làm sạch cơ sở dữ liệu.');
     } else if (RESET_PRODUCTS) {
       await Product.deleteMany({ seedSource: SEED_TAG });
-      console.log(`🗑️  Đã xóa sản phẩm thuộc tag ${SEED_TAG}.`);
+      logger.log(`🗑️  Đã xóa sản phẩm thuộc tag ${SEED_TAG}.`);
     }
 
     // Đảm bảo toàn bộ cây danh mục tồn tại
@@ -2197,13 +2198,13 @@ async function main() {
   await fs.writeFile(PRODUCT_PREVIEW_FILE, JSON.stringify(preparedProducts.slice(0, 20), null, 2), 'utf8');
 
   if (DRY_RUN) {
-    console.log(`\n🧪 DRY_RUN=true: Đã kiểm chứng 850 sản phẩm và cấu hình SEO; chưa ghi MongoDB.`);
-    console.log(`📄 File xem trước preview: ${PRODUCT_PREVIEW_FILE}`);
+    logger.log(`\n🧪 DRY_RUN=true: Đã kiểm chứng 850 sản phẩm và cấu hình SEO; chưa ghi MongoDB.`);
+    logger.log(`📄 File xem trước preview: ${PRODUCT_PREVIEW_FILE}`);
     return;
   }
 
   // Bulk Upsert vào MongoDB
-  console.log(`\n⚡ Đang thực hiện ghi ${preparedProducts.length} sản phẩm vào MongoDB...`);
+  logger.log(`\n⚡ Đang thực hiện ghi ${preparedProducts.length} sản phẩm vào MongoDB...`);
   const bulkOps = preparedProducts.map((doc) => ({
     updateOne: {
       filter: { slug: doc.slug },
@@ -2214,10 +2215,10 @@ async function main() {
 
   const productCollection = mongoose.connection.db!.collection('products');
   const result = await productCollection.bulkWrite(bulkOps);
-  console.log(`✅ Kết quả MongoDB: Upserted=${result.upsertedCount}, Modified=${result.modifiedCount}, Matched=${result.matchedCount}`);
+  logger.log(`✅ Kết quả MongoDB: Upserted=${result.upsertedCount}, Modified=${result.modifiedCount}, Matched=${result.matchedCount}`);
 
   // Cập nhật số lượng sản phẩm cho các danh mục
-  console.log('🔄 Đang đồng bộ số lượng sản phẩm cho danh mục...');
+  logger.log('🔄 Đang đồng bộ số lượng sản phẩm cho danh mục...');
   const categories = await ProductCategory.find({});
   for (const cat of categories) {
     const count = await Product.countDocuments({
@@ -2231,14 +2232,14 @@ async function main() {
     await ProductCategory.updateOne({ _id: cat._id }, { $set: { productCount: count } });
   }
 
-  console.log('\n════════════════════════════════════════════════════════════');
-  console.log(`🎉 HOÀN THÀNH SEED 850 SẢN PHẨM TỪ 6 NGUỒN CHÍNH HÃNG V9!`);
-  console.log('════════════════════════════════════════════════════════════\n');
+  logger.log('\n════════════════════════════════════════════════════════════');
+  logger.log(`🎉 HOÀN THÀNH SEED 850 SẢN PHẨM TỪ 6 NGUỒN CHÍNH HÃNG V9!`);
+  logger.log('════════════════════════════════════════════════════════════\n');
 }
 
 main()
   .catch((err) => {
-    console.error('\n❌ Thất bại:', err);
+    logger.error('\n❌ Thất bại:', err);
     process.exitCode = 1;
   })
   .finally(async () => {

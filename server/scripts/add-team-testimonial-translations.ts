@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -126,12 +127,12 @@ const testimonialTranslations: Record<string, any> = {
 };
 
 async function main() {
-  console.log('🌍 Adding team and testimonial translations...');
-  console.log('==============================================');
+  logger.log('🌍 Adding team and testimonial translations...');
+  logger.log('==============================================');
 
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('✓ Connected to MongoDB');
+    logger.log('✓ Connected to MongoDB');
 
     const db = mongoose.connection.db;
     if (!db) throw new Error('Database not connected');
@@ -139,12 +140,12 @@ async function main() {
     const languages = ['en', 'ko', 'ja', 'zh', 'de'];
 
     // Update Team Members
-    console.log('\n👥 Updating Team Members...');
+    logger.log('\n👥 Updating Team Members...');
     const teamCol = db.collection('teammembers');
     const teamMembers = await teamCol.find({}).toArray();
 
     for (const member of teamMembers) {
-      console.log(`  → ${member.name} (${member.role})`);
+      logger.log(`  → ${member.name} (${member.role})`);
       
       const translations: Record<string, any> = member.translations || {};
       
@@ -160,7 +161,7 @@ async function main() {
         
         if (roleKey && roleTranslations[roleKey][lang]) {
           translations[lang].role = roleTranslations[roleKey][lang];
-          console.log(`    ✓ ${lang}: ${translations[lang].role}`);
+          logger.log(`    ✓ ${lang}: ${translations[lang].role}`);
         }
       }
       
@@ -171,12 +172,12 @@ async function main() {
     }
 
     // Update Testimonials
-    console.log('\n💬 Updating Testimonials...');
+    logger.log('\n💬 Updating Testimonials...');
     const testimonialsCol = db.collection('testimonials');
     const testimonials = await testimonialsCol.find({}).toArray();
 
     for (const testimonial of testimonials) {
-      console.log(`  → ${testimonial.name} (${testimonial.role})`);
+      logger.log(`  → ${testimonial.name} (${testimonial.role})`);
       
       const translations: Record<string, any> = testimonial.translations || {};
       
@@ -197,7 +198,7 @@ async function main() {
           if (testimonialTranslations[testKey].content?.[lang]) {
             translations[lang].content = testimonialTranslations[testKey].content[lang];
           }
-          console.log(`    ✓ ${lang}: role & content`);
+          logger.log(`    ✓ ${lang}: role & content`);
         }
       }
       
@@ -207,11 +208,11 @@ async function main() {
       );
     }
 
-    console.log('\n==============================================');
-    console.log('🎉 All team and testimonial translations added!');
+    logger.log('\n==============================================');
+    logger.log('🎉 All team and testimonial translations added!');
 
   } catch (error) {
-    console.error('Error:', error);
+    logger.error('Error:', error);
   } finally {
     await mongoose.disconnect();
   }

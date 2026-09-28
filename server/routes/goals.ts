@@ -1,5 +1,6 @@
 import express from 'express';
 import { db } from '../../services/db-mongodb';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ router.get('/', async (req, res) => {
     const goals = await db.goals.getAll();
     res.json(goals);
   } catch (error) {
-    console.error('Error getting goals:', error);
+    logger.error('Error getting goals:', error);
     res.status(500).json({ error: 'Failed to get goals' });
   }
 });
@@ -20,7 +21,7 @@ router.get('/active', async (req, res) => {
     const goals = await db.goals.getActive();
     res.json(goals);
   } catch (error) {
-    console.error('Error getting active goals:', error);
+    logger.error('Error getting active goals:', error);
     res.status(500).json({ error: 'Failed to get active goals' });
   }
 });
@@ -31,7 +32,7 @@ router.get('/current', async (req, res) => {
     const goal = await db.goals.getCurrent();
     res.json(goal);
   } catch (error) {
-    console.error('Error getting current goal:', error);
+    logger.error('Error getting current goal:', error);
     res.status(500).json({ error: 'Failed to get current goal' });
   }
 });
@@ -45,7 +46,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(goal);
   } catch (error) {
-    console.error('Error getting goal:', error);
+    logger.error('Error getting goal:', error);
     res.status(500).json({ error: 'Failed to get goal' });
   }
 });
@@ -57,7 +58,7 @@ router.post('/', async (req, res) => {
     const goal = await db.goals.create(goalData);
     res.status(201).json(goal);
   } catch (error) {
-    console.error('Error creating goal:', error);
+    logger.error('Error creating goal:', error);
     res.status(500).json({ error: 'Failed to create goal' });
   }
 });
@@ -72,7 +73,7 @@ router.put('/:id', async (req, res) => {
     }
     res.json(goal);
   } catch (error) {
-    console.error('Error updating goal:', error);
+    logger.error('Error updating goal:', error);
     res.status(500).json({ error: 'Failed to update goal' });
   }
 });
@@ -86,7 +87,7 @@ router.delete('/:id', async (req, res) => {
     }
     res.json({ message: 'Goal deleted successfully' });
   } catch (error) {
-    console.error('Error deleting goal:', error);
+    logger.error('Error deleting goal:', error);
     res.status(500).json({ error: 'Failed to delete goal' });
   }
 });

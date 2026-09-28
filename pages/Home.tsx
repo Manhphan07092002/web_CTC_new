@@ -138,7 +138,7 @@ const Home: React.FC = () => {
               if (!cancelled && Array.isArray(all) && all.length > 0) {
                 setFeaturedProducts(all.slice(0, 4));
               }
-            } catch (e) {}
+            } catch (e) { /* ignore */ }
           })
           .finally(() => markLoaded('products')),
         api.projects.getFeatured(4)

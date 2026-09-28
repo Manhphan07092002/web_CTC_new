@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -9,7 +10,7 @@ router.get('/product/:productId', async (req, res) => {
     const reviews = await db.reviews.getByProductId(req.params.productId);
     res.json(reviews);
   } catch (error) {
-    console.error('Error getting product reviews', error);
+    logger.error('Error getting product reviews', error);
     res.status(500).json({ message: 'Failed to get product reviews' });
   }
 });
@@ -20,7 +21,7 @@ router.get('/', async (req, res) => {
     const reviews = await db.reviews.getAll();
     res.json(reviews);
   } catch (error) {
-    console.error('Error getting all reviews', error);
+    logger.error('Error getting all reviews', error);
     res.status(500).json({ message: 'Failed to get reviews' });
   }
 });
@@ -54,7 +55,7 @@ router.post('/product/:productId', async (req, res) => {
     
     res.status(201).json(review);
   } catch (error) {
-    console.error('Error adding review', error);
+    logger.error('Error adding review', error);
     res.status(500).json({ message: 'Failed to add review' });
   }
 });
@@ -78,7 +79,7 @@ router.delete('/product/:productId/review/:reviewIndex', async (req, res) => {
     
     res.json({ message: 'Review deleted successfully' });
   } catch (error) {
-    console.error('Error deleting review', error);
+    logger.error('Error deleting review', error);
     res.status(500).json({ message: 'Failed to delete review' });
   }
 });

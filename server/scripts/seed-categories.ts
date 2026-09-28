@@ -6,6 +6,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { ProductCategory } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -230,14 +231,14 @@ const categoryHierarchy = [
 
 async function seedCategories() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // 1. Delete ALL existing Product Categories
-    console.log('\n🔥 Deleting ALL existing product categories...');
+    logger.log('\n🔥 Deleting ALL existing product categories...');
     const deleteResult = await ProductCategory.deleteMany({});
-    console.log(`✓ Deleted ${deleteResult.deletedCount} old product categories`);
+    logger.log(`✓ Deleted ${deleteResult.deletedCount} old product categories`);
 
     // 2. Recursive Seeding Function
     async function insertCategoryTree(nodes: any[], parentId?: string) {
@@ -254,7 +255,7 @@ async function seedCategories() {
         });
 
         const savedCat = await newCat.save();
-        console.log(`  └─ Created: "${item.name}" (ID: ${savedCat._id}) ${parentId ? `[ParentID: ${parentId}]` : '[ROOT Level 1]'}`);
+        logger.log(`  └─ Created: "${item.name}" (ID: ${savedCat._id}) ${parentId ? `[ParentID: ${parentId}]` : '[ROOT Level 1]'}`);
 
         if (item.children && item.children.length > 0) {
           await insertCategoryTree(item.children, savedCat._id.toString());
@@ -262,13 +263,13 @@ async function seedCategories() {
       }
     }
 
-    console.log('\n🚀 Seeding new product category hierarchy with SEO descriptions...');
+    logger.log('\n🚀 Seeding new product category hierarchy with SEO descriptions...');
     await insertCategoryTree(categoryHierarchy);
 
-    console.log('\n✅ Successfully seeded all product categories with SEO descriptions!');
+    logger.log('\n✅ Successfully seeded all product categories with SEO descriptions!');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding categories:', error);
+    logger.error('❌ Error seeding categories:', error);
     process.exit(1);
   }
 }

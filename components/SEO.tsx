@@ -134,7 +134,7 @@ const SEO: React.FC<SEOProps> = ({
               link.href = finalFavicon;
             });
           }
-        } catch (e) {}
+        } catch (e) { /* ignore */ }
       }
     });
 

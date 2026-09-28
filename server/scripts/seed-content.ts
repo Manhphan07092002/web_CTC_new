@@ -6,6 +6,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Product, Project, News, ProductCategory, NewsCategory, ProjectCategory } from '../../models';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -54,27 +55,27 @@ const sampleNews = [
 
 async function seedContent() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // Get categories
     const productCategories = await ProductCategory.find();
     const newsCategories = await NewsCategory.find();
     const projectCategories = await ProjectCategory.find();
 
-    console.log(`Found ${productCategories.length} product categories`);
-    console.log(`Found ${newsCategories.length} news categories`);
-    console.log(`Found ${projectCategories.length} project categories`);
+    logger.log(`Found ${productCategories.length} product categories`);
+    logger.log(`Found ${newsCategories.length} news categories`);
+    logger.log(`Found ${projectCategories.length} project categories`);
 
     // Clear existing content
-    console.log('\nClearing existing content...');
+    logger.log('\nClearing existing content...');
     await Project.deleteMany({});
     await News.deleteMany({});
-    console.log('Cleared existing content');
+    logger.log('Cleared existing content');
 
     // Seed Projects
-    console.log('\nSeeding Projects...');
+    logger.log('\nSeeding Projects...');
     for (const projectData of sampleProjects) {
       // Assign to first project category if available
       const categoryId = projectCategories.length > 0 ? projectCategories[0]._id.toString() : undefined;
@@ -84,11 +85,11 @@ async function seedContent() {
         categoryId
       });
       await project.save();
-      console.log(`✓ Created project: ${projectData.title}`);
+      logger.log(`✓ Created project: ${projectData.title}`);
     }
 
     // Seed News
-    console.log('\nSeeding News...');
+    logger.log('\nSeeding News...');
     for (const newsData of sampleNews) {
       // Assign to first news category if available
       const categoryId = newsCategories.length > 0 ? newsCategories[0]._id.toString() : undefined;
@@ -98,20 +99,20 @@ async function seedContent() {
         categoryId
       });
       await news.save();
-      console.log(`✓ Created news: ${newsData.title}`);
+      logger.log(`✓ Created news: ${newsData.title}`);
     }
 
-    console.log('\n✅ Content seeded successfully!');
-    console.log(`\nSummary:`);
-    console.log(`- Projects: ${sampleProjects.length}`);
-    console.log(`- News: ${sampleNews.length}`);
+    logger.log('\n✅ Content seeded successfully!');
+    logger.log(`\nSummary:`);
+    logger.log(`- Projects: ${sampleProjects.length}`);
+    logger.log(`- News: ${sampleNews.length}`);
 
   } catch (error) {
-    console.error('Error seeding content:', error);
+    logger.error('Error seeding content:', error);
     process.exit(1);
   } finally {
     await mongoose.disconnect();
-    console.log('\nDisconnected from MongoDB');
+    logger.log('\nDisconnected from MongoDB');
   }
 }
 

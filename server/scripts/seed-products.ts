@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { Product, ProductCategory } from '../../models';
+import { logger } from "../../utils/logger";
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
@@ -139,17 +140,17 @@ const sampleProducts = [
 
 async function seedProducts() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // Clear existing products
-    console.log('Clearing existing products...');
+    logger.log('Clearing existing products...');
     await Product.deleteMany({});
 
     // Get categories to map categoryId
     const categories = await ProductCategory.find();
-    console.log(`Found ${categories.length} categories`);
+    logger.log(`Found ${categories.length} categories`);
 
     // Create products with categoryId
     const productsWithCategoryId = sampleProducts.map(product => {
@@ -162,12 +163,12 @@ async function seedProducts() {
       };
     });
 
-    console.log('Creating products...');
+    logger.log('Creating products...');
     const createdProducts = await Product.insertMany(productsWithCategoryId);
     
-    console.log(`✅ Successfully created ${createdProducts.length} products:`);
+    logger.log(`✅ Successfully created ${createdProducts.length} products:`);
     createdProducts.forEach((product, index) => {
-      console.log(`${index + 1}. ${product.name} - ${product.price.toLocaleString('vi-VN')}đ`);
+      logger.log(`${index + 1}. ${product.name} - ${product.price.toLocaleString('vi-VN')}đ`);
     });
 
     // Show summary
@@ -175,18 +176,18 @@ async function seedProducts() {
     const featuredProducts = await Product.countDocuments({ isFeatured: true });
     const activeProducts = await Product.countDocuments({ isActive: true });
 
-    console.log('\n📊 Summary:');
-    console.log(`Total products: ${totalProducts}`);
-    console.log(`Featured products: ${featuredProducts}`);
-    console.log(`Active products: ${activeProducts}`);
+    logger.log('\n📊 Summary:');
+    logger.log(`Total products: ${totalProducts}`);
+    logger.log(`Featured products: ${featuredProducts}`);
+    logger.log(`Active products: ${activeProducts}`);
 
-    console.log('\n🎉 Products seeded successfully!');
+    logger.log('\n🎉 Products seeded successfully!');
     
   } catch (error) {
-    console.error('❌ Error seeding products:', error);
+    logger.error('❌ Error seeding products:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
+    logger.log('Disconnected from MongoDB');
   }
 }
 

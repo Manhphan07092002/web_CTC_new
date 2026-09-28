@@ -360,17 +360,17 @@ class AISloganService {
     const apiKey = process.env.OPENAI_API_KEY;
     
     if (!apiKey) {
-      console.log('[AI Slogan] No OpenAI API key, using pre-generated slogans');
+      logger.log('[AI Slogan] No OpenAI API key, using pre-generated slogans');
       return this.getRandomSlogans(8);
     }
 
     try {
       // OpenAI integration would go here
       // For now, return pre-generated slogans
-      console.log('[AI Slogan] AI generation requested, using cached slogans');
+      logger.log('[AI Slogan] AI generation requested, using cached slogans');
       return this.getRandomSlogans(8);
     } catch (error) {
-      console.error('[AI Slogan] Error generating slogans:', error);
+      logger.error('[AI Slogan] Error generating slogans:', error);
       return this.getRandomSlogans(8);
     }
   }

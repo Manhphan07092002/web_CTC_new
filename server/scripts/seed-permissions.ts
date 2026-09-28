@@ -13,6 +13,7 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_ne
 // Import models từ file chính để đảm bảo schema nhất quán
 import { Permission, Role, UserPermission } from '../../models/permissions';
 import { User } from '../../models';
+import { logger } from "../../utils/logger";
 
 // Type aliases để tránh lỗi TypeScript
 const PermissionModel = Permission as mongoose.Model<any>;
@@ -23,13 +24,13 @@ const UserModel = User as mongoose.Model<any>;
 async function seedPermissions() {
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Connected to MongoDB');
+    logger.log('✅ Connected to MongoDB');
 
     // Clear existing data
     await PermissionModel.deleteMany({});
     await RoleModel.deleteMany({});
     await UserPermissionModel.deleteMany({});
-    console.log('🗑️ Cleared existing permission data');
+    logger.log('🗑️ Cleared existing permission data');
 
     // ============================================
     // CREATE PERMISSIONS
@@ -105,7 +106,7 @@ async function seedPermissions() {
     ];
 
     const createdPermissions = await PermissionModel.insertMany(permissions);
-    console.log(`✅ Created ${createdPermissions.length} permissions`);
+    logger.log(`✅ Created ${createdPermissions.length} permissions`);
 
     // Create permission map for easy lookup
     const permissionMap = new Map();
@@ -235,13 +236,13 @@ async function seedPermissions() {
     ];
 
     const createdRoles = await RoleModel.insertMany(roles);
-    console.log(`✅ Created ${createdRoles.length} roles`);
+    logger.log(`✅ Created ${createdRoles.length} roles`);
 
     // ============================================
     // ASSIGN ROLES TO EXISTING USERS
     // ============================================
     const users = await UserModel.find({});
-    console.log(`Found ${users.length} existing users`);
+    logger.log(`Found ${users.length} existing users`);
 
     for (const user of users) {
       let roleToAssign;
@@ -270,25 +271,25 @@ async function seedPermissions() {
         });
 
         await userPermission.save();
-        console.log(`✅ Assigned role ${roleToAssign.displayName} to user ${user.email}`);
+        logger.log(`✅ Assigned role ${roleToAssign.displayName} to user ${user.email}`);
       }
     }
 
-    console.log('\n🎉 Permission system seeded successfully!');
-    console.log('📊 Summary:');
-    console.log(`   - Permissions: ${createdPermissions.length}`);
-    console.log(`   - Roles: ${createdRoles.length}`);
-    console.log(`   - User assignments: ${users.length}`);
-    console.log('\n📋 Created Roles:');
+    logger.log('\n🎉 Permission system seeded successfully!');
+    logger.log('📊 Summary:');
+    logger.log(`   - Permissions: ${createdPermissions.length}`);
+    logger.log(`   - Roles: ${createdRoles.length}`);
+    logger.log(`   - User assignments: ${users.length}`);
+    logger.log('\n📋 Created Roles:');
     createdRoles.forEach(role => {
-      console.log(`   - ${role.displayName} (Level ${role.level}): ${role.permissions.length} permissions`);
+      logger.log(`   - ${role.displayName} (Level ${role.level}): ${role.permissions.length} permissions`);
     });
 
   } catch (error) {
-    console.error('❌ Error seeding permissions:', error);
+    logger.error('❌ Error seeding permissions:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('\n👋 Disconnected from MongoDB');
+    logger.log('\n👋 Disconnected from MongoDB');
     process.exit(0);
   }
 }

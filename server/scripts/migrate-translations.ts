@@ -3,6 +3,7 @@ import path from 'path';
 import { connectDB } from '../db';
 import { Translation } from '../../models/Translation';
 import { SUPPORTED_LANGUAGES } from '../utils/i18n-helpers';
+import { logger } from "../../utils/logger";
 
 interface MigrationStats {
   processed: number;
@@ -22,29 +23,29 @@ class TranslationMigrator {
   };
 
   async migrateFromFiles(): Promise<void> {
-    console.log('🚀 Starting translation migration from files to database...\n');
+    logger.log('🚀 Starting translation migration from files to database...\n');
 
     try {
       // Connect to database without i18n initialization
       await connectDB();
-      console.log('✅ Database connected\n');
+      logger.log('✅ Database connected\n');
 
       const namespaces = ['common', 'auth', 'products', 'projects', 'news', 'contact', 'calculator', 'admin'];
       
       for (const language of SUPPORTED_LANGUAGES) {
-        console.log(`📁 Processing language: ${language.flag} ${language.name} (${language.code})`);
+        logger.log(`📁 Processing language: ${language.flag} ${language.name} (${language.code})`);
         
         for (const namespace of namespaces) {
           await this.migrateNamespace(language.code, namespace);
         }
         
-        console.log(`   ✅ Completed ${language.code}\n`);
+        logger.log(`   ✅ Completed ${language.code}\n`);
       }
 
       this.printSummary();
       
     } catch (error) {
-      console.error('❌ Migration failed:', error);
+      logger.error('❌ Migration failed:', error);
       throw error;
     }
   }
@@ -53,7 +54,7 @@ class TranslationMigrator {
     const filePath = path.join(process.cwd(), 'locales', language, `${namespace}.json`);
     
     if (!fs.existsSync(filePath)) {
-      console.log(`   ⚠️  File not found: ${language}/${namespace}.json`);
+      logger.log(`   ⚠️  File not found: ${language}/${namespace}.json`);
       return;
     }
 
@@ -64,14 +65,14 @@ class TranslationMigrator {
       const flatTranslations = this.flattenObject(translations);
       const keys = Object.keys(flatTranslations);
       
-      console.log(`   📄 ${namespace}.json: ${keys.length} keys`);
+      logger.log(`   📄 ${namespace}.json: ${keys.length} keys`);
       
       for (const key of keys) {
         await this.migrateTranslation(key, namespace, language, flatTranslations[key]);
       }
       
     } catch (error) {
-      console.error(`   ❌ Error processing ${language}/${namespace}.json:`, error);
+      logger.error(`   ❌ Error processing ${language}/${namespace}.json:`, error);
       this.stats.errors++;
     }
   }
@@ -90,7 +91,7 @@ class TranslationMigrator {
           existing.updatedBy = 'migration-script';
           await existing.save();
           this.stats.updated++;
-          console.log(`     🔄 Updated: ${key}`);
+          logger.log(`     🔄 Updated: ${key}`);
         } else {
           this.stats.skipped++;
         }
@@ -109,11 +110,11 @@ class TranslationMigrator {
         
         await translation.save();
         this.stats.created++;
-        console.log(`     ✅ Created: ${key}`);
+        logger.log(`     ✅ Created: ${key}`);
       }
       
     } catch (error) {
-      console.error(`     ❌ Error migrating ${key}:`, error);
+      logger.error(`     ❌ Error migrating ${key}:`, error);
       this.stats.errors++;
     }
   }
@@ -137,22 +138,22 @@ class TranslationMigrator {
   }
 
   private printSummary(): void {
-    console.log('📊 Migration Summary:');
-    console.log(`   Total processed: ${this.stats.processed}`);
-    console.log(`   Created: ${this.stats.created}`);
-    console.log(`   Updated: ${this.stats.updated}`);
-    console.log(`   Skipped: ${this.stats.skipped}`);
-    console.log(`   Errors: ${this.stats.errors}`);
-    console.log(`   Success rate: ${Math.round(((this.stats.created + this.stats.updated + this.stats.skipped) / this.stats.processed) * 100)}%`);
+    logger.log('📊 Migration Summary:');
+    logger.log(`   Total processed: ${this.stats.processed}`);
+    logger.log(`   Created: ${this.stats.created}`);
+    logger.log(`   Updated: ${this.stats.updated}`);
+    logger.log(`   Skipped: ${this.stats.skipped}`);
+    logger.log(`   Errors: ${this.stats.errors}`);
+    logger.log(`   Success rate: ${Math.round(((this.stats.created + this.stats.updated + this.stats.skipped) / this.stats.processed) * 100)}%`);
   }
 
   async syncExistingTranslations(): Promise<void> {
-    console.log('🔄 Syncing existing database translations...\n');
+    logger.log('🔄 Syncing existing database translations...\n');
 
     try {
       // Get all published translations from database
       const dbTranslations = await Translation.find({ status: 'published' });
-      console.log(`📊 Found ${dbTranslations.length} published translations in database`);
+      logger.log(`📊 Found ${dbTranslations.length} published translations in database`);
 
       // Group by language and namespace
       const grouped = dbTranslations.reduce((acc: any, translation) => {
@@ -189,20 +190,20 @@ class TranslationMigrator {
           // Write file
           fs.writeFileSync(filePath, JSON.stringify(grouped[language][namespace], null, 2), 'utf8');
           filesUpdated++;
-          console.log(`   ✅ Updated: ${language}/${namespace}.json`);
+          logger.log(`   ✅ Updated: ${language}/${namespace}.json`);
         }
       }
       
-      console.log(`\n📁 Updated ${filesUpdated} translation files`);
+      logger.log(`\n📁 Updated ${filesUpdated} translation files`);
       
     } catch (error) {
-      console.error('❌ Sync failed:', error);
+      logger.error('❌ Sync failed:', error);
       throw error;
     }
   }
 
   async validateMigration(): Promise<void> {
-    console.log('🔍 Validating migration...\n');
+    logger.log('🔍 Validating migration...\n');
 
     try {
       const namespaces = ['common', 'auth', 'products', 'projects', 'news', 'contact', 'calculator', 'admin'];
@@ -229,21 +230,21 @@ class TranslationMigrator {
             totalDbKeys += dbCount;
 
             if (fileKeys.length !== dbCount) {
-              console.log(`   ⚠️  Mismatch in ${language.code}/${namespace}: File(${fileKeys.length}) vs DB(${dbCount})`);
+              logger.log(`   ⚠️  Mismatch in ${language.code}/${namespace}: File(${fileKeys.length}) vs DB(${dbCount})`);
               mismatches++;
             }
           }
         }
       }
 
-      console.log(`📊 Validation Results:`);
-      console.log(`   Total file keys: ${totalFileKeys}`);
-      console.log(`   Total database keys: ${totalDbKeys}`);
-      console.log(`   Mismatches: ${mismatches}`);
-      console.log(`   Status: ${mismatches === 0 ? '✅ PASSED' : '⚠️  ISSUES FOUND'}`);
+      logger.log(`📊 Validation Results:`);
+      logger.log(`   Total file keys: ${totalFileKeys}`);
+      logger.log(`   Total database keys: ${totalDbKeys}`);
+      logger.log(`   Mismatches: ${mismatches}`);
+      logger.log(`   Status: ${mismatches === 0 ? '✅ PASSED' : '⚠️  ISSUES FOUND'}`);
 
     } catch (error) {
-      console.error('❌ Validation failed:', error);
+      logger.error('❌ Validation failed:', error);
       throw error;
     }
   }
@@ -266,24 +267,24 @@ async function main() {
         await migrator.validateMigration();
         break;
       case 'all':
-        console.log('🚀 Running complete migration process...\n');
+        logger.log('🚀 Running complete migration process...\n');
         await migrator.migrateFromFiles();
-        console.log('\n' + '='.repeat(50) + '\n');
+        logger.log('\n' + '='.repeat(50) + '\n');
         await migrator.validateMigration();
         break;
       default:
-        console.log('🔄 Translation Migrator');
-        console.log('Usage: npx tsx server/scripts/migrate-translations.ts <command>');
-        console.log('');
-        console.log('Commands:');
-        console.log('  migrate   - Migrate translations from files to database');
-        console.log('  sync      - Sync database translations back to files');
-        console.log('  validate  - Validate migration completeness');
-        console.log('  all       - Run migrate + validate');
+        logger.log('🔄 Translation Migrator');
+        logger.log('Usage: npx tsx server/scripts/migrate-translations.ts <command>');
+        logger.log('');
+        logger.log('Commands:');
+        logger.log('  migrate   - Migrate translations from files to database');
+        logger.log('  sync      - Sync database translations back to files');
+        logger.log('  validate  - Validate migration completeness');
+        logger.log('  all       - Run migrate + validate');
         break;
     }
   } catch (error) {
-    console.error('❌ Command failed:', error);
+    logger.error('❌ Command failed:', error);
     process.exit(1);
   }
 }

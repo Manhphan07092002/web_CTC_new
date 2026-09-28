@@ -1,5 +1,6 @@
 import express from 'express';
 import { db } from '../../services/db-mongodb';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -84,7 +85,7 @@ router.post('/', async (req, res) => {
       notifications: created
     });
   } catch (error) {
-    console.error('Error seeding notifications:', error);
+    logger.error('Error seeding notifications:', error);
     res.status(500).json({ error: 'Failed to seed notifications' });
   }
 });
@@ -95,7 +96,7 @@ router.delete('/', async (req, res) => {
     await db.notifications.deleteAll();
     res.json({ success: true, message: 'All notifications deleted' });
   } catch (error) {
-    console.error('Error clearing notifications:', error);
+    logger.error('Error clearing notifications:', error);
     res.status(500).json({ error: 'Failed to clear notifications' });
   }
 });

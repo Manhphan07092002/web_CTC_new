@@ -9,6 +9,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Partner } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -275,26 +276,26 @@ const PARTNERS = [
 ];
 
 async function main() {
-  console.log('🔌 Connecting to MongoDB:', MONGO_URI);
+  logger.log('🔌 Connecting to MongoDB:', MONGO_URI);
   await mongoose.connect(MONGO_URI);
-  console.log('✅ Connected to MongoDB\n');
+  logger.log('✅ Connected to MongoDB\n');
 
-  console.log('🗑️  Xóa toàn bộ đối tác cũ để cập nhật danh sách mới phong phú...');
+  logger.log('🗑️  Xóa toàn bộ đối tác cũ để cập nhật danh sách mới phong phú...');
   await Partner.deleteMany({});
 
-  console.log('🌱 Đang chèn 41 Đối tác chiến lược & tài chính...');
+  logger.log('🌱 Đang chèn 41 Đối tác chiến lược & tài chính...');
   let inserted = 0;
   for (const p of PARTNERS) {
     await Partner.create(p);
     inserted++;
-    console.log(`  ✅ [${inserted.toString().padStart(2, '0')}] (${p.type}) ${p.name}`);
+    logger.log(`  ✅ [${inserted.toString().padStart(2, '0')}] (${p.type}) ${p.name}`);
   }
 
-  console.log(`\n🎉 Đã chèn thành công ${inserted} Đối tác vào DB!`);
+  logger.log(`\n🎉 Đã chèn thành công ${inserted} Đối tác vào DB!`);
   await mongoose.disconnect();
 }
 
 main().catch((err) => {
-  console.error('❌ Lỗi:', err);
+  logger.error('❌ Lỗi:', err);
   process.exit(1);
 });

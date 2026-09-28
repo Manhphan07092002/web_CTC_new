@@ -30,6 +30,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ProjectCategory, Project } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1456,17 +1457,17 @@ function createAllSeedDocuments() {
 // -----------------------------------------------------------------------------
 
 async function seed() {
-  console.log('🔌 Kết nối MongoDB...');
+  logger.log('🔌 Kết nối MongoDB...');
   await mongoose.connect(MONGO_URI);
 
   try {
     if (RESET_PROJECTS) {
-      console.log('🧹 RESET_PROJECTS=true: Xóa dữ liệu ProjectCategory và Project cũ...');
+      logger.log('🧹 RESET_PROJECTS=true: Xóa dữ liệu ProjectCategory và Project cũ...');
       await ProjectCategory.deleteMany({});
       await Project.deleteMany({});
     }
 
-    console.log('📁 Tạo/cập nhật danh mục dự án...');
+    logger.log('📁 Tạo/cập nhật danh mục dự án...');
     const categoryMap = new Map<string, mongoose.Types.ObjectId>();
 
     for (const category of CATEGORIES) {
@@ -1504,7 +1505,7 @@ async function seed() {
       };
     });
 
-    console.log(`🌱 Đang chèn ${docsWithCategoryId.length} bản ghi dự án vào MongoDB...`);
+    logger.log(`🌱 Đang chèn ${docsWithCategoryId.length} bản ghi dự án vào MongoDB...`);
     const insertedDocs = await Project.insertMany(docsWithCategoryId);
 
     for (const category of CATEGORIES) {
@@ -1522,40 +1523,40 @@ async function seed() {
       );
     }
 
-    console.log('✅ Seed hoàn tất.');
-    console.log(`   - Tổng dữ liệu chuẩn bị: ${allDocs.length}`);
-    console.log(`   - Dự án xác thực HSNL: ${verifiedDocs.length}`);
-    console.log(`   - Trang năng lực GEO: ${generatedDocs.length}`);
-    console.log(
+    logger.log('✅ Seed hoàn tất.');
+    logger.log(`   - Tổng dữ liệu chuẩn bị: ${allDocs.length}`);
+    logger.log(`   - Dự án xác thực HSNL: ${verifiedDocs.length}`);
+    logger.log(`   - Trang năng lực GEO: ${generatedDocs.length}`);
+    logger.log(
       `   - GEO đã xuất bản: ${
         PUBLISH_GENERATED_GEO_PAGES ? generatedDocs.length : 0
       }`,
     );
-    console.log(
+    logger.log(
       `   - GEO cho phép index: ${
         INDEX_GENERATED_GEO_PAGES ? generatedDocs.length : 0
       }`,
     );
-    console.log(`   - Tổng số dự án đã chèn vào DB thành công: ${insertedDocs.length}`);
+    logger.log(`   - Tổng số dự án đã chèn vào DB thành công: ${insertedDocs.length}`);
 
     if (!PUBLISH_GENERATED_GEO_PAGES) {
-      console.log(
+      logger.log(
         'ℹ️ Các trang GEO đang là bản nháp. Chỉ bật PUBLISH_GENERATED_GEO_PAGES=true sau khi kiểm duyệt nội dung.',
       );
     }
 
     if (!INDEX_GENERATED_GEO_PAGES) {
-      console.log(
+      logger.log(
         'ℹ️ Các trang GEO đang noindex để tránh tạo trang mỏng/trang cửa ngõ.',
       );
     }
   } finally {
     await mongoose.disconnect();
-    console.log('🔒 Đã ngắt kết nối MongoDB.');
+    logger.log('🔒 Đã ngắt kết nối MongoDB.');
   }
 }
 
 seed().catch((error) => {
-  console.error('❌ Seed thất bại:', error);
+  logger.error('❌ Seed thất bại:', error);
   process.exitCode = 1;
 });

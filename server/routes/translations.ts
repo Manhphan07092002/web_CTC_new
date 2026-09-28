@@ -1,6 +1,7 @@
 import express from 'express';
 import { Translation, ITranslation } from '../../models/Translation';
 import { isLanguageSupported, getAvailableLanguages } from '../utils/i18n-helpers';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -70,7 +71,7 @@ router.get('/', async (req: any, res) => {
       message: req.i18n.formatSuccess('success')
     });
   } catch (error) {
-    console.error('Error fetching translations:', error);
+    logger.error('Error fetching translations:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -97,7 +98,7 @@ router.get('/:id', async (req: any, res) => {
       message: req.i18n.formatSuccess('success')
     });
   } catch (error) {
-    console.error('Error fetching translation:', error);
+    logger.error('Error fetching translation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -171,7 +172,7 @@ router.post('/', async (req: any, res) => {
       message: 'Translation created successfully'
     });
   } catch (error) {
-    console.error('Error creating translation:', error);
+    logger.error('Error creating translation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -224,7 +225,7 @@ router.put('/:id', async (req: any, res) => {
       message: 'Translation updated successfully'
     });
   } catch (error) {
-    console.error('Error updating translation:', error);
+    logger.error('Error updating translation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -258,7 +259,7 @@ router.patch('/:id/approve', async (req: any, res) => {
       message: 'Translation approved successfully'
     });
   } catch (error) {
-    console.error('Error approving translation:', error);
+    logger.error('Error approving translation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -295,7 +296,7 @@ router.patch('/:id/publish', async (req: any, res) => {
       message: 'Translation published successfully'
     });
   } catch (error) {
-    console.error('Error publishing translation:', error);
+    logger.error('Error publishing translation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -325,7 +326,7 @@ router.patch('/:id/deprecate', async (req: any, res) => {
       message: 'Translation deprecated successfully'
     });
   } catch (error) {
-    console.error('Error deprecating translation:', error);
+    logger.error('Error deprecating translation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -351,7 +352,7 @@ router.delete('/:id', async (req: any, res) => {
       message: 'Translation deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting translation:', error);
+    logger.error('Error deleting translation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -421,7 +422,7 @@ router.post('/bulk', async (req: any, res) => {
       message: `Bulk ${action} completed successfully`
     });
   } catch (error) {
-    console.error('Error performing bulk operation:', error);
+    logger.error('Error performing bulk operation:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -510,7 +511,7 @@ router.get('/stats/overview', async (req: any, res) => {
       message: req.i18n.formatSuccess('success')
     });
   } catch (error) {
-    console.error('Error fetching translation statistics:', error);
+    logger.error('Error fetching translation statistics:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -574,7 +575,7 @@ router.get('/export/:language/:namespace?', async (req: any, res) => {
       }
     });
   } catch (error) {
-    console.error('Error exporting translations:', error);
+    logger.error('Error exporting translations:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),

@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { logger } from "../../utils/logger";
 
 /**
  * Interface for processed image result
@@ -76,7 +77,7 @@ export async function optimizeUploadedImage(filePath: string, publicSubPath: str
       webpUrl: relativeWebpPath.replace(/\\/g, '/')
     };
   } catch (error) {
-    console.warn(`[ImageOptimizer] Sharp optimization fallback for ${filePath}:`, error);
+    logger.warn(`[ImageOptimizer] Sharp optimization fallback for ${filePath}:`, error);
     return { originalPath: filePath };
   }
 }

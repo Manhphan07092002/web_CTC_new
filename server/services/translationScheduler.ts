@@ -5,6 +5,7 @@
 import mongoose from 'mongoose';
 import { autoTranslate } from './translate';
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from '../../models';
+import { logger } from "../../utils/logger";
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ctc_web_new';
 
@@ -88,7 +89,7 @@ async function translateDocument(doc: any, fields: string[]): Promise<any> {
     const translations = await autoTranslate(content, 'vi');
     return translations;
   } catch (error) {
-    console.error('Translation error:', error);
+    logger.error('Translation error:', error);
     return null;
   }
 }
@@ -98,34 +99,34 @@ async function translateDocument(doc: any, fields: string[]): Promise<any> {
  */
 export async function runTranslationJob(): Promise<{ success: number; failed: number; skipped: number }> {
   if (isRunning) {
-    console.log('⏳ Translation job already running, skipping...');
+    logger.log('⏳ Translation job already running, skipping...');
     return { success: 0, failed: 0, skipped: 0 };
   }
   
   isRunning = true;
   const stats = { success: 0, failed: 0, skipped: 0 };
   
-  console.log('\n' + '='.repeat(60));
-  console.log('🌐 STARTING AUTO-TRANSLATION JOB');
-  console.log('📅 Time:', new Date().toLocaleString('vi-VN'));
-  console.log('='.repeat(60));
+  logger.log('\n' + '='.repeat(60));
+  logger.log('🌐 STARTING AUTO-TRANSLATION JOB');
+  logger.log('📅 Time:', new Date().toLocaleString('vi-VN'));
+  logger.log('='.repeat(60));
   
   try {
     // Connect to MongoDB if not connected
     if (mongoose.connection.readyState !== 1) {
       await mongoose.connect(MONGODB_URI);
-      console.log('✅ Connected to MongoDB');
+      logger.log('✅ Connected to MongoDB');
     }
     
     const db = mongoose.connection.db!;
     
     for (const config of COLLECTIONS_CONFIG) {
-      console.log(`\n📦 Processing: ${config.name}`);
+      logger.log(`\n📦 Processing: ${config.name}`);
       
       const collection = db.collection(config.name);
       const docs = await collection.find({}).toArray();
       
-      let collectionStats = { translated: 0, skipped: 0 };
+      const collectionStats = { translated: 0, skipped: 0 };
       
       for (const doc of docs) {
         // Check if needs translation
@@ -135,7 +136,7 @@ export async function runTranslationJob(): Promise<{ success: number; failed: nu
           continue;
         }
         
-        console.log(`   → Translating: ${doc.name || doc.title || doc._id}`);
+        logger.log(`   → Translating: ${doc.name || doc.title || doc._id}`);
         
         const translations = await translateDocument(doc, config.fields);
         
@@ -154,22 +155,22 @@ export async function runTranslationJob(): Promise<{ success: number; failed: nu
         }
       }
       
-      console.log(`   ✅ Translated: ${collectionStats.translated}, Skipped: ${collectionStats.skipped}`);
+      logger.log(`   ✅ Translated: ${collectionStats.translated}, Skipped: ${collectionStats.skipped}`);
     }
     
   } catch (error) {
-    console.error('❌ Translation job error:', error);
+    logger.error('❌ Translation job error:', error);
   } finally {
     isRunning = false;
     lastRunTime = new Date();
   }
   
-  console.log('\n' + '='.repeat(60));
-  console.log('📊 TRANSLATION JOB COMPLETED');
-  console.log(`   ✅ Success: ${stats.success}`);
-  console.log(`   ❌ Failed: ${stats.failed}`);
-  console.log(`   ⏭️ Skipped: ${stats.skipped}`);
-  console.log('='.repeat(60) + '\n');
+  logger.log('\n' + '='.repeat(60));
+  logger.log('📊 TRANSLATION JOB COMPLETED');
+  logger.log(`   ✅ Success: ${stats.success}`);
+  logger.log(`   ❌ Failed: ${stats.failed}`);
+  logger.log(`   ⏭️ Skipped: ${stats.skipped}`);
+  logger.log('='.repeat(60) + '\n');
   
   return stats;
 }
@@ -180,16 +181,16 @@ export async function runTranslationJob(): Promise<{ success: number; failed: nu
 export function startTranslationScheduler() {
   const TWELVE_HOURS = 12 * 60 * 60 * 1000; // 12 hours in ms
   
-  console.log('🕐 Translation Scheduler Started');
-  console.log(`   → Next run in 12 hours`);
-  console.log(`   → Or run manually: POST /api/admin/translate-all`);
+  logger.log('🕐 Translation Scheduler Started');
+  logger.log(`   → Next run in 12 hours`);
+  logger.log(`   → Or run manually: POST /api/admin/translate-all`);
   
   // Run immediately on start (optional - comment out if not needed)
   // setTimeout(() => runTranslationJob(), 5000);
   
   // Schedule every 12 hours
   setInterval(async () => {
-    console.log('\n⏰ Scheduled translation job triggered');
+    logger.log('\n⏰ Scheduled translation job triggered');
     await runTranslationJob();
   }, TWELVE_HOURS);
 }

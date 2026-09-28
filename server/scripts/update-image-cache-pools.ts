@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BASE_PRODUCT_CATALOG } from './seed-500-seo-products-real-img-geo-v5.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -149,7 +150,7 @@ async function run() {
   }
 
   await fs.writeFile(CACHE_FILE, JSON.stringify(newCache, null, 2), 'utf8');
-  console.log(`✅ Đã tạo lại image-cache-v5.json với ${Object.keys(newCache).length} sản phẩm theo danh mục chuẩn!`);
+  logger.log(`✅ Đã tạo lại image-cache-v5.json với ${Object.keys(newCache).length} sản phẩm theo danh mục chuẩn!`);
 }
 
 run().catch(console.error);

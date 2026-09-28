@@ -12,6 +12,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Testimonial } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -403,15 +404,15 @@ const TESTIMONIALS = [
 ];
 
 async function main() {
-  console.log('🔌 Connecting to MongoDB:', MONGO_URI);
+  logger.log('🔌 Connecting to MongoDB:', MONGO_URI);
   await mongoose.connect(MONGO_URI);
-  console.log('✅ Connected to MongoDB\n');
+  logger.log('✅ Connected to MongoDB\n');
 
   // Xóa testimonials cũ nếu muốn chạy lại sạch
   const existing = await Testimonial.countDocuments();
   if (existing > 0) {
-    console.log(`⚠️  Đã có ${existing} testimonials trong DB.`);
-    console.log('   → Tiến hành chèn thêm (không xóa dữ liệu cũ)...\n');
+    logger.log(`⚠️  Đã có ${existing} testimonials trong DB.`);
+    logger.log('   → Tiến hành chèn thêm (không xóa dữ liệu cũ)...\n');
   }
 
   let inserted = 0;
@@ -421,23 +422,23 @@ async function main() {
     try {
       await Testimonial.create(item);
       inserted++;
-      console.log(`  ✅ [${inserted.toString().padStart(2, '0')}] ${item.name} — ${item.role.substring(0, 50)}`);
+      logger.log(`  ✅ [${inserted.toString().padStart(2, '0')}] ${item.name} — ${item.role.substring(0, 50)}`);
     } catch (err: any) {
       failed++;
-      console.error(`  ❌ Lỗi khi chèn "${item.name}": ${err.message}`);
+      logger.error(`  ❌ Lỗi khi chèn "${item.name}": ${err.message}`);
     }
   }
 
-  console.log(`\n─────────────────────────────────────────────`);
-  console.log(`🎉 Hoàn tất! Đã thêm: ${inserted} | Lỗi: ${failed}`);
-  console.log(`📊 Tổng testimonials trong DB: ${await Testimonial.countDocuments()}`);
-  console.log(`─────────────────────────────────────────────\n`);
+  logger.log(`\n─────────────────────────────────────────────`);
+  logger.log(`🎉 Hoàn tất! Đã thêm: ${inserted} | Lỗi: ${failed}`);
+  logger.log(`📊 Tổng testimonials trong DB: ${await Testimonial.countDocuments()}`);
+  logger.log(`─────────────────────────────────────────────\n`);
 
   await mongoose.disconnect();
-  console.log('🔌 Đã ngắt kết nối MongoDB');
+  logger.log('🔌 Đã ngắt kết nối MongoDB');
 }
 
 main().catch((err) => {
-  console.error('❌ Lỗi nghiêm trọng:', err);
+  logger.error('❌ Lỗi nghiêm trọng:', err);
   process.exit(1);
 });

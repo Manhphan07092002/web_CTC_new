@@ -12,12 +12,12 @@ const blacklistStore = new Set<string>();
 
 const addToBlacklist = (ip: string) => {
   blacklistStore.add(ip);
-  console.log(`[SECURITY] IP added to blacklist: ${ip}`);
+  logger.log(`[SECURITY] IP added to blacklist: ${ip}`);
 };
 
 const removeFromBlacklist = (ip: string) => {
   blacklistStore.delete(ip);
-  console.log(`[SECURITY] IP removed from blacklist: ${ip}`);
+  logger.log(`[SECURITY] IP removed from blacklist: ${ip}`);
 };
 
 // Simple admin check middleware (replace with JWT auth later)

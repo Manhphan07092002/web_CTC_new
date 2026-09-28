@@ -93,7 +93,7 @@ function cleanValue(valStr: string): any {
   }
 
   if (valStr.startsWith("'") && valStr.endsWith("'")) {
-    let inner = valStr.substring(1, valStr.length - 1);
+    const inner = valStr.substring(1, valStr.length - 1);
     return inner.replace(/''/g, "'");
   }
 

@@ -24,7 +24,7 @@ import {
 
 // Add error handler for uncaught exceptions during import
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception during startup:', error);
+  logger.error('Uncaught Exception during startup:', error);
   process.exit(1);
 });
 
@@ -75,6 +75,7 @@ import brandsRouter from './routes/brands';
 import attributeTemplatesRouter from './routes/attribute-templates';
 import { startTranslationScheduler } from './services/translationScheduler.js';
 import { createSeoInjectMiddleware } from './middleware/seo-inject';
+import { logger } from "../../utils/logger";
 
 // Load envs
 dotenv.config({ path: '.env.local' });
@@ -116,9 +117,9 @@ if (process.env.PRERENDER_TOKEN || process.env.NODE_ENV === 'production') {
         'W3C_Validator'
       ])
     );
-    console.log('🤖 Prerender enabled for SEO bots');
+    logger.log('🤖 Prerender enabled for SEO bots');
   } catch (e) {
-    console.log('⚠️ Prerender not configured (set PRERENDER_TOKEN for production)');
+    logger.log('⚠️ Prerender not configured (set PRERENDER_TOKEN for production)');
   }
 }
 
@@ -211,13 +212,13 @@ app.use((req, res, next) => {
 
   // Solution floating legacy slug -> redirect 301 to /solutions/telecom
   if (lowerPath === '/solutions/floating') {
-    console.log(`🔀 301 Redirecting /solutions/floating -> /solutions/telecom`);
+    logger.log(`🔀 301 Redirecting /solutions/floating -> /solutions/telecom`);
     return res.redirect(301, '/solutions/telecom');
   }
 
   // Legacy activity detail pages → redirect to /news
   if (lowerPath.includes('hoat_dong_chi_tiet')) {
-    console.log(`🔀 301 Redirecting legacy activity URL: ${req.originalUrl} -> /news`);
+    logger.log(`🔀 301 Redirecting legacy activity URL: ${req.originalUrl} -> /news`);
     return res.redirect(301, '/news');
   }
   
@@ -227,7 +228,7 @@ app.use((req, res, next) => {
     lowerPath.includes('/image/pdf') ||
     (lowerPath.endsWith('.pdf') && !fs.existsSync(path.join(process.cwd(), 'public', req.path)) && !fs.existsSync(path.join(process.cwd(), 'uploads', req.path)))
   ) {
-    console.log(`🔀 301 Redirecting legacy URL: ${req.originalUrl} -> /about`);
+    logger.log(`🔀 301 Redirecting legacy URL: ${req.originalUrl} -> /about`);
     return res.redirect(301, '/about');
   }
 
@@ -392,7 +393,7 @@ if (fs.existsSync(indexPath)) {
   const seoInject = createSeoInjectMiddleware(distPath);
   app.get('*', seoInject);
 
-  console.log('🔍 SEO Meta Injection middleware enabled');
+  logger.log('🔍 SEO Meta Injection middleware enabled');
 } else {
   // Fallback when dist/index.html is not built yet
   app.get('*', (req, res, next) => {
@@ -441,7 +442,7 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
 
 // Global error handler
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('[ERROR]', error);
+  logger.error('[ERROR]', error);
   
   if (res.headersSent) {
     return next(error);
@@ -478,31 +479,31 @@ const sslCertPath = process.env.SSL_CERT_PATH || (fs.existsSync(defaultCertPath)
 const hasSSL = fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath);
 
 if (hasSSL) {
-  console.log(`🔒 Found SSL Certificates in: ${path.dirname(sslKeyPath)}`);
-  console.log(`   - Key: ${path.basename(sslKeyPath)}`);
-  console.log(`   - Cert: ${path.basename(sslCertPath)}`);
+  logger.log(`🔒 Found SSL Certificates in: ${path.dirname(sslKeyPath)}`);
+  logger.log(`   - Key: ${path.basename(sslKeyPath)}`);
+  logger.log(`   - Cert: ${path.basename(sslCertPath)}`);
 }
 
-console.log('⚡ Initializing CTC Web API server...');
+logger.log('⚡ Initializing CTC Web API server...');
 
 // Primary Express Server on PORT (default 4000)
 const server = app.listen(PORT, async () => {
-  console.log(`🚀 API server listening on http://localhost:${PORT}`);
-  console.log(`🔒 Security features enabled`);
-  console.log(`📊 Audit logging active`);
-  console.log(`🛡️  Rate limiting active`);
+  logger.log(`🚀 API server listening on http://localhost:${PORT}`);
+  logger.log(`🔒 Security features enabled`);
+  logger.log(`📊 Audit logging active`);
+  logger.log(`🛡️  Rate limiting active`);
 
   try {
     await connectDB();
   } catch (err: any) {
-    console.error('❌ DB Connection Warning:', err?.message || err);
-    console.error('💡 Ensure MongoDB is running locally on port 27017 or start it via: net start MongoDB');
+    logger.error('❌ DB Connection Warning:', err?.message || err);
+    logger.error('💡 Ensure MongoDB is running locally on port 27017 or start it via: net start MongoDB');
   }
 
   try {
     startTranslationScheduler();
-    console.log(`🌐 Translation scheduler active (every 12h)`);
-  } catch (e) {}
+    logger.log(`🌐 Translation scheduler active (every 12h)`);
+  } catch (e) { /* ignore */ }
 
   // Optional: Start Port 80 & 443 direct listeners if SSL certs exist
   if (hasSSL) {
@@ -513,10 +514,10 @@ const server = app.listen(PORT, async () => {
       };
       const httpsServer = https.createServer(httpsOptions, app);
       httpsServer.on('error', (err: any) => {
-        console.warn('⚠️ Direct Port 443 bind skipped (IIS/Nginx reverse proxy or Admin mode recommended):', err?.message || err);
+        logger.warn('⚠️ Direct Port 443 bind skipped (IIS/Nginx reverse proxy or Admin mode recommended):', err?.message || err);
       });
       httpsServer.listen(443, () => {
-        console.log('🔒 HTTPS Server listening on port 443 (https://ctcdn.vn)');
+        logger.log('🔒 HTTPS Server listening on port 443 (https://ctcdn.vn)');
       });
 
       // HTTP Port 80 Redirect to HTTPS Port 443
@@ -526,13 +527,13 @@ const server = app.listen(PORT, async () => {
         res.end();
       });
       httpServer.on('error', (err: any) => {
-        console.warn('⚠️ Direct Port 80 bind skipped (IIS/Nginx reverse proxy or Admin mode recommended):', err?.message || err);
+        logger.warn('⚠️ Direct Port 80 bind skipped (IIS/Nginx reverse proxy or Admin mode recommended):', err?.message || err);
       });
       httpServer.listen(80, () => {
-        console.log('🌐 HTTP Port 80 listening (Redirects to HTTPS 443)');
+        logger.log('🌐 HTTP Port 80 listening (Redirects to HTTPS 443)');
       });
     } catch (sslErr: any) {
-      console.warn('⚠️ Could not bind Port 80/443 directly (IIS/Nginx Reverse Proxy recommended):', sslErr?.message || sslErr);
+      logger.warn('⚠️ Could not bind Port 80/443 directly (IIS/Nginx Reverse Proxy recommended):', sslErr?.message || sslErr);
     }
   }
 });

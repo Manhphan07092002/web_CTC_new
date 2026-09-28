@@ -4,16 +4,17 @@
  */
 
 import { runTranslationJob } from '../services/translationScheduler';
+import { logger } from "../../utils/logger";
 
-console.log('🚀 Starting manual translation job...\n');
+logger.log('🚀 Starting manual translation job...\n');
 
 runTranslationJob()
   .then((stats) => {
-    console.log('\n✅ Translation job completed!');
-    console.log('Stats:', stats);
+    logger.log('\n✅ Translation job completed!');
+    logger.log('Stats:', stats);
     process.exit(0);
   })
   .catch((error) => {
-    console.error('❌ Translation job failed:', error);
+    logger.error('❌ Translation job failed:', error);
     process.exit(1);
   });

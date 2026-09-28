@@ -114,7 +114,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     try {
       const stored = localStorage.getItem(RECENT_ADDRESSES_KEY);
       if (stored) setRecentAddresses(JSON.parse(stored));
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   }, []);
 
   const saveRecentAddress = (addr: string) => {
@@ -124,7 +124,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       const updated = [clean, ...recentAddresses.filter(a => a !== clean)].slice(0, 5);
       setRecentAddresses(updated);
       localStorage.setItem(RECENT_ADDRESSES_KEY, JSON.stringify(updated));
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   };
 
   // 1. Fetch Provinces list on mount (Open API v2)

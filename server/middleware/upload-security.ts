@@ -8,6 +8,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
+import { logger } from "../../utils/logger";
 
 // ============================================
 // SECURITY CONFIGURATIONS
@@ -233,13 +234,13 @@ export const validateUploadedFile = (req: Request, res: Response, next: NextFunc
       }
       
     } catch (error) {
-      console.error('[UPLOAD SECURITY] File validation error:', error);
+      logger.error('[UPLOAD SECURITY] File validation error:', error);
       
       // Delete file on error
       try {
         fs.unlinkSync(file.path);
       } catch (deleteError) {
-        console.error('[UPLOAD SECURITY] Failed to delete invalid file:', deleteError);
+        logger.error('[UPLOAD SECURITY] Failed to delete invalid file:', deleteError);
       }
       
       return res.status(500).json({
@@ -265,18 +266,18 @@ export const quarantineFile = (filePath: string, reason: string) => {
   
   try {
     fs.renameSync(filePath, quarantinePath);
-    console.warn(`[SECURITY] File quarantined: ${filename} -> ${quarantinePath}. Reason: ${reason}`);
+    logger.warn(`[SECURITY] File quarantined: ${filename} -> ${quarantinePath}. Reason: ${reason}`);
     
     // Log to audit system
     // addAuditLog({ ... }) - implement if needed
     
   } catch (error) {
-    console.error('[SECURITY] Failed to quarantine file:', error);
+    logger.error('[SECURITY] Failed to quarantine file:', error);
     // Try to delete instead
     try {
       fs.unlinkSync(filePath);
     } catch (deleteError) {
-      console.error('[SECURITY] Failed to delete suspicious file:', deleteError);
+      logger.error('[SECURITY] Failed to delete suspicious file:', deleteError);
     }
   }
 };
@@ -343,9 +344,9 @@ export const cleanupOldFiles = (maxAgeHours: number = 24) => {
       if (stats.mtime.getTime() < cutoff) {
         try {
           fs.unlinkSync(filePath);
-          console.log(`[CLEANUP] Deleted old file: ${file}`);
+          logger.log(`[CLEANUP] Deleted old file: ${file}`);
         } catch (error) {
-          console.error(`[CLEANUP] Failed to delete ${file}:`, error);
+          logger.error(`[CLEANUP] Failed to delete ${file}:`, error);
         }
       }
     });
@@ -373,7 +374,7 @@ export const getFileInfo = (filename: string) => {
       path: filePath,
     };
   } catch (error) {
-    console.error('[FILE INFO] Error getting file info:', error);
+    logger.error('[FILE INFO] Error getting file info:', error);
     return null;
   }
 };

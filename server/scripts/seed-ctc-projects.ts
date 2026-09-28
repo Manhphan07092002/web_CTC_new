@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -547,14 +548,14 @@ const PROJECTS: ProjectRow[] = [
 // ── Main seed function ─────────────────────────────────────────────────────
 async function seed() {
   try {
-    console.log('🔌 Kết nối MongoDB...');
+    logger.log('🔌 Kết nối MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Kết nối thành công.');
+    logger.log('✅ Kết nối thành công.');
 
     // Clear existing
     const delCat = await ProjectCategory.deleteMany({});
     const delProj = await Project.deleteMany({});
-    console.log(`🧹 Đã xóa ${delCat.deletedCount} danh mục, ${delProj.deletedCount} dự án cũ.`);
+    logger.log(`🧹 Đã xóa ${delCat.deletedCount} danh mục, ${delProj.deletedCount} dự án cũ.`);
 
     // Insert categories
     const catDocs = await ProjectCategory.insertMany(
@@ -564,7 +565,7 @@ async function seed() {
         isActive: true, projectCount: 0
       })) as any
     );
-    console.log(`📂 Đã tạo ${catDocs.length} danh mục.`);
+    logger.log(`📂 Đã tạo ${catDocs.length} danh mục.`);
 
     // Build slug → _id map
     const catMap = new Map<string, mongoose.Types.ObjectId>();
@@ -584,27 +585,27 @@ async function seed() {
     }));
 
     const inserted = await Project.insertMany(projectDocs as any);
-    console.log(`📦 Đã tạo ${inserted.length} dự án.`);
+    logger.log(`📦 Đã tạo ${inserted.length} dự án.`);
 
     // Update category counts
     for (const catDoc of catDocs) {
       const count = inserted.filter(p => p.categoryId?.toString() === catDoc._id.toString()).length;
       await (ProjectCategory as any).findByIdAndUpdate(catDoc._id, { projectCount: count });
     }
-    console.log('✅ Cập nhật số lượng dự án trong danh mục.');
+    logger.log('✅ Cập nhật số lượng dự án trong danh mục.');
 
     // Summary
     const featured = inserted.filter(p => p.featured).length;
-    console.log('\n📊 Tóm tắt:');
-    console.log(`   📂 Danh mục: ${catDocs.length}`);
-    console.log(`   📦 Dự án:    ${inserted.length}`);
-    console.log(`   ⭐ Nổi bật:  ${featured}`);
-    console.log('\n🎉 Seed dự án hoàn tất!');
+    logger.log('\n📊 Tóm tắt:');
+    logger.log(`   📂 Danh mục: ${catDocs.length}`);
+    logger.log(`   📦 Dự án:    ${inserted.length}`);
+    logger.log(`   ⭐ Nổi bật:  ${featured}`);
+    logger.log('\n🎉 Seed dự án hoàn tất!');
 
     await mongoose.disconnect();
     process.exit(0);
   } catch (err) {
-    console.error('❌ Lỗi:', err);
+    logger.error('❌ Lỗi:', err);
     process.exit(1);
   }
 }

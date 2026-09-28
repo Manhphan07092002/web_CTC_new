@@ -6,6 +6,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Product, ProductCategory, Category } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 
 dotenv.config({ path: '.env.local' });
@@ -17,33 +18,33 @@ const CLEAR_CATEGORIES = String(process.env.CLEAR_CATEGORIES || 'true').toLowerC
 
 async function clearAllProducts() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // 1. Clear all products
-    console.log('\n🔥 Deleting ALL products from database...');
+    logger.log('\n🔥 Deleting ALL products from database...');
     const result = await Product.deleteMany({});
-    console.log(`✓ Successfully deleted ${result.deletedCount} products`);
+    logger.log(`✓ Successfully deleted ${result.deletedCount} products`);
 
     // 2. Clear or Reset categories
     if (CLEAR_CATEGORIES) {
-      console.log('\n🔥 Deleting ALL categories from database...');
+      logger.log('\n🔥 Deleting ALL categories from database...');
       const catResult = await ProductCategory.deleteMany({});
-      console.log(`✓ Successfully deleted ${catResult.deletedCount} ProductCategory items`);
+      logger.log(`✓ Successfully deleted ${catResult.deletedCount} ProductCategory items`);
       const legacyCatResult = await Category.deleteMany({});
-      console.log(`✓ Successfully deleted ${legacyCatResult.deletedCount} legacy Category items`);
+      logger.log(`✓ Successfully deleted ${legacyCatResult.deletedCount} legacy Category items`);
     } else {
 
-      console.log('\n🔄 Resetting product counts on all categories...');
+      logger.log('\n🔄 Resetting product counts on all categories...');
       const updateResult = await ProductCategory.updateMany({}, { $set: { productCount: 0 } });
-      console.log(`✓ Updated ${updateResult.modifiedCount} categories productCount to 0`);
+      logger.log(`✓ Updated ${updateResult.modifiedCount} categories productCount to 0`);
     }
 
-    console.log('\n✅ All old products and categories cleared successfully!');
+    logger.log('\n✅ All old products and categories cleared successfully!');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error clearing products:', error);
+    logger.error('❌ Error clearing products:', error);
     process.exit(1);
   }
 }

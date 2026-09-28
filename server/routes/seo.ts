@@ -10,6 +10,7 @@ import { INDEXNOW_KEY, INDEXNOW_KEY_FILENAME, triggerInstantIndexing } from '../
 
 import path from 'path';
 import fs from 'fs';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -70,7 +71,7 @@ router.post('/api/indexing/ping', async (req, res) => {
     const result = await triggerInstantIndexing(urls);
     res.json(result);
   } catch (error: any) {
-    console.error('Indexing API error:', error);
+    logger.error('Indexing API error:', error);
     res.status(500).json({ message: 'Failed to trigger indexing', error: error.message });
   }
 });
@@ -169,7 +170,7 @@ router.get('/sitemap.xml', async (req, res) => {
       }
 
     } catch (dbError) {
-      console.error('Sitemap DB error:', dbError);
+      logger.error('Sitemap DB error:', dbError);
       // Continue with static pages only
     }
 
@@ -182,7 +183,7 @@ router.get('/sitemap.xml', async (req, res) => {
     res.send(xml);
 
   } catch (error) {
-    console.error('Sitemap error:', error);
+    logger.error('Sitemap error:', error);
     res.status(500).send('Error generating sitemap');
   }
 });
@@ -245,7 +246,7 @@ const handleRss = async (req: express.Request, res: express.Response) => {
     res.header('Cache-Control', 'public, max-age=1800');
     res.send(rssXml);
   } catch (error) {
-    console.error('RSS Feed error:', error);
+    logger.error('RSS Feed error:', error);
     res.status(500).send('Error generating RSS feed');
   }
 };

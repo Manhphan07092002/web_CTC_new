@@ -6,6 +6,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Product, Project, News, Testimonial, ProductCategory, NewsCategory, ProjectCategory } from '../../models';
+import { logger } from "../../utils/logger";
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -34,7 +35,7 @@ async function translateContent(
   targetLang: TargetLanguage
 ): Promise<Record<string, string | string[]> | null> {
   if (!GEMINI_API_KEY) {
-    console.error('❌ GEMINI_API_KEY not set!');
+    logger.error('❌ GEMINI_API_KEY not set!');
     return null;
   }
 
@@ -78,7 +79,7 @@ Return the translated content in the exact same format (key: value).`;
     });
 
     if (!response.ok) {
-      console.error(`API error for ${targetLang}:`, response.status);
+      logger.error(`API error for ${targetLang}:`, response.status);
       return null;
     }
 
@@ -93,7 +94,7 @@ Return the translated content in the exact same format (key: value).`;
       const colonIndex = line.indexOf(':');
       if (colonIndex > 0) {
         const key = line.substring(0, colonIndex).trim();
-        let value = line.substring(colonIndex + 1).trim();
+        const value = line.substring(colonIndex + 1).trim();
 
         if (value.startsWith('[') && value.endsWith(']')) {
           try {
@@ -109,26 +110,26 @@ Return the translated content in the exact same format (key: value).`;
 
     return Object.keys(translatedFields).length > 0 ? translatedFields : null;
   } catch (error) {
-    console.error(`Error translating to ${targetLang}:`, error);
+    logger.error(`Error translating to ${targetLang}:`, error);
     return null;
   }
 }
 
 // Translate all products
 async function translateProducts() {
-  console.log('\n📦 Translating Products...');
+  logger.log('\n📦 Translating Products...');
   const products = await Product.find({});
-  console.log(`Found ${products.length} products`);
+  logger.log(`Found ${products.length} products`);
 
   for (const product of products) {
-    console.log(`  → Translating: ${product.name}`);
+    logger.log(`  → Translating: ${product.name}`);
     
     const translations: Record<string, any> = product.translations || {};
     
     for (const lang of TARGET_LANGUAGES) {
       // Skip if already translated
       if (translations[lang]?.name) {
-        console.log(`    ✓ ${lang} already exists`);
+        logger.log(`    ✓ ${lang} already exists`);
         continue;
       }
 
@@ -143,9 +144,9 @@ async function translateProducts() {
       const translated = await translateContent(content, lang);
       if (translated) {
         translations[lang] = translated;
-        console.log(`    ✓ ${lang} translated`);
+        logger.log(`    ✓ ${lang} translated`);
       } else {
-        console.log(`    ✗ ${lang} failed`);
+        logger.log(`    ✗ ${lang} failed`);
       }
 
       // Delay to avoid rate limiting (2 seconds)
@@ -155,23 +156,23 @@ async function translateProducts() {
     // Save translations
     await Product.findByIdAndUpdate(product._id, { translations });
   }
-  console.log('✅ Products translation completed!');
+  logger.log('✅ Products translation completed!');
 }
 
 // Translate all projects
 async function translateProjects() {
-  console.log('\n🏗️ Translating Projects...');
+  logger.log('\n🏗️ Translating Projects...');
   const projects = await Project.find({});
-  console.log(`Found ${projects.length} projects`);
+  logger.log(`Found ${projects.length} projects`);
 
   for (const project of projects) {
-    console.log(`  → Translating: ${project.title}`);
+    logger.log(`  → Translating: ${project.title}`);
     
     const translations: Record<string, any> = project.translations || {};
     
     for (const lang of TARGET_LANGUAGES) {
       if (translations[lang]?.title) {
-        console.log(`    ✓ ${lang} already exists`);
+        logger.log(`    ✓ ${lang} already exists`);
         continue;
       }
 
@@ -183,9 +184,9 @@ async function translateProjects() {
       const translated = await translateContent(content, lang);
       if (translated) {
         translations[lang] = translated;
-        console.log(`    ✓ ${lang} translated`);
+        logger.log(`    ✓ ${lang} translated`);
       } else {
-        console.log(`    ✗ ${lang} failed`);
+        logger.log(`    ✗ ${lang} failed`);
       }
 
       await new Promise(r => setTimeout(r, 2000));
@@ -193,23 +194,23 @@ async function translateProjects() {
 
     await Project.findByIdAndUpdate(project._id, { translations });
   }
-  console.log('✅ Projects translation completed!');
+  logger.log('✅ Projects translation completed!');
 }
 
 // Translate all news
 async function translateNews() {
-  console.log('\n📰 Translating News...');
+  logger.log('\n📰 Translating News...');
   const newsItems = await News.find({});
-  console.log(`Found ${newsItems.length} news items`);
+  logger.log(`Found ${newsItems.length} news items`);
 
   for (const news of newsItems) {
-    console.log(`  → Translating: ${news.title}`);
+    logger.log(`  → Translating: ${news.title}`);
     
     const translations: Record<string, any> = news.translations || {};
     
     for (const lang of TARGET_LANGUAGES) {
       if (translations[lang]?.title) {
-        console.log(`    ✓ ${lang} already exists`);
+        logger.log(`    ✓ ${lang} already exists`);
         continue;
       }
 
@@ -221,9 +222,9 @@ async function translateNews() {
       const translated = await translateContent(content, lang);
       if (translated) {
         translations[lang] = translated;
-        console.log(`    ✓ ${lang} translated`);
+        logger.log(`    ✓ ${lang} translated`);
       } else {
-        console.log(`    ✗ ${lang} failed`);
+        logger.log(`    ✗ ${lang} failed`);
       }
 
       await new Promise(r => setTimeout(r, 2000));
@@ -231,18 +232,18 @@ async function translateNews() {
 
     await News.findByIdAndUpdate(news._id, { translations });
   }
-  console.log('✅ News translation completed!');
+  logger.log('✅ News translation completed!');
 }
 
 // Translate all categories
 async function translateCategories() {
-  console.log('\n🏷️ Translating Categories...');
+  logger.log('\n🏷️ Translating Categories...');
 
   // Product Categories
-  console.log('  Product Categories:');
+  logger.log('  Product Categories:');
   const productCategories = await ProductCategory.find({});
   for (const category of productCategories) {
-    console.log(`    → ${category.name}`);
+    logger.log(`    → ${category.name}`);
     const translations: Record<string, any> = (category as any).translations || {};
     for (const lang of TARGET_LANGUAGES) {
       if (translations[lang]?.name) continue;
@@ -257,10 +258,10 @@ async function translateCategories() {
   }
 
   // News Categories
-  console.log('  News Categories:');
+  logger.log('  News Categories:');
   const newsCategories = await NewsCategory.find({});
   for (const category of newsCategories) {
-    console.log(`    → ${category.name}`);
+    logger.log(`    → ${category.name}`);
     const translations: Record<string, any> = (category as any).translations || {};
     for (const lang of TARGET_LANGUAGES) {
       if (translations[lang]?.name) continue;
@@ -275,10 +276,10 @@ async function translateCategories() {
   }
 
   // Project Categories
-  console.log('  Project Categories:');
+  logger.log('  Project Categories:');
   const projectCategories = await ProjectCategory.find({});
   for (const category of projectCategories) {
-    console.log(`    → ${category.name}`);
+    logger.log(`    → ${category.name}`);
     const translations: Record<string, any> = (category as any).translations || {};
     for (const lang of TARGET_LANGUAGES) {
       if (translations[lang]?.name) continue;
@@ -291,25 +292,25 @@ async function translateCategories() {
     }
     await ProjectCategory.findByIdAndUpdate(category._id, { translations });
   }
-  console.log('✅ Categories translation completed!');
+  logger.log('✅ Categories translation completed!');
 }
 
 // Main function
 async function main() {
-  console.log('🌍 Starting MongoDB Data Translation...');
-  console.log('=====================================');
+  logger.log('🌍 Starting MongoDB Data Translation...');
+  logger.log('=====================================');
   
   if (!GEMINI_API_KEY) {
-    console.error('❌ ERROR: GEMINI_API_KEY not found in .env file!');
+    logger.error('❌ ERROR: GEMINI_API_KEY not found in .env file!');
     process.exit(1);
   }
   
-  console.log('✓ GEMINI_API_KEY found');
-  console.log(`✓ Target languages: ${TARGET_LANGUAGES.join(', ')}`);
+  logger.log('✓ GEMINI_API_KEY found');
+  logger.log(`✓ Target languages: ${TARGET_LANGUAGES.join(', ')}`);
 
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('✓ Connected to MongoDB');
+    logger.log('✓ Connected to MongoDB');
 
     // Run translations
     await translateProducts();
@@ -317,14 +318,14 @@ async function main() {
     await translateNews();
     await translateCategories();
 
-    console.log('\n=====================================');
-    console.log('🎉 All translations completed!');
+    logger.log('\n=====================================');
+    logger.log('🎉 All translations completed!');
     
   } catch (error) {
-    console.error('Error:', error);
+    logger.error('Error:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
+    logger.log('Disconnected from MongoDB');
   }
 }
 

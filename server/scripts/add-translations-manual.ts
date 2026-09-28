@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -178,19 +179,19 @@ const categoryTranslations: Record<string, any> = {
 };
 
 async function main() {
-  console.log('🌍 Adding translations manually...');
-  console.log('=====================================');
+  logger.log('🌍 Adding translations manually...');
+  logger.log('=====================================');
 
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('✓ Connected to MongoDB');
+    logger.log('✓ Connected to MongoDB');
 
     // Get native MongoDB connection
     const db = mongoose.connection.db;
     if (!db) throw new Error('Database not connected');
 
     // Update Products
-    console.log('\n📦 Updating Products...');
+    logger.log('\n📦 Updating Products...');
     const productsCol = db.collection('products');
     const products = await productsCol.find({}).toArray();
     for (const product of products) {
@@ -200,12 +201,12 @@ async function main() {
           { _id: product._id },
           { $set: { translations: trans } }
         );
-        console.log(`  ✓ ${product.name}`);
+        logger.log(`  ✓ ${product.name}`);
       }
     }
 
     // Update Projects
-    console.log('\n🏗️ Updating Projects...');
+    logger.log('\n🏗️ Updating Projects...');
     const projectsCol = db.collection('projects');
     const projects = await projectsCol.find({}).toArray();
     for (const project of projects) {
@@ -215,12 +216,12 @@ async function main() {
           { _id: project._id },
           { $set: { translations: trans } }
         );
-        console.log(`  ✓ ${project.title}`);
+        logger.log(`  ✓ ${project.title}`);
       }
     }
 
     // Update News
-    console.log('\n📰 Updating News...');
+    logger.log('\n📰 Updating News...');
     const newsCol = db.collection('news');
     const newsItems = await newsCol.find({}).toArray();
     for (const news of newsItems) {
@@ -230,12 +231,12 @@ async function main() {
           { _id: news._id },
           { $set: { translations: trans } }
         );
-        console.log(`  ✓ ${news.title}`);
+        logger.log(`  ✓ ${news.title}`);
       }
     }
 
     // Update Categories
-    console.log('\n🏷️ Updating Categories...');
+    logger.log('\n🏷️ Updating Categories...');
     
     const productCatsCol = db.collection('productcategories');
     const productCats = await productCatsCol.find({}).toArray();
@@ -246,7 +247,7 @@ async function main() {
           { _id: cat._id },
           { $set: { translations: trans } }
         );
-        console.log(`  ✓ Product: ${cat.name}`);
+        logger.log(`  ✓ Product: ${cat.name}`);
       }
     }
 
@@ -259,7 +260,7 @@ async function main() {
           { _id: cat._id },
           { $set: { translations: trans } }
         );
-        console.log(`  ✓ News: ${cat.name}`);
+        logger.log(`  ✓ News: ${cat.name}`);
       }
     }
 
@@ -272,18 +273,18 @@ async function main() {
           { _id: cat._id },
           { $set: { translations: trans } }
         );
-        console.log(`  ✓ Project: ${cat.name}`);
+        logger.log(`  ✓ Project: ${cat.name}`);
       }
     }
 
-    console.log('\n=====================================');
-    console.log('🎉 All translations added successfully!');
+    logger.log('\n=====================================');
+    logger.log('🎉 All translations added successfully!');
 
   } catch (error) {
-    console.error('Error:', error);
+    logger.error('Error:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
+    logger.log('Disconnected from MongoDB');
   }
 }
 

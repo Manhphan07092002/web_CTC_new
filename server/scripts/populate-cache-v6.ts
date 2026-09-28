@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,13 +17,13 @@ async function run() {
   try {
     const raw = await fs.readFile(V4_CACHE_FILE, 'utf8');
     v4Cache = JSON.parse(raw);
-    console.log(`Loaded ${Object.keys(v4Cache).length} items from v4 cache.`);
+    logger.log(`Loaded ${Object.keys(v4Cache).length} items from v4 cache.`);
   } catch {
-    console.log('No v4 cache found.');
+    logger.log('No v4 cache found.');
   }
 
   await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(v4Cache, null, 2), 'utf8');
-  console.log(`Initialized image-cache-v6.json with ${Object.keys(v4Cache).length} items.`);
+  logger.log(`Initialized image-cache-v6.json with ${Object.keys(v4Cache).length} items.`);
 }
 
 run().catch(console.error);

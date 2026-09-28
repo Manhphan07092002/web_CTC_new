@@ -1,5 +1,6 @@
 import express from 'express';
 import { db } from '../../services/db-mongodb';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.post('/track', async (req, res) => {
     
     res.json(event);
   } catch (error) {
-    console.error('Error tracking event:', error);
+    logger.error('Error tracking event:', error);
     res.status(500).json({ error: 'Failed to track event' });
   }
 });
@@ -45,7 +46,7 @@ router.get('/funnel', async (req, res) => {
     const funnelData = await db.analytics.getFunnelData();
     res.json(funnelData);
   } catch (error) {
-    console.error('Error getting funnel data:', error);
+    logger.error('Error getting funnel data:', error);
     res.status(500).json({ error: 'Failed to get funnel data' });
   }
 });
@@ -56,7 +57,7 @@ router.get('/events', async (req, res) => {
     const events = await db.analytics.getEvents();
     res.json(events);
   } catch (error) {
-    console.error('Error getting events:', error);
+    logger.error('Error getting events:', error);
     res.status(500).json({ error: 'Failed to get events' });
   }
 });
@@ -67,7 +68,7 @@ router.get('/events/:type', async (req, res) => {
     const events = await db.analytics.getEvents({ type: req.params.type });
     res.json(events);
   } catch (error) {
-    console.error('Error getting events by type:', error);
+    logger.error('Error getting events by type:', error);
     res.status(500).json({ error: 'Failed to get events' });
   }
 });
@@ -78,7 +79,7 @@ router.get('/session/:sessionId', async (req, res) => {
     const events = await db.analytics.getEvents({ sessionId: req.params.sessionId });
     res.json(events);
   } catch (error) {
-    console.error('Error getting session events:', error);
+    logger.error('Error getting session events:', error);
     res.status(500).json({ error: 'Failed to get session events' });
   }
 });
@@ -90,7 +91,7 @@ router.delete('/cleanup', async (req, res) => {
     const deletedCount = await db.analytics.clearOldEvents(days);
     res.json({ message: `Deleted ${deletedCount} old events`, deletedCount });
   } catch (error) {
-    console.error('Error clearing old events:', error);
+    logger.error('Error clearing old events:', error);
     res.status(500).json({ error: 'Failed to clear old events' });
   }
 });

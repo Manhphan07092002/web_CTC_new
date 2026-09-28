@@ -5,6 +5,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import { logger } from "../../utils/logger";
 
 // Get models (avoid type issues by using mongoose.model)
 const getSecurityEvent = () => mongoose.models.SecurityEvent || mongoose.model('SecurityEvent');
@@ -125,7 +126,7 @@ export const xssProtection = (req: Request, res: Response, next: NextFunction) =
       for (const key of Object.keys(value)) {
         // Prevent NoSQL Injection: drop keys starting with $ or containing .
         if (key.startsWith('$') || key.includes('.')) {
-          console.warn(`[SECURITY] NoSQL Injection blocked key "${key}" from IP ${req.ip}`);
+          logger.warn(`[SECURITY] NoSQL Injection blocked key "${key}" from IP ${req.ip}`);
           continue;
         }
         sanitized[key] = sanitizeValue(value[key]);
@@ -151,7 +152,7 @@ export const securityLogger = (req: Request, res: Response, next: NextFunction) 
     
     // Log suspicious activity
     if (res.statusCode >= 400 || duration > 5000) {
-      console.warn(`[SECURITY] ${req.method} ${req.path} - ${res.statusCode} - ${duration}ms - IP: ${req.ip}`);
+      logger.warn(`[SECURITY] ${req.method} ${req.path} - ${res.statusCode} - ${duration}ms - IP: ${req.ip}`);
     }
   });
   
@@ -167,7 +168,7 @@ export const ipFilter = async (req: Request, res: Response, next: NextFunction) 
   
   // Check if IP is blacklisted
   if (blacklistCache.has(clientIP)) {
-    console.warn(`[SECURITY] Blocked request from blacklisted IP: ${clientIP}`);
+    logger.warn(`[SECURITY] Blocked request from blacklisted IP: ${clientIP}`);
     
     // Log blocked request
     try {
@@ -182,7 +183,7 @@ export const ipFilter = async (req: Request, res: Response, next: NextFunction) 
         blocked: true,
       });
     } catch (e) {
-      console.error('[SECURITY] Failed to log blocked IP event:', e);
+      logger.error('[SECURITY] Failed to log blocked IP event:', e);
     }
     
     return res.status(403).json({
@@ -246,7 +247,7 @@ export const auditMiddleware = (req: Request, res: Response, next: NextFunction)
         statusCode: res.statusCode,
         duration,
       }).catch((err: any) => {
-        console.error('[AUDIT] Failed to save log:', err.message);
+        logger.error('[AUDIT] Failed to save log:', err.message);
       });
       
       // Log failed login attempts as security events
@@ -261,7 +262,7 @@ export const auditMiddleware = (req: Request, res: Response, next: NextFunction)
           severity: 'medium',
           blocked: false,
         }).catch((err: any) => {
-          console.error('[SECURITY] Failed to log failed login:', err.message);
+          logger.error('[SECURITY] Failed to log failed login:', err.message);
         });
       }
     }

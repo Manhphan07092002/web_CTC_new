@@ -7,17 +7,18 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { User } from '../../models';
 import { Permission, Role, UserPermission } from '../../models/permissions';
+import { logger } from "../../utils/logger";
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
 
 async function createTestUsers() {
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Connected to MongoDB');
+    logger.log('✅ Connected to MongoDB');
 
     // Get all roles
     const roles = await Role.find({});
-    console.log(`Found ${roles.length} roles`);
+    logger.log(`Found ${roles.length} roles`);
 
     // Test users data
     const testUsers = [
@@ -69,7 +70,7 @@ async function createTestUsers() {
       // Check if user already exists
       const existingUser = await User.findOne({ email: userData.email });
       if (existingUser) {
-        console.log(`⚠️ User ${userData.email} already exists, skipping...`);
+        logger.log(`⚠️ User ${userData.email} already exists, skipping...`);
         continue;
       }
 
@@ -86,12 +87,12 @@ async function createTestUsers() {
         avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=random`
       });
 
-      console.log(`✅ Created user: ${userData.email}`);
+      logger.log(`✅ Created user: ${userData.email}`);
 
       // Find target role
       const targetRole = roles.find(r => r.name === userData.targetRole);
       if (!targetRole) {
-        console.log(`⚠️ Role ${userData.targetRole} not found for ${userData.email}`);
+        logger.log(`⚠️ Role ${userData.targetRole} not found for ${userData.email}`);
         continue;
       }
 
@@ -107,20 +108,20 @@ async function createTestUsers() {
         notes: `Test user created with ${targetRole.displayName} role`
       });
 
-      console.log(`✅ Assigned role ${targetRole.displayName} to ${userData.email}`);
+      logger.log(`✅ Assigned role ${targetRole.displayName} to ${userData.email}`);
     }
 
-    console.log('\n🎉 Test users created successfully!');
-    console.log('\n📋 Login credentials:');
+    logger.log('\n🎉 Test users created successfully!');
+    logger.log('\n📋 Login credentials:');
     testUsers.forEach(user => {
-      console.log(`   ${user.targetRole.toUpperCase()}: ${user.email} / ${user.password}`);
+      logger.log(`   ${user.targetRole.toUpperCase()}: ${user.email} / ${user.password}`);
     });
 
   } catch (error) {
-    console.error('❌ Error creating test users:', error);
+    logger.error('❌ Error creating test users:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('👋 Disconnected from MongoDB');
+    logger.log('👋 Disconnected from MongoDB');
   }
 }
 

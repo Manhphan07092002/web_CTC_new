@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -13,15 +14,15 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_ne
 
 async function syncCategoryCounts() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB\n');
+    logger.log('Connected to MongoDB\n');
 
     const db = mongoose.connection.db;
     if (!db) throw new Error('Database connection not established');
 
     // Sync Product Categories
-    console.log('📦 Syncing Product Categories...');
+    logger.log('📦 Syncing Product Categories...');
     const productCategories = await db.collection('productcategories').find().toArray();
     for (const category of productCategories) {
       if (!category) continue;
@@ -40,11 +41,11 @@ async function syncCategoryCounts() {
         { _id: category._id },
         { $set: { productCount: count } }
       );
-      console.log(`  ✓ ${catName}: ${count} products`);
+      logger.log(`  ✓ ${catName}: ${count} products`);
     }
 
     // Sync News Categories
-    console.log('\n📰 Syncing News Categories...');
+    logger.log('\n📰 Syncing News Categories...');
     const newsCategories = await db.collection('newscategories').find().toArray();
     for (const category of newsCategories) {
       if (!category) continue;
@@ -63,11 +64,11 @@ async function syncCategoryCounts() {
         { _id: category._id },
         { $set: { newsCount: count } }
       );
-      console.log(`  ✓ ${catName}: ${count} news items`);
+      logger.log(`  ✓ ${catName}: ${count} news items`);
     }
 
     // Sync Project Categories
-    console.log('\n🏗️ Syncing Project Categories...');
+    logger.log('\n🏗️ Syncing Project Categories...');
     const projectCategories = await db.collection('projectcategories').find().toArray();
     for (const category of projectCategories) {
       if (!category) continue;
@@ -86,27 +87,27 @@ async function syncCategoryCounts() {
         { _id: category._id },
         { $set: { projectCount: count } }
       );
-      console.log(`  ✓ ${catName}: ${count} projects`);
+      logger.log(`  ✓ ${catName}: ${count} projects`);
     }
 
-    console.log('\n✅ Category counts synced successfully!');
+    logger.log('\n✅ Category counts synced successfully!');
 
     // Summary
     const totalProducts = await db.collection('products').countDocuments({ isDeleted: { $ne: true } });
     const totalNews = await db.collection('news').countDocuments();
     const totalProjects = await db.collection('projects').countDocuments();
 
-    console.log('\n📊 Summary:');
-    console.log(`  Products: ${totalProducts}`);
-    console.log(`  News: ${totalNews}`);
-    console.log(`  Projects: ${totalProjects}`);
+    logger.log('\n📊 Summary:');
+    logger.log(`  Products: ${totalProducts}`);
+    logger.log(`  News: ${totalNews}`);
+    logger.log(`  Projects: ${totalProjects}`);
 
   } catch (error) {
-    console.error('❌ Error syncing category counts:', error);
+    logger.error('❌ Error syncing category counts:', error);
     process.exit(1);
   } finally {
     await mongoose.disconnect();
-    console.log('\nDisconnected from MongoDB');
+    logger.log('\nDisconnected from MongoDB');
   }
 }
 

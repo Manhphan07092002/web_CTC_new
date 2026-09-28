@@ -6,6 +6,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Product, ProductCategory } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -145,34 +146,34 @@ function generateSeoDescription(productName: string, categoryName: string, brand
 
 async function seed300Products() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    logger.log('Connected to MongoDB');
 
     // 1. Delete all existing products
-    console.log('\n🔥 Clearing existing products...');
+    logger.log('\n🔥 Clearing existing products...');
     await Product.deleteMany({});
-    console.log('✓ Cleared all old products');
+    logger.log('✓ Cleared all old products');
 
     // 2. Fetch all categories
     const categories = await ProductCategory.find({ isActive: true });
-    console.log(`\nFound ${categories.length} categories in database.`);
+    logger.log(`\nFound ${categories.length} categories in database.`);
 
     if (categories.length === 0) {
-      console.error('❌ No categories found! Please run npm run seed:categories first.');
+      logger.error('❌ No categories found! Please run npm run seed:categories first.');
       process.exit(1);
     }
 
     // Identify leaf categories (categories that are NOT parent to any other category)
     const parentIds = new Set(categories.map(c => c.parentId?.toString()).filter(Boolean));
     const leafCategories = categories.filter(c => !parentIds.has(c._id.toString()));
-    console.log(`Targeting ${leafCategories.length} leaf categories for product generation.`);
+    logger.log(`Targeting ${leafCategories.length} leaf categories for product generation.`);
 
     const TOTAL_PRODUCTS = 300;
     const baseCountPerCat = Math.floor(TOTAL_PRODUCTS / leafCategories.length); // ~8-9 per category
     let remaining = TOTAL_PRODUCTS - (baseCountPerCat * leafCategories.length);
 
-    console.log(`Generating approx ${baseCountPerCat} products per category...`);
+    logger.log(`Generating approx ${baseCountPerCat} products per category...`);
 
     let globalCounter = 1;
     const productsToInsert = [];
@@ -224,23 +225,23 @@ async function seed300Products() {
       }
     }
 
-    console.log(`\n🚀 Inserting ${productsToInsert.length} products into MongoDB...`);
+    logger.log(`\n🚀 Inserting ${productsToInsert.length} products into MongoDB...`);
     const inserted = await Product.insertMany(productsToInsert);
-    console.log(`✅ Successfully inserted ${inserted.length} products! All prices set to "Liên hệ".`);
+    logger.log(`✅ Successfully inserted ${inserted.length} products! All prices set to "Liên hệ".`);
 
     // Update productCount for each category
-    console.log('\n🔄 Updating category product counts...');
+    logger.log('\n🔄 Updating category product counts...');
     for (const cat of categories) {
       // Find count of products for this category (direct + descendant)
       const count = await Product.countDocuments({ categoryId: cat._id });
       await ProductCategory.findByIdAndUpdate(cat._id, { productCount: count });
     }
-    console.log('✓ Updated productCount for all categories!');
+    logger.log('✓ Updated productCount for all categories!');
 
-    console.log('\n🎉 Seed 300 products complete!');
+    logger.log('\n🎉 Seed 300 products complete!');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding products:', error);
+    logger.error('❌ Error seeding products:', error);
     process.exit(1);
   }
 }

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { SupportedLanguage, SUPPORTED_LANGUAGES, applyTranslations, TRANSLATION_FIELDS } from '../../models';
 import { translateTestimonial } from '../services/translate';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -39,7 +40,7 @@ router.get('/', async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Error getting testimonials', error);
+    logger.error('Error getting testimonials', error);
     res.status(500).json({ message: 'Failed to get testimonials' });
   }
 });
@@ -49,10 +50,10 @@ router.post('/', async (req, res) => {
     // Auto-translate testimonial
     const translatedData = await translateTestimonial(req.body);
     const created = await db.testimonials.add(translatedData);
-    console.log('Testimonial created with translations:', created.id);
+    logger.log('Testimonial created with translations:', created.id);
     res.status(201).json(created);
   } catch (error) {
-    console.error('Error creating testimonial', error);
+    logger.error('Error creating testimonial', error);
     res.status(500).json({ message: 'Failed to create testimonial' });
   }
 });
@@ -63,10 +64,10 @@ router.put('/:id', async (req, res) => {
     const translatedData = await translateTestimonial(req.body);
     const updated = await db.testimonials.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'Testimonial not found' });
-    console.log('Testimonial updated with translations:', req.params.id);
+    logger.log('Testimonial updated with translations:', req.params.id);
     res.json(updated);
   } catch (error) {
-    console.error('Error updating testimonial', error);
+    logger.error('Error updating testimonial', error);
     res.status(500).json({ message: 'Failed to update testimonial' });
   }
 });
@@ -77,7 +78,7 @@ router.delete('/:id', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'Testimonial not found' });
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting testimonial', error);
+    logger.error('Error deleting testimonial', error);
     res.status(500).json({ message: 'Failed to delete testimonial' });
   }
 });

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { requireAdmin } from '../middleware/auth';
 import { apiCache } from '../utils/api-cache';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.get('/', async (req, res) => {
     const settings = await db.settings.get();
     res.json(cleanSettingsUrls(settings));
   } catch (error) {
-    console.error('Error getting settings', error);
+    logger.error('Error getting settings', error);
     res.status(500).json({ message: 'Failed to get settings' });
   }
 });
@@ -46,7 +47,7 @@ router.get('/maintenance', async (req, res) => {
       phone: settings.phone
     });
   } catch (error) {
-    console.error('Error checking maintenance status', error);
+    logger.error('Error checking maintenance status', error);
     res.status(500).json({ message: 'Failed to check maintenance status' });
   }
 });
@@ -59,7 +60,7 @@ router.put('/', requireAdmin, async (req, res) => {
     apiCache.delByPrefix('/api/settings');
     res.json(cleanSettingsUrls(updated));
   } catch (error) {
-    console.error('Error updating settings', error);
+    logger.error('Error updating settings', error);
     res.status(500).json({ message: 'Failed to update settings' });
   }
 });
@@ -349,7 +350,7 @@ router.post('/test-ai', requireAdmin, async (req, res) => {
       results
     });
   } catch (error: any) {
-    console.error('Error testing AI API keys:', error);
+    logger.error('Error testing AI API keys:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Lỗi kiểm tra API Key',

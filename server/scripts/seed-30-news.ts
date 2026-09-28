@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -478,12 +479,12 @@ Giải thưởng khẳng định uy tín, thương hiệu vững chắc và cam 
 
 async function seed30News() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB successfully.');
+    logger.log('Connected to MongoDB successfully.');
 
     // 1. Ensure categories exist
-    console.log('\nChecking News Categories...');
+    logger.log('\nChecking News Categories...');
     const categoryMap: { [slug: string]: any } = {};
 
     for (const catData of DEFAULT_CATEGORIES) {
@@ -491,19 +492,19 @@ async function seed30News() {
       if (!cat) {
         cat = new NewsCategory({ ...catData, newsCount: 0 });
         await cat.save();
-        console.log(`+ Created Category: ${cat.name}`);
+        logger.log(`+ Created Category: ${cat.name}`);
       } else {
-        console.log(`= Existing Category: ${cat.name}`);
+        logger.log(`= Existing Category: ${cat.name}`);
       }
       categoryMap[catData.slug] = cat;
     }
 
     // 2. Clear existing news and insert 30 new items
-    console.log('\nClearing existing news items...');
+    logger.log('\nClearing existing news items...');
     await News.deleteMany({});
-    console.log('Cleared existing news items.');
+    logger.log('Cleared existing news items.');
 
-    console.log('\nInserting 30 news articles...');
+    logger.log('\nInserting 30 news articles...');
     let count = 0;
     for (const itemData of SEED_NEWS_DATA) {
       const categoryObj = categoryMap[itemData.categorySlug];
@@ -523,25 +524,25 @@ async function seed30News() {
 
       await newsArticle.save();
       count++;
-      console.log(`✓ [${count}/30] ${itemData.title}`);
+      logger.log(`✓ [${count}/30] ${itemData.title}`);
     }
 
     // 3. Update category counts
-    console.log('\nUpdating news counts per category...');
+    logger.log('\nUpdating news counts per category...');
     for (const slug in categoryMap) {
       const catObj = categoryMap[slug];
       const itemCount = await News.countDocuments({ categoryId: catObj._id });
       await NewsCategory.findByIdAndUpdate(catObj._id, { newsCount: itemCount });
-      console.log(`Updated ${catObj.name}: ${itemCount} articles.`);
+      logger.log(`Updated ${catObj.name}: ${itemCount} articles.`);
     }
 
-    console.log('\n✅ Successfully seeded 30 rich news articles!');
+    logger.log('\n✅ Successfully seeded 30 rich news articles!');
   } catch (error) {
-    console.error('Error seeding 30 news articles:', error);
+    logger.error('Error seeding 30 news articles:', error);
     process.exit(1);
   } finally {
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB.');
+    logger.log('Disconnected from MongoDB.');
   }
 }
 

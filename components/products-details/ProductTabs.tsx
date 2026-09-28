@@ -192,11 +192,11 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({
                 <div key={gi} className="rounded-2xl border border-gray-200/80 dark:border-slate-700 overflow-hidden shadow-2xs">
                   <div className="px-5 py-3 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-slate-800 dark:to-slate-850 border-b border-gray-200 dark:border-slate-700 font-bold text-xs uppercase tracking-wider text-gray-800 dark:text-gray-200 flex items-center justify-between">
                     <span>{groupName}</span>
-                    <span className="text-[10px] text-gray-400 font-normal">{groupItems.length} thông số</span>
+                    <span className="text-[10px] text-gray-400 font-normal">{(groupItems as ProductSpecification[]).length} thông số</span>
                   </div>
                   <table className="w-full text-xs sm:text-sm text-left border-collapse">
                     <tbody className="divide-y divide-gray-100 dark:divide-slate-700/60">
-                      {groupItems.map((spec, si) => (
+                      {(groupItems as ProductSpecification[]).map((spec, si) => (
                         <tr 
                           key={si}
                           className={si % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/60 dark:bg-slate-850/40'}

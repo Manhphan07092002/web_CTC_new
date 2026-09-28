@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { applyTranslationsToArray, applyTranslations, TRANSLATION_FIELDS, SupportedLanguage, SUPPORTED_LANGUAGES } from '../../models';
 import { translateProject } from '../services/translate';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
     
     res.json(projects);
   } catch (error) {
-    console.error('Error getting projects', error);
+    logger.error('Error getting projects', error);
     res.status(500).json({ message: 'Failed to get projects' });
   }
 });
@@ -39,7 +40,7 @@ router.get('/featured', async (req, res) => {
     
     res.json(projects);
   } catch (error) {
-    console.error('Error getting featured projects', error);
+    logger.error('Error getting featured projects', error);
     res.status(500).json({ message: 'Failed to get featured projects' });
   }
 });
@@ -56,7 +57,7 @@ router.get('/:id', async (req, res) => {
     
     res.json(project);
   } catch (error) {
-    console.error('Error getting project by id', error);
+    logger.error('Error getting project by id', error);
     res.status(500).json({ message: 'Failed to get project' });
   }
 });
@@ -98,13 +99,13 @@ router.post('/', async (req, res) => {
     try {
       translatedData = await translateProject(data);
     } catch (e) {
-      console.warn('Project translation skipped:', e);
+      logger.warn('Project translation skipped:', e);
     }
     const created = await db.projects.add(translatedData);
-    console.log('Project created:', created.id);
+    logger.log('Project created:', created.id);
     res.status(201).json(created);
   } catch (error) {
-    console.error('Error creating project', error);
+    logger.error('Error creating project', error);
     res.status(500).json({ message: 'Failed to create project' });
   }
 });
@@ -116,14 +117,14 @@ router.put('/:id', async (req, res) => {
     try {
       translatedData = await translateProject(req.body);
     } catch (e) {
-      console.warn('Project translation skipped on update:', e);
+      logger.warn('Project translation skipped on update:', e);
     }
     const updated = await db.projects.update(req.params.id, translatedData);
     if (!updated) return res.status(404).json({ message: 'Project not found' });
-    console.log('Project updated with translations:', req.params.id);
+    logger.log('Project updated with translations:', req.params.id);
     res.json(updated);
   } catch (error) {
-    console.error('Error updating project', error);
+    logger.error('Error updating project', error);
     res.status(500).json({ message: 'Failed to update project' });
   }
 });
@@ -134,7 +135,7 @@ router.delete('/:id', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'Project not found' });
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting project', error);
+    logger.error('Error deleting project', error);
     res.status(500).json({ message: 'Failed to delete project' });
   }
 });

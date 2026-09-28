@@ -14,6 +14,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { DocumentCategory, Resource } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,7 +48,7 @@ function generate200Resources() {
   for (let i = 1; i <= 50; i++) {
     let title = '';
     let desc = '';
-    let size = `${(1.5 + (i * 0.15)).toFixed(1)} MB`;
+    const size = `${(1.5 + (i * 0.15)).toFixed(1)} MB`;
 
     if (i <= 18) {
       const panel = solarPanels[i % solarPanels.length];
@@ -210,19 +211,19 @@ function generate200Resources() {
 }
 
 async function main() {
-  console.log('🔌 Connecting to MongoDB:', MONGO_URI);
+  logger.log('🔌 Connecting to MongoDB:', MONGO_URI);
   await mongoose.connect(MONGO_URI);
-  console.log('✅ Connected to MongoDB\n');
+  logger.log('✅ Connected to MongoDB\n');
 
   // 1. Tạo / Cập nhật Danh mục tài liệu (DocumentCategories)
-  console.log('🌱 Đang khởi tạo Danh mục tài liệu (DocumentCategories)...');
+  logger.log('🌱 Đang khởi tạo Danh mục tài liệu (DocumentCategories)...');
   const catMap: Record<string, any> = {};
 
   for (const c of CATEGORIES_DATA) {
     let catDoc = await DocumentCategory.findOne({ name: c.name });
     if (!catDoc) {
       catDoc = await DocumentCategory.create({ name: c.name, description: c.description, isActive: true });
-      console.log(`  ➕ Tạo danh mục tài liệu mới: ${c.name}`);
+      logger.log(`  ➕ Tạo danh mục tài liệu mới: ${c.name}`);
     } else {
       await DocumentCategory.updateOne({ _id: catDoc._id }, { description: c.description, isActive: true });
     }
@@ -230,11 +231,11 @@ async function main() {
   }
 
   // 2. Xóa tài liệu cũ và chèn 200 tài liệu mới
-  console.log('\n🗑️  Xóa dữ liệu tài liệu cũ...');
+  logger.log('\n🗑️  Xóa dữ liệu tài liệu cũ...');
   await Resource.deleteMany({});
 
   const allDocsData = generate200Resources();
-  console.log(`\n🚀 Đang tiến hành chèn ${allDocsData.length} Tài liệu kỹ thuật chuẩn chuyên ngành...`);
+  logger.log(`\n🚀 Đang tiến hành chèn ${allDocsData.length} Tài liệu kỹ thuật chuẩn chuyên ngành...`);
 
   const docsToInsert = allDocsData.map((d) => ({
     title: d.title,
@@ -248,15 +249,15 @@ async function main() {
 
   const insertedDocs = await Resource.insertMany(docsToInsert);
 
-  console.log('\n────────────────────────────────────────────────────────────');
-  console.log(`🎉 HOÀN THÀNH KẾT QUẢ: ĐÃ SEED THÀNH CÔNG ${insertedDocs.length} TÀI LIỆU KỸ THUẬT!`);
-  console.log('────────────────────────────────────────────────────────────\n');
+  logger.log('\n────────────────────────────────────────────────────────────');
+  logger.log(`🎉 HOÀN THÀNH KẾT QUẢ: ĐÃ SEED THÀNH CÔNG ${insertedDocs.length} TÀI LIỆU KỸ THUẬT!`);
+  logger.log('────────────────────────────────────────────────────────────\n');
 
   await mongoose.disconnect();
-  console.log('🔌 Đã ngắt kết nối MongoDB');
+  logger.log('🔌 Đã ngắt kết nối MongoDB');
 }
 
 main().catch((err) => {
-  console.error('❌ Lỗi nghiêm trọng:', err);
+  logger.error('❌ Lỗi nghiêm trọng:', err);
   process.exit(1);
 });

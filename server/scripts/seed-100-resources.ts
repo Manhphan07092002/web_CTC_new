@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -158,12 +159,12 @@ const SAMPLE_DOCS_DATA = [
 
 async function seed100Resources() {
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB successfully.');
+    logger.log('Connected to MongoDB successfully.');
 
     // 1. Create or Find Document Categories
-    console.log('\nChecking Document Categories...');
+    logger.log('\nChecking Document Categories...');
     const categoryMap: { [name: string]: any } = {};
 
     for (const catData of CATEGORIES_DATA) {
@@ -171,19 +172,19 @@ async function seed100Resources() {
       if (!cat) {
         cat = new DocumentCategory({ ...catData, isActive: true });
         await cat.save();
-        console.log(`+ Created Category: ${cat.name}`);
+        logger.log(`+ Created Category: ${cat.name}`);
       } else {
-        console.log(`= Existing Category: ${cat.name}`);
+        logger.log(`= Existing Category: ${cat.name}`);
       }
       categoryMap[catData.name] = cat;
     }
 
     // 2. Clear existing resources and insert 100 resources
-    console.log('\nClearing existing technical resources...');
+    logger.log('\nClearing existing technical resources...');
     await Resource.deleteMany({});
-    console.log('Cleared existing resources.');
+    logger.log('Cleared existing resources.');
 
-    console.log('\nInserting 100 technical documents & resources...');
+    logger.log('\nInserting 100 technical documents & resources...');
     let count = 0;
 
     for (const doc of SAMPLE_DOCS_DATA) {
@@ -201,16 +202,16 @@ async function seed100Resources() {
 
       await resourceDoc.save();
       count++;
-      console.log(`✓ [${count}/100] (${doc.type.toUpperCase()}) ${doc.title}`);
+      logger.log(`✓ [${count}/100] (${doc.type.toUpperCase()}) ${doc.title}`);
     }
 
-    console.log('\n✅ Successfully seeded 100 rich technical documents into MongoDB!');
+    logger.log('\n✅ Successfully seeded 100 rich technical documents into MongoDB!');
   } catch (error) {
-    console.error('Error seeding 100 resources:', error);
+    logger.error('Error seeding 100 resources:', error);
     process.exit(1);
   } finally {
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB.');
+    logger.log('Disconnected from MongoDB.');
   }
 }
 

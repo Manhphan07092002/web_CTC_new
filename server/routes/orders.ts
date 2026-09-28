@@ -3,6 +3,7 @@ import { Order, OrderItem, Notification, Product } from '../../models';
 import { EmailService } from '../../services/email-service';
 import { orderRateLimiter, honeypotCheck } from '../middleware/anti-spam';
 import { notificationStream } from '../services/notificationStream';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -37,7 +38,7 @@ router.get('/', async (req: any, res) => {
       data: orders
     });
   } catch (error) {
-    console.error('Error fetching orders:', error);
+    logger.error('Error fetching orders:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch orders' });
   }
 });
@@ -48,7 +49,7 @@ router.get('/pending-count', async (req, res) => {
     const count = await Order.countDocuments({ status: 'pending' });
     res.json({ success: true, count });
   } catch (error) {
-    console.error('Error counting pending orders:', error);
+    logger.error('Error counting pending orders:', error);
     res.status(500).json({ success: false, error: 'Failed to count pending orders' });
   }
 });
@@ -109,7 +110,7 @@ router.get('/track', orderRateLimiter, async (req: any, res) => {
       data
     });
   } catch (error) {
-    console.error('Error tracking order:', error);
+    logger.error('Error tracking order:', error);
     res.status(500).json({ success: false, error: 'Lỗi hệ thống, vui lòng thử lại.' });
   }
 });
@@ -142,7 +143,7 @@ router.get('/stats', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching order stats:', error);
+    logger.error('Error fetching order stats:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch order stats' });
   }
 });
@@ -165,7 +166,7 @@ router.get('/:id', async (req: any, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching order details:', error);
+    logger.error('Error fetching order details:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch order details' });
   }
 });
@@ -251,7 +252,7 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
             });
           }
         } catch (stockError) {
-          console.error('Failed to deduct stock for product:', itemData.productId, stockError);
+          logger.error('Failed to deduct stock for product:', itemData.productId, stockError);
         }
       }
     }
@@ -275,7 +276,7 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
         data: { orderId: order._id, orderCode, customerName, totalAmount }
       });
     } catch (notifError) {
-      console.error('Failed to create order notification:', notifError);
+      logger.error('Failed to create order notification:', notifError);
     }
 
     // Send email notifications (fire-and-forget, don't block response)
@@ -297,7 +298,7 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
     Promise.all([
       EmailService.sendOrderConfirmation(emailOrderData),
       EmailService.sendNewOrderNotification(emailOrderData)
-    ]).catch(err => console.error('Failed to send order emails:', err));
+    ]).catch(err => logger.error('Failed to send order emails:', err));
 
     res.status(201).json({
       success: true,
@@ -309,7 +310,7 @@ router.post('/', orderRateLimiter, honeypotCheck, async (req: any, res) => {
       }
     });
   } catch (error) {
-    console.error('Error creating order:', error);
+    logger.error('Error creating order:', error);
     res.status(500).json({ success: false, error: 'Failed to place order' });
   }
 });
@@ -352,7 +353,7 @@ router.post('/:id/resend-email', async (req: any, res) => {
       res.json({ success: false, error: 'Không thể gửi email. Kiểm tra lại cấu hình SMTP.' });
     }
   } catch (error) {
-    console.error('Error resending email:', error);
+    logger.error('Error resending email:', error);
     res.status(500).json({ success: false, error: 'Failed to resend email' });
   }
 });
@@ -434,7 +435,7 @@ router.post('/admin-create', async (req: any, res) => {
             });
           }
         } catch (stockError) {
-          console.error('Failed to deduct stock for admin order product:', itemData.productId, stockError);
+          logger.error('Failed to deduct stock for admin order product:', itemData.productId, stockError);
         }
       }
     }
@@ -455,7 +456,7 @@ router.post('/admin-create', async (req: any, res) => {
       })),
       note: note || ''
     };
-    EmailService.sendOrderConfirmation(emailOrderData).catch(err => console.error('Failed sending order email:', err));
+    EmailService.sendOrderConfirmation(emailOrderData).catch(err => logger.error('Failed sending order email:', err));
 
     res.status(201).json({
       success: true,
@@ -466,7 +467,7 @@ router.post('/admin-create', async (req: any, res) => {
       }
     });
   } catch (error) {
-    console.error('Error creating admin order:', error);
+    logger.error('Error creating admin order:', error);
     res.status(500).json({ success: false, error: 'Không thể tạo đơn hàng' });
   }
 });
@@ -530,7 +531,7 @@ router.patch('/:id/status', async (req: any, res) => {
           }
         }
       } catch (refundError) {
-        console.error('Failed to refund stock for cancelled order:', currentOrder._id, refundError);
+        logger.error('Failed to refund stock for cancelled order:', currentOrder._id, refundError);
       }
     }
 
@@ -545,7 +546,7 @@ router.patch('/:id/status', async (req: any, res) => {
       estimatedDeliveryDate: order.estimatedDeliveryDate,
       cancelledReason: order.cancelledReason,
       note: note || ''
-    }).catch(err => console.error('Error sending order status email:', err));
+    }).catch(err => logger.error('Error sending order status email:', err));
 
     res.json({
       success: true,
@@ -553,7 +554,7 @@ router.patch('/:id/status', async (req: any, res) => {
       data: order
     });
   } catch (error) {
-    console.error('Error updating order status:', error);
+    logger.error('Error updating order status:', error);
     res.status(500).json({ success: false, error: 'Không thể cập nhật trạng thái đơn hàng' });
   }
 });
@@ -583,7 +584,7 @@ router.patch('/:id/shipping', async (req: any, res) => {
       data: order
     });
   } catch (error) {
-    console.error('Error updating shipping info:', error);
+    logger.error('Error updating shipping info:', error);
     res.status(500).json({ success: false, error: 'Không thể cập nhật thông tin vận chuyển' });
   }
 });
@@ -601,7 +602,7 @@ router.delete('/:id', async (req: any, res) => {
 
     res.json({ success: true, message: 'Order deleted successfully' });
   } catch (error) {
-    console.error('Error deleting order:', error);
+    logger.error('Error deleting order:', error);
     res.status(500).json({ success: false, error: 'Failed to delete order' });
   }
 });

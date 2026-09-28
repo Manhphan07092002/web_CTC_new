@@ -17,6 +17,7 @@ import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { Product, Project, News } from '../../models';
+import { logger } from "../../utils/logger";
 
 const SITE_URL = process.env.SITE_URL || 'https://ctcdn.vn';
 const SITE_NAME = 'CTC';
@@ -270,7 +271,7 @@ export function createSeoInjectMiddleware(distPath: string) {
   const indexPath = path.join(distPath, 'index.html');
   
   if (!fs.existsSync(indexPath)) {
-    console.log('⚠️ SEO Inject: dist/index.html not found, middleware disabled');
+    logger.log('⚠️ SEO Inject: dist/index.html not found, middleware disabled');
     return (_req: Request, _res: Response, next: NextFunction) => next();
   }
 
@@ -282,8 +283,8 @@ export function createSeoInjectMiddleware(distPath: string) {
     fs.watchFile(indexPath, () => {
       try {
         htmlTemplate = fs.readFileSync(indexPath, 'utf-8');
-        console.log('🔄 SEO Inject: Template reloaded');
-      } catch (e) {}
+        logger.log('🔄 SEO Inject: Template reloaded');
+      } catch (e) { /* ignore */ }
     });
   }
 
@@ -379,7 +380,7 @@ export function createSeoInjectMiddleware(distPath: string) {
             .select('_id name slug shortDescription price category brand')
             .limit(24)
             .lean();
-        } catch (e) {}
+        } catch (e) { /* ignore */ }
 
         const productItemsHtml = products.map(p => {
           const fullId = (p._id || '').toString();
@@ -455,7 +456,7 @@ export function createSeoInjectMiddleware(distPath: string) {
               { name: { $regex: new RegExp(catSlug, 'i') } }
             ]
           }).select('_id name slug shortDescription price brand').limit(20).lean();
-        } catch (e) {}
+        } catch (e) { /* ignore */ }
 
         const meta: PageMeta = {
           title: catInfo.title,
@@ -539,7 +540,7 @@ export function createSeoInjectMiddleware(distPath: string) {
               const newUrl = `/products/${slugStr}-${shortHash}`;
               return res.redirect(301, newUrl);
             }
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
           const meta: PageMeta = { title: 'Sản Phẩm Không Tồn Tại', description: 'Sản phẩm bạn tìm kiếm không tồn tại hoặc đã bị xóa.', noindex: true };
           return res.status(404).send(injectMeta(htmlTemplate, meta, urlPath));
         }
@@ -554,7 +555,7 @@ export function createSeoInjectMiddleware(distPath: string) {
               .select('_id name slug shortDescription description price brand category images')
               .lean();
             product = products.find(p => (p._id || '').toString().endsWith(shortHash));
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (!product) {
@@ -562,13 +563,13 @@ export function createSeoInjectMiddleware(distPath: string) {
             product = await Product.findOne({ slug: param, isDeleted: { $ne: true } })
               .select('_id name slug shortDescription description price brand category images')
               .lean();
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (!product) {
           try {
             product = await Product.findById(param).select('name slug shortDescription description price brand category images').lean();
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (product) {
@@ -638,7 +639,7 @@ export function createSeoInjectMiddleware(distPath: string) {
               const slugStr = (project as any).slug || createSlug((project as any).title, 'du-an');
               return res.redirect(301, `/projects/${slugStr}-${shortHash}`);
             }
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
           const meta: PageMeta = { title: 'Dự Án Không Tồn Tại', description: 'Dự án bạn tìm kiếm không tồn tại.', noindex: true };
           return res.status(404).send(injectMeta(htmlTemplate, meta, urlPath));
         }
@@ -649,7 +650,7 @@ export function createSeoInjectMiddleware(distPath: string) {
           try {
             const projects = await Project.find({ isDeleted: { $ne: true } }).select('_id title slug description location client').lean();
             project = projects.find(p => (p._id || '').toString().endsWith(hashMatch[1]));
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (!project) {
@@ -657,13 +658,13 @@ export function createSeoInjectMiddleware(distPath: string) {
             project = await Project.findOne({ slug: param, isDeleted: { $ne: true } })
               .select('title slug description location client')
               .lean();
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (!project) {
           try {
             project = await Project.findById(param).select('title slug description location client').lean();
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (project) {
@@ -717,7 +718,7 @@ export function createSeoInjectMiddleware(distPath: string) {
           try {
             const allNews = await News.find({}).select('_id title slug excerpt content author createdAt').lean();
             news = allNews.find(n => (n._id || '').toString().endsWith(hashMatch[1]));
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (!news) {
@@ -725,13 +726,13 @@ export function createSeoInjectMiddleware(distPath: string) {
             news = await News.findOne({ slug: param })
               .select('title slug excerpt content author createdAt')
               .lean();
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (!news) {
           try {
             news = await News.findById(param).select('title slug excerpt content author createdAt').lean();
-          } catch (e) {}
+          } catch (e) { /* ignore */ }
         }
 
         if (news) {
@@ -806,7 +807,7 @@ export function createSeoInjectMiddleware(distPath: string) {
       return res.status(404).send(notFoundHtml);
 
     } catch (error) {
-      console.error('[SEO Inject Error]', error);
+      logger.error('[SEO Inject Error]', error);
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       return res.status(200).send(htmlTemplate);

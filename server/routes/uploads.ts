@@ -138,6 +138,7 @@ const upload = multer({
 });
 
 import { optimizeUploadedImage } from '../utils/image-optimizer';
+import { logger } from "../../utils/logger";
 
 const handleUpload = (req: any, res: any, next: any) => {
   upload.any()(req, res, (err: any) => {
@@ -204,7 +205,7 @@ router.get(['/', '/images', '/files'], (req, res) => {
 
   fs.readdir(targetDir, { withFileTypes: true }, (err, dirents) => {
     if (err) {
-      console.error('Error reading directory', err);
+      logger.error('Error reading directory', err);
       return res.status(500).json({ message: 'Không thể đọc thư mục' });
     }
 
@@ -217,7 +218,7 @@ router.get(['/', '/images', '/files'], (req, res) => {
         const stats = fs.statSync(fullPath);
         size = stats.isFile() ? stats.size : undefined;
       } catch (e) {
-        console.error('Error getting file stats:', e);
+        logger.error('Error getting file stats:', e);
         size = undefined;
       }
       
@@ -262,7 +263,7 @@ router.post(['/create-folder', '/images/create-folder', '/files/create-folder'],
     fs.mkdirSync(fullPath, { recursive: true });
     res.status(201).json({ message: 'Tạo thư mục thành công', path: cleanFolderPath });
   } catch (err) {
-    console.error('Error creating folder', err);
+    logger.error('Error creating folder', err);
     res.status(500).json({ message: 'Không thể tạo thư mục' });
   }
 });
@@ -322,7 +323,7 @@ router.post(['/rename', '/images/rename', '/files/rename'], (req, res) => {
       newUrl: `/uploads/${relativeNewPath}`
     });
   } catch (err: any) {
-    console.error('Error renaming file or folder:', err);
+    logger.error('Error renaming file or folder:', err);
     res.status(500).json({ message: 'Đổi tên thất bại: ' + (err.message || 'Lỗi server') });
   }
 });
@@ -354,7 +355,7 @@ router.delete(['/:filepath(*)', '/images/:filepath(*)', '/files/:filepath(*)'], 
     // Delete directory recursively
     fs.rm(fullPath, { recursive: true, force: true }, (err) => {
       if (err) {
-        console.error('Error deleting directory', err);
+        logger.error('Error deleting directory', err);
         return res.status(500).json({ message: 'Lỗi khi xóa thư mục' });
       }
       res.status(204).send();
@@ -363,7 +364,7 @@ router.delete(['/:filepath(*)', '/images/:filepath(*)', '/files/:filepath(*)'], 
     // Delete file
     fs.unlink(fullPath, (err) => {
       if (err) {
-        console.error('Error deleting file', err);
+        logger.error('Error deleting file', err);
         return res.status(500).json({ message: 'Lỗi khi xóa tệp tin' });
       }
       res.status(204).send();

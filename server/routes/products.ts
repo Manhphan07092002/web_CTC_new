@@ -100,12 +100,12 @@ router.get('/', async (req, res) => {
 // Get deleted products for trash
 router.get('/deleted', async (req, res) => {
   try {
-    console.log('Fetching deleted products...');
+    logger.log('Fetching deleted products...');
     const products = await db.products.getDeleted();
-    console.log('Found deleted products:', products.length);
+    logger.log('Found deleted products:', products.length);
     res.json(products);
   } catch (error) {
-    console.error('Error getting deleted products:', error);
+    logger.error('Error getting deleted products:', error);
     logger.error('Error getting deleted products', error);
     res.status(500).json({ 
       message: 'Failed to get deleted products',
@@ -124,7 +124,7 @@ router.get('/featured', async (req, res) => {
     }
     res.json(products);
   } catch (error) {
-    console.error('Error getting featured products', error);
+    logger.error('Error getting featured products', error);
     res.status(500).json({ message: 'Failed to get featured products' });
   }
 });
@@ -142,7 +142,7 @@ router.get('/:id', async (req, res) => {
     
     res.json(product);
   } catch (error) {
-    console.error('Error getting product by id', error);
+    logger.error('Error getting product by id', error);
     res.status(500).json({ message: 'Failed to get product' });
   }
 });
@@ -266,7 +266,7 @@ router.get('/trash/all', async (req, res) => {
     const products = await db.products.getDeleted();
     res.json(products);
   } catch (error) {
-    console.error('Error getting deleted products', error);
+    logger.error('Error getting deleted products', error);
     res.status(500).json({ message: 'Failed to get deleted products' });
   }
 });
@@ -278,7 +278,7 @@ router.post('/:id/restore', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'Product not found' });
     res.json({ message: 'Product restored successfully' });
   } catch (error) {
-    console.error('Error restoring product', error);
+    logger.error('Error restoring product', error);
     res.status(500).json({ message: 'Failed to restore product' });
   }
 });
@@ -290,7 +290,7 @@ router.delete('/:id/permanent', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'Product not found' });
     res.status(204).send();
   } catch (error) {
-    console.error('Error permanently deleting product', error);
+    logger.error('Error permanently deleting product', error);
     res.status(500).json({ message: 'Failed to permanently delete product' });
   }
 });

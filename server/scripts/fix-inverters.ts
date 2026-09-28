@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
+import { logger } from "../../utils/logger";
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ctc_web_new';
 
 async function fixInverters() {
   await mongoose.connect(MONGO_URI);
-  console.log('Connected to MongoDB');
+  logger.log('Connected to MongoDB');
   const Product = mongoose.connection.db!.collection('products');
 
   const huaweiReplacements: Record<string, string> = {
@@ -27,7 +28,7 @@ async function fixInverters() {
       { name: new RegExp(model.replace(/\s+/g, '.*'), 'i') },
       { $set: { image: url, images: [url] } }
     );
-    console.log(`Updated Huawei ${model} -> ${res.modifiedCount} products`);
+    logger.log(`Updated Huawei ${model} -> ${res.modifiedCount} products`);
   }
 
   const growattReplacements: Record<string, string> = {
@@ -47,18 +48,18 @@ async function fixInverters() {
       { name: new RegExp(model.replace(/\s+/g, '.*'), 'i') },
       { $set: { image: url, images: [url] } }
     );
-    console.log(`Updated Growatt ${model} -> ${res.modifiedCount} products`);
+    logger.log(`Updated Growatt ${model} -> ${res.modifiedCount} products`);
   }
 
   // Also clear in-memory backend cache
   try {
     const res = await fetch('http://localhost:4000/api/products/clear-cache');
-    console.log('Cleared backend cache:', await res.json());
+    logger.log('Cleared backend cache:', await res.json());
   } catch (e: any) {
-    console.log('Backend cache clear:', e.message);
+    logger.log('Backend cache clear:', e.message);
   }
 
-  console.log('✅ ALL INVERTER IMAGES SUCCESSFULLY FIXED!');
+  logger.log('✅ ALL INVERTER IMAGES SUCCESSFULLY FIXED!');
   await mongoose.disconnect();
 }
 

@@ -1,5 +1,6 @@
 import express from 'express';
 import { runTranslationJob, getSchedulerStatus } from '../services/translationScheduler';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ router.post('/translate-all', async (req, res) => {
     // Execute after response sent
     setImmediate(async () => {
       const stats = await runTranslationJob();
-      console.log('Manual translation job completed:', stats);
+      logger.log('Manual translation job completed:', stats);
     });
     
   } catch (error) {

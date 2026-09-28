@@ -5,6 +5,7 @@
 
 import fetch from 'node-fetch';
 import https from 'https';
+import { logger } from "../../utils/logger";
 
 export const INDEXNOW_KEY = 'ctc_indexnow_key_8f3a91b2c4e56789';
 export const INDEXNOW_KEY_FILENAME = `${INDEXNOW_KEY}.txt`;
@@ -83,7 +84,7 @@ export async function sendIndexNowNotification(urlList: string[], customSiteUrl?
   try {
     const res = await postHttps('https://api.indexnow.org/indexnow', payload, 3500);
     if (res.status === 200 || res.status === 202 || res.status === 204) {
-      console.log(`[IndexNow API] Đã gửi ép lập chỉ mục ${absoluteUrls.length} URLs cho ${hostName} (HTTP ${res.status})`);
+      logger.log(`[IndexNow API] Đã gửi ép lập chỉ mục ${absoluteUrls.length} URLs cho ${hostName} (HTTP ${res.status})`);
       return true;
     }
   } catch (err: any) {
@@ -94,14 +95,14 @@ export async function sendIndexNowNotification(urlList: string[], customSiteUrl?
   try {
     const res = await postHttps('https://www.bing.com/indexnow', payload, 3500);
     if (res.status === 200 || res.status === 202 || res.status === 204) {
-      console.log(`[Bing IndexNow] Đã gửi thông báo cho Bing cho ${hostName} (HTTP ${res.status})`);
+      logger.log(`[Bing IndexNow] Đã gửi thông báo cho Bing cho ${hostName} (HTTP ${res.status})`);
       return true;
     }
   } catch (err: any) {
     // Silent catch
   }
 
-  console.log(`[IndexNow Info] Đã lưu URL bài viết vào danh sách chờ IndexNow (Sitemap sẵn sàng tại /sitemap.xml)`);
+  logger.log(`[IndexNow Info] Đã lưu URL bài viết vào danh sách chờ IndexNow (Sitemap sẵn sàng tại /sitemap.xml)`);
   return false;
 }
 
@@ -112,7 +113,7 @@ export async function triggerInstantIndexing(pathOrUrls: string | string[], cust
   const urls = Array.isArray(pathOrUrls) ? pathOrUrls : [pathOrUrls];
   const siteUrl = customSiteUrl || getSiteUrl();
 
-  console.log(`[Indexing] Triggering instant indexing for: ${urls.join(', ')}`);
+  logger.log(`[Indexing] Triggering instant indexing for: ${urls.join(', ')}`);
 
   // Run in background without blocking response
   setImmediate(() => {

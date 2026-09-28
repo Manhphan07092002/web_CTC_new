@@ -4,6 +4,7 @@
  */
 
 import mongoose from 'mongoose';
+import { logger } from "../../utils/logger";
 
 const MONGODB_URI = 'mongodb://localhost:27017/ctc_web_new';
 
@@ -20,12 +21,12 @@ const generateSlug = (text: string): string => {
 async function seedData() {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ Connected to MongoDB\n');
+    logger.log('✅ Connected to MongoDB\n');
     
     const db = mongoose.connection.db!;
 
     // 1. Product
-    console.log('📦 1. Adding Product...');
+    logger.log('📦 1. Adding Product...');
     const productSlug = generateSlug('Tấm Pin JA Solar 545W Mono Half-Cell');
     if (!(await db.collection('products').findOne({ slug: productSlug }))) {
       await db.collection('products').insertOne({
@@ -40,13 +41,13 @@ async function seedData() {
         isFeatured: true,
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
     // 2. Project
-    console.log('🏗️ 2. Adding Project...');
+    logger.log('🏗️ 2. Adding Project...');
     const projectSlug = generateSlug('Hệ thống điện mặt trời 50kWp Khách sạn Sunrise');
     if (!(await db.collection('projects').findOne({ slug: projectSlug }))) {
       await db.collection('projects').insertOne({
@@ -59,13 +60,13 @@ async function seedData() {
         isFeatured: true,
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
     // 3. News
-    console.log('📰 3. Adding News...');
+    logger.log('📰 3. Adding News...');
     const newsSlug = generateSlug('Việt Nam đặt mục tiêu 30% năng lượng tái tạo');
     if (!(await db.collection('news').findOne({ slug: newsSlug }))) {
       await db.collection('news').insertOne({
@@ -78,13 +79,13 @@ async function seedData() {
         publishedAt: new Date(),
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
     // 4. Testimonial
-    console.log('💬 4. Adding Testimonial...');
+    logger.log('💬 4. Adding Testimonial...');
     if (!(await db.collection('testimonials').findOne({ name: 'Nguyễn Minh Tuấn' }))) {
       await db.collection('testimonials').insertOne({
         name: 'Nguyễn Minh Tuấn',
@@ -94,13 +95,13 @@ async function seedData() {
         isActive: true,
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
     // 5. Team Member
-    console.log('👤 5. Adding Team Member...');
+    logger.log('👤 5. Adding Team Member...');
     if (!(await db.collection('teammembers').findOne({ name: 'Lê Hoàng Anh' }))) {
       await db.collection('teammembers').insertOne({
         name: 'Lê Hoàng Anh',
@@ -110,13 +111,13 @@ async function seedData() {
         order: 4,
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
     // 6. Product Category
-    console.log('🏷️ 6. Adding Product Category...');
+    logger.log('🏷️ 6. Adding Product Category...');
     const prodCatSlug = generateSlug('Bộ Điều Khiển Sạc');
     if (!(await db.collection('productcategories').findOne({ slug: prodCatSlug }))) {
       await db.collection('productcategories').insertOne({
@@ -128,13 +129,13 @@ async function seedData() {
         productCount: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
     // 7. News Category
-    console.log('🏷️ 7. Adding News Category...');
+    logger.log('🏷️ 7. Adding News Category...');
     const newsCatSlug = generateSlug('Kiến Thức Năng Lượng');
     if (!(await db.collection('newscategories').findOne({ slug: newsCatSlug }))) {
       await db.collection('newscategories').insertOne({
@@ -146,13 +147,13 @@ async function seedData() {
         newsCount: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
     // 8. Project Category
-    console.log('🏷️ 8. Adding Project Category...');
+    logger.log('🏷️ 8. Adding Project Category...');
     const projCatSlug = generateSlug('Dự Án Thương Mại');
     if (!(await db.collection('projectcategories').findOne({ slug: projCatSlug }))) {
       await db.collection('projectcategories').insertOne({
@@ -164,23 +165,23 @@ async function seedData() {
         projectCount: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ Created');
+      logger.log('   ✅ Created');
     } else {
-      console.log('   ⏭️ Already exists');
+      logger.log('   ⏭️ Already exists');
     }
 
-    console.log('\n' + '='.repeat(50));
-    console.log('🎉 Data seeded (without translations)!');
-    console.log('='.repeat(50));
-    console.log('\n⏳ Đợi 10-15 phút rồi chạy:');
-    console.log('   npx tsx server/scripts/seed-test-translate.ts');
-    console.log('\n   (Script đó sẽ update translations cho data đã có)');
+    logger.log('\n' + '='.repeat(50));
+    logger.log('🎉 Data seeded (without translations)!');
+    logger.log('='.repeat(50));
+    logger.log('\n⏳ Đợi 10-15 phút rồi chạy:');
+    logger.log('   npx tsx server/scripts/seed-test-translate.ts');
+    logger.log('\n   (Script đó sẽ update translations cho data đã có)');
 
   } catch (error) {
-    console.error('❌ Error:', error);
+    logger.error('❌ Error:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('\n✅ Disconnected from MongoDB');
+    logger.log('\n✅ Disconnected from MongoDB');
   }
 }
 

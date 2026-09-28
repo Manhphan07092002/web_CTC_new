@@ -15,7 +15,7 @@ router.get('/', async (req: any, res) => {
       message: req.i18n.formatSuccess('success')
     });
   } catch (error) {
-    console.error('Error getting contacts:', error);
+    logger.error('Error getting contacts:', error);
     res.status(500).json({ 
       success: false,
       error: req.i18n.formatError('error')
@@ -39,7 +39,7 @@ router.get('/:id', async (req: any, res) => {
       message: req.i18n.formatSuccess('success')
     });
   } catch (error) {
-    console.error('Error getting contact:', error);
+    logger.error('Error getting contact:', error);
     res.status(500).json({ 
       success: false,
       error: req.i18n.formatError('error')
@@ -48,6 +48,7 @@ router.get('/:id', async (req: any, res) => {
 });
 
 import { contactRateLimiter, honeypotCheck, validateContactInput } from '../middleware/anti-spam';
+import { logger } from "../../utils/logger";
 
 // Submit contact form (Public with anti-spam & rate limiting)
 router.post('/submit', contactRateLimiter, honeypotCheck, validateContactInput, async (req: any, res) => {
@@ -109,7 +110,7 @@ router.post('/submit', contactRateLimiter, honeypotCheck, validateContactInput, 
       ]);
 
       if (!notificationSent) {
-        console.warn('Contact saved, but notification email could not be sent. Check SMTP configuration.');
+        logger.warn('Contact saved, but notification email could not be sent. Check SMTP configuration.');
       }
     }
 
@@ -128,9 +129,9 @@ router.post('/submit', contactRateLimiter, honeypotCheck, validateContactInput, 
         link: '/admin/contacts',
         isRead: false
       });
-      console.log('✅ Notification created for new contact request');
+      logger.log('✅ Notification created for new contact request');
     } catch (notifError) {
-      console.error('❌ Error creating notification:', notifError);
+      logger.error('❌ Error creating notification:', notifError);
     }
 
     res.status(201).json({
@@ -143,7 +144,7 @@ router.post('/submit', contactRateLimiter, honeypotCheck, validateContactInput, 
       }
     });
   } catch (error) {
-    console.error('Error submitting contact form:', error);
+    logger.error('Error submitting contact form:', error);
     res.status(500).json({ 
       success: false,
       error: req.i18n.getTranslation('contact:messages.submit_error')
@@ -173,7 +174,7 @@ router.patch('/:id/status', async (req, res) => {
 
     res.json(contact);
   } catch (error) {
-    console.error('Error updating contact:', error);
+    logger.error('Error updating contact:', error);
     res.status(500).json({ error: 'Failed to update contact' });
   }
 });
@@ -192,7 +193,7 @@ router.delete('/:id', async (req, res) => {
     }
     res.json({ success: true });
   } catch (error) {
-    console.error('Error deleting contact:', error);
+    logger.error('Error deleting contact:', error);
     res.status(500).json({ error: 'Failed to delete contact' });
   }
 });

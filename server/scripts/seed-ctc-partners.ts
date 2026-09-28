@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -136,23 +137,23 @@ const samplePartners: PartnerData[] = [
 
 async function seed() {
   try {
-    console.log('🔌 Connecting to MongoDB...');
+    logger.log('🔌 Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Connected to MongoDB');
+    logger.log('✅ Connected to MongoDB');
 
-    console.log('🧹 Clearing old partners...');
+    logger.log('🧹 Clearing old partners...');
     const deleteRes = await Partner.deleteMany({});
-    console.log(`   Removed ${deleteRes.deletedCount} old partners.`);
+    logger.log(`   Removed ${deleteRes.deletedCount} old partners.`);
 
-    console.log('📦 Seeding new professional partners...');
+    logger.log('📦 Seeding new professional partners...');
     const inserted = await Partner.insertMany(samplePartners);
-    console.log(`✅ Successfully seeded ${inserted.length} partners.`);
+    logger.log(`✅ Successfully seeded ${inserted.length} partners.`);
 
     await mongoose.disconnect();
-    console.log('🔌 Disconnected from MongoDB');
+    logger.log('🔌 Disconnected from MongoDB');
     process.exit(0);
   } catch (err) {
-    console.error('❌ Error seeding partners:', err);
+    logger.error('❌ Error seeding partners:', err);
     process.exit(1);
   }
 }

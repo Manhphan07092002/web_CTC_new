@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { logger } from "../../utils/logger";
 
 dotenv.config();
 
@@ -55,7 +56,7 @@ const IPBlacklistSchema = new mongoose.Schema({
 async function seedSecurityData() {
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Connected to MongoDB');
+    logger.log('✅ Connected to MongoDB');
 
     const SecurityEvent = mongoose.models.SecurityEvent || mongoose.model('SecurityEvent', SecurityEventSchema);
     const AuditLog = mongoose.models.AuditLog || mongoose.model('AuditLog', AuditLogSchema);
@@ -65,7 +66,7 @@ async function seedSecurityData() {
     await SecurityEvent.deleteMany({});
     await AuditLog.deleteMany({});
     await IPBlacklist.deleteMany({});
-    console.log('🗑️ Cleared existing security data');
+    logger.log('🗑️ Cleared existing security data');
 
     // Generate random IPs
     const generateIP = () => `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
@@ -97,7 +98,7 @@ async function seedSecurityData() {
       });
     }
     await SecurityEvent.insertMany(securityEvents);
-    console.log(`✅ Created ${securityEvents.length} security events`);
+    logger.log(`✅ Created ${securityEvents.length} security events`);
 
     // Create audit logs
     const actions = ['login', 'create', 'update', 'delete', 'view'];
@@ -132,7 +133,7 @@ async function seedSecurityData() {
       });
     }
     await AuditLog.insertMany(auditLogs);
-    console.log(`✅ Created ${auditLogs.length} audit logs`);
+    logger.log(`✅ Created ${auditLogs.length} audit logs`);
 
     // Create blacklisted IPs
     const blacklistedIPs = [
@@ -148,19 +149,19 @@ async function seedSecurityData() {
         // Ignore duplicate errors
       }
     }
-    console.log(`✅ Created ${blacklistedIPs.length} blacklisted IPs`);
+    logger.log(`✅ Created ${blacklistedIPs.length} blacklisted IPs`);
 
-    console.log('\n🎉 Security data seeded successfully!');
-    console.log('📊 Summary:');
-    console.log(`   - Security Events: ${securityEvents.length}`);
-    console.log(`   - Audit Logs: ${auditLogs.length}`);
-    console.log(`   - Blacklisted IPs: ${blacklistedIPs.length}`);
+    logger.log('\n🎉 Security data seeded successfully!');
+    logger.log('📊 Summary:');
+    logger.log(`   - Security Events: ${securityEvents.length}`);
+    logger.log(`   - Audit Logs: ${auditLogs.length}`);
+    logger.log(`   - Blacklisted IPs: ${blacklistedIPs.length}`);
 
   } catch (error) {
-    console.error('❌ Error seeding security data:', error);
+    logger.error('❌ Error seeding security data:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('\n👋 Disconnected from MongoDB');
+    logger.log('\n👋 Disconnected from MongoDB');
     process.exit(0);
   }
 }

@@ -4,6 +4,7 @@
  */
 
 import mongoose from 'mongoose';
+import { logger } from "../../utils/logger";
 
 const MONGODB_URI = 'mongodb://localhost:27017/ctc_web_new';
 
@@ -82,62 +83,62 @@ const translations = {
 async function addManualTranslations() {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ Connected to MongoDB\n');
+    logger.log('✅ Connected to MongoDB\n');
     
     const db = mongoose.connection.db!;
 
     // Update Products
-    console.log('📦 Updating Products...');
+    logger.log('📦 Updating Products...');
     for (const [name, trans] of Object.entries(translations.products)) {
       const result = await db.collection('products').updateOne(
         { name },
         { $set: { translations: trans } }
       );
-      if (result.modifiedCount > 0) console.log(`   ✅ ${name}`);
+      if (result.modifiedCount > 0) logger.log(`   ✅ ${name}`);
     }
 
     // Update Projects
-    console.log('\n🏗️ Updating Projects...');
+    logger.log('\n🏗️ Updating Projects...');
     for (const [title, trans] of Object.entries(translations.projects)) {
       const result = await db.collection('projects').updateOne(
         { title },
         { $set: { translations: trans } }
       );
-      if (result.modifiedCount > 0) console.log(`   ✅ ${title.substring(0, 40)}...`);
+      if (result.modifiedCount > 0) logger.log(`   ✅ ${title.substring(0, 40)}...`);
     }
 
     // Update News
-    console.log('\n📰 Updating News...');
+    logger.log('\n📰 Updating News...');
     for (const [title, trans] of Object.entries(translations.news)) {
       const result = await db.collection('news').updateOne(
         { title },
         { $set: { translations: trans } }
       );
-      if (result.modifiedCount > 0) console.log(`   ✅ ${title.substring(0, 40)}...`);
+      if (result.modifiedCount > 0) logger.log(`   ✅ ${title.substring(0, 40)}...`);
     }
 
     // Update Testimonials
-    console.log('\n💬 Updating Testimonials...');
+    logger.log('\n💬 Updating Testimonials...');
     for (const [name, trans] of Object.entries(translations.testimonials)) {
       const result = await db.collection('testimonials').updateOne(
         { name },
         { $set: { translations: trans } }
       );
-      if (result.modifiedCount > 0) console.log(`   ✅ ${name}`);
+      if (result.modifiedCount > 0) logger.log(`   ✅ ${name}`);
     }
 
     // Update Team
-    console.log('\n👤 Updating Team...');
+    logger.log('\n👤 Updating Team...');
     for (const [name, trans] of Object.entries(translations.team)) {
       const result = await db.collection('teammembers').updateOne(
         { name },
         { $set: { translations: trans } }
       );
-      if (result.modifiedCount > 0) console.log(`   ✅ ${name}`);
+      if (result.modifiedCount > 0) logger.log(`   ✅ ${name}`);
     }
 
     // Update Categories
-    console.log('\n🏷️ Updating Categories...');
+    logger.log('\n🏷️ Updating Categories...');
     for (const [name, trans] of Object.entries(translations.categories)) {
       // Try all category collections
       for (const collection of ['productcategories', 'newscategories', 'projectcategories']) {
@@ -145,22 +146,22 @@ async function addManualTranslations() {
           { name },
           { $set: { translations: trans } }
         );
-        if (result.modifiedCount > 0) console.log(`   ✅ ${name}`);
+        if (result.modifiedCount > 0) logger.log(`   ✅ ${name}`);
       }
     }
 
-    console.log('\n' + '='.repeat(50));
-    console.log('🎉 Manual translations added!');
-    console.log('='.repeat(50));
-    console.log('\n📋 Test:');
-    console.log('   curl http://localhost:4000/api/products?lang=en');
-    console.log('   curl http://localhost:4000/api/projects?lang=ko');
+    logger.log('\n' + '='.repeat(50));
+    logger.log('🎉 Manual translations added!');
+    logger.log('='.repeat(50));
+    logger.log('\n📋 Test:');
+    logger.log('   curl http://localhost:4000/api/products?lang=en');
+    logger.log('   curl http://localhost:4000/api/projects?lang=ko');
 
   } catch (error) {
-    console.error('❌ Error:', error);
+    logger.error('❌ Error:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('\n✅ Disconnected');
+    logger.log('\n✅ Disconnected');
   }
 }
 

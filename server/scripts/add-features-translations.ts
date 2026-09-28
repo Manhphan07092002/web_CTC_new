@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -194,12 +195,12 @@ function translateSpecifications(specs: string, lang: string): string {
 }
 
 async function main() {
-  console.log('🌍 Adding features and specifications translations...');
-  console.log('=====================================================');
+  logger.log('🌍 Adding features and specifications translations...');
+  logger.log('=====================================================');
 
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('✓ Connected to MongoDB');
+    logger.log('✓ Connected to MongoDB');
 
     const db = mongoose.connection.db;
     if (!db) throw new Error('Database not connected');
@@ -207,12 +208,12 @@ async function main() {
     const productsCol = db.collection('products');
     const products = await productsCol.find({}).toArray();
 
-    console.log(`\n📦 Found ${products.length} products to update...`);
+    logger.log(`\n📦 Found ${products.length} products to update...`);
 
     const languages = ['en', 'ko', 'ja', 'zh', 'de'];
 
     for (const product of products) {
-      console.log(`\n  → ${product.name}`);
+      logger.log(`\n  → ${product.name}`);
       
       const existingTranslations = product.translations || {};
       
@@ -226,7 +227,7 @@ async function main() {
           existingTranslations[lang].features = product.features.map(
             (f: string) => translateFeature(f, lang)
           );
-          console.log(`    ✓ ${lang}: ${existingTranslations[lang].features.length} features`);
+          logger.log(`    ✓ ${lang}: ${existingTranslations[lang].features.length} features`);
         }
         
         // Translate specifications
@@ -235,7 +236,7 @@ async function main() {
             product.specifications,
             lang
           );
-          console.log(`    ✓ ${lang}: specifications translated`);
+          logger.log(`    ✓ ${lang}: specifications translated`);
         }
       }
       
@@ -246,11 +247,11 @@ async function main() {
       );
     }
 
-    console.log('\n=====================================================');
-    console.log('🎉 All features and specifications translations added!');
+    logger.log('\n=====================================================');
+    logger.log('🎉 All features and specifications translations added!');
 
   } catch (error) {
-    console.error('Error:', error);
+    logger.error('Error:', error);
   } finally {
     await mongoose.disconnect();
   }

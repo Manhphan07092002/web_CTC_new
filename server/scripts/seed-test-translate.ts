@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import { translateProduct, translateProject, translateNews, translateCategory, translateTestimonial, translateTeamMember } from '../services/translate';
+import { logger } from "../../utils/logger";
 
 const MONGODB_URI = 'mongodb://localhost:27017/ctc_web_new';
 
@@ -22,12 +23,12 @@ const generateSlug = (text: string): string => {
 async function seedRealData() {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ Connected to MongoDB\n');
+    logger.log('✅ Connected to MongoDB\n');
     
     const db = mongoose.connection.db!;
 
     // ========== 1. PRODUCT ==========
-    console.log('📦 1. Adding Product...');
+    logger.log('📦 1. Adding Product...');
     const product = {
       name: 'Tấm Pin JA Solar 545W Mono Half-Cell',
       description: 'Tấm pin năng lượng mặt trời JA Solar công suất 545W, công nghệ Half-Cell tiên tiến, hiệu suất chuyển đổi cao 21.3%, bảo hành 12 năm sản phẩm và 25 năm hiệu suất.',
@@ -59,17 +60,17 @@ async function seedRealData() {
         views: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ Product created with translations');
+      logger.log('   ✅ Product created with translations');
     } else {
       await db.collection('products').updateOne(
         { _id: existingProduct._id },
         { $set: { translations: translatedProduct.translations } }
       );
-      console.log('   ✅ Product translations updated');
+      logger.log('   ✅ Product translations updated');
     }
 
     // ========== 2. PROJECT ==========
-    console.log('\n🏗️ 2. Adding Project...');
+    logger.log('\n🏗️ 2. Adding Project...');
     const project = {
       title: 'Hệ thống điện mặt trời 50kWp - Khách sạn Sunrise Đà Nẵng',
       location: 'Đà Nẵng, Việt Nam',
@@ -92,17 +93,17 @@ async function seedRealData() {
         isFeatured: true,
         createdAt: new Date()
       });
-      console.log('   ✅ Project created with translations');
+      logger.log('   ✅ Project created with translations');
     } else {
       await db.collection('projects').updateOne(
         { _id: existingProject._id },
         { $set: { translations: translatedProject.translations } }
       );
-      console.log('   ✅ Project translations updated');
+      logger.log('   ✅ Project translations updated');
     }
 
     // ========== 3. NEWS ==========
-    console.log('\n📰 3. Adding News...');
+    logger.log('\n📰 3. Adding News...');
     const news = {
       title: 'Việt Nam đặt mục tiêu 30% năng lượng tái tạo vào năm 2030',
       excerpt: 'Chính phủ Việt Nam công bố kế hoạch phát triển năng lượng tái tạo với mục tiêu đạt 30% tổng công suất điện từ nguồn năng lượng sạch.',
@@ -124,17 +125,17 @@ async function seedRealData() {
         views: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ News created with translations');
+      logger.log('   ✅ News created with translations');
     } else {
       await db.collection('news').updateOne(
         { _id: existingNews._id },
         { $set: { translations: translatedNews.translations } }
       );
-      console.log('   ✅ News translations updated');
+      logger.log('   ✅ News translations updated');
     }
 
     // ========== 4. TESTIMONIAL ==========
-    console.log('\n💬 4. Adding Testimonial...');
+    logger.log('\n💬 4. Adding Testimonial...');
     const testimonial = {
       name: 'Nguyễn Minh Tuấn',
       role: 'Giám đốc Khách sạn Sunrise',
@@ -152,17 +153,17 @@ async function seedRealData() {
         isActive: true,
         createdAt: new Date()
       });
-      console.log('   ✅ Testimonial created with translations');
+      logger.log('   ✅ Testimonial created with translations');
     } else {
       await db.collection('testimonials').updateOne(
         { _id: existingTestimonial._id },
         { $set: { translations: translatedTestimonial.translations } }
       );
-      console.log('   ✅ Testimonial translations updated');
+      logger.log('   ✅ Testimonial translations updated');
     }
 
     // ========== 5. TEAM MEMBER ==========
-    console.log('\n👤 5. Adding Team Member...');
+    logger.log('\n👤 5. Adding Team Member...');
     const teamMember = {
       name: 'Lê Hoàng Anh',
       role: 'Kỹ sư trưởng Năng lượng Mặt trời'
@@ -182,17 +183,17 @@ async function seedRealData() {
         order: 4,
         createdAt: new Date()
       });
-      console.log('   ✅ Team member created with translations');
+      logger.log('   ✅ Team member created with translations');
     } else {
       await db.collection('teammembers').updateOne(
         { _id: existingTeam._id },
         { $set: { translations: translatedTeam.translations } }
       );
-      console.log('   ✅ Team member translations updated');
+      logger.log('   ✅ Team member translations updated');
     }
 
     // ========== 6. PRODUCT CATEGORY ==========
-    console.log('\n🏷️ 6. Adding Product Category...');
+    logger.log('\n🏷️ 6. Adding Product Category...');
     const productCategory = {
       name: 'Bộ Điều Khiển Sạc',
       description: 'Thiết bị điều khiển sạc năng lượng mặt trời, bảo vệ pin và tối ưu hóa hiệu suất sạc'
@@ -212,17 +213,17 @@ async function seedRealData() {
         productCount: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ Product category created with translations');
+      logger.log('   ✅ Product category created with translations');
     } else {
       await db.collection('productcategories').updateOne(
         { _id: existingProductCat._id },
         { $set: { translations: translatedProductCat.translations } }
       );
-      console.log('   ✅ Product category translations updated');
+      logger.log('   ✅ Product category translations updated');
     }
 
     // ========== 7. NEWS CATEGORY ==========
-    console.log('\n🏷️ 7. Adding News Category...');
+    logger.log('\n🏷️ 7. Adding News Category...');
     const newsCategory = {
       name: 'Kiến Thức Năng Lượng',
       description: 'Bài viết chia sẻ kiến thức về năng lượng mặt trời và năng lượng tái tạo'
@@ -242,17 +243,17 @@ async function seedRealData() {
         newsCount: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ News category created with translations');
+      logger.log('   ✅ News category created with translations');
     } else {
       await db.collection('newscategories').updateOne(
         { _id: existingNewsCat._id },
         { $set: { translations: translatedNewsCat.translations } }
       );
-      console.log('   ✅ News category translations updated');
+      logger.log('   ✅ News category translations updated');
     }
 
     // ========== 8. PROJECT CATEGORY ==========
-    console.log('\n🏷️ 8. Adding Project Category...');
+    logger.log('\n🏷️ 8. Adding Project Category...');
     const projectCategory = {
       name: 'Dự Án Thương Mại',
       description: 'Các dự án điện mặt trời cho tòa nhà văn phòng, trung tâm thương mại'
@@ -272,37 +273,37 @@ async function seedRealData() {
         projectCount: 0,
         createdAt: new Date()
       });
-      console.log('   ✅ Project category created with translations');
+      logger.log('   ✅ Project category created with translations');
     } else {
       await db.collection('projectcategories').updateOne(
         { _id: existingProjectCat._id },
         { $set: { translations: translatedProjectCat.translations } }
       );
-      console.log('   ✅ Project category translations updated');
+      logger.log('   ✅ Project category translations updated');
     }
 
-    console.log('\n' + '='.repeat(50));
-    console.log('🎉 All data seeded successfully!');
-    console.log('='.repeat(50));
-    console.log('\n📋 Summary:');
-    console.log('   1. Product: Tấm Pin JA Solar 545W');
-    console.log('   2. Project: Khách sạn Sunrise 50kWp');
-    console.log('   3. News: Mục tiêu năng lượng tái tạo 2030');
-    console.log('   4. Testimonial: Nguyễn Minh Tuấn');
-    console.log('   5. Team: Lê Hoàng Anh');
-    console.log('   6. Product Category: Bộ Điều Khiển Sạc');
-    console.log('   7. News Category: Kiến Thức Năng Lượng');
-    console.log('   8. Project Category: Dự Án Thương Mại');
-    console.log('\n📋 Test translations:');
-    console.log('   curl http://localhost:4000/api/products?lang=en');
-    console.log('   curl http://localhost:4000/api/product-categories?lang=ko');
-    console.log('   curl http://localhost:4000/api/projects?lang=ja');
+    logger.log('\n' + '='.repeat(50));
+    logger.log('🎉 All data seeded successfully!');
+    logger.log('='.repeat(50));
+    logger.log('\n📋 Summary:');
+    logger.log('   1. Product: Tấm Pin JA Solar 545W');
+    logger.log('   2. Project: Khách sạn Sunrise 50kWp');
+    logger.log('   3. News: Mục tiêu năng lượng tái tạo 2030');
+    logger.log('   4. Testimonial: Nguyễn Minh Tuấn');
+    logger.log('   5. Team: Lê Hoàng Anh');
+    logger.log('   6. Product Category: Bộ Điều Khiển Sạc');
+    logger.log('   7. News Category: Kiến Thức Năng Lượng');
+    logger.log('   8. Project Category: Dự Án Thương Mại');
+    logger.log('\n📋 Test translations:');
+    logger.log('   curl http://localhost:4000/api/products?lang=en');
+    logger.log('   curl http://localhost:4000/api/product-categories?lang=ko');
+    logger.log('   curl http://localhost:4000/api/projects?lang=ja');
 
   } catch (error) {
-    console.error('❌ Error:', error);
+    logger.error('❌ Error:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('\n✅ Disconnected from MongoDB');
+    logger.log('\n✅ Disconnected from MongoDB');
   }
 }
 

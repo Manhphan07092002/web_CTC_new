@@ -2,6 +2,7 @@ import express from 'express';
 import { db } from '../../services/db-mongodb';
 import AIService from '../../services/ai-service';
 import AnalyticsService from '../../services/analytics-service';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -250,7 +251,7 @@ router.get('/', async (req, res) => {
 
     res.json(stats);
   } catch (error) {
-    console.error('Error getting statistics:', error);
+    logger.error('Error getting statistics:', error);
     res.status(500).json({ error: 'Failed to get statistics' });
   }
 });
@@ -280,7 +281,7 @@ router.get('/revenue', async (req, res) => {
     
     res.json(revenueData);
   } catch (error) {
-    console.error('Error getting revenue data:', error);
+    logger.error('Error getting revenue data:', error);
     res.status(500).json({ error: 'Failed to get revenue data' });
   }
 });

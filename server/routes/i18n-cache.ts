@@ -1,5 +1,6 @@
 import express from 'express';
 import { enhancedBackend, translationCache } from '../i18n';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.get('/stats', (req: any, res) => {
       message: req.i18n.formatSuccess('success')
     });
   } catch (error) {
-    console.error('Error getting cache stats:', error);
+    logger.error('Error getting cache stats:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -77,7 +78,7 @@ router.delete('/clear', (req: any, res) => {
       });
     }
   } catch (error) {
-    console.error('Error clearing cache:', error);
+    logger.error('Error clearing cache:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -102,7 +103,7 @@ router.post('/preload', async (req: any, res) => {
       }
     });
   } catch (error) {
-    console.error('Error preloading cache:', error);
+    logger.error('Error preloading cache:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -132,7 +133,7 @@ router.post('/warmup', async (req: any, res) => {
       }
     });
   } catch (error) {
-    console.error('Error warming up cache:', error);
+    logger.error('Error warming up cache:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -175,7 +176,7 @@ router.get('/keys', (req: any, res) => {
       message: req.i18n.formatSuccess('success')
     });
   } catch (error) {
-    console.error('Error getting cache keys:', error);
+    logger.error('Error getting cache keys:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -195,7 +196,7 @@ router.post('/reset-stats', (req: any, res) => {
       data: translationCache.getStats()
     });
   } catch (error) {
-    console.error('Error resetting cache stats:', error);
+    logger.error('Error resetting cache stats:', error);
     res.status(500).json({
       success: false,
       message: req.i18n.formatError('error'),
@@ -226,7 +227,7 @@ router.get('/health', (req: any, res) => {
       message: isHealthy ? 'Cache system is healthy' : 'Cache system performance is degraded'
     });
   } catch (error) {
-    console.error('Error checking cache health:', error);
+    logger.error('Error checking cache health:', error);
     res.status(500).json({
       success: false,
       message: 'Cache health check failed',

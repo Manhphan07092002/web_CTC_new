@@ -20,6 +20,7 @@ import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TeamMember } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -744,7 +745,7 @@ async function connectMongo(): Promise<void> {
   } catch (err: any) {
     if (err.message && err.message.includes('ENOTFOUND') && MONGO_URI.includes('mongo')) {
       const fallbackUri = MONGO_URI.replace(/([\/@])mongo(?=[:\/]|$)/g, '$1127.0.0.1');
-      console.warn(`⚠️ Không tìm thấy host 'mongo' (chạy ngoài Docker container), tự động chuyển sang: ${fallbackUri}`);
+      logger.warn(`⚠️ Không tìm thấy host 'mongo' (chạy ngoài Docker container), tự động chuyển sang: ${fallbackUri}`);
       await mongoose.connect(fallbackUri);
     } else {
       throw err;
@@ -753,18 +754,18 @@ async function connectMongo(): Promise<void> {
 }
 
 async function main() {
-  console.log('\n============================================================');
-  console.log('CTC — SEED 50 NHÂN SỰ CHÍNH THỨC CHUẨN SEO + GEO');
-  console.log('============================================================\n');
+  logger.log('\n============================================================');
+  logger.log('CTC — SEED 50 NHÂN SỰ CHÍNH THỨC CHUẨN SEO + GEO');
+  logger.log('============================================================\n');
 
   try {
-    console.log('Connecting to MongoDB...');
+    logger.log('Connecting to MongoDB...');
     await connectMongo();
-    console.log('✅ Connected to MongoDB.\n');
+    logger.log('✅ Connected to MongoDB.\n');
 
-    console.log('🔥 Clearing existing team members...');
+    logger.log('🔥 Clearing existing team members...');
     await TeamMember.deleteMany({});
-    console.log('✓ Cleared old team members.\n');
+    logger.log('✓ Cleared old team members.\n');
 
     const teamToInsert = EMPLOYEES_DATA.map((emp) => {
       const cleanName = emp.name.replace(/\s*\([^)]*\)/g, '').trim();
@@ -787,15 +788,15 @@ async function main() {
       };
     });
 
-    console.log(`🚀 Inserting ${teamToInsert.length} official CTC team members...`);
+    logger.log(`🚀 Inserting ${teamToInsert.length} official CTC team members...`);
     const inserted = await TeamMember.insertMany(teamToInsert);
-    console.log(`\n💾 Successfully inserted ${inserted.length} official CTC employees into MongoDB!`);
+    logger.log(`\n💾 Successfully inserted ${inserted.length} official CTC employees into MongoDB!`);
 
-    console.log('\n============================================================');
-    console.log('🎉 SEED 50 NHÂN SỰ CHÍNH THỨC CTC HOÀN TẤT!');
-    console.log('============================================================\n');
+    logger.log('\n============================================================');
+    logger.log('🎉 SEED 50 NHÂN SỰ CHÍNH THỨC CTC HOÀN TẤT!');
+    logger.log('============================================================\n');
   } catch (error) {
-    console.error('❌ Error seeding team members:', error);
+    logger.error('❌ Error seeding team members:', error);
     process.exitCode = 1;
   } finally {
     if (mongoose.connection.readyState !== 0) {

@@ -14,6 +14,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { ProductCategory, Product } from '../../models';
+import { logger } from "../../utils/logger";
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -456,35 +457,35 @@ const ctcProducts = [
 // ─────────────────────────────────────────────────────────
 async function seedCTCProducts() {
   try {
-    console.log('🔌 Connecting to MongoDB...');
+    logger.log('🔌 Connecting to MongoDB...');
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Connected to MongoDB\n');
+    logger.log('✅ Connected to MongoDB\n');
 
     // ── 1. Clear CTC-related categories ──────────────────
-    console.log('🧹 Clearing old CTC product categories...');
+    logger.log('🧹 Clearing old CTC product categories...');
     const ctcCategoryNames = ctcCategories.map(c => c.name);
     const deleted = await (ProductCategory as any).deleteMany({ name: { $in: ctcCategoryNames } });
-    console.log(`   Removed ${deleted.deletedCount} old categories.\n`);
+    logger.log(`   Removed ${deleted.deletedCount} old categories.\n`);
 
     // ── 2. Seed categories ────────────────────────────────
-    console.log('📂 Seeding 5 CTC product categories...');
+    logger.log('📂 Seeding 5 CTC product categories...');
     const createdCategories: Record<string, any> = {};
     for (const cat of ctcCategories) {
       const newCat = new (ProductCategory as any)({ ...cat, isActive: true, productCount: 0 });
       await newCat.save();
       createdCategories[cat.name] = newCat;
-      console.log(`   ✓ [${cat.order}] ${cat.name} (slug: ${cat.slug})`);
+      logger.log(`   ✓ [${cat.order}] ${cat.name} (slug: ${cat.slug})`);
     }
-    console.log('');
+    logger.log('');
 
     // ── 3. Clear old CTC products ─────────────────────────
-    console.log('🧹 Clearing old CTC products...');
+    logger.log('🧹 Clearing old CTC products...');
     const ctcProductCodes = ctcProducts.map(p => p.code);
     const deletedProducts = await (Product as any).deleteMany({ code: { $in: ctcProductCodes } });
-    console.log(`   Removed ${deletedProducts.deletedCount} old products.\n`);
+    logger.log(`   Removed ${deletedProducts.deletedCount} old products.\n`);
 
     // ── 4. Seed products ──────────────────────────────────
-    console.log('📦 Seeding 10 CTC products...');
+    logger.log('📦 Seeding 10 CTC products...');
     const createdProducts: any[] = [];
     for (const [index, productData] of ctcProducts.entries()) {
       const catDoc = createdCategories[productData.category];
@@ -498,42 +499,42 @@ async function seedCTCProducts() {
       });
       await product.save();
       createdProducts.push(product);
-      console.log(`   ✓ [${index + 1}] ${productData.name} (${productData.category})`);
+      logger.log(`   ✓ [${index + 1}] ${productData.name} (${productData.category})`);
     }
 
     // ── 5. Update category product counts ─────────────────
-    console.log('\n📊 Updating category product counts...');
+    logger.log('\n📊 Updating category product counts...');
     for (const catName of Object.keys(createdCategories)) {
       const count = ctcProducts.filter(p => p.category === catName).length;
       await (ProductCategory as any).findByIdAndUpdate(createdCategories[catName]._id, { productCount: count });
-      console.log(`   ✓ ${catName}: ${count} sản phẩm`);
+      logger.log(`   ✓ ${catName}: ${count} sản phẩm`);
     }
 
     // ── 6. Print summary ──────────────────────────────────
-    console.log('\n══════════════════════════════════════════════');
-    console.log('🎉 SEED HOÀN TẤT – CTC Products & Categories');
-    console.log('══════════════════════════════════════════════');
-    console.log(`📂 Categories: ${ctcCategories.length}`);
-    console.log(`📦 Products:   ${createdProducts.length}`);
-    console.log(`⭐ Featured:   ${ctcProducts.filter(p => p.isFeatured).length}`);
-    console.log('══════════════════════════════════════════════\n');
+    logger.log('\n══════════════════════════════════════════════');
+    logger.log('🎉 SEED HOÀN TẤT – CTC Products & Categories');
+    logger.log('══════════════════════════════════════════════');
+    logger.log(`📂 Categories: ${ctcCategories.length}`);
+    logger.log(`📦 Products:   ${createdProducts.length}`);
+    logger.log(`⭐ Featured:   ${ctcProducts.filter(p => p.isFeatured).length}`);
+    logger.log('══════════════════════════════════════════════\n');
 
     const categoryBreakdown = ctcCategories.map(c => ({
       category: c.name,
       products: ctcProducts.filter(p => p.category === c.name).map(p => `  - ${p.name}`)
     }));
-    console.log('📋 Danh sách theo danh mục:');
+    logger.log('📋 Danh sách theo danh mục:');
     categoryBreakdown.forEach(c => {
-      console.log(`\n▸ ${c.category}`);
-      c.products.forEach(p => console.log(p));
+      logger.log(`\n▸ ${c.category}`);
+      c.products.forEach(p => logger.log(p));
     });
 
   } catch (error) {
-    console.error('❌ Lỗi khi seed:', error);
+    logger.error('❌ Lỗi khi seed:', error);
     process.exit(1);
   } finally {
     await mongoose.disconnect();
-    console.log('\n🔌 Disconnected from MongoDB');
+    logger.log('\n🔌 Disconnected from MongoDB');
   }
 }
 

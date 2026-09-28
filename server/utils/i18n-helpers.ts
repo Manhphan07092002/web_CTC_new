@@ -1,6 +1,7 @@
 import { i18next } from '../i18n';
 import fs from 'fs';
 import path from 'path';
+import { logger } from "../../utils/logger";
 
 export interface TranslationStats {
   language: string;
@@ -126,7 +127,7 @@ export function loadTranslationFile(language: string, namespace: string): any {
       return JSON.parse(content);
     }
   } catch (error) {
-    console.error(`Error loading translation file: ${filePath}`, error);
+    logger.error(`Error loading translation file: ${filePath}`, error);
   }
   
   return {};

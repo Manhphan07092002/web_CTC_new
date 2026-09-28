@@ -1,5 +1,6 @@
 import express from 'express';
 import FunnelMetricsService from '../../services/funnel-metrics-service';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ router.post('/capture', async (req, res) => {
     const snapshot = await FunnelMetricsService.captureMetrics(period || 'daily');
     res.json(snapshot);
   } catch (error) {
-    console.error('Error capturing metrics:', error);
+    logger.error('Error capturing metrics:', error);
     res.status(500).json({ error: 'Failed to capture metrics' });
   }
 });
@@ -22,7 +23,7 @@ router.get('/latest', async (req, res) => {
     const metrics = await FunnelMetricsService.getLatest(period as string);
     res.json(metrics);
   } catch (error) {
-    console.error('Error getting latest metrics:', error);
+    logger.error('Error getting latest metrics:', error);
     res.status(500).json({ error: 'Failed to get latest metrics' });
   }
 });
@@ -33,7 +34,7 @@ router.get('/with-goal', async (req, res) => {
     const metrics = await FunnelMetricsService.getMetricsWithGoal();
     res.json(metrics);
   } catch (error) {
-    console.error('Error getting metrics with goal:', error);
+    logger.error('Error getting metrics with goal:', error);
     res.status(500).json({ error: 'Failed to get metrics with goal' });
   }
 });
@@ -52,7 +53,7 @@ router.get('/history', async (req, res) => {
     const history = await FunnelMetricsService.getHistory(options);
     res.json(history);
   } catch (error) {
-    console.error('Error getting metrics history:', error);
+    logger.error('Error getting metrics history:', error);
     res.status(500).json({ error: 'Failed to get metrics history' });
   }
 });
@@ -63,7 +64,7 @@ router.get('/achievement-summary', async (req, res) => {
     const summary = await FunnelMetricsService.getAchievementSummary();
     res.json(summary);
   } catch (error) {
-    console.error('Error getting achievement summary:', error);
+    logger.error('Error getting achievement summary:', error);
     res.status(500).json({ error: 'Failed to get achievement summary' });
   }
 });

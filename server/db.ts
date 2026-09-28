@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { autoSeedIfEmpty, autoSeedProfileData, autoSeedProductMeta } from './utils/autoSeed';
+import { logger } from "../../utils/logger";
 
 // Load environment variables from .env.local (fallback to .env)
 dotenv.config({ path: '.env.local' });
@@ -16,7 +17,7 @@ export const connectDB = async () => {
       maxPoolSize: 50,
       minPoolSize: 10,
     });
-    console.log(`🍃 MongoDB connected: ${conn.connection.host}`);
+    logger.log(`🍃 MongoDB connected: ${conn.connection.host}`);
     
     // Automatically seed all initial data from seed-data/ if DB is empty
     await autoSeedIfEmpty();
@@ -27,7 +28,7 @@ export const connectDB = async () => {
 
     return conn;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', (error as Error).message || error);
+    logger.error('❌ MongoDB connection error:', (error as Error).message || error);
     throw error;
   }
 };
@@ -35,9 +36,9 @@ export const connectDB = async () => {
 export const disconnectDB = async () => {
   try {
     await mongoose.disconnect();
-    console.log('MongoDB disconnected');
+    logger.log('MongoDB disconnected');
   } catch (error) {
-    console.error('MongoDB disconnection error:', error);
+    logger.error('MongoDB disconnection error:', error);
     throw error;
   }
 };

@@ -24,6 +24,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ProjectCategory, Project } from '../../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -332,11 +333,11 @@ function buildDocument(seed: SolarProject, index: number, categoryId: Schema.Typ
 }
 
 async function seedSolar() {
-  console.log('🔌 Kết nối MongoDB...');
+  logger.log('🔌 Kết nối MongoDB...');
   await mongoose.connect(MONGO_URI);
 
   try {
-    console.log('📁 Tạo/cập nhật danh mục Điện Mặt Trời...');
+    logger.log('📁 Tạo/cập nhật danh mục Điện Mặt Trời...');
     const category = await ProjectCategory.findOneAndUpdate(
       { slug: CATEGORY.slug },
       {
@@ -357,7 +358,7 @@ async function seedSolar() {
       throw new Error('Không tạo/đọc được category Điện Mặt Trời.');
     }
 
-    console.log('🧹 Xóa các dự án Solar cũ...');
+    logger.log('🧹 Xóa các dự án Solar cũ...');
     await Project.deleteMany({ categorySlug: CATEGORY.slug });
 
     const documents = SOLAR_PROJECTS.map((project, index) =>
@@ -370,7 +371,7 @@ async function seedSolar() {
       throw new Error(`Slug trùng: ${[...new Set(duplicates)].join(', ')}`);
     }
 
-    console.log(`🌱 Đang seed ${documents.length} dự án Solar...`);
+    logger.log(`🌱 Đang seed ${documents.length} dự án Solar...`);
     const inserted = await Project.insertMany(documents);
 
     const projectCount = await Project.countDocuments({
@@ -383,22 +384,22 @@ async function seedSolar() {
       { $set: { projectCount } },
     );
 
-    console.log('');
-    console.log('✅ SEED SOLAR HOÀN TẤT');
-    console.log(`   - Danh mục: ${CATEGORY.name}`);
-    console.log(`   - Số dự án: ${inserted.length}`);
-    console.log(`   - Dự án published: ${projectCount}`);
-    console.log('');
+    logger.log('');
+    logger.log('✅ SEED SOLAR HOÀN TẤT');
+    logger.log(`   - Danh mục: ${CATEGORY.name}`);
+    logger.log(`   - Số dự án: ${inserted.length}`);
+    logger.log(`   - Dự án published: ${projectCount}`);
+    logger.log('');
     SOLAR_PROJECTS.forEach((project, index) => {
-      console.log(`   ${index + 1}. ${project.title} | ${project.capacity}`);
+      logger.log(`   ${index + 1}. ${project.title} | ${project.capacity}`);
     });
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 Đã đóng kết nối MongoDB.');
+    logger.log('🔌 Đã đóng kết nối MongoDB.');
   }
 }
 
 seedSolar().catch((error) => {
-  console.error('❌ Seed Solar thất bại:', error);
+  logger.error('❌ Seed Solar thất bại:', error);
   process.exit(1);
 });

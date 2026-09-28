@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { getTranslationStats, checkTranslationCompleteness, SUPPORTED_LANGUAGES } from '../utils/i18n-helpers';
+import { logger } from "../../utils/logger";
 
 interface TranslationKey {
   key: string;
@@ -30,7 +31,7 @@ class TranslationManager {
           const namespaceKeys = this.extractKeys(content, namespace);
           keys.push(...namespaceKeys);
         } catch (error) {
-          console.error(`Error reading ${filePath}:`, error);
+          logger.error(`Error reading ${filePath}:`, error);
         }
       }
     });
@@ -63,7 +64,7 @@ class TranslationManager {
 
   // Generate missing translation files
   generateMissingFiles(): void {
-    console.log('🔍 Checking for missing translation files...\n');
+    logger.log('🔍 Checking for missing translation files...\n');
     
     SUPPORTED_LANGUAGES.forEach(lang => {
       const langDir = path.join(this.localesPath, lang.code);
@@ -71,7 +72,7 @@ class TranslationManager {
       // Create language directory if it doesn't exist
       if (!fs.existsSync(langDir)) {
         fs.mkdirSync(langDir, { recursive: true });
-        console.log(`📁 Created directory: ${langDir}`);
+        logger.log(`📁 Created directory: ${langDir}`);
       }
       
       this.namespaces.forEach(namespace => {
@@ -81,12 +82,12 @@ class TranslationManager {
           // Create empty namespace file
           const emptyStructure = this.createEmptyStructure(namespace);
           fs.writeFileSync(filePath, JSON.stringify(emptyStructure, null, 2), 'utf8');
-          console.log(`📄 Created file: ${filePath}`);
+          logger.log(`📄 Created file: ${filePath}`);
         }
       });
     });
     
-    console.log('\n✅ Missing file generation completed!');
+    logger.log('\n✅ Missing file generation completed!');
   }
 
   // Create empty structure based on Vietnamese template
@@ -101,7 +102,7 @@ class TranslationManager {
       const viContent = JSON.parse(fs.readFileSync(viFilePath, 'utf8'));
       return this.createEmptyFromTemplate(viContent);
     } catch (error) {
-      console.error(`Error reading Vietnamese template for ${namespace}:`, error);
+      logger.error(`Error reading Vietnamese template for ${namespace}:`, error);
       return {};
     }
   }
@@ -125,7 +126,7 @@ class TranslationManager {
 
   // Generate translation report
   generateReport(): void {
-    console.log('📊 Generating Translation Report...\n');
+    logger.log('📊 Generating Translation Report...\n');
     
     const stats = getTranslationStats();
     
@@ -198,31 +199,31 @@ class TranslationManager {
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
     
     // Display summary
-    console.log('📈 Translation Summary:');
-    console.log(`   Total Languages: ${report.summary.totalLanguages}`);
-    console.log(`   Total Namespaces: ${report.summary.totalNamespaces}`);
-    console.log(`   Total Keys: ${report.summary.totalKeys}`);
-    console.log(`   Average Completion: ${report.summary.averageCompletion}%\n`);
+    logger.log('📈 Translation Summary:');
+    logger.log(`   Total Languages: ${report.summary.totalLanguages}`);
+    logger.log(`   Total Namespaces: ${report.summary.totalNamespaces}`);
+    logger.log(`   Total Keys: ${report.summary.totalKeys}`);
+    logger.log(`   Average Completion: ${report.summary.averageCompletion}%\n`);
     
-    console.log('🌐 Language Completion:');
+    logger.log('🌐 Language Completion:');
     Object.values(report.languages).forEach((lang: LanguageStats) => {
       const flag = SUPPORTED_LANGUAGES.find(l => l.code === lang.language)?.flag || '🏳️';
-      console.log(`   ${flag} ${lang.language.toUpperCase()}: ${lang.averageCompletion}% (${lang.translatedKeys}/${lang.totalKeys})`);
+      logger.log(`   ${flag} ${lang.language.toUpperCase()}: ${lang.averageCompletion}% (${lang.translatedKeys}/${lang.totalKeys})`);
     });
     
     if (report.missingTranslations.length > 0) {
-      console.log('\n❌ Missing Translations:');
+      logger.log('\n❌ Missing Translations:');
       report.missingTranslations.forEach((missing: any) => {
-        console.log(`   ${missing.language}/${missing.namespace}: ${missing.missingKeys.length} keys missing`);
+        logger.log(`   ${missing.language}/${missing.namespace}: ${missing.missingKeys.length} keys missing`);
       });
     }
     
-    console.log(`\n📄 Full report saved to: ${reportPath}`);
+    logger.log(`\n📄 Full report saved to: ${reportPath}`);
   }
 
   // Validate translation files
   validateTranslations(): boolean {
-    console.log('🔍 Validating translation files...\n');
+    logger.log('🔍 Validating translation files...\n');
     
     let hasErrors = false;
     
@@ -231,7 +232,7 @@ class TranslationManager {
         const filePath = path.join(this.localesPath, lang.code, `${namespace}.json`);
         
         if (!fs.existsSync(filePath)) {
-          console.log(`❌ Missing file: ${filePath}`);
+          logger.log(`❌ Missing file: ${filePath}`);
           hasErrors = true;
           return;
         }
@@ -239,19 +240,19 @@ class TranslationManager {
         try {
           const content = fs.readFileSync(filePath, 'utf8');
           JSON.parse(content);
-          console.log(`✅ Valid: ${lang.code}/${namespace}.json`);
+          logger.log(`✅ Valid: ${lang.code}/${namespace}.json`);
         } catch (error) {
-          console.log(`❌ Invalid JSON: ${filePath}`);
-          console.log(`   Error: ${error}`);
+          logger.log(`❌ Invalid JSON: ${filePath}`);
+          logger.log(`   Error: ${error}`);
           hasErrors = true;
         }
       });
     });
     
     if (!hasErrors) {
-      console.log('\n🎉 All translation files are valid!');
+      logger.log('\n🎉 All translation files are valid!');
     } else {
-      console.log('\n⚠️  Some translation files have errors.');
+      logger.log('\n⚠️  Some translation files have errors.');
     }
     
     return !hasErrors;
@@ -259,7 +260,7 @@ class TranslationManager {
 
   // Sync translation structure (add missing keys to all languages)
   syncTranslationStructure(): void {
-    console.log('🔄 Syncing translation structure...\n');
+    logger.log('🔄 Syncing translation structure...\n');
     
     // Get base structure from Vietnamese
     const baseStructure: any = {};
@@ -271,7 +272,7 @@ class TranslationManager {
         try {
           baseStructure[namespace] = JSON.parse(fs.readFileSync(viFilePath, 'utf8'));
         } catch (error) {
-          console.error(`Error reading ${viFilePath}:`, error);
+          logger.error(`Error reading ${viFilePath}:`, error);
         }
       }
     });
@@ -291,7 +292,7 @@ class TranslationManager {
           try {
             targetContent = JSON.parse(fs.readFileSync(targetFilePath, 'utf8'));
           } catch (error) {
-            console.error(`Error reading ${targetFilePath}:`, error);
+            logger.error(`Error reading ${targetFilePath}:`, error);
           }
         }
         
@@ -300,11 +301,11 @@ class TranslationManager {
         
         // Write back to file
         fs.writeFileSync(targetFilePath, JSON.stringify(syncedContent, null, 2), 'utf8');
-        console.log(`🔄 Synced: ${lang.code}/${namespace}.json`);
+        logger.log(`🔄 Synced: ${lang.code}/${namespace}.json`);
       });
     });
     
-    console.log('\n✅ Translation structure sync completed!');
+    logger.log('\n✅ Translation structure sync completed!');
   }
 
   // Merge structures while preserving existing translations
@@ -345,25 +346,25 @@ switch (command) {
     manager.syncTranslationStructure();
     break;
   case 'all':
-    console.log('🚀 Running all translation management tasks...\n');
+    logger.log('🚀 Running all translation management tasks...\n');
     manager.generateMissingFiles();
-    console.log('\n' + '='.repeat(50) + '\n');
+    logger.log('\n' + '='.repeat(50) + '\n');
     manager.syncTranslationStructure();
-    console.log('\n' + '='.repeat(50) + '\n');
+    logger.log('\n' + '='.repeat(50) + '\n');
     manager.validateTranslations();
-    console.log('\n' + '='.repeat(50) + '\n');
+    logger.log('\n' + '='.repeat(50) + '\n');
     manager.generateReport();
     break;
   default:
-    console.log('🌐 Translation Manager');
-    console.log('Usage: npx tsx server/scripts/translation-manager.ts <command>');
-    console.log('');
-    console.log('Commands:');
-    console.log('  generate  - Generate missing translation files');
-    console.log('  report    - Generate translation completion report');
-    console.log('  validate  - Validate all translation files');
-    console.log('  sync      - Sync translation structure across languages');
-    console.log('  all       - Run all commands in sequence');
+    logger.log('🌐 Translation Manager');
+    logger.log('Usage: npx tsx server/scripts/translation-manager.ts <command>');
+    logger.log('');
+    logger.log('Commands:');
+    logger.log('  generate  - Generate missing translation files');
+    logger.log('  report    - Generate translation completion report');
+    logger.log('  validate  - Validate all translation files');
+    logger.log('  sync      - Sync translation structure across languages');
+    logger.log('  all       - Run all commands in sequence');
     break;
 }
 

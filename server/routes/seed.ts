@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Product, Project, News, Testimonial, Partner, User, TeamMember } from '../models';
 import {
+import { logger } from "../../utils/logger";
   MOCK_PRODUCTS,
   MOCK_PROJECTS,
   MOCK_NEWS,
@@ -67,7 +68,7 @@ router.post('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error seeding database', error);
+    logger.error('Error seeding database', error);
     res.status(500).json({ message: 'Failed to seed database' });
   }
 });

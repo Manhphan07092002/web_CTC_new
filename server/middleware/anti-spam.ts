@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { logger } from "../../utils/logger";
 
 // Store IP rate limit records in memory
 const contactLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -14,7 +15,7 @@ export const honeypotCheck = (req: Request, res: Response, next: NextFunction) =
   const { website_hp, fax_number_hp, honeypot } = req.body || {};
 
   if (website_hp || fax_number_hp || honeypot) {
-    console.warn(`[ANTI-SPAM] Honeypot triggered from IP: ${req.ip}`);
+    logger.warn(`[ANTI-SPAM] Honeypot triggered from IP: ${req.ip}`);
     // Return fake 200 OK so bots think submission succeeded and don't retry
     return res.status(200).json({
       success: true,

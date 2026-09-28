@@ -9,6 +9,7 @@ import { PermissionLog } from '../../models/permissions';
 
 // Import models để đảm bảo schemas được đăng ký
 import '../../models/permissions';
+import { logger } from "../../utils/logger";
 
 // Helper functions để tránh lỗi TypeScript với Mongoose
 const getPermission = () => mongoose.model('Permission');
@@ -91,7 +92,7 @@ async function loadUserPermissions(userId: string): Promise<Set<string>> {
 
     return permissions;
   } catch (error) {
-    console.error('Error loading user permissions:', error);
+    logger.error('Error loading user permissions:', error);
     return new Set();
   }
 }
@@ -120,7 +121,7 @@ async function logPermissionCheck(
       userAgent: req.headers['user-agent'],
     });
   } catch (error) {
-    console.error('Error logging permission check:', error);
+    logger.error('Error logging permission check:', error);
   }
 }
 
@@ -149,7 +150,7 @@ export async function hasPermission(
 
     return hasAccess;
   } catch (error) {
-    console.error('Error checking permission:', error);
+    logger.error('Error checking permission:', error);
     return false;
   }
 }
@@ -179,7 +180,7 @@ export function requirePermission(permission: string) {
 
       next();
     } catch (error) {
-      console.error('Permission middleware error:', error);
+      logger.error('Permission middleware error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -214,7 +215,7 @@ export function requireAnyPermission(permissions: string[]) {
         required: permissions
       });
     } catch (error) {
-      console.error('Permission middleware error:', error);
+      logger.error('Permission middleware error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -258,7 +259,7 @@ export function requireRoleLevel(minLevel: number) {
 
       next();
     } catch (error) {
-      console.error('Role level middleware error:', error);
+      logger.error('Role level middleware error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'

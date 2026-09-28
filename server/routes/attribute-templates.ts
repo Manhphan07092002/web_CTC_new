@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { db } from '../../services/db-mongodb';
 import { AttributeTemplate, ProductCategory } from '../../models';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -144,7 +145,7 @@ router.get('/', async (req, res) => {
     const normalized = (items || []).map(normalizeTemplate);
     res.json(normalized);
   } catch (error: any) {
-    console.error('Error getting attribute templates:', error);
+    logger.error('Error getting attribute templates:', error);
     res.status(500).json({ message: 'Failed to get attribute templates', error: error?.message });
   }
 });
@@ -180,7 +181,7 @@ router.get('/by-category/:cat', async (req, res) => {
 
     res.json(normalizeTemplate(template));
   } catch (error: any) {
-    console.error('Error getting template by category:', error);
+    logger.error('Error getting template by category:', error);
     res.status(500).json({ message: 'Failed to get attribute template by category', error: error?.message });
   }
 });
@@ -192,7 +193,7 @@ router.get('/:id', async (req, res) => {
     if (!item) return res.status(404).json({ message: 'Attribute template not found' });
     res.json(normalizeTemplate(item));
   } catch (error: any) {
-    console.error('Error getting attribute template:', error);
+    logger.error('Error getting attribute template:', error);
     res.status(500).json({ message: 'Failed to get attribute template', error: error?.message });
   }
 });
@@ -225,7 +226,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(normalizeTemplate(created));
   } catch (error: any) {
-    console.error('Error creating attribute template:', error);
+    logger.error('Error creating attribute template:', error);
     res.status(500).json({ message: 'Failed to create attribute template', error: error?.message });
   }
 });
@@ -256,7 +257,7 @@ router.put('/:id', async (req, res) => {
     if (!updated) return res.status(404).json({ message: 'Attribute template not found' });
     res.json(normalizeTemplate(updated));
   } catch (error: any) {
-    console.error('Error updating attribute template:', error);
+    logger.error('Error updating attribute template:', error);
     res.status(500).json({ message: 'Failed to update attribute template', error: error?.message });
   }
 });
@@ -268,7 +269,7 @@ router.delete('/:id', async (req, res) => {
     if (!ok) return res.status(404).json({ message: 'Attribute template not found' });
     res.json({ message: 'Attribute template deleted successfully' });
   } catch (error: any) {
-    console.error('Error deleting attribute template:', error);
+    logger.error('Error deleting attribute template:', error);
     res.status(500).json({ message: 'Failed to delete attribute template', error: error?.message });
   }
 });
@@ -326,7 +327,7 @@ router.post('/seed-defaults', async (req, res) => {
     const normalized = (all || []).map(normalizeTemplate);
     res.json({ success: true, message: `Đã cập nhật/khởi tạo ${seededCount} bộ thuộc tính mẫu chuẩn.`, data: normalized });
   } catch (error: any) {
-    console.error('Error seeding attribute templates:', error);
+    logger.error('Error seeding attribute templates:', error);
     res.status(500).json({ message: 'Failed to seed attribute templates', error: error?.message });
   }
 });

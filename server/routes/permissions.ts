@@ -21,6 +21,7 @@ const requireAuth = (req: any, res: any, next: any) => {
 
 // Import models để đảm bảo schemas được đăng ký
 import '../../models/permissions';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -54,7 +55,7 @@ router.get('/permissions', requireAuth, async (req: Request, res: Response) => {
       total: permissions.length
     });
   } catch (error) {
-    console.error('Error fetching permissions:', error);
+    logger.error('Error fetching permissions:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi tải danh sách quyền'
@@ -90,7 +91,7 @@ router.post('/permissions', requireAuth, async (req: Request, res: Response) => 
       message: 'Tạo quyền thành công'
     });
   } catch (error: any) {
-    console.error('Error creating permission:', error);
+    logger.error('Error creating permission:', error);
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -129,7 +130,7 @@ router.put('/permissions/:id', requireAuth, async (req: Request, res: Response) 
       message: 'Cập nhật quyền thành công'
     });
   } catch (error) {
-    console.error('Error updating permission:', error);
+    logger.error('Error updating permission:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi cập nhật quyền'
@@ -156,7 +157,7 @@ router.delete('/permissions/:id', requireAuth, async (req: Request, res: Respons
       message: 'Xóa quyền thành công'
     });
   } catch (error) {
-    console.error('Error deleting permission:', error);
+    logger.error('Error deleting permission:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi xóa quyền'
@@ -191,7 +192,7 @@ router.get('/roles', requireAuth, async (req: Request, res: Response) => {
       total: roles.length
     });
   } catch (error) {
-    console.error('Error fetching roles:', error);
+    logger.error('Error fetching roles:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi tải danh sách vai trò'
@@ -229,7 +230,7 @@ router.post('/roles', requireAuth, async (req: Request, res: Response) => {
       message: 'Tạo vai trò thành công'
     });
   } catch (error: any) {
-    console.error('Error creating role:', error);
+    logger.error('Error creating role:', error);
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -274,7 +275,7 @@ router.put('/roles/:id', requireAuth, async (req: Request, res: Response) => {
       message: 'Cập nhật vai trò thành công'
     });
   } catch (error) {
-    console.error('Error updating role:', error);
+    logger.error('Error updating role:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi cập nhật vai trò'
@@ -310,7 +311,7 @@ router.delete('/roles/:id', requireAuth, async (req: Request, res: Response) => 
       message: 'Xóa vai trò thành công'
     });
   } catch (error) {
-    console.error('Error deleting role:', error);
+    logger.error('Error deleting role:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi xóa vai trò'
@@ -346,7 +347,7 @@ router.get('/user-permissions', requireAuth, async (req: Request, res: Response)
       data: userPermissions
     });
   } catch (error) {
-    console.error('Error fetching all user permissions:', error);
+    logger.error('Error fetching all user permissions:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi tải danh sách phân quyền'
@@ -403,7 +404,7 @@ router.get('/users/:userId/permissions', requireAuth, async (req: Request, res: 
       data: userPermission
     });
   } catch (error) {
-    console.error('Error fetching user permissions:', error);
+    logger.error('Error fetching user permissions:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi tải phân quyền người dùng'
@@ -458,7 +459,7 @@ router.post('/users/:userId/role', requireAuth, async (req: Request, res: Respon
       message: 'Phân quyền thành công'
     });
   } catch (error) {
-    console.error('Error assigning role:', error);
+    logger.error('Error assigning role:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi phân quyền'
@@ -504,7 +505,7 @@ router.post('/users/:userId/permissions', requireAuth, async (req: Request, res:
       message: 'Thêm quyền thành công'
     });
   } catch (error) {
-    console.error('Error adding permissions:', error);
+    logger.error('Error adding permissions:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi thêm quyền'
@@ -546,7 +547,7 @@ router.get('/logs', requireAuth, async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching permission logs:', error);
+    logger.error('Error fetching permission logs:', error);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi tải nhật ký phân quyền'

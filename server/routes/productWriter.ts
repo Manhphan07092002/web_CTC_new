@@ -1,5 +1,6 @@
 import express from 'express';
 import { generateAiProduct, scrapeProductFromUrl } from '../services/productWriter';
+import { logger } from "../../utils/logger";
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.post('/generate-product', async (req, res) => {
       return res.status(400).json({ message: 'Vui lòng nhập tên sản phẩm, dán link hoặc dán nội dung văn bản mẫu' });
     }
 
-    console.log(`[Product AI Writer] Generating product: "${name}" (Style: ${style || 'technical'}, Has URL: ${!!productUrl}, Selected Imgs: ${selectedImages?.length || 0})`);
+    logger.log(`[Product AI Writer] Generating product: "${name}" (Style: ${style || 'technical'}, Has URL: ${!!productUrl}, Selected Imgs: ${selectedImages?.length || 0})`);
     const product = await generateAiProduct(
       name || '',
       code,
@@ -31,7 +32,7 @@ router.post('/generate-product', async (req, res) => {
       data: product
     });
   } catch (error: any) {
-    console.error('[Product AI Writer Error]:', error.message || error);
+    logger.error('[Product AI Writer Error]:', error.message || error);
     res.status(500).json({
       success: false,
       message: error.message || 'Lỗi khi tạo bài viết sản phẩm AI'
@@ -49,7 +50,7 @@ router.post('/scrape-product-url', async (req, res) => {
       return res.status(400).json({ message: 'Vui lòng nhập đường link URL sản phẩm hợp lệ' });
     }
 
-    console.log(`[Product AI Writer Scraper] Scraping URL: ${url}`);
+    logger.log(`[Product AI Writer Scraper] Scraping URL: ${url}`);
     const data = await scrapeProductFromUrl(url.trim());
 
     res.json({
@@ -57,7 +58,7 @@ router.post('/scrape-product-url', async (req, res) => {
       data
     });
   } catch (error: any) {
-    console.error('[Product AI Scrape Error]:', error.message || error);
+    logger.error('[Product AI Scrape Error]:', error.message || error);
     res.status(500).json({
       success: false,
       message: error.message || 'Lỗi khi bóc tách URL sản phẩm'

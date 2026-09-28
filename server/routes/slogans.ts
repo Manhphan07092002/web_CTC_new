@@ -7,6 +7,7 @@
 
 import { Router, Request, Response } from 'express';
 import { aiSloganService } from '../services/aiSloganService';
+import { logger } from "../../utils/logger";
 
 const router = Router();
 
@@ -39,7 +40,7 @@ router.get('/', async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('[Slogans API] Error:', error);
+    logger.error('[Slogans API] Error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch slogans',
@@ -61,7 +62,7 @@ router.get('/random', async (req: Request, res: Response) => {
       data: slogans,
     });
   } catch (error: any) {
-    console.error('[Slogans API] Random error:', error);
+    logger.error('[Slogans API] Random error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch random slogans',
@@ -82,7 +83,7 @@ router.get('/categories', async (req: Request, res: Response) => {
       data: categories,
     });
   } catch (error: any) {
-    console.error('[Slogans API] Categories error:', error);
+    logger.error('[Slogans API] Categories error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch categories',
@@ -109,7 +110,7 @@ router.get('/dynamic', async (req: Request, res: Response) => {
       data: slogan,
     });
   } catch (error: any) {
-    console.error('[Slogans API] Dynamic error:', error);
+    logger.error('[Slogans API] Dynamic error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to generate dynamic slogan',
@@ -134,7 +135,7 @@ router.post('/generate', async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('[Slogans API] Generate error:', error);
+    logger.error('[Slogans API] Generate error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to generate slogans',

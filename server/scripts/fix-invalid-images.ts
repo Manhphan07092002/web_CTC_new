@@ -13,6 +13,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { Product } from '../models/index.js';
+import { logger } from "../../utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -190,15 +191,15 @@ async function searchGoogleImages(query: string): Promise<any[]> {
 }
 
 async function run() {
-  console.log('════════════════════════════════════════════════════════════');
-  console.log('🔧 BẮT ĐẦU FIX LỖI ẢNH TRÙNG LẶP & ẢNH SAI TOÀN CATALOG');
-  console.log('════════════════════════════════════════════════════════════');
+  logger.log('════════════════════════════════════════════════════════════');
+  logger.log('🔧 BẮT ĐẦU FIX LỖI ẢNH TRÙNG LẶP & ẢNH SAI TOÀN CATALOG');
+  logger.log('════════════════════════════════════════════════════════════');
 
   await mongoose.connect(MONGO_URI);
-  console.log('✅ Đã kết nối MongoDB thành công.');
+  logger.log('✅ Đã kết nối MongoDB thành công.');
 
   const products = await Product.find({ isDeleted: { $ne: true } }).lean();
-  console.log(`📦 Tổng số sản phẩm trong cơ sở dữ liệu: ${products.length}`);
+  logger.log(`📦 Tổng số sản phẩm trong cơ sở dữ liệu: ${products.length}`);
 
   let imageCache: Record<string, any> = {};
   try {
@@ -236,9 +237,9 @@ async function run() {
     }
   }
 
-  console.log(`\n🔍 Phát hiện:`);
-  console.log(`• Số sản phẩm có ảnh sai / thiếu / bị chặn: ${wrongImageProductIds.length}`);
-  console.log(`• Số nhóm ảnh bị trùng lặp: ${duplicateImageUrls.size}`);
+  logger.log(`\n🔍 Phát hiện:`);
+  logger.log(`• Số sản phẩm có ảnh sai / thiếu / bị chặn: ${wrongImageProductIds.length}`);
+  logger.log(`• Số nhóm ảnh bị trùng lặp: ${duplicateImageUrls.size}`);
 
   // Tập hợp tất cả các URL ảnh đã được gán DUY NHẤT để không bị gán đè
   const globallyUsedImages = new Set<string>();
@@ -265,7 +266,7 @@ async function run() {
     }
   }
 
-  console.log(`\n🚀 Cần tìm ảnh mới chính xác cho ${productsToFix.length} sản phẩm...`);
+  logger.log(`\n🚀 Cần tìm ảnh mới chính xác cho ${productsToFix.length} sản phẩm...`);
 
   let fixedCount = 0;
   for (let i = 0; i < productsToFix.length; i++) {
@@ -275,7 +276,7 @@ async function run() {
     const query = buildHighPrecisionSerperQuery(p.name, category, brand);
     const model = extractExactModel(p.name, brand);
 
-    console.log(`[${i + 1}/${productsToFix.length}] "${p.name}" (Model: "${model}")`);
+    logger.log(`[${i + 1}/${productsToFix.length}] "${p.name}" (Model: "${model}")`);
     
     const candidates = await searchGoogleImages(query);
     let chosenUrl: string | null = null;
@@ -329,9 +330,9 @@ async function run() {
         },
       );
       fixedCount++;
-      console.log(`  -> ✅ Đã đổi ảnh mới: ${chosenUrl.slice(0, 80)}...`);
+      logger.log(`  -> ✅ Đã đổi ảnh mới: ${chosenUrl.slice(0, 80)}...`);
     } else {
-      console.log(`  -> ⚠️ Chưa tìm thấy ảnh độc lập mới, giữ ảnh hiện tại.`);
+      logger.log(`  -> ⚠️ Chưa tìm thấy ảnh độc lập mới, giữ ảnh hiện tại.`);
     }
 
     // Delay nhẹ tránh rate limit Serper
@@ -340,8 +341,8 @@ async function run() {
 
   // Lưu lại cache
   await fs.writeFile(IMAGE_CACHE_FILE, JSON.stringify(imageCache, null, 2), 'utf8');
-  console.log(`\n💾 Đã cập nhật file cache: ${IMAGE_CACHE_FILE}`);
-  console.log(`🎉 ĐÃ HOÀN TẤT: Cập nhật thành công ảnh cho ${fixedCount} / ${productsToFix.length} sản phẩm!`);
+  logger.log(`\n💾 Đã cập nhật file cache: ${IMAGE_CACHE_FILE}`);
+  logger.log(`🎉 ĐÃ HOÀN TẤT: Cập nhật thành công ảnh cho ${fixedCount} / ${productsToFix.length} sản phẩm!`);
 
   await mongoose.disconnect();
 }

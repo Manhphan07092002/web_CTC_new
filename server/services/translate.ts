@@ -1,4 +1,5 @@
 import { SupportedLanguage, SUPPORTED_LANGUAGES } from '../../models';
+import { logger } from "../../utils/logger";
 
 // Dynamic import for ESM module
 let translate: any = null;
@@ -63,7 +64,7 @@ async function translateBatch(texts: string[], from: string, to: string, retries
   
   // Skip if rate limited
   if (isRateLimited()) {
-    console.log(`⏳ Skipping translation - cooldown ${getRateLimitCooldown()}s remaining`);
+    logger.log(`⏳ Skipping translation - cooldown ${getRateLimitCooldown()}s remaining`);
     return texts;
   }
   
@@ -86,16 +87,16 @@ async function translateBatch(texts: string[], from: string, to: string, retries
         return translated;
       }
       // Fallback: return originals if split failed
-      console.warn('⚠️ Split mismatch, using originals');
+      logger.warn('⚠️ Split mismatch, using originals');
       return texts;
       
     } catch (error: any) {
       if (error?.name === 'TooManyRequestsError') {
         lastRateLimitTime = Date.now();
-        console.log(`🚫 Rate limited! Cooldown for ${RATE_LIMIT_COOLDOWN/60000} minutes`);
+        logger.log(`🚫 Rate limited! Cooldown for ${RATE_LIMIT_COOLDOWN/60000} minutes`);
         return texts; // Return originals immediately, don't retry
       } else if (attempt === retries) {
-        console.warn(`⚠️ Translation failed:`, error?.message || error);
+        logger.warn(`⚠️ Translation failed:`, error?.message || error);
         return texts;
       }
       // Wait before retry for other errors
@@ -118,7 +119,7 @@ export async function autoTranslate(
   // Check cache
   const cacheKey = JSON.stringify({ content, sourceLanguage });
   if (translationCache.has(cacheKey)) {
-    console.log('📦 Using cached translation');
+    logger.log('📦 Using cached translation');
     return translationCache.get(cacheKey);
   }
 
@@ -153,7 +154,7 @@ export async function autoTranslate(
     for (const targetLang of targetLanguages) {
       const toLang = GOOGLE_LANG_CODES[targetLang];
       
-      console.log(`   → ${targetLang}...`);
+      logger.log(`   → ${targetLang}...`);
       const translated = await translateBatch(values, fromLang, toLang);
       
       // Rebuild structure
@@ -193,7 +194,7 @@ export async function autoTranslate(
     }
     
   } catch (error) {
-    console.error('Auto-translate error:', error);
+    logger.error('Auto-translate error:', error);
   }
   
   return translations as any;
@@ -216,7 +217,7 @@ export async function translateProduct(productData: any): Promise<any> {
     return productData;
   }
   
-  console.log('🌐 Auto-translating product:', productData.name);
+  logger.log('🌐 Auto-translating product:', productData.name);
   const translations = await autoTranslate(fieldsToTranslate);
   
   return {
@@ -239,7 +240,7 @@ export async function translateProject(projectData: any): Promise<any> {
     return projectData;
   }
   
-  console.log('🌐 Auto-translating project:', projectData.title);
+  logger.log('🌐 Auto-translating project:', projectData.title);
   const translations = await autoTranslate(fieldsToTranslate);
   
   return {
@@ -263,7 +264,7 @@ export async function translateNews(newsData: any): Promise<any> {
       return newsData;
     }
     
-    console.log('🌐 Auto-translating news:', newsData.title);
+    logger.log('🌐 Auto-translating news:', newsData.title);
     const translations = await autoTranslate(fieldsToTranslate);
     
     return {
@@ -271,7 +272,7 @@ export async function translateNews(newsData: any): Promise<any> {
       translations
     };
   } catch (err) {
-    console.warn('⚠️ Auto-translate news skipped due to error:', err);
+    logger.warn('⚠️ Auto-translate news skipped due to error:', err);
     return newsData;
   }
 }
@@ -290,7 +291,7 @@ export async function translateTestimonial(testimonialData: any): Promise<any> {
       return testimonialData;
     }
     
-    console.log('🌐 Auto-translating testimonial:', testimonialData.name);
+    logger.log('🌐 Auto-translating testimonial:', testimonialData.name);
     const translations = await autoTranslate(fieldsToTranslate);
     
     return {
@@ -298,7 +299,7 @@ export async function translateTestimonial(testimonialData: any): Promise<any> {
       translations
     };
   } catch (err) {
-    console.warn('⚠️ Auto-translate testimonial skipped:', err);
+    logger.warn('⚠️ Auto-translate testimonial skipped:', err);
     return testimonialData;
   }
 }
@@ -317,7 +318,7 @@ export async function translateCategory(categoryData: any): Promise<any> {
       return categoryData;
     }
     
-    console.log('🌐 Auto-translating category:', categoryData.name);
+    logger.log('🌐 Auto-translating category:', categoryData.name);
     const translations = await autoTranslate(fieldsToTranslate);
     
     return {
@@ -325,7 +326,7 @@ export async function translateCategory(categoryData: any): Promise<any> {
       translations
     };
   } catch (err) {
-    console.warn('⚠️ Auto-translate category skipped:', err);
+    logger.warn('⚠️ Auto-translate category skipped:', err);
     return categoryData;
   }
 }
@@ -343,7 +344,7 @@ export async function translateTeamMember(memberData: any): Promise<any> {
       return memberData;
     }
     
-    console.log('🌐 Auto-translating team member:', memberData.name);
+    logger.log('🌐 Auto-translating team member:', memberData.name);
     const translations = await autoTranslate(fieldsToTranslate);
     
     return {
@@ -351,7 +352,7 @@ export async function translateTeamMember(memberData: any): Promise<any> {
       translations
     };
   } catch (err) {
-    console.warn('⚠️ Auto-translate team member skipped:', err);
+    logger.warn('⚠️ Auto-translate team member skipped:', err);
     return memberData;
   }
 }

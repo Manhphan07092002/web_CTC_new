@@ -2,16 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import mongoose from 'mongoose';
 import { Translation } from '../../models/Translation';
+import { logger } from "../../utils/logger";
 
 // Simple migration without i18n system interference
 async function simpleMigrate() {
-  console.log('🚀 Simple Translation Migration...\n');
+  logger.log('🚀 Simple Translation Migration...\n');
 
   try {
     // Connect directly to MongoDB
     const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ctc_web_new';
     await mongoose.connect(MONGO_URI);
-    console.log('✅ Database connected\n');
+    logger.log('✅ Database connected\n');
 
     const languages = ['vi', 'en', 'ko', 'ja', 'zh', 'de', 'fr', 'es'];
     const namespaces = ['common', 'auth', 'products', 'projects', 'news', 'contact', 'calculator', 'admin', 'home'];
@@ -20,7 +21,7 @@ async function simpleMigrate() {
     let totalCreated = 0;
 
     for (const language of languages) {
-      console.log(`📁 Processing ${language}...`);
+      logger.log(`📁 Processing ${language}...`);
       
       for (const namespace of namespaces) {
         const filePath = path.join(process.cwd(), 'locales', language, `${namespace}.json`);
@@ -30,7 +31,7 @@ async function simpleMigrate() {
             const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             const flatTranslations = flattenObject(content);
             
-            console.log(`   📄 ${namespace}.json: ${Object.keys(flatTranslations).length} keys`);
+            logger.log(`   📄 ${namespace}.json: ${Object.keys(flatTranslations).length} keys`);
             
             for (const [key, value] of Object.entries(flatTranslations)) {
               totalProcessed++;
@@ -52,27 +53,27 @@ async function simpleMigrate() {
                 totalCreated++;
                 
                 if (totalCreated % 10 === 0) {
-                  console.log(`     ✅ Created ${totalCreated} translations...`);
+                  logger.log(`     ✅ Created ${totalCreated} translations...`);
                 }
               }
             }
           } catch (error) {
-            console.error(`   ❌ Error processing ${language}/${namespace}:`, error);
+            logger.error(`   ❌ Error processing ${language}/${namespace}:`, error);
           }
         }
       }
     }
 
-    console.log(`\n📊 Migration Summary:`);
-    console.log(`   Total processed: ${totalProcessed}`);
-    console.log(`   Total created: ${totalCreated}`);
-    console.log(`   Success rate: ${Math.round((totalCreated / totalProcessed) * 100)}%`);
+    logger.log(`\n📊 Migration Summary:`);
+    logger.log(`   Total processed: ${totalProcessed}`);
+    logger.log(`   Total created: ${totalCreated}`);
+    logger.log(`   Success rate: ${Math.round((totalCreated / totalProcessed) * 100)}%`);
 
     await mongoose.disconnect();
-    console.log('\n✅ Migration completed successfully!');
+    logger.log('\n✅ Migration completed successfully!');
 
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    logger.error('❌ Migration failed:', error);
     process.exit(1);
   }
 }
