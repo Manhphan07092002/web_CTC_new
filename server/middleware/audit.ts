@@ -217,7 +217,7 @@ import { Router } from 'express';
 
 // Simple admin check middleware (local implementation)
 const requireAdmin = (req: any, res: any, next: any) => {
-  req.user = req.user || { email: 'admin@ctcdn.vn', role: 'admin' };
+  req.user = req.user || { email: process.env.ADMIN_EMAIL || 'admin@ctcdn.vn', role: 'admin' };
   next();
 };
 

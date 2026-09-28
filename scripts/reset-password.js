@@ -21,16 +21,22 @@ async function resetPassword() {
     await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB');
 
-    let admin = await User.findOne({ email: 'admin@ctcdn.vn' });
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ctcdn.vn';
+    const newPassword = process.env.ADMIN_PASSWORD;
+    if (!newPassword) {
+      console.error('Error: ADMIN_PASSWORD environment variable is required');
+      process.exit(1);
+    }
+
+    let admin = await User.findOne({ email: adminEmail });
     const salt = await bcrypt.genSalt(10);
-    const newPassword = 'CTC@2024';
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     
     if (!admin) {
       console.log('Admin user not found. Creating new admin user...');
       admin = await User.create({
         name: 'Super Admin',
-        email: 'admin@ctcdn.vn',
+        email: adminEmail,
         password: hashedPassword,
         role: 'admin',
         phone: '0915 059 666',
@@ -44,8 +50,8 @@ async function resetPassword() {
     }
     
     console.log('\n✅ Password reset successfully with bcrypt hash!');
-    console.log('Email: admin@ctcdn.vn');
-    console.log('Password: ' + newPassword);
+    console.log('Email:', adminEmail);
+    console.log('Password: [set via ADMIN_PASSWORD env var]');
     
     await mongoose.disconnect();
     console.log('\nDisconnected from MongoDB');

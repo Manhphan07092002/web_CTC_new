@@ -13,16 +13,21 @@ async function seedAdmin() {
     const users = db.collection('users');
 
     // Hash password properly with bcrypt
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      console.error('Error: ADMIN_PASSWORD environment variable is required');
+      process.exit(1);
+    }
     console.log('Hashing password...');
-    const hash = await bcrypt.hash('CTC@2024', 10);
+    const hash = await bcrypt.hash(adminPassword, 10);
 
     // Upsert admin user (create if not exists, update if exists)
     const result = await users.updateOne(
-      { email: 'admin@ctcdn.vn' },
+      { email: process.env.ADMIN_EMAIL || 'admin@ctcdn.vn' },
       {
         $set: {
           name: 'Super Admin',
-          email: 'admin@ctcdn.vn',
+          email: process.env.ADMIN_EMAIL || 'admin@ctcdn.vn',
           password: hash,
           role: 'admin',
           phone: '',
@@ -35,8 +40,8 @@ async function seedAdmin() {
 
     console.log('Result:', result.upsertedId ? 'Created new admin' : 'Updated existing admin');
     console.log('\n✅ Admin credentials:');
-    console.log('Email: admin@ctcdn.vn');
-    console.log('Password: CTC@2024');
+    console.log('Email:', process.env.ADMIN_EMAIL || 'admin@ctcdn.vn');
+    console.log('Password: [set via ADMIN_PASSWORD env var]');
 
     await mongoose.disconnect();
     console.log('\nDisconnected from MongoDB');

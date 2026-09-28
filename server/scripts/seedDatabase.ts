@@ -75,10 +75,11 @@ const seedDatabase = async () => {
     });
 
     console.log('Inserting Users...');
-    const hashedPassword = await bcrypt.hash('Admin@123', 10);
+    const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeMe@2024!';
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
     const admin = await User.create({
       name: 'Admin CTC',
-      email: 'admin@ctcdn.vn',
+      email: process.env.ADMIN_EMAIL || 'admin@ctcdn.vn',
       password: hashedPassword,
       role: 'admin',
       permissions: ['settings_manage', 'view_users'],

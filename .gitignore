@@ -61,3 +61,11 @@ sqlpackage*/
 playwright-report/
 playwright/.auth/
 test-results/
+
+# SSL Certificates & Private Keys
+*.pem
+*.key
+*.crt
+*.pfx
+chung chi/
+ssl/

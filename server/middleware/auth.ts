@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'ctc-solar-secure-jwt-secret-key-2026';
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET or SESSION_SECRET environment variable is required');
+}
 
 export interface UserPayload {
   id: string;

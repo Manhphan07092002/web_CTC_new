@@ -17,13 +17,17 @@ async function fixAdminPassword() {
     const db = mongoose.connection.db;
     const users = db.collection('users');
     
-    const newPassword = process.env.NEW_ADMIN_PASS || 'ctcadmin2024';
-    console.log(`Hashing new password (${newPassword})...`);
+    const newPassword = process.env.NEW_ADMIN_PASS;
+    if (!newPassword) {
+      console.error('Error: NEW_ADMIN_PASS environment variable is required');
+      process.exit(1);
+    }
+    console.log('Hashing new password...');
     const hash = await bcrypt.hash(newPassword, 10);
     
     // Update or insert admin
     const result = await users.updateOne(
-      { email: 'admin@ctcdn.vn' },
+      { email: process.env.ADMIN_EMAIL || 'admin@ctcdn.vn' },
       { 
         $set: { 
           password: hash,

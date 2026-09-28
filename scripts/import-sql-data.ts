@@ -377,8 +377,9 @@ async function seedRBAC() {
     const users = await db.collection('users').find({}).toArray();
 
     // Map specific role per user email
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ctcdn.vn';
     const userRoleMapping: Record<string, string> = {
-      'admin@ctcdn.vn': 'super_admin',      // Super Admin (Level 100)
+      [adminEmail]: 'super_admin',      // Super Admin (Level 100)
       'ducnam@ctcdn.vn': 'admin',            // Admin (Level 90)
       'khanhnd@ctcdn.vn': 'editor',          // Editor (Level 50)
       'phanmanh@ctcdn.vn': 'moderator',      // Moderator (Level 40)

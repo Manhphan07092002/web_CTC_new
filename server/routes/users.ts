@@ -108,11 +108,16 @@ router.get('/', requireAdmin, async (req, res) => {
     
     // If no users exist, create default admin
     if (items.length === 0) {
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      if (!adminPassword) {
+        logger.error('ADMIN_PASSWORD environment variable is required to create default admin');
+        return res.status(500).json({ message: 'Server configuration error: ADMIN_PASSWORD not set' });
+      }
       logger.info('No users found, creating default admin...');
-      const hashedPassword = await hashPassword('CTC@2024');
+      const hashedPassword = await hashPassword(adminPassword);
       const defaultAdmin = await db.users.add({
         name: 'Super Admin',
-        email: 'admin@ctcdn.vn',
+        email: process.env.ADMIN_EMAIL || 'admin@ctcdn.vn',
         password: hashedPassword,
         role: 'admin' as 'admin' | 'editor' | 'viewer',
         phone: '',
@@ -266,9 +271,9 @@ router.post('/login', async (req, res) => {
     // Don't send password to client
     const { password: _, ...sanitized } = userWithPassword;
     
-    // Check if user is using a default weak password
-    const DEFAULT_PASSWORDS = ['CTC@2024', 'TranLe@2024', '123456', 'admin', 'admin123'];
-    const mustChangePassword = DEFAULT_PASSWORDS.includes(password);
+    // Check if user is using a weak password
+    const WEAK_PASSWORDS = ['123456', 'admin', 'admin123', 'password', '12345678'];
+    const mustChangePassword = WEAK_PASSWORDS.includes(password) || password.length < 8;
 
     // Generate auth token
     const token = generateToken({

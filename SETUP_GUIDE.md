@@ -37,8 +37,8 @@ npm run dev
 *   **Website (Giao diện chính):** [http://localhost:3000](http://localhost:3000)
 *   **Trang Quản trị (Admin Dashboard):** [http://localhost:3000/#/login](http://localhost:3000/#/login)
 *   **Tài khoản Admin mặc định:**
-    *   *Email:* `admin@tranle.com`
-    *   *Mật khẩu:* `TranLe@2024`
+    *   *Email:* `admin@yourdomain.com` (cấu hình qua `ADMIN_EMAIL`)
+    *   *Mật khẩu:* `ChangeMe@2024!` (cấu hình qua `ADMIN_PASSWORD`)
 
 ---
 
