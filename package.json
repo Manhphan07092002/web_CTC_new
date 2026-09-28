@@ -39,7 +39,10 @@
     "seed:team": "npx tsx server/scripts/seed-50-team-members.ts",
     "clear:products": "npx tsx server/scripts/clear-all-products.ts",
     "seed:sql": "npx tsx scripts/import-sql-data.ts",
-    "optimize:images": "node scripts/optimize-uploads.js"
+    "optimize:images": "node scripts/optimize-uploads.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@google/genai": "^1.29.1",
@@ -105,11 +108,13 @@
     "eslint": "^10.11.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
+    "mongodb-memory-server": "^11.3.0",
     "tailwindcss": "^4.3.3",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.70.1",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vitest": "^5.0.2"
   }
 }
