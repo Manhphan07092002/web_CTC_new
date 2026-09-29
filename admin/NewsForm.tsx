@@ -34,33 +34,6 @@ interface NewsCategory {
 const MAX_ATTACHMENTS = 5;
 const MAX_ATTACHMENT_SIZE = 200 * 1024 * 1024; // 200MB
 
-const getUploadApiBase = () => {
-  const viteEnv = (import.meta as any).env;
-  if (viteEnv?.VITE_API_URL) return `${viteEnv.VITE_API_URL}/uploads`;
-  const hostname = window.location.hostname;
-  const protocol = window.location.protocol;
-  const port = window.location.port;
-  if (!port || port === '80' || port === '443') return '/api/uploads';
-  return `${protocol}//${hostname}:4000/api/uploads`;
-};
-
-const getUploadAuthHeaders = (): HeadersInit => {
-  try {
-    const direct = localStorage.getItem('token') || localStorage.getItem('auth_token');
-    let token: string | null = direct;
-    if (!token) {
-      const s = localStorage.getItem('admin_session');
-      if (s) {
-        const p = JSON.parse(s);
-        token = p?.token || p?.user?.token || null;
-      }
-    }
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  } catch {
-    return {};
-  }
-};
-
 const formatAttachSize = (bytes?: number): string => {
   if (!bytes || bytes <= 0) return '';
   if (bytes < 1024) return `${bytes} B`;
@@ -172,51 +145,31 @@ const NewsForm: React.FC = () => {
     setShowImagePicker(false);
   };
 
-  const [uploadingAttach, setUploadingAttach] = useState(false);
+  const [showAttachPicker, setShowAttachPicker] = useState(false);
 
-  const handleAttachmentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    if (formData.attachments.length + files.length > MAX_ATTACHMENTS) {
+  const handleAttachPick = (file: { url: string; filename: string; size?: number; mimetype?: string }) => {
+    if (formData.attachments.length >= MAX_ATTACHMENTS) {
       showToast(`Tối đa ${MAX_ATTACHMENTS} file đính kèm mỗi bài viết`, 'error');
-      e.target.value = '';
       return;
     }
-    const tooBig = Array.from(files).find(f => f.size > MAX_ATTACHMENT_SIZE);
-    if (tooBig) {
-      showToast(`File "${tooBig.name}" vượt quá 200MB`, 'error');
-      e.target.value = '';
+    if (formData.attachments.some(a => a.fileUrl === file.url)) {
+      showToast('File này đã có trong danh sách đính kèm', 'info');
       return;
     }
-    const form = new FormData();
-    Array.from(files).forEach(f => form.append('files', f));
-    form.append('path', 'documents');
-    try {
-      setUploadingAttach(true);
-      const res = await fetch(`${getUploadApiBase()}?path=documents`, {
-        method: 'POST',
-        headers: getUploadAuthHeaders(),
-        body: form,
-      });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || 'Tải file lên thất bại');
-      }
-      const result = await res.json();
-      const uploaded: NewsAttachment[] = (result.files || []).map((f: any) => ({
-        fileUrl: f.url,
-        fileName: f.originalName || f.filename,
-        fileSize: f.size,
-        fileType: f.mimetype,
-      }));
-      setFormData(prev => ({ ...prev, attachments: [...prev.attachments, ...uploaded].slice(0, MAX_ATTACHMENTS) }));
-      showToast(`Đã thêm ${uploaded.length} file đính kèm`, 'success');
-    } catch (err: any) {
-      showToast(err.message || 'Lỗi khi tải file đính kèm', 'error');
-    } finally {
-      setUploadingAttach(false);
-      e.target.value = '';
+    if (typeof file.size === 'number' && file.size > MAX_ATTACHMENT_SIZE) {
+      showToast(`File "${file.filename}" vượt quá 200MB`, 'error');
+      return;
     }
+    setFormData(prev => ({
+      ...prev,
+      attachments: [...prev.attachments, {
+        fileUrl: file.url,
+        fileName: file.filename,
+        fileSize: file.size,
+        fileType: file.mimetype,
+      }].slice(0, MAX_ATTACHMENTS),
+    }));
+    showToast(`Đã thêm file "${file.filename}"`, 'success');
   };
 
   const handleAttachmentRemove = (idx: number) => {
@@ -673,21 +626,16 @@ const NewsForm: React.FC = () => {
                     ))}
                   </div>
                 )}
-                <label className={`w-full border-2 border-dashed rounded-xl flex items-center justify-center h-11 text-xs font-semibold transition-colors cursor-pointer ${
-                  uploadingAttach ? 'opacity-50 pointer-events-none' : 'border-gray-300 dark:border-slate-700 text-gray-400 hover:border-primary hover:text-primary'
-                }`}>
+                <button
+                  type="button"
+                  onClick={() => setShowAttachPicker(true)}
+                  disabled={formData.attachments.length >= MAX_ATTACHMENTS}
+                  className="w-full border-2 border-dashed rounded-xl flex items-center justify-center h-11 text-xs font-semibold transition-colors cursor-pointer border-gray-300 dark:border-slate-700 text-gray-400 hover:border-primary hover:text-primary disabled:opacity-50"
+                >
                   <Upload size={14} className="mr-1.5" />
-                  {uploadingAttach ? 'Đang tải lên...' : formData.attachments.length >= MAX_ATTACHMENTS ? `Tối đa ${MAX_ATTACHMENTS} file` : 'Thêm file (PDF, Word, Excel, ZIP)'}
-                  <input
-                    type="file"
-                    multiple
-                    className="hidden"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"
-                    onChange={handleAttachmentUpload}
-                    disabled={uploadingAttach || formData.attachments.length >= MAX_ATTACHMENTS}
-                  />
-                </label>
-                <p className="text-[11px] text-gray-400 mt-2">Mỗi file tối đa 200MB.</p>
+                  {formData.attachments.length >= MAX_ATTACHMENTS ? `Tối đa ${MAX_ATTACHMENTS} file` : 'Chọn từ Quản lý file / Tải lên mới'}
+                </button>
+                <p className="text-[11px] text-gray-400 mt-2">Chọn file có sẵn hoặc tải file mới lên (PDF, Word, Excel, ZIP). Mỗi file tối đa 200MB.</p>
               </div>
 
               {/* Meta */}
@@ -833,6 +781,15 @@ const NewsForm: React.FC = () => {
         isOpen={showImagePicker}
         onSelect={handleImageSelect}
         onClose={() => setShowImagePicker(false)}
+      />
+
+      {/* Attachment Picker Modal (dùng chung API Quản lý file) */}
+      <FilePickerModal
+        isOpen={showAttachPicker}
+        onSelect={() => {}} // không dùng: onSelectFile được ưu tiên
+        onSelectFile={handleAttachPick}
+        onClose={() => setShowAttachPicker(false)}
+        title="Chọn file đính kèm"
       />
 
       {/* AI Writer Assistant Modal */}

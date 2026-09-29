@@ -32,6 +32,7 @@ interface FilePickerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (url: string) => void;
+  onSelectFile?: (file: { url: string; filename: string; size?: number; mimetype?: string }) => void;
   title?: string;
 }
 
@@ -146,7 +147,7 @@ const formatFileSize = (bytes?: number): string => {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 };
 
-const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSelect, title }) => {
+const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSelect, onSelectFile, title }) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [currentPath, setCurrentPath] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<string[]>(['']);
@@ -262,8 +263,8 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       
       // If only one file uploaded, auto-select it
       if (body.files && body.files.length === 1) {
-        onSelect(body.files[0].url);
-        onClose();
+        const f = body.files[0];
+        emitSelect({ url: f.url, filename: f.originalName || f.filename, size: f.size, mimetype: f.mimetype });
       }
     } catch (err: any) {
       setError(err.message || 'Upload thất bại. Vui lòng thử lại.');
@@ -298,9 +299,17 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
     }
   };
 
-  const handleChoose = (url: string) => {
-    onSelect(url);
+  const emitSelect = (file: { url: string; filename: string; size?: number; mimetype?: string }) => {
+    if (onSelectFile) {
+      onSelectFile(file);
+    } else {
+      onSelect(file.url);
+    }
     onClose();
+  };
+
+  const handleChoose = (file: UploadedFile) => {
+    emitSelect({ url: file.url, filename: file.filename, size: file.size, mimetype: file.mimeType });
   };
 
   const handleFolderClick = (folderName: string) => {
@@ -374,6 +383,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       if (filterType === 'image') return !(f.isDirectory || f.type === 'folder') && getFileType(f.filename) === 'image';
       if (filterType === 'document') return !(f.isDirectory || f.type === 'folder') && ['pdf', 'document', 'spreadsheet'].includes(getFileType(f.filename));
       if (filterType === 'media') return !(f.isDirectory || f.type === 'folder') && ['video', 'audio'].includes(getFileType(f.filename));
+      if (filterType === 'archive') return !(f.isDirectory || f.type === 'folder') && ['zip', 'rar', '7z', 'tar', 'gz'].includes(getFileExtension(f.filename));
       return true;
     });
   }, [files, searchQuery, filterType]);
@@ -568,6 +578,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
               <option value="image">Hình ảnh</option>
               <option value="document">Tài liệu</option>
               <option value="media">Video/Audio</option>
+              <option value="archive">File nén (.zip/.rar)</option>
               <option value="folder">Thư mục</option>
             </select>
           </div>
@@ -603,7 +614,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                         if (isDir) {
                           handleFolderClick(f.filename);
                         } else {
-                          handleChoose(f.url);
+                          handleChoose(f);
                         }
                       }}
                     >
@@ -658,7 +669,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
                           <button
                             type="button"
                             className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold cursor-pointer"
-                            onClick={() => handleChoose(f.url)}
+                            onClick={() => handleChoose(f)}
                           >
                             Chọn
                           </button>
