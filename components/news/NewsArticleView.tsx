@@ -4,7 +4,8 @@ import {
   Calendar, Tag, Share2, Clock, Check, User, ArrowRight, 
   Phone, MessageSquare, Printer, Bookmark, Eye, Type, 
   ThumbsUp, BookOpen, ListOrdered, Volume2, VolumeX, Play, Pause,
-  Send, MessageCircle, ShieldCheck, CornerDownRight, X
+  Send, MessageCircle, ShieldCheck, CornerDownRight, X,
+  Paperclip, FileText, Download
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../../contexts/SettingsContext';
@@ -837,6 +838,45 @@ export const NewsArticleView: React.FC<NewsArticleViewProps> = ({ news }) => {
               ))
             )}
           </div>
+
+          {/* Attachments - File đính kèm */}
+          {Array.isArray((news as any).attachments) && (news as any).attachments.length > 0 && (
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700/70 space-y-3">
+              <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Paperclip size={16} className="text-primary" />
+                TÀI LIỆU ĐÍNH KÈM ({(news as any).attachments.length})
+              </h4>
+              <div className="space-y-2">
+                {(news as any).attachments.map((att: any, idx: number) => (
+                  <a
+                    key={idx}
+                    href={att.fileUrl}
+                    download={att.fileName || true}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:shadow-sm transition-all group"
+                  >
+                    <span className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+                      <FileText size={17} />
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-primary">
+                        {att.fileName || att.fileUrl.split('/').pop()}
+                      </span>
+                      {att.fileSize ? (
+                        <span className="block text-[11px] text-gray-400 font-medium">
+                          {att.fileSize < 1024 * 1024
+                            ? `${(att.fileSize / 1024).toFixed(1)} KB`
+                            : `${(att.fileSize / (1024 * 1024)).toFixed(2)} MB`}
+                        </span>
+                      ) : null}
+                    </span>
+                    <Download size={16} className="text-gray-400 group-hover:text-primary flex-shrink-0" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Editorial Reaction & Social Share Bar */}
           <div className="pt-8 border-t border-gray-100 dark:border-gray-700/70 flex flex-col sm:flex-row items-center justify-between gap-4">

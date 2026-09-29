@@ -220,6 +220,13 @@ export interface Project {
   updatedAt?: string;
 }
 
+export interface NewsAttachment {
+  fileUrl: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
+}
+
 export interface NewsItem {
   id: string;
   _id?: string;
@@ -238,6 +245,7 @@ export interface NewsItem {
   featuredOrder?: number;
   viewCount?: number;
   likes?: number;
+  attachments?: NewsAttachment[];
   createdAt?: string;
   updatedAt?: string;
 }

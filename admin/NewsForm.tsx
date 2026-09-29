@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Save, X, Image as ImageIcon, Eye, EyeOff,
   FileText, Hash, Calendar, User, Tag, Star, StarOff,
-  ChevronRight, Sparkles
+  ChevronRight, Sparkles, Paperclip, Upload, Trash2, Download
 } from 'lucide-react';
 import FilePickerModal from './FilePickerModal';
 import { api } from '../services/api';
@@ -17,12 +17,56 @@ import AiWriterModal from './components/AiWriterModal';
 import UnsavedChangesModal from './components/UnsavedChangesModal';
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 
+interface NewsAttachment {
+  fileUrl: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
+}
+
 interface NewsCategory {
   id: string;
   _id?: string;
   name: string;
   slug: string;
 }
+
+const MAX_ATTACHMENTS = 5;
+const MAX_ATTACHMENT_SIZE = 50 * 1024 * 1024; // 50MB
+
+const getUploadApiBase = () => {
+  const viteEnv = (import.meta as any).env;
+  if (viteEnv?.VITE_API_URL) return `${viteEnv.VITE_API_URL}/uploads`;
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  const port = window.location.port;
+  if (!port || port === '80' || port === '443') return '/api/uploads';
+  return `${protocol}//${hostname}:4000/api/uploads`;
+};
+
+const getUploadAuthHeaders = (): HeadersInit => {
+  try {
+    const direct = localStorage.getItem('token') || localStorage.getItem('auth_token');
+    let token: string | null = direct;
+    if (!token) {
+      const s = localStorage.getItem('admin_session');
+      if (s) {
+        const p = JSON.parse(s);
+        token = p?.token || p?.user?.token || null;
+      }
+    }
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+};
+
+const formatAttachSize = (bytes?: number): string => {
+  if (!bytes || bytes <= 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+};
 
 const NewsForm: React.FC = () => {
   const { id } = useParams();
@@ -52,6 +96,7 @@ const NewsForm: React.FC = () => {
     author: 'Phan Xuân Mạnh',
     isFeatured: false,
     tags: [] as string[],
+    attachments: [] as NewsAttachment[],
     focusKeyword: '',
     status: 'published' as 'published' | 'pending' | 'draft',
   });
@@ -109,6 +154,7 @@ const NewsForm: React.FC = () => {
         author: news.author || 'Phan Xuân Mạnh',
         isFeatured: news.isFeatured || false,
         tags: news.tags || [],
+        attachments: Array.isArray(news.attachments) ? news.attachments : [],
         focusKeyword: loadedKw,
         status: (news.status as any) || 'published',
       };
@@ -124,6 +170,57 @@ const NewsForm: React.FC = () => {
   const handleImageSelect = (url: string) => {
     setFormData({ ...formData, image: url });
     setShowImagePicker(false);
+  };
+
+  const [uploadingAttach, setUploadingAttach] = useState(false);
+
+  const handleAttachmentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    if (formData.attachments.length + files.length > MAX_ATTACHMENTS) {
+      showToast(`Tối đa ${MAX_ATTACHMENTS} file đính kèm mỗi bài viết`, 'error');
+      e.target.value = '';
+      return;
+    }
+    const tooBig = Array.from(files).find(f => f.size > MAX_ATTACHMENT_SIZE);
+    if (tooBig) {
+      showToast(`File "${tooBig.name}" vượt quá 50MB`, 'error');
+      e.target.value = '';
+      return;
+    }
+    const form = new FormData();
+    Array.from(files).forEach(f => form.append('files', f));
+    form.append('path', 'documents');
+    try {
+      setUploadingAttach(true);
+      const res = await fetch(`${getUploadApiBase()}?path=documents`, {
+        method: 'POST',
+        headers: getUploadAuthHeaders(),
+        body: form,
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Tải file lên thất bại');
+      }
+      const result = await res.json();
+      const uploaded: NewsAttachment[] = (result.files || []).map((f: any) => ({
+        fileUrl: f.url,
+        fileName: f.originalName || f.filename,
+        fileSize: f.size,
+        fileType: f.mimetype,
+      }));
+      setFormData(prev => ({ ...prev, attachments: [...prev.attachments, ...uploaded].slice(0, MAX_ATTACHMENTS) }));
+      showToast(`Đã thêm ${uploaded.length} file đính kèm`, 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Lỗi khi tải file đính kèm', 'error');
+    } finally {
+      setUploadingAttach(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleAttachmentRemove = (idx: number) => {
+    setFormData(prev => ({ ...prev, attachments: prev.attachments.filter((_, i) => i !== idx) }));
   };
 
   const handleCategoryChange = (categoryId: string) => {
@@ -397,6 +494,22 @@ const NewsForm: React.FC = () => {
               className="prose prose-lg max-w-none text-gray-800 dark:text-gray-200"
               dangerouslySetInnerHTML={{ __html: formData.content || '<p class="text-gray-400 dark:text-gray-500">Chưa có nội dung...</p>' }}
             />
+            {formData.attachments.length > 0 && (
+              <div className="mt-8 p-5 rounded-2xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700">
+                <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-1.5">
+                  <Paperclip size={15} className="text-primary" /> File đính kèm ({formData.attachments.length})
+                </h4>
+                <div className="space-y-2">
+                  {formData.attachments.map((att, idx) => (
+                    <a key={idx} href={att.fileUrl} download className="flex items-center gap-2 text-sm text-primary hover:underline">
+                      <FileText size={15} />
+                      <span className="truncate">{att.fileName || att.fileUrl}</span>
+                      {att.fileSize ? <span className="text-xs text-gray-400">({formatAttachSize(att.fileSize)})</span> : null}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ) : (
@@ -518,6 +631,63 @@ const NewsForm: React.FC = () => {
                     )}
                   </button>
                 </div>
+              </div>
+
+              {/* Attachments */}
+              <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/60 p-5">
+                <label className="block text-xs font-black text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-3">
+                  <Paperclip size={12} className="inline mr-1" /> FILE ĐÍNH KÈM ({formData.attachments.length}/{MAX_ATTACHMENTS})
+                </label>
+                {formData.attachments.length > 0 && (
+                  <div className="space-y-2 mb-3">
+                    {formData.attachments.map((att, idx) => (
+                      <div key={`${att.fileUrl}-${idx}`} className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700">
+                        <FileText size={16} className="text-blue-500 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 truncate" title={att.fileName || att.fileUrl}>
+                            {att.fileName || att.fileUrl}
+                          </p>
+                          {att.fileSize ? (
+                            <p className="text-[11px] text-gray-400">{formatAttachSize(att.fileSize)}</p>
+                          ) : null}
+                        </div>
+                        <a
+                          href={att.fileUrl}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg"
+                          title="Tải xuống"
+                        >
+                          <Download size={14} />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleAttachmentRemove(idx)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg"
+                          title="Xóa file"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <label className={`w-full border-2 border-dashed rounded-xl flex items-center justify-center h-11 text-xs font-semibold transition-colors cursor-pointer ${
+                  uploadingAttach ? 'opacity-50 pointer-events-none' : 'border-gray-300 dark:border-slate-700 text-gray-400 hover:border-primary hover:text-primary'
+                }`}>
+                  <Upload size={14} className="mr-1.5" />
+                  {uploadingAttach ? 'Đang tải lên...' : formData.attachments.length >= MAX_ATTACHMENTS ? `Tối đa ${MAX_ATTACHMENTS} file` : 'Thêm file (PDF, Word, Excel, ZIP)'}
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"
+                    onChange={handleAttachmentUpload}
+                    disabled={uploadingAttach || formData.attachments.length >= MAX_ATTACHMENTS}
+                  />
+                </label>
+                <p className="text-[11px] text-gray-400 mt-2">Mỗi file tối đa 50MB.</p>
               </div>
 
               {/* Meta */}

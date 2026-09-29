@@ -7,6 +7,24 @@ import { logger } from "../../utils/logger";
 
 const router = Router();
 
+// Validate file đính kèm tin tức: tối đa 5 file, mỗi file ≤ 50MB
+const MAX_ATTACHMENTS = 5;
+const MAX_ATTACHMENT_SIZE = 50 * 1024 * 1024;
+const ALLOWED_ATTACHMENT_EXTS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv', '.zip', '.rar'];
+
+function validateAttachments(attachments: any): string | null {
+  if (attachments === undefined) return null;
+  if (!Array.isArray(attachments)) return 'File đính kèm không hợp lệ';
+  if (attachments.length > MAX_ATTACHMENTS) return `Tối đa ${MAX_ATTACHMENTS} file đính kèm mỗi bài viết`;
+  for (const a of attachments) {
+    if (!a || typeof a.fileUrl !== 'string' || !a.fileUrl.trim()) return 'File đính kèm thiếu đường dẫn';
+    const ext = a.fileUrl.toLowerCase().slice(a.fileUrl.toLowerCase().lastIndexOf('.'));
+    if (!ALLOWED_ATTACHMENT_EXTS.includes(ext)) return `Định dạng file đính kèm không hỗ trợ (${ext})`;
+    if (typeof a.fileSize === 'number' && a.fileSize > MAX_ATTACHMENT_SIZE) return `File "${a.fileName || a.fileUrl}" vượt quá 50MB`;
+  }
+  return null;
+}
+
 // Helper to get language from request
 const getLanguage = (req: any): SupportedLanguage => {
   const lang = (req.query.lang as string) || req.headers['accept-language']?.split(',')[0]?.split('-')[0] || 'vi';
@@ -75,6 +93,8 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    const attachError = validateAttachments(req.body?.attachments);
+    if (attachError) return res.status(400).json({ message: attachError });
     let translatedData = req.body;
     try {
       translatedData = await translateNews(req.body);
@@ -108,6 +128,8 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
+    const attachError = validateAttachments(req.body?.attachments);
+    if (attachError) return res.status(400).json({ message: attachError });
     let translatedData = req.body;
     try {
       translatedData = await translateNews(req.body);

@@ -419,6 +419,12 @@ export const db = {
       cleanData.isFeatured = Boolean(cleanData.isFeatured);
       cleanData.featuredOrder = typeof cleanData.featuredOrder === 'number' && !isNaN(cleanData.featuredOrder) ? cleanData.featuredOrder : 0;
       cleanData.tags = Array.isArray(cleanData.tags) ? cleanData.tags : (typeof cleanData.tags === 'string' ? (cleanData.tags as string).split(',').map(t => t.trim()).filter(Boolean) : []);
+      cleanData.attachments = Array.isArray(cleanData.attachments) ? cleanData.attachments.slice(0, 5).map((a: any) => ({
+        fileUrl: String(a?.fileUrl || ''),
+        fileName: String(a?.fileName || ''),
+        fileSize: typeof a?.fileSize === 'number' ? a.fileSize : 0,
+        fileType: String(a?.fileType || ''),
+      })).filter((a: any) => a.fileUrl) : [];
       cleanData.focusKeyword = typeof cleanData.focusKeyword === 'string' ? cleanData.focusKeyword : '';
       if (!['published', 'pending', 'draft'].includes(cleanData.status)) {
         cleanData.status = 'published';
@@ -443,6 +449,14 @@ export const db = {
       
       if (cleanData.tags && !Array.isArray(cleanData.tags)) {
         cleanData.tags = typeof cleanData.tags === 'string' ? (cleanData.tags as string).split(',').map(t => t.trim()).filter(Boolean) : [];
+      }
+      if ('attachments' in cleanData) {
+        cleanData.attachments = Array.isArray(cleanData.attachments) ? cleanData.attachments.slice(0, 5).map((a: any) => ({
+          fileUrl: String(a?.fileUrl || ''),
+          fileName: String(a?.fileName || ''),
+          fileSize: typeof a?.fileSize === 'number' ? a.fileSize : 0,
+          fileType: String(a?.fileType || ''),
+        })).filter((a: any) => a.fileUrl) : [];
       }
       if (cleanData.status && !['published', 'pending', 'draft'].includes(cleanData.status)) {
         cleanData.status = 'published';

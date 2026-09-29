@@ -465,6 +465,21 @@ ProjectSchema.index({ categoryId: 1 });
 ProjectSchema.index({ category: 1 });
 
 // News Schema
+
+// File đính kèm bài viết (pdf/doc/xls/zip...)
+export interface NewsAttachment {
+  fileUrl: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
+}
+
+const NewsAttachmentSchema = new Schema<NewsAttachment>({
+  fileUrl: { type: String, required: true },
+  fileName: { type: String },
+  fileSize: { type: Number },
+  fileType: { type: String },
+}, { _id: false });
 export interface INewsItem extends BaseDocument {
   title: string;
   slug?: string;
@@ -482,6 +497,7 @@ export interface INewsItem extends BaseDocument {
   tags?: string[];           // Tags
   focusKeyword?: string;     // Từ khóa SEO chính
   status?: 'published' | 'pending' | 'draft'; // Trạng thái duyệt bài
+  attachments?: NewsAttachment[]; // File đính kèm (tối đa 5 file)
   translations?: TranslationsMap<NewsTranslation>;
 }
 
@@ -502,6 +518,7 @@ const NewsSchema = new Schema<INewsItem>({
   tags: [{ type: String }],
   focusKeyword: { type: String, default: '' },
   status: { type: String, enum: ['published', 'pending', 'draft'], default: 'published' },
+  attachments: { type: [NewsAttachmentSchema], default: [] },
   translations: createTranslationSchema()
 }, { timestamps: true, strict: false });
 
