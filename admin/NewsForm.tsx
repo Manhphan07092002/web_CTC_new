@@ -32,7 +32,7 @@ interface NewsCategory {
 }
 
 const MAX_ATTACHMENTS = 5;
-const MAX_ATTACHMENT_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_ATTACHMENT_SIZE = 200 * 1024 * 1024; // 200MB
 
 const getUploadApiBase = () => {
   const viteEnv = (import.meta as any).env;
@@ -184,7 +184,7 @@ const NewsForm: React.FC = () => {
     }
     const tooBig = Array.from(files).find(f => f.size > MAX_ATTACHMENT_SIZE);
     if (tooBig) {
-      showToast(`File "${tooBig.name}" vượt quá 50MB`, 'error');
+      showToast(`File "${tooBig.name}" vượt quá 200MB`, 'error');
       e.target.value = '';
       return;
     }
@@ -687,7 +687,7 @@ const NewsForm: React.FC = () => {
                     disabled={uploadingAttach || formData.attachments.length >= MAX_ATTACHMENTS}
                   />
                 </label>
-                <p className="text-[11px] text-gray-400 mt-2">Mỗi file tối đa 50MB.</p>
+                <p className="text-[11px] text-gray-400 mt-2">Mỗi file tối đa 200MB.</p>
               </div>
 
               {/* Meta */}

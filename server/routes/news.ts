@@ -7,9 +7,9 @@ import { logger } from "../../utils/logger";
 
 const router = Router();
 
-// Validate file đính kèm tin tức: tối đa 5 file, mỗi file ≤ 50MB
+// Validate file đính kèm tin tức: tối đa 5 file, mỗi file ≤ 200MB
 const MAX_ATTACHMENTS = 5;
-const MAX_ATTACHMENT_SIZE = 50 * 1024 * 1024;
+const MAX_ATTACHMENT_SIZE = 200 * 1024 * 1024;
 const ALLOWED_ATTACHMENT_EXTS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv', '.zip', '.rar'];
 
 function validateAttachments(attachments: any): string | null {
@@ -20,7 +20,7 @@ function validateAttachments(attachments: any): string | null {
     if (!a || typeof a.fileUrl !== 'string' || !a.fileUrl.trim()) return 'File đính kèm thiếu đường dẫn';
     const ext = a.fileUrl.toLowerCase().slice(a.fileUrl.toLowerCase().lastIndexOf('.'));
     if (!ALLOWED_ATTACHMENT_EXTS.includes(ext)) return `Định dạng file đính kèm không hỗ trợ (${ext})`;
-    if (typeof a.fileSize === 'number' && a.fileSize > MAX_ATTACHMENT_SIZE) return `File "${a.fileName || a.fileUrl}" vượt quá 50MB`;
+    if (typeof a.fileSize === 'number' && a.fileSize > MAX_ATTACHMENT_SIZE) return `File "${a.fileName || a.fileUrl}" vượt quá 200MB`;
   }
   return null;
 }
