@@ -307,7 +307,7 @@ const ProductSchema = new Schema<IProduct>({
   seedSource: String,
   // Multi-language translations
   translations: createTranslationSchema()
-}, { timestamps: true, strict: false });
+}, { timestamps: true, strict: false, suppressReservedKeysWarning: true });
 
 // Product Indexes for fast querying & filtering
 ProductSchema.index({ category: 1, isDeleted: 1 });

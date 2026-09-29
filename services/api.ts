@@ -61,7 +61,7 @@ const getCurrentLanguage = (): string => {
 };
 
 // Get auth token from localStorage / session
-const getAuthToken = (): string | null => {
+export const getAuthToken = (): string | null => {
   try {
     const directToken = localStorage.getItem('token') || localStorage.getItem('auth_token');
     if (directToken) return directToken;
@@ -677,8 +677,10 @@ export const api = {
         formData.append('folder', folder);
       }
 
+      const token = getAuthToken();
       const response = await fetch(`${API_BASE_URL}/uploads`, {
         method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
 

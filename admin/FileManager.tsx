@@ -56,6 +56,27 @@ const getApiBase = () => {
 
 const API_BASE = getApiBase();
 
+// Auth headers for protected uploads API (same token source as services/api.ts)
+const getAuthHeaders = (json = false): HeadersInit => {
+  try {
+    const direct = localStorage.getItem('token') || localStorage.getItem('auth_token');
+    let token: string | null = direct;
+    if (!token) {
+      const s = localStorage.getItem('admin_session');
+      if (s) {
+        const p = JSON.parse(s);
+        token = p?.token || p?.user?.token || null;
+      }
+    }
+    const h: Record<string, string> = {};
+    if (token) h.Authorization = `Bearer ${token}`;
+    if (json) h['Content-Type'] = 'application/json';
+    return h;
+  } catch {
+    return json ? { 'Content-Type': 'application/json' } : {};
+  }
+};
+
 // Format file size
 const formatFileSize = (bytes?: number): string => {
   if (!bytes || bytes === 0) return '0 B';
@@ -71,12 +92,13 @@ const getFileExtension = (filename: string): string => {
 };
 
 // Get file category
-const getFileCategory = (filename: string): 'image' | 'video' | 'audio' | 'document' | 'other' => {
+const getFileCategory = (filename: string): 'image' | 'video' | 'audio' | 'document' | 'archive' | 'other' => {
   const ext = getFileExtension(filename);
   if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'ico', 'bmp'].includes(ext)) return 'image';
   if (['mp4', 'webm', 'mov', 'avi', 'mkv'].includes(ext)) return 'video';
   if (['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext)) return 'audio';
   if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv'].includes(ext)) return 'document';
+  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return 'archive';
   return 'other';
 };
 
@@ -92,6 +114,8 @@ const renderFileIcon = (filename: string, size = 20) => {
       return <FileAudio size={size} className="text-pink-500 flex-shrink-0" />;
     case 'document':
       return <FileText size={size} className="text-blue-500 flex-shrink-0" />;
+    case 'archive':
+      return <File size={size} className="text-amber-500 flex-shrink-0" />;
     default:
       return <File size={size} className="text-gray-400 flex-shrink-0" />;
   }
@@ -139,7 +163,7 @@ const FileManager: React.FC = () => {
     try {
       setIsLoading(true);
       const query = path ? `?path=${encodeURIComponent(path)}` : '';
-      const res = await fetch(`${API_BASE}/images${query}`);
+      const res = await fetch(`${API_BASE}/images${query}`, { headers: getAuthHeaders() });
       if (!res.ok) throw new Error('Không thể tải danh sách tệp tin');
       const data = await res.json();
       setFiles(Array.isArray(data) ? data : []);
@@ -185,6 +209,13 @@ const FileManager: React.FC = () => {
   const uploadFilesList = async (fileList: File[]) => {
     if (fileList.length === 0) return;
 
+    const MAX_SIZE = 200 * 1024 * 1024; // 200MB
+    const tooBig = fileList.find(f => f.size > MAX_SIZE);
+    if (tooBig) {
+      showToast(`File "${tooBig.name}" vượt quá 200MB. Vui lòng chọn file nhỏ hơn.`, 'error');
+      return;
+    }
+
     const formData = new FormData();
     fileList.forEach(f => formData.append('files', f));
     if (currentPath) {
@@ -196,6 +227,7 @@ const FileManager: React.FC = () => {
       const query = currentPath ? `?path=${encodeURIComponent(currentPath)}` : '';
       const res = await fetch(`${API_BASE}/images${query}`, {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: formData,
       });
 
@@ -230,7 +262,7 @@ const FileManager: React.FC = () => {
       setUploading(true);
       // Delete old file
       const oldPath = replaceTarget.path || replaceTarget.filename;
-      await fetch(`${API_BASE}/images/${encodeURIComponent(oldPath)}`, { method: 'DELETE' });
+      await fetch(`${API_BASE}/images/${encodeURIComponent(oldPath)}`, { method: 'DELETE', headers: getAuthHeaders() });
 
       // Upload replacement file to same folder
       const formData = new FormData();
@@ -242,6 +274,7 @@ const FileManager: React.FC = () => {
       const query = currentPath ? `?path=${encodeURIComponent(currentPath)}` : '';
       const res = await fetch(`${API_BASE}/images${query}`, {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: formData,
       });
 
@@ -267,7 +300,7 @@ const FileManager: React.FC = () => {
     try {
       const res = await fetch(`${API_BASE}/images/create-folder`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(true),
         body: JSON.stringify({ path: folderPath }),
       });
 
@@ -304,7 +337,7 @@ const FileManager: React.FC = () => {
       setRenaming(true);
       const res = await fetch(`${API_BASE}/images/rename`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(true),
         body: JSON.stringify({
           oldPath,
           newName: newTargetName.trim(),
@@ -350,7 +383,7 @@ const FileManager: React.FC = () => {
       try {
         const res = await fetch(`${API_BASE}/images/bulk-delete`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(true),
           body: JSON.stringify({ paths: pathsToDelete }),
         });
 
@@ -367,6 +400,7 @@ const FileManager: React.FC = () => {
       try {
         const res = await fetch(`${API_BASE}/images/${encodeURIComponent(filePath)}`, {
           method: 'DELETE',
+          headers: getAuthHeaders(),
         });
         if (!res.ok && res.status !== 204 && res.status !== 404) {
           throw new Error('Xóa tệp thất bại');
@@ -441,6 +475,7 @@ const FileManager: React.FC = () => {
       if (filterType === 'image') return !(f.isDirectory || f.type === 'folder') && getFileCategory(f.filename) === 'image';
       if (filterType === 'document') return !(f.isDirectory || f.type === 'folder') && getFileCategory(f.filename) === 'document';
       if (filterType === 'media') return !(f.isDirectory || f.type === 'folder') && ['video', 'audio'].includes(getFileCategory(f.filename));
+      if (filterType === 'archive') return !(f.isDirectory || f.type === 'folder') && getFileCategory(f.filename) === 'archive';
       return true;
     });
 
@@ -490,6 +525,7 @@ const FileManager: React.FC = () => {
         ref={fileInputRef}
         multiple
         className="hidden"
+        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.7z,.tar,.gz"
         onChange={handleFileInputChange}
       />
       <input
@@ -618,6 +654,7 @@ const FileManager: React.FC = () => {
             <option value="image">Chỉ Hình ảnh</option>
             <option value="document">Chỉ Tài liệu / PDF</option>
             <option value="media">Video / Âm thanh</option>
+            <option value="archive">File nén (.zip/.rar)</option>
             <option value="folder">Chỉ Thư mục</option>
           </select>
 

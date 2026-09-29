@@ -21,7 +21,23 @@ import { SecurityEvent, AuditLog, IPBlacklist, SecurityStats } from '../../model
 import { logger } from "../../utils/logger";
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
+// 200MB max cho file backup ZIP (DB + uploads media)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 200 * 1024 * 1024, files: 1 },
+});
+
+const handleMigrationUpload = (req: any, res: any, next: any) => {
+  upload.single('file')(req, res, (err: any) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ success: false, error: 'File ZIP quá lớn. Giới hạn tối đa 200MB.' });
+      }
+      return res.status(400).json({ success: false, error: err.message || 'Lỗi tải lên file ZIP' });
+    }
+    next();
+  });
+};
 
 function generateSlug(str: string) {
   if (!str) return '';
@@ -92,7 +108,7 @@ function cleanDocForInsert(doc: any, keepId: boolean = true) {
 /**
  * IMPORT BACKUP (Upload ZIP containing 100% site JSON collections and media)
  */
-router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
+router.post(['/upload', '/import'], handleMigrationUpload, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'Chưa chọn file sao lưu ZIP' });
@@ -112,7 +128,8 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
     }
 
     let extractedMediaCount = 0;
-    const mediaExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.mp4'];
+    const mediaExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.ico', '.bmp', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv', '.mp4', '.webm', '.mov', '.mp3', '.wav', '.ogg', '.zip', '.rar', '.7z'];
+    const resolvedUploadsDir = path.resolve(uploadsDir);
 
     for (const entry of zipEntries) {
       if (entry.isDirectory) continue;
@@ -124,7 +141,12 @@ router.post(['/upload', '/import'], upload.single('file'), async (req, res) => {
         if (relativePath.toLowerCase().startsWith('uploads/')) {
           relativePath = relativePath.substring(8);
         }
-        const targetPath = path.join(uploadsDir, relativePath);
+        const targetPath = path.resolve(path.join(uploadsDir, relativePath));
+        // Chống Zip-Slip: bỏ qua entry thoát ra ngoài uploads/
+        if (!targetPath.startsWith(resolvedUploadsDir + path.sep) && targetPath !== resolvedUploadsDir) {
+          logs.push(`Bỏ qua file nguy hiểm: ${entryName}`);
+          continue;
+        }
         const targetDir = path.dirname(targetPath);
         if (!fs.existsSync(targetDir)) {
           fs.mkdirSync(targetDir, { recursive: true });

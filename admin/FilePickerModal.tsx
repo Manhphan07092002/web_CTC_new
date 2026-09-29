@@ -53,6 +53,27 @@ const getApiBase = () => {
 };
 const API_BASE = getApiBase();
 
+// Auth headers for protected uploads API (same token source as services/api.ts)
+const getAuthHeaders = (json = false): HeadersInit => {
+  try {
+    const direct = localStorage.getItem('token') || localStorage.getItem('auth_token');
+    let token: string | null = direct;
+    if (!token) {
+      const s = localStorage.getItem('admin_session');
+      if (s) {
+        const p = JSON.parse(s);
+        token = p?.token || p?.user?.token || null;
+      }
+    }
+    const h: Record<string, string> = {};
+    if (token) h.Authorization = `Bearer ${token}`;
+    if (json) h['Content-Type'] = 'application/json';
+    return h;
+  } catch {
+    return json ? { 'Content-Type': 'application/json' } : {};
+  }
+};
+
 // Helper function to get file extension
 const getFileExtension = (filename: string): string => {
   const parts = filename.split('.');
@@ -160,7 +181,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       const oldPath = currentPath ? `${currentPath}/${renameTarget.filename}` : renameTarget.filename;
       const res = await fetch(`${API_BASE}/images/rename`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(true),
         body: JSON.stringify({
           oldPath,
           newName: newTargetName.trim(),
@@ -187,7 +208,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       setIsLoading(true);
       setError(null);
       const endpoint = path ? `${API_BASE}/images?path=${encodeURIComponent(path)}` : `${API_BASE}/images`;
-      const res = await fetch(endpoint);
+      const res = await fetch(endpoint, { headers: getAuthHeaders() });
       if (!res.ok) throw new Error('Không thể tải danh sách tệp');
       const data = await res.json();
       setFiles(Array.isArray(data) ? data : []);
@@ -229,6 +250,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       const endpoint = `${API_BASE}/images${query}`;
       const res = await fetch(endpoint, {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: formData,
       });
       if (!res.ok) {
@@ -303,6 +325,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       const fullPath = currentPath ? `${currentPath}/${filename}` : filename;
       const res = await fetch(`${API_BASE}/images/${encodeURIComponent(fullPath)}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
       if (!res.ok && res.status !== 204 && res.status !== 404) throw new Error('Delete failed');
       await loadFiles(currentPath);
@@ -322,7 +345,7 @@ const FilePickerModal: React.FC<FilePickerModalProps> = ({ isOpen, onClose, onSe
       const folderPath = currentPath ? `${currentPath}/${newFolderName.trim()}` : newFolderName.trim();
       const res = await fetch(`${API_BASE}/images/create-folder`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(true),
         body: JSON.stringify({ path: folderPath }),
       });
       

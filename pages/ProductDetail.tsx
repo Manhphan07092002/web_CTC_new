@@ -305,7 +305,7 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
     "manufacturer": {
       "@type": "Organization",
       "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
-      "url": "https://www.ctcdn.vn"
+      "url": "https://ctcdn.vn"
     },
     "offers": {
       "@type": "Offer",
@@ -316,7 +316,7 @@ Sau bảng so sánh, hãy viết phần "ĐÁNH GIÁ & KHUYÊN DÙNG CHI TIẾT 
       "seller": {
         "@type": "Organization",
         "name": "CTC",
-        "url": "https://www.ctcdn.vn"
+        "url": "https://ctcdn.vn"
       }
     },
     "aggregateRating": reviews.length > 0 ? {

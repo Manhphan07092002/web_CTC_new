@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
+import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
@@ -125,7 +126,8 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage,
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB max per file (supports PDFs, docs, videos)
+    fileSize: 200 * 1024 * 1024, // 200MB max per file (supports ZIP backup, PDFs, docs, videos)
+    files: 10, // max 10 files per request
   },
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
@@ -143,6 +145,12 @@ import { logger } from "../../utils/logger";
 const handleUpload = (req: any, res: any, next: any) => {
   upload.any()(req, res, (err: any) => {
     if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'File quá lớn. Giới hạn tối đa 200MB mỗi file.' });
+      }
+      if (err.code === 'LIMIT_FILE_COUNT') {
+        return res.status(400).json({ message: 'Quá nhiều file. Tối đa 10 file mỗi lần tải.' });
+      }
       return res.status(400).json({ message: err.message || 'Lỗi tải lên tệp tin' });
     }
     next();
@@ -150,7 +158,7 @@ const handleUpload = (req: any, res: any, next: any) => {
 };
 
 // Upload single or multiple files (supports POST /, POST /images, POST /files)
-router.post(['/', '/images', '/files'], handleUpload, async (req, res) => {
+router.post(['/', '/images', '/files'], requireAuth, handleUpload, async (req, res) => {
   const files = (req as any).files as Express.Multer.File[] | undefined;
 
   if (!files || files.length === 0) {
@@ -186,7 +194,7 @@ router.post(['/', '/images', '/files'], handleUpload, async (req, res) => {
 });
 
 // List all files and folders with optional path parameter
-router.get(['/', '/images', '/files'], (req, res) => {
+router.get(['/', '/images', '/files'], requireAuth, (req, res) => {
   const rawSubPath = String(req.query.path || '').trim();
   const subPath = rawSubPath.replace(/^\/+|\/+$/g, '');
   const targetDir = subPath ? path.join(uploadRoot, subPath) : uploadRoot;
@@ -237,7 +245,7 @@ router.get(['/', '/images', '/files'], (req, res) => {
 });
 
 // Create a new folder
-router.post(['/create-folder', '/images/create-folder', '/files/create-folder'], (req, res) => {
+router.post(['/create-folder', '/images/create-folder', '/files/create-folder'], requireAuth, (req, res) => {
   const { path: folderPath } = req.body;
 
   if (!folderPath) {
@@ -269,7 +277,7 @@ router.post(['/create-folder', '/images/create-folder', '/files/create-folder'],
 });
 
 // Rename a file or folder
-router.post(['/rename', '/images/rename', '/files/rename'], (req, res) => {
+router.post(['/rename', '/images/rename', '/files/rename'], requireAuth, (req, res) => {
   const { oldPath, newName } = req.body;
 
   if (!oldPath || !newName) {
@@ -329,7 +337,7 @@ router.post(['/rename', '/images/rename', '/files/rename'], (req, res) => {
 });
 
 // Delete a file or folder by path
-router.delete(['/:filepath(*)', '/images/:filepath(*)', '/files/:filepath(*)'], (req, res) => {
+router.delete(['/:filepath(*)', '/images/:filepath(*)', '/files/:filepath(*)'], requireAuth, (req, res) => {
   const filepath = req.params.filepath;
   if (!filepath) {
     return res.status(400).json({ message: 'Đường dẫn tệp tin là bắt buộc' });
@@ -373,7 +381,7 @@ router.delete(['/:filepath(*)', '/images/:filepath(*)', '/files/:filepath(*)'], 
 });
 
 // Bulk delete files and folders
-router.post(['/bulk-delete', '/images/bulk-delete', '/files/bulk-delete'], (req, res) => {
+router.post(['/bulk-delete', '/images/bulk-delete', '/files/bulk-delete'], requireAuth, (req, res) => {
   const { paths } = req.body;
   if (!Array.isArray(paths) || paths.length === 0) {
     return res.status(400).json({ message: 'Danh sách tệp tin cần xóa không hợp lệ' });

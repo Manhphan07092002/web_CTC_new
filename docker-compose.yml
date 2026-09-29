@@ -48,7 +48,7 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-https://ctcdn.vn}
       CORS_ORIGIN: ${CORS_ORIGIN:-https://ctcdn.vn,http://ctcdn.vn,https://www.ctcdn.vn}
     ports:
-      - "4000:4000"
+      - "127.0.0.1:4000:4000"
     volumes:
       - uploads_data:/app/uploads
       - ./server/.cache:/app/server/.cache

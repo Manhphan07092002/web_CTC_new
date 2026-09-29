@@ -24,7 +24,7 @@ export const COMPANY = {
   hotline: '0915 059 666',
   email: 'info@ctcdn.vn',
   emailAlternate: 'khkd.ctc@gmail.com',
-  website: 'https://www.ctcdn.vn',
+  website: 'https://ctcdn.vn',
   
   // Địa chỉ
   address: {

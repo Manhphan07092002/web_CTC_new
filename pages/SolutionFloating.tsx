@@ -17,7 +17,7 @@ const SolutionFloating: React.FC = () => {
           "provider": {
             "@type": "Organization",
             "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
-            "url": "https://www.ctcdn.vn",
+            "url": "https://ctcdn.vn",
             "telephone": "+84-915-059-666"
           },
           "areaServed": "Vietnam",

@@ -1,6 +1,6 @@
 import { connectDB, disconnectDB } from '../services/mongodb';
 import { Settings } from '../models';
-import { logger } from "../../utils/logger";
+import { logger } from "../utils/logger";
 
 async function migrateSettings() {
   try {

@@ -75,7 +75,7 @@ import brandsRouter from './routes/brands';
 import attributeTemplatesRouter from './routes/attribute-templates';
 import { startTranslationScheduler } from './services/translationScheduler.js';
 import { createSeoInjectMiddleware } from './middleware/seo-inject';
-import { logger } from "../../utils/logger";
+import { logger } from "../utils/logger";
 
 // Load envs
 dotenv.config({ path: '.env.local' });
@@ -94,6 +94,8 @@ app.set('trust proxy', process.env.TRUST_PROXY || 'loopback');
 // Only enable in production or when PRERENDER_TOKEN is set
 if (process.env.PRERENDER_TOKEN || process.env.NODE_ENV === 'production') {
   try {
+    const { createRequire } = await import('module');
+    const require = createRequire(import.meta.url);
     const prerender = require('prerender-node');
     app.use(prerender
       .set('prerenderToken', process.env.PRERENDER_TOKEN || '')
@@ -317,7 +319,7 @@ app.use('/api/users', usersRouter);
 
 // Other routes
 app.use('/api/seed', seedRouter);
-app.use('/api/uploads', uploadsRouter); // Remove rate limiting for uploads
+app.use('/api/uploads', uploadsRouter);
 app.use('/api/team', teamRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/statistics', statisticsRouter);
@@ -344,7 +346,6 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/ai', aiWriterRouter);
 app.use('/api/ai/product', productWriterRouter);
-app.use('/api/uploads', uploadsRouter);
 app.use('/api/company-profiles', companyProfilesRouter);
 app.use('/api/financial-reports', financialReportsRouter);
 app.use('/api/business-sectors', businessSectorsRouter);
@@ -385,6 +386,12 @@ if (fs.existsSync(indexPath)) {
       }
     },
   }));
+
+  // Chặn file source dev (.tsx/.ts) lọt ra production:
+  // index.html cũ từng trỏ /index.tsx, trình duyệt cache lại rồi request file này,
+  // static middleware trả về application/octet-stream gây lỗi "Failed to load module script".
+  app.get('*.tsx', (_req, res) => res.status(404).send('Not found'));
+  app.get('*.ts', (_req, res) => res.status(404).send('Not found'));
 
   // SPA fallback with SEO meta injection:
   // Each URL gets unique <title>, <meta description>, <link canonical>
@@ -435,7 +442,7 @@ if (fs.existsSync(indexPath)) {
 // Simple upload error handler
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (error.code === 'LIMIT_FILE_SIZE') {
-    return res.status(400).json({ message: 'File quá lớn' });
+    return res.status(400).json({ message: 'File quá lớn. Giới hạn tối đa 200MB.' });
   }
   next(error);
 });
@@ -541,5 +548,5 @@ const server = app.listen(PORT, async () => {
 // Configure Server Timeouts for Anti-Slowloris & Connection Reuse
 server.keepAliveTimeout = 65000; // 65 seconds (slightly higher than Nginx 60s default)
 server.headersTimeout = 66000; // Must be greater than keepAliveTimeout
-(server as any).requestTimeout = 30000; // Max 30s per request
+(server as any).requestTimeout = 300000; // 5 phút: cho phép upload + import ZIP 200MB
 

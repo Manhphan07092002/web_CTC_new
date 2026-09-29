@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8'; // bump để xóa cache cũ (index.html từng trỏ /index.tsx gây lỗi MIME)
 const STATIC_CACHE = `ctc-static-${CACHE_VERSION}`;
 const FONT_CACHE = `ctc-fonts-${CACHE_VERSION}`;
 const IMAGE_CACHE = `ctc-images-${CACHE_VERSION}`;

@@ -47,7 +47,7 @@ const About: React.FC = () => {
       },
       "telephone": "+84-236-3745-555",
       "email": "info@ctcdn.vn",
-      "url": "https://www.ctcdn.vn"
+      "url": "https://ctcdn.vn"
     }
   };
 

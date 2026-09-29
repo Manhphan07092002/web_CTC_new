@@ -6,7 +6,7 @@
 import { getProductUrl, getNewsUrl } from './news-url-helper';
 
 // Site configuration - Thông tin công ty CTC
-const SITE_URL = 'https://www.ctcdn.vn';
+const SITE_URL = 'https://ctcdn.vn';
 const SITE_NAME = 'Công ty Cổ phần Xây lắp Bưu điện Miền Trung';
 const SITE_SHORT_NAME = 'CTC';
 const COMPANY_PHONE = '+84 236 3745 555';

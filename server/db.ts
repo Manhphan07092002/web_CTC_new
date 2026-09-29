@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { autoSeedIfEmpty, autoSeedProfileData, autoSeedProductMeta } from './utils/autoSeed';
-import { logger } from "../../utils/logger";
+import { logger } from "../utils/logger";
 
 // Load environment variables from .env.local (fallback to .env)
 dotenv.config({ path: '.env.local' });

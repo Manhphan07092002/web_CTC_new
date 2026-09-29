@@ -179,7 +179,7 @@ const Home: React.FC = () => {
       "@id": `${window.location.origin}/#organization`,
       "name": "Công ty Cổ phần Xây lắp Bưu điện Miền Trung",
       "alternateName": ["CENTRAL VIETNAM POSTS AND TELECOMMUNICATIONS CONSTRUCTION JOINT - STOCK COMPANY", "CTC", "CTC"],
-      "url": "https://www.ctcdn.vn",
+      "url": "https://ctcdn.vn",
       "logo": {
         "@type": "ImageObject",
         "url": `${window.location.origin}/uploads/images/logo/logo.png`,
@@ -241,7 +241,7 @@ const Home: React.FC = () => {
       "image": `${window.location.origin}/images/why_choose_us_visual.webp`,
       "telephone": "+84-236-3745-555",
       "email": "info@ctcdn.vn",
-      "url": "https://www.ctcdn.vn",
+      "url": "https://ctcdn.vn",
       "priceRange": "$$",
       "currenciesAccepted": "VND",
       "paymentAccepted": "Cash, Bank Transfer, Credit Card",

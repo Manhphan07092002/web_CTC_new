@@ -58,8 +58,14 @@ const MigrationManagement: React.FC = () => {
       return;
     }
 
-    if (!file.name.endsWith('.zip')) {
+    if (!file.name.toLowerCase().endsWith('.zip')) {
       showToast('Chỉ hỗ trợ định dạng file .zip', 'error');
+      return;
+    }
+
+    const MAX_SIZE = 200 * 1024 * 1024; // 200MB
+    if (file.size > MAX_SIZE) {
+      showToast(`File ZIP ${(file.size / 1024 / 1024).toFixed(1)}MB vượt quá giới hạn 200MB.`, 'error');
       return;
     }
 
@@ -71,15 +77,30 @@ const MigrationManagement: React.FC = () => {
     if (!file) return;
 
     setLoading(true);
-    setLogs(['Đang tải file lên máy chủ...']);
+    setLogs([`Đang tải file ${(file.size / 1024 / 1024).toFixed(2)}MB lên máy chủ (tối đa 200MB, có thể mất vài phút)...`]);
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
+      // Gửi kèm token như FileManager để đồng nhất xác thực
+      let authHeaders: Record<string, string> = {};
+      try {
+        const direct = localStorage.getItem('token') || localStorage.getItem('auth_token');
+        let token: string | null = direct;
+        if (!token) {
+          const s = localStorage.getItem('admin_session');
+          if (s) {
+            const p = JSON.parse(s);
+            token = p?.token || p?.user?.token || null;
+          }
+        }
+        if (token) authHeaders.Authorization = `Bearer ${token}`;
+      } catch { /* ignore */ }
       // Direct fetch to avoid api wrapper parsing issues with FormData
       const response = await fetch('/api/migration/import', {
         method: 'POST',
+        headers: authHeaders,
         body: formData,
       });
 

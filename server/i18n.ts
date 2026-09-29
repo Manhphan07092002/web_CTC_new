@@ -3,7 +3,7 @@ import * as middleware from 'i18next-http-middleware';
 import path from 'path';
 import { EnhancedI18nBackend } from './utils/i18n-backend-enhanced';
 import { translationCache } from './utils/translation-cache';
-import { logger } from "../../utils/logger";
+import { logger } from "../utils/logger";
 
 // Initialize enhanced backend
 const enhancedBackend = new EnhancedI18nBackend();

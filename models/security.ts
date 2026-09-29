@@ -55,7 +55,6 @@ const SecurityEventSchema = new Schema<ISecurityEvent>({
   createdAt: {
     type: Date,
     default: Date.now,
-    index: true,
   },
 });
 
@@ -134,7 +133,6 @@ const AuditLogSchema = new Schema<IAuditLog>({
   createdAt: {
     type: Date,
     default: Date.now,
-    index: true,
   },
 });
 

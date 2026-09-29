@@ -4,14 +4,14 @@
 
 ## Links
 
-- [Trang chủ](https://www.ctcdn.vn/): Trang chủ chính thức Công ty Cổ phần Xây lắp Bưu điện Miền Trung.
-- [Giới thiệu](https://www.ctcdn.vn/about): Hồ sơ năng lực, lịch sử phát triển và ban lãnh đạo CTC.
-- [Sản phẩm](https://www.ctcdn.vn/products): Tấm pin năng lượng mặt trời, bộ hòa lưới Inverter, pin lưu trữ Lithium.
-- [Giải pháp](https://www.ctcdn.vn/solutions): Giải pháp Tổng thầu EPC Điện mặt trời mái nhà, Điện gió, Đường dây & Trạm biến áp 110kV.
-- [Dự án](https://www.ctcdn.vn/projects): Danh mục hơn 500 dự án tiêu biểu CTC đã triển khai thi công.
-- [Tin tức](https://www.ctcdn.vn/news): Tin tức chuyên ngành năng lượng tái tạo, viễn thông và thông cáo báo chí.
-- [Tài liệu](https://www.ctcdn.vn/resources): Tài liệu kỹ thuật, catalog sản phẩm và hướng dẫn vận hành.
-- [Liên hệ](https://www.ctcdn.vn/contact): Thông tin liên hệ tư vấn, địa chỉ trụ sở và đăng ký báo giá.
+- [Trang chủ](https://ctcdn.vn/): Trang chủ chính thức Công ty Cổ phần Xây lắp Bưu điện Miền Trung.
+- [Giới thiệu](https://ctcdn.vn/about): Hồ sơ năng lực, lịch sử phát triển và ban lãnh đạo CTC.
+- [Sản phẩm](https://ctcdn.vn/products): Tấm pin năng lượng mặt trời, bộ hòa lưới Inverter, pin lưu trữ Lithium.
+- [Giải pháp](https://ctcdn.vn/solutions): Giải pháp Tổng thầu EPC Điện mặt trời mái nhà, Điện gió, Đường dây & Trạm biến áp 110kV.
+- [Dự án](https://ctcdn.vn/projects): Danh mục hơn 500 dự án tiêu biểu CTC đã triển khai thi công.
+- [Tin tức](https://ctcdn.vn/news): Tin tức chuyên ngành năng lượng tái tạo, viễn thông và thông cáo báo chí.
+- [Tài liệu](https://ctcdn.vn/resources): Tài liệu kỹ thuật, catalog sản phẩm và hướng dẫn vận hành.
+- [Liên hệ](https://ctcdn.vn/contact): Thông tin liên hệ tư vấn, địa chỉ trụ sở và đăng ký báo giá.
 
 ## Details
 
