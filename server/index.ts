@@ -504,7 +504,18 @@ const server = app.listen(PORT, async () => {
     await connectDB();
   } catch (err: any) {
     logger.error('❌ DB Connection Warning:', err?.message || err);
-    logger.error('💡 Ensure MongoDB is running locally on port 27017 or start it via: net start MongoDB');
+    logger.error('💡 Ensure MongoDB is running, will keep retrying in background every 10s');
+    const retryInBackground = async () => {
+      const mongoose = (await import('mongoose')).default;
+      while (mongoose.connection.readyState !== 1) {
+        await new Promise((r) => setTimeout(r, 10000));
+        try {
+          await connectDB(1, 0);
+          break;
+        } catch { /* keep looping */ }
+      }
+    };
+    retryInBackground();
   }
 
   try {
